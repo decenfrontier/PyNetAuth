@@ -51,20 +51,20 @@ class Ui_WndClient(object):
 
         self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
 
-        self.lineEdit = QLineEdit(self.widget)
-        self.lineEdit.setObjectName(u"lineEdit")
+        self.edt_account = QLineEdit(self.widget)
+        self.edt_account.setObjectName(u"edt_account")
 
-        self.gridLayout_2.addWidget(self.lineEdit, 0, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.edt_account, 0, 1, 1, 1)
 
         self.label_2 = QLabel(self.widget)
         self.label_2.setObjectName(u"label_2")
 
         self.gridLayout_2.addWidget(self.label_2, 1, 0, 1, 1)
 
-        self.lineEdit_2 = QLineEdit(self.widget)
-        self.lineEdit_2.setObjectName(u"lineEdit_2")
+        self.edt_pwd = QLineEdit(self.widget)
+        self.edt_pwd.setObjectName(u"edt_pwd")
 
-        self.gridLayout_2.addWidget(self.lineEdit_2, 1, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.edt_pwd, 1, 1, 1, 1)
 
 
         self.gridLayout_6.addLayout(self.gridLayout_2, 1, 1, 1, 3)
@@ -77,10 +77,10 @@ class Ui_WndClient(object):
 
         self.gridLayout_6.addItem(self.horizontalSpacer_3, 2, 1, 1, 1)
 
-        self.pushButton = QPushButton(self.widget)
-        self.pushButton.setObjectName(u"pushButton")
+        self.btn_login = QPushButton(self.widget)
+        self.btn_login.setObjectName(u"btn_login")
 
-        self.gridLayout_6.addWidget(self.pushButton, 2, 2, 1, 1)
+        self.gridLayout_6.addWidget(self.btn_login, 2, 2, 1, 1)
 
         self.horizontalSpacer_4 = QSpacerItem(41, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -356,7 +356,7 @@ class Ui_WndClient(object):
         WndClient.setWindowTitle(QCoreApplication.translate("WndClient", u"YZ\u7f51\u7edc\u9a8c\u8bc1-\u5ba2\u6237\u7aef", None))
         self.label.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
         self.label_2.setText(QCoreApplication.translate("WndClient", u"\u5bc6\u7801:", None))
-        self.pushButton.setText(QCoreApplication.translate("WndClient", u"\u767b \u5f55", None))
+        self.btn_login.setText(QCoreApplication.translate("WndClient", u"\u767b \u5f55", None))
         self.label_5.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
         self.label_6.setText(QCoreApplication.translate("WndClient", u"\u5bc6\u7801:", None))
         self.label_7.setText(QCoreApplication.translate("WndClient", u"\u91cd\u590d\u5bc6\u7801:", None))

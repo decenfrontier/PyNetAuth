@@ -707,7 +707,7 @@
     <string>toolBar</string>
    </property>
    <property name="movable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="orientation">
     <enum>Qt::Vertical</enum>

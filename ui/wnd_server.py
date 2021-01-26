@@ -208,7 +208,7 @@ class Ui_WndServer(object):
         WndServer.setStatusBar(self.status_bar)
         self.tool_bar = QToolBar(WndServer)
         self.tool_bar.setObjectName(u"tool_bar")
-        self.tool_bar.setMovable(False)
+        self.tool_bar.setMovable(True)
         self.tool_bar.setOrientation(Qt.Vertical)
         WndServer.addToolBar(Qt.LeftToolBarArea, self.tool_bar)
 

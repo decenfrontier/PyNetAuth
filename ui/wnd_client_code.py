@@ -1,5 +1,5 @@
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QMainWindow, QLabel
+from PySide2.QtWidgets import QMainWindow, QLabel, QMessageBox
 import socket
 
 from ui.wnd_client import Ui_WndClient
@@ -33,13 +33,14 @@ class WndClient(QMainWindow, Ui_WndClient):
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
+        self.btn_login.clicked.connect(self.on_btn_login_clicked)
 
     def init_tcp_client(self):
         self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.show_info("正在连接服务器...")
-        err_no = self.tcp_socket.connect_ex((mf.server_ip, mf.server_port))
-        if err_no != 0:
-            self.show_info(f"连接服务器失败, 错误码: {err_no}")
+        self.err_no = self.tcp_socket.connect_ex((mf.server_ip, mf.server_port))
+        if self.err_no != 0:
+            self.show_info(f"连接服务器失败, 错误码: {self.err_no}")
             return False
         self.show_info(f"连接服务器成功")
         return True
@@ -54,6 +55,16 @@ class WndClient(QMainWindow, Ui_WndClient):
             self.stack_widget.setCurrentIndex(2)
         elif action_name == "改密":
             self.stack_widget.setCurrentIndex(3)
+
+    def on_btn_login_clicked(self):
+        if self.err_no != 0:
+            QMessageBox.information(self, "错误", f"连接服务器失败:{self.err_no}")
+            return
+        account = self.edt_account.text()
+        pwd = self.edt_pwd.text()
+        send_data = account.encode()
+        self.tcp_socket.send(send_data)
+        self.show_info("客户端发送数据成功")
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")

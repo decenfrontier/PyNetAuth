@@ -3,6 +3,9 @@ import time
 cur_time_stamp = time.time()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
+server_ip = "127.0.0.1"
+server_port = 47123
+
 qss_style = """
     * {
         font-size: 11px;

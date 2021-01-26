@@ -20,7 +20,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_all_sig_slot()
         self.init_mysql()
         self.init_tcp_server()
-        self.show_info("窗口初始化完成")
+        self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):
         self.tcp_socket.close()
@@ -86,7 +86,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def init_tcp_server(self):
         self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.tcp_socket.bind(("", 47123))  # 主机号+端口号
+        self.tcp_socket.bind((mf.server_ip, mf.server_port))  # 主机号+端口号
         self.tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
         Thread(target=self.thd_receive_client).start()
 
@@ -114,17 +114,42 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info("服务器已开启, 准备接受客户请求...")
         while True:
             self.show_info("正在等待客户端发出连接请求...")
-            client_socket, client_addr = self.tcp_socket.accept()
+            try:
+                client_socket, client_addr = self.tcp_socket.accept()
+            except:
+                break
             self.show_info(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
-            Thread(target=thd_serve_client, args=(client_socket, client_addr)).start()
+            Thread(target=self.thd_serve_client, args=(client_socket, client_addr)).start()
+        self.show_info("服务器已关闭, 停止接受客户请求...")
 
     def thd_serve_client(self, client_socket: socket.socket, client_addr: tuple):
         while True:
             self.show_info("客服套接字等待接收客户端的消息中...")
-            recv_data = client_socket.recv(1024)
+            try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
+                recv_data = client_socket.recv(1024)
+            except:
+                recv_data = ""
             if not recv_data:  # 若客户端退出,会收到一个空str
                 break
             self.show_info(f"收到客户端的消息: {recv_data.decode()}")
             # todo: 添加回复
         self.show_info(f"客户端{client_addr}, 已退出, 服务结束")
         client_socket.close()
+
+
+import sys
+from PySide2.QtWidgets import QApplication, QStyleFactory
+from PySide2.QtCore import Qt
+
+if __name__ == '__main__':
+    # 界面随DPI自动缩放
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+
+    app = QApplication()
+    app.setStyle(QStyleFactory.create("fusion"))
+    app.setStyleSheet(mf.qss_style)
+
+    wnd_server = WndServer()
+    wnd_server.show()
+
+    sys.exit(app.exec_())

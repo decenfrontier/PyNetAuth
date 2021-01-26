@@ -17,7 +17,7 @@ class Ui_WndClient(object):
     def setupUi(self, WndClient):
         if not WndClient.objectName():
             WndClient.setObjectName(u"WndClient")
-        WndClient.resize(366, 289)
+        WndClient.resize(334, 246)
         WndClient.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.centralwidget = QWidget(WndClient)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -339,10 +339,10 @@ class Ui_WndClient(object):
         WndClient.setStatusBar(self.status_bar)
         self.tool_bar = QToolBar(WndClient)
         self.tool_bar.setObjectName(u"tool_bar")
-        self.tool_bar.setMovable(False)
-        self.tool_bar.setOrientation(Qt.Vertical)
-        self.tool_bar.setFloatable(False)
-        WndClient.addToolBar(Qt.LeftToolBarArea, self.tool_bar)
+        self.tool_bar.setMovable(True)
+        self.tool_bar.setOrientation(Qt.Horizontal)
+        self.tool_bar.setFloatable(True)
+        WndClient.addToolBar(Qt.TopToolBarArea, self.tool_bar)
 
         self.retranslateUi(WndClient)
 

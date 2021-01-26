@@ -7,5 +7,6 @@
         <file>modify.png</file>
         <file>pay.png</file>
         <file>register.png</file>
+        <file>log.png</file>
     </qresource>
 </RCC>

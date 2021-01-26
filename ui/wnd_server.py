@@ -61,7 +61,7 @@ class Ui_WndServer(object):
         self.tbe_all_user.setWordWrap(True)
         self.tbe_all_user.setCornerButtonEnabled(False)
         self.tbe_all_user.setRowCount(100)
-        self.tbe_all_user.horizontalHeader().setVisible(True)
+        self.tbe_all_user.horizontalHeader().setVisible(False)
         self.tbe_all_user.horizontalHeader().setCascadingSectionResizes(False)
         self.tbe_all_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_all_user.verticalHeader().setVisible(False)
@@ -181,6 +181,24 @@ class Ui_WndServer(object):
         self.gridLayout_4.addLayout(self.horizontalLayout_3, 0, 0, 1, 1)
 
         self.stack_widget.addWidget(self.page_2)
+        self.page_3 = QWidget()
+        self.page_3.setObjectName(u"page_3")
+        self.gridLayout_5 = QGridLayout(self.page_3)
+        self.gridLayout_5.setSpacing(2)
+        self.gridLayout_5.setObjectName(u"gridLayout_5")
+        self.gridLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.tbr_log = QTextBrowser(self.page_3)
+        self.tbr_log.setObjectName(u"tbr_log")
+
+        self.gridLayout_5.addWidget(self.tbr_log, 1, 0, 1, 1)
+
+        self.label = QLabel(self.page_3)
+        self.label.setObjectName(u"label")
+        self.label.setAlignment(Qt.AlignCenter)
+
+        self.gridLayout_5.addWidget(self.label, 0, 0, 1, 1)
+
+        self.stack_widget.addWidget(self.page_3)
 
         self.gridLayout.addWidget(self.stack_widget, 0, 0, 1, 1)
 
@@ -196,7 +214,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -249,6 +267,7 @@ class Ui_WndServer(object):
         ___qtablewidgetitem20 = self.tbe_card_manage.horizontalHeaderItem(4)
         ___qtablewidgetitem20.setText(QCoreApplication.translate("WndServer", u"use_time", None));
         self.groupBox_3.setTitle("")
+        self.label.setText(QCoreApplication.translate("WndServer", u"\u6267\u884c\u65e5\u5fd7", None))
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))
     # retranslateUi
 

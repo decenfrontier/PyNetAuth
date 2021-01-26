@@ -2,7 +2,7 @@ from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMainWindow
 
 from ui.wnd_client import Ui_WndClient
-from ui import qres
+from res import qres
 
 class WndClient(QMainWindow, Ui_WndClient):
     def __init__(self):
@@ -10,6 +10,7 @@ class WndClient(QMainWindow, Ui_WndClient):
         self.setupUi(self)
         self.init_all_controls()
         self.init_all_sig_slot()
+        self.init_tcp_client()
 
     def init_all_controls(self):
         # 显示第一页
@@ -22,6 +23,10 @@ class WndClient(QMainWindow, Ui_WndClient):
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
+
+    def init_tcp_client(self):
+
+        ...
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()

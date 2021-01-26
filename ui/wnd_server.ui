@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="page_0">
        <layout class="QGridLayout" name="gridLayout_2">
@@ -72,7 +72,7 @@
              <number>100</number>
             </property>
             <attribute name="horizontalHeaderVisible">
-             <bool>true</bool>
+             <bool>false</bool>
             </attribute>
             <attribute name="horizontalHeaderCascadingSectionResizes">
              <bool>false</bool>
@@ -662,6 +662,38 @@
            </widget>
           </item>
          </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_3">
+       <layout class="QGridLayout" name="gridLayout_5">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <item row="1" column="0">
+         <widget class="QTextBrowser" name="tbr_log"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>执行日志</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

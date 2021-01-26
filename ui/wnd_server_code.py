@@ -8,14 +8,16 @@ class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.tool_bar.addAction(QIcon(":/users.png"), "all_user")
-        self.tool_bar.addAction(QIcon(":/user.png"), "online_user")
-        self.tool_bar.addAction(QIcon(":/card.png"), "card_manage")
         self.init_all_controls()
         self.init_all_sig_slot()
 
     def init_all_controls(self):
+        # 显示第一页
         self.stack_widget.setCurrentIndex(0)
+        # 工具栏设置图标
+        self.tool_bar.addAction(QIcon(":/users.png"), "全部用户")
+        self.tool_bar.addAction(QIcon(":/user.png"), "在线用户")
+        self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
         # 所有表头可视化
         self.tbe_all_user.horizontalHeader().setVisible(True)
         self.tbe_online_user.horizontalHeader().setVisible(True)
@@ -44,9 +46,9 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
-        if action_name == "all_user":
+        if action_name == "全部用户":
             self.stack_widget.setCurrentIndex(0)
-        elif action_name == "online_user":
+        elif action_name == "在线用户":
             self.stack_widget.setCurrentIndex(1)
         else:
             self.stack_widget.setCurrentIndex(2)

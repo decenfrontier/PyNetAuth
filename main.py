@@ -16,10 +16,10 @@ if __name__ == '__main__':
     app.setStyle(QStyleFactory.create("fusion"))
     app.setStyleSheet(mf.qss_style)
 
-    # wnd_server = WndServer()
-    # wnd_server.show()
+    wnd_server = WndServer()
+    wnd_server.show()
 
-    wnd_client = WndClient()
-    wnd_client.show()
+    # wnd_client = WndClient()
+    # wnd_client.show()
 
     sys.exit(app.exec_())

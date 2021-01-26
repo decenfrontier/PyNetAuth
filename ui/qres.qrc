@@ -3,5 +3,9 @@
         <file>card.png</file>
         <file>user.png</file>
         <file>users.png</file>
+        <file>login.png</file>
+        <file>modify.png</file>
+        <file>pay.png</file>
+        <file>register.png</file>
     </qresource>
 </RCC>

@@ -18,6 +18,7 @@ class Ui_WndServer(object):
         if not WndServer.objectName():
             WndServer.setObjectName(u"WndServer")
         WndServer.resize(1053, 590)
+        WndServer.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.centralwidget = QWidget(WndServer)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -190,7 +191,8 @@ class Ui_WndServer(object):
         self.tool_bar = QToolBar(WndServer)
         self.tool_bar.setObjectName(u"tool_bar")
         self.tool_bar.setMovable(False)
-        WndServer.addToolBar(Qt.TopToolBarArea, self.tool_bar)
+        self.tool_bar.setOrientation(Qt.Vertical)
+        WndServer.addToolBar(Qt.LeftToolBarArea, self.tool_bar)
 
         self.retranslateUi(WndServer)
 

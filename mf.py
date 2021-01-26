@@ -1,3 +1,8 @@
+import time
+
+cur_time_stamp = time.time()
+cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
+
 qss_style = """
     * {
         font-size: 11px;

@@ -1,17 +1,21 @@
 from PySide2.QtGui import QIcon, QCloseEvent
 from PySide2.QtWidgets import QMainWindow, QLabel
+from PySide2.QtCore import QTimer
 import pymysql
 import socket
 from threading import Thread
+import time
 
 from ui.wnd_server import Ui_WndServer
 from res import qres
+import mf
 
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.init_status_bar()
+        self.init_timer()
         self.init_all_controls()
         self.init_all_sig_slot()
         self.init_mysql()
@@ -22,6 +26,16 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tcp_socket.close()
         self.crsr.close()
         self.conn.close()
+
+    def init_status_bar(self):
+        self.lbe_info = QLabel()
+        self.status_bar.addWidget(self.lbe_info)
+
+    def init_timer(self):
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.on_timer_timeout)
+        self.timer.start(1000)
+        ...
 
     def init_all_controls(self):
         # 显示第一页
@@ -47,7 +61,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_all_user.setColumnWidth(is_forbid, 70)
         # 卡密管理表
         card_key, state, type, gen_time, use_time = [i for i in range(5)]
-        self.tbe_card_manage.setColumnWidth(card_key, 350)
+        self.tbe_card_manage.setColumnWidth(card_key, 340)
         self.tbe_card_manage.setColumnWidth(state, 80)
         self.tbe_card_manage.setColumnWidth(type, 80)
         self.tbe_card_manage.setColumnWidth(gen_time, 150)
@@ -56,9 +70,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
 
-    def init_status_bar(self):
-        self.lbe_info = QLabel()
-        self.status_bar.addWidget(self.lbe_info)
+
 
     def init_mysql(self):
         # 创建连接对象
@@ -80,8 +92,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
-        self.tbr_log.append(text)
-
+        self.tbr_log.append(f"{mf.cur_time_format}  {text}")
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
@@ -94,6 +105,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.stack_widget.setCurrentIndex(2)
         elif action_name == "执行日志":
             self.stack_widget.setCurrentIndex(3)
+
+    def on_timer_timeout(self):
+        mf.cur_time_stamp += 1
+        mf.cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
     def thd_receive_client(self):
         print("服务器开始接受客户请求...")

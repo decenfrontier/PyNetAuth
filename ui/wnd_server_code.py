@@ -1,14 +1,10 @@
-import sys
-
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow
-from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QMainWindow
 
-from ui.wnd_server import Ui_wnd_server
+from ui.wnd_server import Ui_WndServer
 from ui import qres
-import mf
 
-class WndServer(QMainWindow, Ui_wnd_server):
+class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -19,6 +15,7 @@ class WndServer(QMainWindow, Ui_wnd_server):
         self.init_all_sig_slot()
 
     def init_all_controls(self):
+        self.stack_widget.setCurrentIndex(0)
         # 所有表头可视化
         self.tbe_all_user.horizontalHeader().setVisible(True)
         self.tbe_online_user.horizontalHeader().setVisible(True)
@@ -55,15 +52,4 @@ class WndServer(QMainWindow, Ui_wnd_server):
             self.stack_widget.setCurrentIndex(2)
 
 
-if __name__ == '__main__':
-    # 界面随DPI自动缩放
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 
-    app = QApplication()
-    app.setStyle(QStyleFactory.create("fusion"))
-    app.setStyleSheet(mf.qss_style)
-
-    wnd_server = WndServer()
-    wnd_server.show()
-
-    sys.exit(app.exec_())

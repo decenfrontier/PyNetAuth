@@ -13,12 +13,12 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 
-class Ui_wnd_server(object):
-    def setupUi(self, wnd_server):
-        if not wnd_server.objectName():
-            wnd_server.setObjectName(u"wnd_server")
-        wnd_server.resize(1053, 590)
-        self.centralwidget = QWidget(wnd_server)
+class Ui_WndServer(object):
+    def setupUi(self, WndServer):
+        if not WndServer.objectName():
+            WndServer.setObjectName(u"WndServer")
+        WndServer.resize(1053, 590)
+        self.centralwidget = QWidget(WndServer)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(u"gridLayout")
@@ -183,70 +183,70 @@ class Ui_wnd_server(object):
 
         self.gridLayout.addWidget(self.stack_widget, 0, 0, 1, 1)
 
-        wnd_server.setCentralWidget(self.centralwidget)
-        self.status_bar = QStatusBar(wnd_server)
+        WndServer.setCentralWidget(self.centralwidget)
+        self.status_bar = QStatusBar(WndServer)
         self.status_bar.setObjectName(u"status_bar")
-        wnd_server.setStatusBar(self.status_bar)
-        self.tool_bar = QToolBar(wnd_server)
+        WndServer.setStatusBar(self.status_bar)
+        self.tool_bar = QToolBar(WndServer)
         self.tool_bar.setObjectName(u"tool_bar")
         self.tool_bar.setMovable(False)
-        wnd_server.addToolBar(Qt.TopToolBarArea, self.tool_bar)
+        WndServer.addToolBar(Qt.TopToolBarArea, self.tool_bar)
 
-        self.retranslateUi(wnd_server)
+        self.retranslateUi(WndServer)
 
         self.stack_widget.setCurrentIndex(2)
 
 
-        QMetaObject.connectSlotsByName(wnd_server)
+        QMetaObject.connectSlotsByName(WndServer)
     # setupUi
 
-    def retranslateUi(self, wnd_server):
-        wnd_server.setWindowTitle(QCoreApplication.translate("wnd_server", u"PY\u7f51\u7edc\u9a8c\u8bc1-\u670d\u52a1\u7aef", None))
+    def retranslateUi(self, WndServer):
+        WndServer.setWindowTitle(QCoreApplication.translate("WndServer", u"PY\u7f51\u7edc\u9a8c\u8bc1-\u670d\u52a1\u7aef", None))
         ___qtablewidgetitem = self.tbe_all_user.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("wnd_server", u"account", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("WndServer", u"account", None));
         ___qtablewidgetitem1 = self.tbe_all_user.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("wnd_server", u"pwd", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("WndServer", u"pwd", None));
         ___qtablewidgetitem2 = self.tbe_all_user.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("wnd_server", u"email", None));
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("WndServer", u"email", None));
         ___qtablewidgetitem3 = self.tbe_all_user.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("wnd_server", u"machine_code", None));
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("WndServer", u"machine_code", None));
         ___qtablewidgetitem4 = self.tbe_all_user.horizontalHeaderItem(4)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("wnd_server", u"reg_ip", None));
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("WndServer", u"reg_ip", None));
         ___qtablewidgetitem5 = self.tbe_all_user.horizontalHeaderItem(5)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("wnd_server", u"reg_time", None));
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("WndServer", u"reg_time", None));
         ___qtablewidgetitem6 = self.tbe_all_user.horizontalHeaderItem(6)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("wnd_server", u"due_time", None));
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("WndServer", u"due_time", None));
         ___qtablewidgetitem7 = self.tbe_all_user.horizontalHeaderItem(7)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("wnd_server", u"is_forbid", None));
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("WndServer", u"is_forbid", None));
         self.groupBox.setTitle("")
         ___qtablewidgetitem8 = self.tbe_online_user.horizontalHeaderItem(0)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("wnd_server", u"account", None));
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("WndServer", u"account", None));
         ___qtablewidgetitem9 = self.tbe_online_user.horizontalHeaderItem(1)
-        ___qtablewidgetitem9.setText(QCoreApplication.translate("wnd_server", u"hcomm", None));
+        ___qtablewidgetitem9.setText(QCoreApplication.translate("WndServer", u"hcomm", None));
         ___qtablewidgetitem10 = self.tbe_online_user.horizontalHeaderItem(2)
-        ___qtablewidgetitem10.setText(QCoreApplication.translate("wnd_server", u"connect_id", None));
+        ___qtablewidgetitem10.setText(QCoreApplication.translate("WndServer", u"connect_id", None));
         ___qtablewidgetitem11 = self.tbe_online_user.horizontalHeaderItem(3)
-        ___qtablewidgetitem11.setText(QCoreApplication.translate("wnd_server", u"machine_code", None));
+        ___qtablewidgetitem11.setText(QCoreApplication.translate("WndServer", u"machine_code", None));
         ___qtablewidgetitem12 = self.tbe_online_user.horizontalHeaderItem(4)
-        ___qtablewidgetitem12.setText(QCoreApplication.translate("wnd_server", u"login_ip", None));
+        ___qtablewidgetitem12.setText(QCoreApplication.translate("WndServer", u"login_ip", None));
         ___qtablewidgetitem13 = self.tbe_online_user.horizontalHeaderItem(5)
-        ___qtablewidgetitem13.setText(QCoreApplication.translate("wnd_server", u"login_time", None));
+        ___qtablewidgetitem13.setText(QCoreApplication.translate("WndServer", u"login_time", None));
         ___qtablewidgetitem14 = self.tbe_online_user.horizontalHeaderItem(6)
-        ___qtablewidgetitem14.setText(QCoreApplication.translate("wnd_server", u"heart_time", None));
+        ___qtablewidgetitem14.setText(QCoreApplication.translate("WndServer", u"heart_time", None));
         ___qtablewidgetitem15 = self.tbe_online_user.horizontalHeaderItem(7)
-        ___qtablewidgetitem15.setText(QCoreApplication.translate("wnd_server", u"online_time", None));
+        ___qtablewidgetitem15.setText(QCoreApplication.translate("WndServer", u"online_time", None));
         self.groupBox_2.setTitle("")
         ___qtablewidgetitem16 = self.tbe_card_manage.horizontalHeaderItem(0)
-        ___qtablewidgetitem16.setText(QCoreApplication.translate("wnd_server", u"card_key", None));
+        ___qtablewidgetitem16.setText(QCoreApplication.translate("WndServer", u"card_key", None));
         ___qtablewidgetitem17 = self.tbe_card_manage.horizontalHeaderItem(1)
-        ___qtablewidgetitem17.setText(QCoreApplication.translate("wnd_server", u"state", None));
+        ___qtablewidgetitem17.setText(QCoreApplication.translate("WndServer", u"state", None));
         ___qtablewidgetitem18 = self.tbe_card_manage.horizontalHeaderItem(2)
-        ___qtablewidgetitem18.setText(QCoreApplication.translate("wnd_server", u"type", None));
+        ___qtablewidgetitem18.setText(QCoreApplication.translate("WndServer", u"type", None));
         ___qtablewidgetitem19 = self.tbe_card_manage.horizontalHeaderItem(3)
-        ___qtablewidgetitem19.setText(QCoreApplication.translate("wnd_server", u"gen_time", None));
+        ___qtablewidgetitem19.setText(QCoreApplication.translate("WndServer", u"gen_time", None));
         ___qtablewidgetitem20 = self.tbe_card_manage.horizontalHeaderItem(4)
-        ___qtablewidgetitem20.setText(QCoreApplication.translate("wnd_server", u"use_time", None));
+        ___qtablewidgetitem20.setText(QCoreApplication.translate("WndServer", u"use_time", None));
         self.groupBox_3.setTitle("")
-        self.tool_bar.setWindowTitle(QCoreApplication.translate("wnd_server", u"toolBar", None))
+        self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))
     # retranslateUi
 

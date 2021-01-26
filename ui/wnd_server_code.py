@@ -1,5 +1,6 @@
-from PySide2.QtGui import QIcon
+from PySide2.QtGui import QIcon, QCloseEvent
 from PySide2.QtWidgets import QMainWindow
+import pymysql
 
 from ui.wnd_server import Ui_WndServer
 from ui import qres
@@ -10,6 +11,23 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.setupUi(self)
         self.init_all_controls()
         self.init_all_sig_slot()
+        self.init_mysql()
+
+    def closeEvent(self, event: QCloseEvent):
+        self.crsr.close()
+        self.conn.close()
+
+    def init_mysql(self):
+        # 创建连接对象
+        self.conn = pymysql.connect(
+            host="localhost",
+            port=3306,
+            user="root",
+            password="mysql",
+            database="network_auth"
+        )
+        # 创建游标对象
+        self.crsr = self.conn.cursor()
 
     def init_all_controls(self):
         # 显示第一页

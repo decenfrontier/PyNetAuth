@@ -17,7 +17,7 @@ class Ui_WndServer(object):
     def setupUi(self, WndServer):
         if not WndServer.objectName():
             WndServer.setObjectName(u"WndServer")
-        WndServer.resize(1053, 590)
+        WndServer.resize(1117, 590)
         WndServer.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.centralwidget = QWidget(WndServer)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -61,7 +61,7 @@ class Ui_WndServer(object):
         self.tbe_all_user.setWordWrap(True)
         self.tbe_all_user.setCornerButtonEnabled(False)
         self.tbe_all_user.setRowCount(100)
-        self.tbe_all_user.horizontalHeader().setVisible(False)
+        self.tbe_all_user.horizontalHeader().setVisible(True)
         self.tbe_all_user.horizontalHeader().setCascadingSectionResizes(False)
         self.tbe_all_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_all_user.verticalHeader().setVisible(False)
@@ -163,7 +163,7 @@ class Ui_WndServer(object):
         self.tbe_card_manage.setWordWrap(True)
         self.tbe_card_manage.setCornerButtonEnabled(False)
         self.tbe_card_manage.setRowCount(100)
-        self.tbe_card_manage.horizontalHeader().setVisible(True)
+        self.tbe_card_manage.horizontalHeader().setVisible(False)
         self.tbe_card_manage.horizontalHeader().setStretchLastSection(True)
         self.tbe_card_manage.verticalHeader().setVisible(False)
         self.tbe_card_manage.verticalHeader().setMinimumSectionSize(20)
@@ -196,14 +196,14 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(2)
+        self.stack_widget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(WndServer)
     # setupUi
 
     def retranslateUi(self, WndServer):
-        WndServer.setWindowTitle(QCoreApplication.translate("WndServer", u"PY\u7f51\u7edc\u9a8c\u8bc1-\u670d\u52a1\u7aef", None))
+        WndServer.setWindowTitle(QCoreApplication.translate("WndServer", u"YZ\u7f51\u7edc\u9a8c\u8bc1-\u670d\u52a1\u7aef", None))
         ___qtablewidgetitem = self.tbe_all_user.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("WndServer", u"account", None));
         ___qtablewidgetitem1 = self.tbe_all_user.horizontalHeaderItem(1)

@@ -88,7 +88,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.tcp_socket.bind(("", 47123))  # 主机号+端口号
         self.tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
-        # Thread(target=self.thd_receive_client).start()
+        Thread(target=self.thd_receive_client).start()
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -111,7 +111,20 @@ class WndServer(QMainWindow, Ui_WndServer):
         mf.cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
     def thd_receive_client(self):
-        print("服务器开始接受客户请求...")
+        self.show_info("服务器已开启, 准备接受客户请求...")
         while True:
-            print("接受客户端请求,分配一个客服套接字...")
+            self.show_info("正在等待客户端发出连接请求...")
             client_socket, client_addr = self.tcp_socket.accept()
+            self.show_info(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
+            Thread(target=thd_serve_client, args=(client_socket, client_addr)).start()
+
+    def thd_serve_client(self, client_socket: socket.socket, client_addr: tuple):
+        while True:
+            self.show_info("客服套接字等待接收客户端的消息中...")
+            recv_data = client_socket.recv(1024)
+            if not recv_data:  # 若客户端退出,会收到一个空str
+                break
+            self.show_info(f"收到客户端的消息: {recv_data.decode()}")
+            # todo: 添加回复
+        self.show_info(f"客户端{client_addr}, 已退出, 服务结束")
+        client_socket.close()

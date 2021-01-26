@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'wnd_server.ui'
+## Form generated from reading UI file 'wnd_server.qres.qrc'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##

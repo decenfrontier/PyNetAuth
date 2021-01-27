@@ -14,6 +14,7 @@ class WndClient(QMainWindow, Ui_WndClient):
         self.init_status_bar()
         self.init_all_controls()
         self.init_all_sig_slot()
+        self.move(1130, 300)
         self.show_info("窗口初始化成功")
 
     def closeEvent(self, event:QCloseEvent):
@@ -51,8 +52,11 @@ class WndClient(QMainWindow, Ui_WndClient):
         account = self.edt_account.text()
         pwd = self.edt_pwd.text()
         send_data = account.encode()
-        tcp_socket.send(send_data)
-        self.show_info("客户端发送数据成功")
+        try:
+            tcp_socket.send(send_data)
+            self.show_info("客户端发送数据成功")
+        except Exception as e:
+            self.show_info(f"客户端发送数据失败: {e}")
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -61,7 +65,7 @@ class WndClient(QMainWindow, Ui_WndClient):
 def thd_recv_server():
     while True:
         print("等待服务端发出消息中...")
-        try:  # 若等待服务端发出消息时, 套接字关闭会异常
+        try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
             recv_data = tcp_socket.recv(1024)
         except:
             break

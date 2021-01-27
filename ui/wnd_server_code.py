@@ -18,12 +18,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_timer()
         self.init_all_controls()
         self.init_all_sig_slot()
+        self.move(0, 160)
         self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):
         tcp_socket.close()
         cursor.close()
-        conn.close()
+        db.close()
 
     def init_status_bar(self):
         self.lbe_info = QLabel()
@@ -104,16 +105,33 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
     while True:
         wnd_server.show_info("等待客户端发出消息中...")
         try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
-            recv_data = client_socket.recv(1024)
+            recv_bytes = client_socket.recv(1024)
         except:
-            recv_data = ""
-        if not recv_data:  # 若客户端退出,会收到一个空str
+            recv_bytes = ""
+        if not recv_bytes:  # 若客户端退出,会收到一个空str
             break
-        wnd_server.show_info(f"收到客户端的消息: {recv_data.decode()}")
-        reply_data = "草泥马".encode()
-        client_socket.send(reply_data)
+        recv_str = recv_bytes.decode()
+        wnd_server.show_info(f"收到客户端的消息: {recv_str}")
+        # 查询数据库
+        table_retrieve("all_user", "account", recv_str)
+
     wnd_server.show_info(f"客户端{client_addr}, 已退出, 服务结束")
     client_socket.close()
+
+# 表-查询
+def table_retrieve(table_name: str, field: str, val: str):
+    # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
+    sql = f"select * from {table_name} where {field}=%s;"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql, (val,))
+        # 获取查询, 没查到返回空元组
+        ret = cursor.fetchall()
+        # 提交到数据库
+        db.commit()
+    except:
+        ret = ()
+    wnd_server.show_info(f"查询到记录: {ret}")
 
 
 import sys
@@ -132,16 +150,16 @@ if __name__ == '__main__':
     wnd_server.show()
     # 初始化mysql
     try:
-        # 创建连接对象
-        conn = pymysql.connect(
+        # 创建数据库对象
+        db = pymysql.connect(
             host="localhost",
             port=3306,
             user="root",
             password="mysql",
             database="network_auth"
         )
-        # 创建游标对象
-        cursor = conn.cursor()
+        # 创建游标对象, pymysql.cursors.DictCursor指定 返回的结果类型 为字典  默认是元祖类型
+        cursor = db.cursor(pymysql.cursors.DictCursor)
         wnd_server.show_info("连接数据库成功")
     except Exception as e:
         QMessageBox.critical(wnd_server, "错误", f"mysql连接失败: {e}")

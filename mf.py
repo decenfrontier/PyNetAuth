@@ -31,13 +31,14 @@ def get_outer_ip() -> str:
     return ip
 
 
-# 获取机器码(主板序列号+cpu序列号)
+# 获取机器码(主板序列号+硬盘序列号+bios序列号)
 def get_machine_code():
     c = wmi.WMI()
     try:
         board_serial = c.Win32_BaseBoard()[0].SerialNumber
-        cpu_serial = c.Win32_Processor()[0].ProcessorId
-        machine_code = board_serial + cpu_serial
+        disk_serial = c.Win32_DiskDrive()[0].SerialNumber
+        bios_serial = c.Win32_BIOS()[0].SerialNumber
+        machine_code = board_serial + disk_serial + bios_serial
     except:
         machine_code = ""
     return machine_code

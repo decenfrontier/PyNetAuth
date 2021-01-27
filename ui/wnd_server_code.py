@@ -11,6 +11,7 @@ from ui.wnd_server import Ui_WndServer
 from res import qres
 import mf
 
+
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
         super().__init__()
@@ -89,6 +90,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         mf.cur_time_stamp += 1
         mf.cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
+
 def thd_accept_client():
     wnd_server.show_info("服务器已开启, 准备接受客户请求...")
     while True:
@@ -100,6 +102,7 @@ def thd_accept_client():
         wnd_server.show_info(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
         Thread(target=thd_serve_client, args=(client_socket, client_addr), daemon=True).start()
     wnd_server.show_info("服务端已关闭, 停止接受客户端请求...")
+
 
 def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
     while True:
@@ -114,15 +117,46 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
         wnd_server.show_info(f"收到客户端的消息: {recv_str}")
         # json字符串 转 py字典
         client_info_dict = json.loads(recv_str)
-
+        msg_type = client_info_dict["msg_type"]
+        client_info_dict.pop("msg_type")
+        if msg_type == "reg":
+            deal_reg(client_info_dict)
         # 查询数据库
-        table_retrieve("all_user", "account", recv_str)
+        table_query("all_user", "account", recv_str)
 
     wnd_server.show_info(f"客户端{client_addr}, 已退出, 服务结束")
     client_socket.close()
 
+
+# 处理-注册
+def deal_reg(client_info_dict: dict):
+    client_info_dict["reg_time"] = mf.cur_time_format
+    ret = table_insert("all_user", client_info_dict)
+
+
+# 表-插入
+def table_insert(table_name: str, val_dict: dict):
+    # 一个以键和逗号组成的字符串, account,pwd,qq,machine_code,reg_ip
+    keys = ",".join(val_dict.keys())
+    # '%s, %s, %s, %s, %s'
+    values = ",".join(["%s" * len(val_dict)])
+    # 准备SQL语句
+    sql = f"insert {table_name}({keys}) values({values});"
+    ret = False
+    try:
+        # 执行SQL语句
+        ret = cursor.execute(sql, tuple(val_dict.values()))
+        if ret:
+            db.commit()
+        else:
+            raise Exception("执行SQL语句失败")
+    except:
+        # 对修改的数据进行撤销
+        db.rollback()
+    return ret
+
 # 表-查询
-def table_retrieve(table_name: str, field: str, val: str):
+def table_query(table_name: str, field: str, val: str):
     # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
     sql = f"select * from {table_name} where {field}=%s;"
     ret = ()

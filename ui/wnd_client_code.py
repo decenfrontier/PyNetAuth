@@ -85,7 +85,6 @@ class WndClient(QMainWindow, Ui_WndClient):
             QMessageBox.information(self, "注册失败", "账号密码长度应为6~12位, QQ号长度应为5-10位")
             return
         # 把客户端信息整理成字典, 再转为json
-        reg_time = mf.cur_time_format
         client_info_dict = {
             "msg_type": "reg",
             "account": reg_account,
@@ -93,7 +92,6 @@ class WndClient(QMainWindow, Ui_WndClient):
             "qq": reg_qq,
             "machine_code": machine_code,
             "reg_ip": reg_ip,
-            "reg_time": reg_time,
         }
         json_str = json.dumps(client_info_dict, ensure_ascii=False)
         try:

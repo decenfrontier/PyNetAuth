@@ -49,8 +49,8 @@ class WndClient(QMainWindow, Ui_WndClient):
             self.stack_widget.setCurrentIndex(3)
 
     def on_btn_login_clicked(self):
-        account = self.edt_account.text()
-        pwd = self.edt_pwd.text()
+        account = self.edt_login_account.text()
+        pwd = self.edt_login_pwd.text()
         send_data = account.encode()
         try:
             tcp_socket.send(send_data)

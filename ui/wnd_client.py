@@ -51,20 +51,20 @@ class Ui_WndClient(object):
 
         self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
 
-        self.edt_account = QLineEdit(self.widget)
-        self.edt_account.setObjectName(u"edt_account")
+        self.edt_login_account = QLineEdit(self.widget)
+        self.edt_login_account.setObjectName(u"edt_login_account")
 
-        self.gridLayout_2.addWidget(self.edt_account, 0, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.edt_login_account, 0, 1, 1, 1)
 
         self.label_2 = QLabel(self.widget)
         self.label_2.setObjectName(u"label_2")
 
         self.gridLayout_2.addWidget(self.label_2, 1, 0, 1, 1)
 
-        self.edt_pwd = QLineEdit(self.widget)
-        self.edt_pwd.setObjectName(u"edt_pwd")
+        self.edt_login_pwd = QLineEdit(self.widget)
+        self.edt_login_pwd.setObjectName(u"edt_login_pwd")
 
-        self.gridLayout_2.addWidget(self.edt_pwd, 1, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.edt_login_pwd, 1, 1, 1, 1)
 
 
         self.gridLayout_6.addLayout(self.gridLayout_2, 1, 1, 1, 3)
@@ -114,35 +114,35 @@ class Ui_WndClient(object):
 
         self.gridLayout_3.addWidget(self.label_5, 0, 0, 1, 1)
 
-        self.lineEdit_5 = QLineEdit(self.widget_2)
-        self.lineEdit_5.setObjectName(u"lineEdit_5")
+        self.edt_reg_account = QLineEdit(self.widget_2)
+        self.edt_reg_account.setObjectName(u"edt_reg_account")
 
-        self.gridLayout_3.addWidget(self.lineEdit_5, 0, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.edt_reg_account, 0, 1, 1, 1)
 
         self.label_6 = QLabel(self.widget_2)
         self.label_6.setObjectName(u"label_6")
 
         self.gridLayout_3.addWidget(self.label_6, 1, 0, 1, 1)
 
-        self.lineEdit_6 = QLineEdit(self.widget_2)
-        self.lineEdit_6.setObjectName(u"lineEdit_6")
+        self.edt_reg_pwd = QLineEdit(self.widget_2)
+        self.edt_reg_pwd.setObjectName(u"edt_reg_pwd")
 
-        self.gridLayout_3.addWidget(self.lineEdit_6, 1, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.edt_reg_pwd, 1, 1, 1, 1)
 
         self.label_7 = QLabel(self.widget_2)
         self.label_7.setObjectName(u"label_7")
 
         self.gridLayout_3.addWidget(self.label_7, 2, 0, 1, 1)
 
-        self.lineEdit_7 = QLineEdit(self.widget_2)
-        self.lineEdit_7.setObjectName(u"lineEdit_7")
+        self.edt_reg_pwd2 = QLineEdit(self.widget_2)
+        self.edt_reg_pwd2.setObjectName(u"edt_reg_pwd2")
 
-        self.gridLayout_3.addWidget(self.lineEdit_7, 2, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.edt_reg_pwd2, 2, 1, 1, 1)
 
-        self.label_8 = QLabel(self.widget_2)
-        self.label_8.setObjectName(u"label_8")
+        self.edt_reg_qq = QLabel(self.widget_2)
+        self.edt_reg_qq.setObjectName(u"edt_reg_qq")
 
-        self.gridLayout_3.addWidget(self.label_8, 3, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.edt_reg_qq, 3, 0, 1, 1)
 
         self.lineEdit_8 = QLineEdit(self.widget_2)
         self.lineEdit_8.setObjectName(u"lineEdit_8")
@@ -360,7 +360,7 @@ class Ui_WndClient(object):
         self.label_5.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
         self.label_6.setText(QCoreApplication.translate("WndClient", u"\u5bc6\u7801:", None))
         self.label_7.setText(QCoreApplication.translate("WndClient", u"\u91cd\u590d\u5bc6\u7801:", None))
-        self.label_8.setText(QCoreApplication.translate("WndClient", u"\u90ae\u7bb1:", None))
+        self.edt_reg_qq.setText(QCoreApplication.translate("WndClient", u"QQ:", None))
         self.pushButton_2.setText(QCoreApplication.translate("WndClient", u"\u6ce8 \u518c", None))
         self.label_13.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
         self.lineEdit_13.setText("")

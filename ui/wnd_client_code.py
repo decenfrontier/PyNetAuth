@@ -1,7 +1,9 @@
-from PySide2.QtGui import QIcon, QCloseEvent
+from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator
 from PySide2.QtWidgets import QMainWindow, QLabel, QMessageBox
+from PySide2.QtCore import QRegExp
 import socket
 from threading import Thread
+import json
 
 from ui.wnd_client import Ui_WndClient
 from res import qres
@@ -17,7 +19,7 @@ class WndClient(QMainWindow, Ui_WndClient):
         self.move(1130, 300)
         self.show_info("窗口初始化成功")
 
-    def closeEvent(self, event:QCloseEvent):
+    def closeEvent(self, event: QCloseEvent):
         tcp_socket.close()
 
     def init_status_bar(self):
@@ -32,10 +34,21 @@ class WndClient(QMainWindow, Ui_WndClient):
         self.tool_bar.addAction(QIcon(":/register.png"), "注册")
         self.tool_bar.addAction(QIcon(":/pay.png"), "充值")
         self.tool_bar.addAction(QIcon(":/modify.png"), "改密")
+        # 正则表达式
+        reg_exp_acount_pwd = QRegExp("[a-zA-Z0-9]+")
+        reg_exp_qq_number = QRegExp("\d+")
+        # 登录页
+        self.edt_login_account.setValidator(QRegExpValidator(reg_exp_acount_pwd))
+        self.edt_login_pwd.setValidator(QRegExpValidator(reg_exp_acount_pwd))
+        # 注册页
+        self.edt_reg_account.setValidator(QRegExpValidator(reg_exp_acount_pwd))
+        self.edt_reg_pwd.setValidator(QRegExpValidator(reg_exp_acount_pwd))
+        self.edt_reg_qq.setValidator(QRegExpValidator(reg_exp_qq_number))
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         self.btn_login.clicked.connect(self.on_btn_login_clicked)
+        self.btn_reg.clicked.connect(self.on_btn_reg_clicked)
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
@@ -49,14 +62,46 @@ class WndClient(QMainWindow, Ui_WndClient):
             self.stack_widget.setCurrentIndex(3)
 
     def on_btn_login_clicked(self):
-        account = self.edt_login_account.text()
-        pwd = self.edt_login_pwd.text()
-        send_data = account.encode()
+        login_account = self.edt_login_account.text()
+        login_pwd = self.edt_login_pwd.text()
+        send_data = login_account.encode()
         try:
             tcp_socket.send(send_data)
             self.show_info("客户端发送数据成功")
         except Exception as e:
             self.show_info(f"客户端发送数据失败: {e}")
+
+    def on_btn_reg_clicked(self):
+        # 判断注册信息是否符合要求
+        reg_account = self.edt_reg_account.text()
+        reg_pwd = self.edt_reg_pwd.text()
+        reg_qq = self.edt_reg_qq.text()
+        bool_list = [
+            len(reg_account) in range(6,13),
+            len(reg_pwd) in range(6, 13),
+            len(reg_qq) in range(5, 11)
+        ]
+        if False in bool_list:
+            QMessageBox.information(self, "注册失败", "账号密码长度应为6~12位, QQ号长度应为5-10位")
+            return
+        # 把客户端信息整理成字典, 再转为json
+        machine_code = mf.get_machine_code()
+        reg_ip = mf.get_outer_ip()
+        reg_time = mf.cur_time_format
+        client_info_dict = {
+            "account": reg_account,
+            "pwd": reg_pwd,
+            "qq": reg_qq,
+            "machine_code": machine_code,
+            "reg_ip": reg_ip,
+            "reg_time": reg_time,
+        }
+        json_str = json.dumps(client_info_dict, ensure_ascii=False)
+        try:
+            tcp_socket.send(json_str)
+            self.show_info("发送客户端注册信息成功")
+        except Exception as e:
+            self.show_info(f"发送客户端注册信息失败: {e}")
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -71,6 +116,8 @@ def thd_recv_server():
             break
         print(f"收到服务端的消息: {recv_data.decode()}")
     print("客户端已关闭, 停止接收服务端消息...")
+
+
 
 import sys
 from PySide2.QtWidgets import QApplication, QStyleFactory
@@ -87,6 +134,7 @@ if __name__ == '__main__':
     wnd_client = WndClient()
     wnd_client.show()
 
+    get_outer_ip()
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("正在连接服务器...")
     err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))

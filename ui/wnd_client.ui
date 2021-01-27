@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>334</width>
-    <height>246</height>
+    <height>244</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,8 +35,11 @@
     </property>
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
+      <property name="toolTip">
+       <string>6-12位</string>
+      </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page_login">
        <layout class="QGridLayout" name="gridLayout_13">
@@ -223,13 +226,25 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="edt_reg_account"/>
+              <widget class="QLineEdit" name="edt_reg_account">
+               <property name="toolTip">
+                <string>6-12位</string>
+               </property>
+              </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QLineEdit" name="edt_reg_qq"/>
+              <widget class="QLineEdit" name="edt_reg_qq">
+               <property name="toolTip">
+                <string>5-10位</string>
+               </property>
+              </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="edt_reg_pwd"/>
+              <widget class="QLineEdit" name="edt_reg_pwd">
+               <property name="toolTip">
+                <string>6-12位</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>

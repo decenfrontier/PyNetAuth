@@ -109,6 +109,16 @@ class Ui_WndClient(object):
 
         self.gridLayout_3 = QGridLayout()
         self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.label_3 = QLabel(self.widget_2)
+        self.label_3.setObjectName(u"label_3")
+
+        self.gridLayout_3.addWidget(self.label_3, 2, 0, 1, 1)
+
+        self.label_6 = QLabel(self.widget_2)
+        self.label_6.setObjectName(u"label_6")
+
+        self.gridLayout_3.addWidget(self.label_6, 1, 0, 1, 1)
+
         self.label_5 = QLabel(self.widget_2)
         self.label_5.setObjectName(u"label_5")
 
@@ -119,35 +129,15 @@ class Ui_WndClient(object):
 
         self.gridLayout_3.addWidget(self.edt_reg_account, 0, 1, 1, 1)
 
-        self.label_6 = QLabel(self.widget_2)
-        self.label_6.setObjectName(u"label_6")
+        self.edt_reg_qq = QLineEdit(self.widget_2)
+        self.edt_reg_qq.setObjectName(u"edt_reg_qq")
 
-        self.gridLayout_3.addWidget(self.label_6, 1, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.edt_reg_qq, 2, 1, 1, 1)
 
         self.edt_reg_pwd = QLineEdit(self.widget_2)
         self.edt_reg_pwd.setObjectName(u"edt_reg_pwd")
 
         self.gridLayout_3.addWidget(self.edt_reg_pwd, 1, 1, 1, 1)
-
-        self.label_7 = QLabel(self.widget_2)
-        self.label_7.setObjectName(u"label_7")
-
-        self.gridLayout_3.addWidget(self.label_7, 2, 0, 1, 1)
-
-        self.edt_reg_pwd2 = QLineEdit(self.widget_2)
-        self.edt_reg_pwd2.setObjectName(u"edt_reg_pwd2")
-
-        self.gridLayout_3.addWidget(self.edt_reg_pwd2, 2, 1, 1, 1)
-
-        self.edt_reg_qq = QLabel(self.widget_2)
-        self.edt_reg_qq.setObjectName(u"edt_reg_qq")
-
-        self.gridLayout_3.addWidget(self.edt_reg_qq, 3, 0, 1, 1)
-
-        self.lineEdit_8 = QLineEdit(self.widget_2)
-        self.lineEdit_8.setObjectName(u"lineEdit_8")
-
-        self.gridLayout_3.addWidget(self.lineEdit_8, 3, 1, 1, 1)
 
 
         self.gridLayout_7.addLayout(self.gridLayout_3, 1, 1, 1, 3)
@@ -160,10 +150,10 @@ class Ui_WndClient(object):
 
         self.gridLayout_7.addItem(self.horizontalSpacer_5, 2, 1, 1, 1)
 
-        self.pushButton_2 = QPushButton(self.widget_2)
-        self.pushButton_2.setObjectName(u"pushButton_2")
+        self.btn_reg = QPushButton(self.widget_2)
+        self.btn_reg.setObjectName(u"btn_reg")
 
-        self.gridLayout_7.addWidget(self.pushButton_2, 2, 2, 1, 1)
+        self.gridLayout_7.addWidget(self.btn_reg, 2, 2, 1, 1)
 
         self.horizontalSpacer_6 = QSpacerItem(53, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -357,18 +347,17 @@ class Ui_WndClient(object):
         self.label.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
         self.label_2.setText(QCoreApplication.translate("WndClient", u"\u5bc6\u7801:", None))
         self.btn_login.setText(QCoreApplication.translate("WndClient", u"\u767b \u5f55", None))
-        self.label_5.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
+        self.label_3.setText(QCoreApplication.translate("WndClient", u"QQ:", None))
         self.label_6.setText(QCoreApplication.translate("WndClient", u"\u5bc6\u7801:", None))
-        self.label_7.setText(QCoreApplication.translate("WndClient", u"\u91cd\u590d\u5bc6\u7801:", None))
-        self.edt_reg_qq.setText(QCoreApplication.translate("WndClient", u"QQ:", None))
-        self.pushButton_2.setText(QCoreApplication.translate("WndClient", u"\u6ce8 \u518c", None))
+        self.label_5.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
+        self.btn_reg.setText(QCoreApplication.translate("WndClient", u"\u6ce8 \u518c", None))
         self.label_13.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
         self.lineEdit_13.setText("")
         self.label_9.setText(QCoreApplication.translate("WndClient", u"\u5145\u503c\u5361\u53f7:", None))
         self.lineEdit_9.setText("")
         self.pushButton_3.setText(QCoreApplication.translate("WndClient", u"\u5145 \u503c", None))
         self.label_10.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
-        self.label_12.setText(QCoreApplication.translate("WndClient", u"\u90ae\u7bb1:", None))
+        self.label_12.setText(QCoreApplication.translate("WndClient", u"QQ:", None))
         self.label_11.setText(QCoreApplication.translate("WndClient", u"\u65b0\u5bc6\u7801:", None))
         self.pushButton_4.setText(QCoreApplication.translate("WndClient", u"\u786e\u5b9a\u4fee\u6539", None))
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndClient", u"toolBar", None))

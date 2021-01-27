@@ -61,7 +61,7 @@ class Ui_WndServer(object):
         self.tbe_all_user.setWordWrap(True)
         self.tbe_all_user.setCornerButtonEnabled(False)
         self.tbe_all_user.setRowCount(100)
-        self.tbe_all_user.horizontalHeader().setVisible(False)
+        self.tbe_all_user.horizontalHeader().setVisible(True)
         self.tbe_all_user.horizontalHeader().setCascadingSectionResizes(False)
         self.tbe_all_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_all_user.verticalHeader().setVisible(False)
@@ -214,7 +214,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(3)
+        self.stack_widget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -227,7 +227,7 @@ class Ui_WndServer(object):
         ___qtablewidgetitem1 = self.tbe_all_user.horizontalHeaderItem(1)
         ___qtablewidgetitem1.setText(QCoreApplication.translate("WndServer", u"pwd", None));
         ___qtablewidgetitem2 = self.tbe_all_user.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("WndServer", u"email", None));
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("WndServer", u"qq", None));
         ___qtablewidgetitem3 = self.tbe_all_user.horizontalHeaderItem(3)
         ___qtablewidgetitem3.setText(QCoreApplication.translate("WndServer", u"machine_code", None));
         ___qtablewidgetitem4 = self.tbe_all_user.horizontalHeaderItem(4)

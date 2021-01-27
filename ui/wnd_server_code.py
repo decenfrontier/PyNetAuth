@@ -5,6 +5,7 @@ import pymysql
 import socket
 from threading import Thread
 import time
+import json
 
 from ui.wnd_server import Ui_WndServer
 from res import qres
@@ -68,7 +69,6 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
 
-
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
         self.tbr_log.append(f"{mf.cur_time_format}  {text}")
@@ -112,6 +112,9 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
             break
         recv_str = recv_bytes.decode()
         wnd_server.show_info(f"收到客户端的消息: {recv_str}")
+        # json字符串 转 py字典
+        client_info_dict = json.loads(recv_str)
+
         # 查询数据库
         table_retrieve("all_user", "account", recv_str)
 
@@ -122,6 +125,7 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
 def table_retrieve(table_name: str, field: str, val: str):
     # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
     sql = f"select * from {table_name} where {field}=%s;"
+    ret = ()
     try:
         # 执行SQL语句
         cursor.execute(sql, (val,))
@@ -130,7 +134,8 @@ def table_retrieve(table_name: str, field: str, val: str):
         # 提交到数据库
         db.commit()
     except:
-        ret = ()
+        # 数据库回滚
+        db.rollback()
     wnd_server.show_info(f"查询到记录: {ret}")
 
 

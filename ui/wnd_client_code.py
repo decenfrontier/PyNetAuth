@@ -85,10 +85,9 @@ class WndClient(QMainWindow, Ui_WndClient):
             QMessageBox.information(self, "注册失败", "账号密码长度应为6~12位, QQ号长度应为5-10位")
             return
         # 把客户端信息整理成字典, 再转为json
-        machine_code = mf.get_machine_code()
-        reg_ip = mf.get_outer_ip()
         reg_time = mf.cur_time_format
         client_info_dict = {
+            "msg_type": "reg",
             "account": reg_account,
             "pwd": reg_pwd,
             "qq": reg_qq,
@@ -98,7 +97,7 @@ class WndClient(QMainWindow, Ui_WndClient):
         }
         json_str = json.dumps(client_info_dict, ensure_ascii=False)
         try:
-            tcp_socket.send(json_str)
+            tcp_socket.send(json_str.encode())
             self.show_info("发送客户端注册信息成功")
         except Exception as e:
             self.show_info(f"发送客户端注册信息失败: {e}")
@@ -134,7 +133,6 @@ if __name__ == '__main__':
     wnd_client = WndClient()
     wnd_client.show()
 
-    get_outer_ip()
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("正在连接服务器...")
     err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
@@ -143,5 +141,8 @@ if __name__ == '__main__':
         sys.exit(-1)
     print(f"连接服务器成功, 开始接收数据...")
     Thread(target=thd_recv_server).start()
+
+    machine_code = mf.get_machine_code()
+    reg_ip = mf.get_outer_ip()
 
     sys.exit(app.exec_())

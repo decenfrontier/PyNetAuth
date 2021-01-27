@@ -1,6 +1,7 @@
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMainWindow, QLabel, QMessageBox
 import socket
+from threading import Thread
 
 from ui.wnd_client import Ui_WndClient
 from res import qres
@@ -42,7 +43,8 @@ class WndClient(QMainWindow, Ui_WndClient):
         if self.err_no != 0:
             self.show_info(f"连接服务器失败, 错误码: {self.err_no}")
             return False
-        self.show_info(f"连接服务器成功")
+        self.show_info(f"连接服务器成功, 开始接收数据...")
+        Thread(target=self.thd_recv_server).start()
         return True
 
     def on_tool_bar_actionTriggered(self, action):
@@ -69,6 +71,12 @@ class WndClient(QMainWindow, Ui_WndClient):
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
         print(text)
+
+    def thd_recv_server(self):
+        while True:
+            print("等待服务端发出消息中...")
+            recv_data = self.tcp_socket.recv(1024)
+            print(f"收到服务端的消息: {recv_data.decode()}")
 
 
 import sys

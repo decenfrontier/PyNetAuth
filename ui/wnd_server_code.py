@@ -1,5 +1,5 @@
 from PySide2.QtGui import QIcon, QCloseEvent
-from PySide2.QtWidgets import QMainWindow, QLabel
+from PySide2.QtWidgets import QMainWindow, QLabel, QMessageBox
 from PySide2.QtCore import QTimer
 import pymysql
 import socket
@@ -35,7 +35,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer = QTimer()
         self.timer.timeout.connect(self.on_timer_timeout)
         self.timer.start(1000)
-        ...
 
     def init_all_controls(self):
         # 显示第一页
@@ -70,25 +69,28 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
 
-
-
     def init_mysql(self):
-        # 创建连接对象
-        self.conn = pymysql.connect(
-            host="localhost",
-            port=3306,
-            user="root",
-            password="mysql",
-            database="network_auth"
-        )
-        # 创建游标对象
-        self.crsr = self.conn.cursor()
+        try:
+            # 创建连接对象
+            self.conn = pymysql.connect(
+                host="localhost",
+                port=3306,
+                user="root",
+                password="mysql",
+                database="network_auth"
+            )
+            # 创建游标对象
+            self.crsr = self.conn.cursor()
+            self.show_info("连接数据库成功")
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"mysql连接失败: {e}")
+            sys.exit(-1)
 
     def init_tcp_server(self):
         self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.tcp_socket.bind((mf.server_ip, mf.server_port))  # 主机号+端口号
         self.tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
-        Thread(target=self.thd_receive_client).start()
+        Thread(target=self.thd_accept_client).start()
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -96,7 +98,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
-        self.show_info(f"切换到 {action_name} 页")
+        self.show_info(f"切换到 {action_name}")
         if action_name == "全部用户":
             self.stack_widget.setCurrentIndex(0)
         elif action_name == "在线用户":
@@ -110,7 +112,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         mf.cur_time_stamp += 1
         mf.cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
-    def thd_receive_client(self):
+    def thd_accept_client(self):
         self.show_info("服务器已开启, 准备接受客户请求...")
         while True:
             self.show_info("正在等待客户端发出连接请求...")
@@ -124,7 +126,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def thd_serve_client(self, client_socket: socket.socket, client_addr: tuple):
         while True:
-            self.show_info("客服套接字等待接收客户端的消息中...")
+            self.show_info("等待客户端发出消息中...")
             try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
                 recv_data = client_socket.recv(1024)
             except:
@@ -132,6 +134,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             if not recv_data:  # 若客户端退出,会收到一个空str
                 break
             self.show_info(f"收到客户端的消息: {recv_data.decode()}")
+            reply_data = "草泥马".encode()
+            client_socket.send(reply_data)
             # todo: 添加回复
         self.show_info(f"客户端{client_addr}, 已退出, 服务结束")
         client_socket.close()

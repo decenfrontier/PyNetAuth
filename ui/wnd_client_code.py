@@ -1,4 +1,4 @@
-from PySide2.QtGui import QIcon
+from PySide2.QtGui import QIcon, QCloseEvent
 from PySide2.QtWidgets import QMainWindow, QLabel, QMessageBox
 import socket
 from threading import Thread
@@ -14,10 +14,10 @@ class WndClient(QMainWindow, Ui_WndClient):
         self.init_status_bar()
         self.init_all_controls()
         self.init_all_sig_slot()
-        if self.init_tcp_client():
-            self.show_info("窗口初始化成功")
-        else:
-            self.show_info("窗口初始化失败")
+        self.show_info("窗口初始化成功")
+
+    def closeEvent(self, event:QCloseEvent):
+        tcp_socket.close()
 
     def init_status_bar(self):
         self.lbe_info = QLabel()
@@ -36,17 +36,6 @@ class WndClient(QMainWindow, Ui_WndClient):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         self.btn_login.clicked.connect(self.on_btn_login_clicked)
 
-    def init_tcp_client(self):
-        self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.show_info("正在连接服务器...")
-        self.err_no = self.tcp_socket.connect_ex((mf.server_ip, mf.server_port))
-        if self.err_no != 0:
-            self.show_info(f"连接服务器失败, 错误码: {self.err_no}")
-            return False
-        self.show_info(f"连接服务器成功, 开始接收数据...")
-        Thread(target=self.thd_recv_server).start()
-        return True
-
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
         if action_name == "登录":
@@ -59,25 +48,25 @@ class WndClient(QMainWindow, Ui_WndClient):
             self.stack_widget.setCurrentIndex(3)
 
     def on_btn_login_clicked(self):
-        if self.err_no != 0:
-            QMessageBox.information(self, "错误", f"连接服务器失败:{self.err_no}")
-            return
         account = self.edt_account.text()
         pwd = self.edt_pwd.text()
         send_data = account.encode()
-        self.tcp_socket.send(send_data)
+        tcp_socket.send(send_data)
         self.show_info("客户端发送数据成功")
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
         print(text)
 
-    def thd_recv_server(self):
-        while True:
-            print("等待服务端发出消息中...")
-            recv_data = self.tcp_socket.recv(1024)
-            print(f"收到服务端的消息: {recv_data.decode()}")
-
+def thd_recv_server():
+    while True:
+        print("等待服务端发出消息中...")
+        try:  # 若等待服务端发出消息时, 套接字关闭会异常
+            recv_data = tcp_socket.recv(1024)
+        except:
+            break
+        print(f"收到服务端的消息: {recv_data.decode()}")
+    print("客户端已关闭, 停止接收服务端消息...")
 
 import sys
 from PySide2.QtWidgets import QApplication, QStyleFactory
@@ -93,5 +82,14 @@ if __name__ == '__main__':
 
     wnd_client = WndClient()
     wnd_client.show()
+
+    tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print("正在连接服务器...")
+    err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
+    if err_no != 0:
+        QMessageBox.critical(wnd_client, "错误", f"连接服务器失败, 错误码: {err_no}")
+        sys.exit(-1)
+    print(f"连接服务器成功, 开始接收数据...")
+    Thread(target=thd_recv_server).start()
 
     sys.exit(app.exec_())

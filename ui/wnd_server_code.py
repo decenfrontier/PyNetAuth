@@ -122,7 +122,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 break
             self.show_info(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
             Thread(target=self.thd_serve_client, args=(client_socket, client_addr)).start()
-        self.show_info("服务器已关闭, 停止接受客户请求...")
+        self.show_info("服务端已关闭, 停止接受客户端请求...")
 
     def thd_serve_client(self, client_socket: socket.socket, client_addr: tuple):
         while True:

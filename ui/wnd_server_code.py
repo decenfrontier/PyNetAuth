@@ -18,14 +18,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_timer()
         self.init_all_controls()
         self.init_all_sig_slot()
-        self.init_mysql()
-        self.init_tcp_server()
         self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):
-        self.tcp_socket.close()
-        self.crsr.close()
-        self.conn.close()
+        tcp_socket.close()
+        cursor.close()
+        conn.close()
 
     def init_status_bar(self):
         self.lbe_info = QLabel()
@@ -69,28 +67,6 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
 
-    def init_mysql(self):
-        try:
-            # 创建连接对象
-            self.conn = pymysql.connect(
-                host="localhost",
-                port=3306,
-                user="root",
-                password="mysql",
-                database="network_auth"
-            )
-            # 创建游标对象
-            self.crsr = self.conn.cursor()
-            self.show_info("连接数据库成功")
-        except Exception as e:
-            QMessageBox.critical(self, "错误", f"mysql连接失败: {e}")
-            sys.exit(-1)
-
-    def init_tcp_server(self):
-        self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.tcp_socket.bind((mf.server_ip, mf.server_port))  # 主机号+端口号
-        self.tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
-        Thread(target=self.thd_accept_client).start()
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -112,33 +88,32 @@ class WndServer(QMainWindow, Ui_WndServer):
         mf.cur_time_stamp += 1
         mf.cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
-    def thd_accept_client(self):
-        self.show_info("服务器已开启, 准备接受客户请求...")
-        while True:
-            self.show_info("正在等待客户端发出连接请求...")
-            try:
-                client_socket, client_addr = self.tcp_socket.accept()
-            except:
-                break
-            self.show_info(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
-            Thread(target=self.thd_serve_client, args=(client_socket, client_addr)).start()
-        self.show_info("服务端已关闭, 停止接受客户端请求...")
+def thd_accept_client():
+    wnd_server.show_info("服务器已开启, 准备接受客户请求...")
+    while True:
+        wnd_server.show_info("正在等待客户端发出连接请求...")
+        try:
+            client_socket, client_addr = tcp_socket.accept()
+        except:
+            break
+        wnd_server.show_info(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
+        Thread(target=thd_serve_client, args=(client_socket, client_addr), daemon=True).start()
+    wnd_server.show_info("服务端已关闭, 停止接受客户端请求...")
 
-    def thd_serve_client(self, client_socket: socket.socket, client_addr: tuple):
-        while True:
-            self.show_info("等待客户端发出消息中...")
-            try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
-                recv_data = client_socket.recv(1024)
-            except:
-                recv_data = ""
-            if not recv_data:  # 若客户端退出,会收到一个空str
-                break
-            self.show_info(f"收到客户端的消息: {recv_data.decode()}")
-            reply_data = "草泥马".encode()
-            client_socket.send(reply_data)
-            # todo: 添加回复
-        self.show_info(f"客户端{client_addr}, 已退出, 服务结束")
-        client_socket.close()
+def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
+    while True:
+        wnd_server.show_info("等待客户端发出消息中...")
+        try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
+            recv_data = client_socket.recv(1024)
+        except:
+            recv_data = ""
+        if not recv_data:  # 若客户端退出,会收到一个空str
+            break
+        wnd_server.show_info(f"收到客户端的消息: {recv_data.decode()}")
+        reply_data = "草泥马".encode()
+        client_socket.send(reply_data)
+    wnd_server.show_info(f"客户端{client_addr}, 已退出, 服务结束")
+    client_socket.close()
 
 
 import sys
@@ -148,12 +123,37 @@ from PySide2.QtCore import Qt
 if __name__ == '__main__':
     # 界面随DPI自动缩放
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-
+    # 应用程序
     app = QApplication()
     app.setStyle(QStyleFactory.create("fusion"))
     app.setStyleSheet(mf.qss_style)
-
+    # 窗口
     wnd_server = WndServer()
     wnd_server.show()
-
+    # 初始化mysql
+    try:
+        # 创建连接对象
+        conn = pymysql.connect(
+            host="localhost",
+            port=3306,
+            user="root",
+            password="mysql",
+            database="network_auth"
+        )
+        # 创建游标对象
+        cursor = conn.cursor()
+        wnd_server.show_info("连接数据库成功")
+    except Exception as e:
+        QMessageBox.critical(wnd_server, "错误", f"mysql连接失败: {e}")
+        sys.exit(-1)
+    # 初始化tcp连接
+    try:
+        tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        tcp_socket.bind((mf.server_ip, mf.server_port))  # 主机号+端口号
+        tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
+        Thread(target=thd_accept_client, daemon=True).start()
+    except Exception as e:
+        QMessageBox.critical(wnd_server, "错误", f"tcp连接失败: {e}")
+        sys.exit(-1)
+    # 消息循环
     sys.exit(app.exec_())

@@ -22,6 +22,10 @@ class WndClient(QMainWindow, Ui_WndClient):
     def closeEvent(self, event: QCloseEvent):
         tcp_socket.close()
 
+    def show_info(self, text):
+        self.lbe_info.setText(f"<提示> : {text}")
+        print(text)
+
     def init_status_bar(self):
         self.lbe_info = QLabel()
         self.status_bar.addWidget(self.lbe_info)
@@ -101,23 +105,28 @@ class WndClient(QMainWindow, Ui_WndClient):
             self.show_info("发送客户端注册信息成功")
         except Exception as e:
             self.show_info(f"发送客户端注册信息失败: {e}")
-        # 等待服务器返回注册结果
 
-
-
-    def show_info(self, text):
-        self.lbe_info.setText(f"<提示> : {text}")
-        print(text)
 
 def thd_recv_server():
     while True:
         print("等待服务端发出消息中...")
         try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
-            recv_data = tcp_socket.recv(1024)
+            recv_bytes = tcp_socket.recv(1024)
         except:
+            recv_bytes = ""
+        if not recv_bytes:  # 若客户端退出,会收到一个空str
             break
-        print(f"收到服务端的消息: {recv_data.decode()}")
-    print("客户端已关闭, 停止接收服务端消息...")
+        # json字符串 转 py字典
+        json_str = recv_bytes.decode()
+        server_info_dict = json.loads(json_str)
+        print(f"收到服务端的消息: {server_info_dict}")
+        # 客户端消息处理
+        msg_type = server_info_dict["msg_type"]
+        server_info_dict.pop("msg_type")
+        if msg_type == "reg":
+            detail = server_info_dict["detail"]  # str
+            wnd_client.show_info(detail)
+    wnd_client.show_info("服务端已断开连接...")
 
 
 

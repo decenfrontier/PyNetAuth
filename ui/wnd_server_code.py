@@ -114,40 +114,43 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
             recv_bytes = ""
         if not recv_bytes:  # 若客户端退出,会收到一个空str
             break
-        recv_str = recv_bytes.decode()
-        wnd_server.show_info(f"收到客户端的消息: {recv_str}")
         # json字符串 转 py字典
-        client_info_dict = json.loads(recv_str)
+        json_str = recv_bytes.decode()
+        client_info_dict = json.loads(json_str)
+        wnd_server.show_info(f"收到客户端的消息: {client_info_dict}")
+        # 服务端消息处理
         msg_type = client_info_dict["msg_type"]
         client_info_dict.pop("msg_type")
         if msg_type == "reg":
-            deal_reg(client_info_dict)
+            deal_reg(client_socket, client_info_dict)
 
-    wnd_server.show_info(f"客户端{client_addr}, 已退出, 服务结束")
+    wnd_server.show_info(f"客户端{client_addr}已断开连接, 服务结束")
     client_socket.close()
 
 
 # 处理-注册
-def deal_reg(client_info_dict: dict):
+def deal_reg(client_socket: socket.socket, client_info_dict: dict):
     client_info_dict["reg_time"] = mf.cur_time_format
     account = client_info_dict["account"]
 
     if table_query("all_user", "account", account):  # 查询账号是否存在
         reg_ret = False
-        wnd_server.show_info(f"错误, 账号{account}已被注册!")
+        detail = f"失败, 账号{account}已被注册!"
+        wnd_server.show_info(detail)
     else:  # 插入表
         reg_ret = table_insert("all_user", client_info_dict)
-        wnd_server.show_info(f"账号{account}注册结果: {reg_ret}")
+        detail = f"账号{account}注册成功!" if reg_ret else f"账号{account}注册失败!"
+        wnd_server.show_info(detail)
     # 把注册结果整理成py字典
-    server_info_dict = {"msg_type": "reg_ret", "reg_ret": reg_ret}
+    server_info_dict = {"msg_type": "reg", "reg_ret": reg_ret, "detail": detail}
     # py字典 转 json字符串
     json_str = json.dumps(server_info_dict, ensure_ascii=False)
     # 向客户端回复注册结果
     try:
-        tcp_socket.send(json_str.encode())
-        self.show_info("注册结果向客户端回复成功")
+        client_socket.send(json_str.encode())
+        wnd_server.show_info("注册结果向客户端回复成功")
     except Exception as e:
-        self.show_info(f"注册结果向客户端回复失败: {e}")
+        wnd_server.show_info(f"注册结果向客户端回复失败: {e}")
 
 
 # 表-插入, 成功返回True, 否则返回False

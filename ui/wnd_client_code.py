@@ -4,6 +4,7 @@ from PySide2.QtCore import QRegExp
 import socket
 from threading import Thread
 import json
+import hashlib
 
 from ui.wnd_client import Ui_WndClient
 from res import qres
@@ -88,6 +89,9 @@ class WndClient(QMainWindow, Ui_WndClient):
         if False in bool_list:
             QMessageBox.information(self, "注册失败", "账号密码长度应为6~12位, QQ号长度应为5-10位")
             return
+        # 对重要信息进行单向散列加密
+        reg_pwd = mf.get_encrypted_str(reg_pwd.encode())
+        reg_qq = mf.get_encrypted_str(reg_pwd.encode())
         # 把客户端信息整理成字典
         client_info_dict = {
             "msg_type": "reg",

@@ -2,6 +2,7 @@ import time
 from urllib.request import urlopen
 import wmi
 import platform
+import hmac
 
 qss_style = """
     * {
@@ -50,4 +51,7 @@ def get_machine_code():
 def get_operation_system():
     return platform.platform()
 
-
+# 获取加密后字符
+def get_encrypted_str(ori_bytes: bytes):
+    encrypted = hmac.new(b"dkstFeb.1st", ori_bytes, "sha1")
+    return encrypted.hexdigest()

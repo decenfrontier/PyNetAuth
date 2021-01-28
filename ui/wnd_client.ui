@@ -230,6 +230,9 @@
                <property name="toolTip">
                 <string>6-12位</string>
                </property>
+               <property name="text">
+                <string>111111</string>
+               </property>
               </widget>
              </item>
              <item row="2" column="1">
@@ -237,12 +240,18 @@
                <property name="toolTip">
                 <string>5-10位</string>
                </property>
+               <property name="text">
+                <string>333333</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="1">
               <widget class="QLineEdit" name="edt_reg_pwd">
                <property name="toolTip">
                 <string>6-12位</string>
+               </property>
+               <property name="text">
+                <string>222222</string>
                </property>
               </widget>
              </item>

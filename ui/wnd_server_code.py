@@ -73,6 +73,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
         self.tbr_log.append(f"{mf.cur_time_format}  {text}")
+        print(text)
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
@@ -121,8 +122,6 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
         client_info_dict.pop("msg_type")
         if msg_type == "reg":
             deal_reg(client_info_dict)
-        # 查询数据库
-        table_query("all_user", "account", recv_str)
 
     wnd_server.show_info(f"客户端{client_addr}, 已退出, 服务结束")
     client_socket.close()
@@ -131,15 +130,21 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
 # 处理-注册
 def deal_reg(client_info_dict: dict):
     client_info_dict["reg_time"] = mf.cur_time_format
+    # 查询账号是否存在
+    if table_query("all_user", "account", client_info_dict["account"]):
+        wnd_server.show_info("错误, 该账号已被注册!")
+        return
+    # 插入表
     ret = table_insert("all_user", client_info_dict)
+    print("")
 
 
-# 表-插入
+# 表-插入, 成功返回True, 否则返回False
 def table_insert(table_name: str, val_dict: dict):
-    # 一个以键和逗号组成的字符串, account,pwd,qq,machine_code,reg_ip
-    keys = ",".join(val_dict.keys())
-    # '%s, %s, %s, %s, %s'
-    values = ",".join(["%s" * len(val_dict)])
+    # keys = "account, pwd,qq, machine_code, reg_ip"
+    keys = ", ".join(val_dict.keys())
+    # values = "%s, %s, %s,%s,%s,%s"
+    values = ", ".join(["%s"] * len(val_dict))
     # 准备SQL语句
     sql = f"insert {table_name}({keys}) values({values});"
     ret = False
@@ -153,13 +158,13 @@ def table_insert(table_name: str, val_dict: dict):
     except:
         # 对修改的数据进行撤销
         db.rollback()
+    wnd_server.show_info(f"table_insert: {ret}")
     return ret
 
-# 表-查询
+# 表-查询, 成功返回True, 否则返回False
 def table_query(table_name: str, field: str, val: str):
     # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
     sql = f"select * from {table_name} where {field}=%s;"
-    ret = ()
     try:
         # 执行SQL语句
         cursor.execute(sql, (val,))
@@ -170,7 +175,10 @@ def table_query(table_name: str, field: str, val: str):
     except:
         # 数据库回滚
         db.rollback()
-    wnd_server.show_info(f"查询到记录: {ret}")
+        ret = ()
+    wnd_server.show_info(f"table_query: {ret}")
+    ret = True if ret else False
+    return ret
 
 
 import sys

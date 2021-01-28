@@ -17,7 +17,7 @@ class Ui_WndClient(object):
     def setupUi(self, WndClient):
         if not WndClient.objectName():
             WndClient.setObjectName(u"WndClient")
-        WndClient.resize(334, 246)
+        WndClient.resize(334, 244)
         WndClient.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.centralwidget = QWidget(WndClient)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -336,7 +336,7 @@ class Ui_WndClient(object):
 
         self.retranslateUi(WndClient)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(WndClient)
@@ -344,12 +344,27 @@ class Ui_WndClient(object):
 
     def retranslateUi(self, WndClient):
         WndClient.setWindowTitle(QCoreApplication.translate("WndClient", u"YZ\u7f51\u7edc\u9a8c\u8bc1-\u5ba2\u6237\u7aef", None))
+#if QT_CONFIG(tooltip)
+        self.stack_widget.setToolTip(QCoreApplication.translate("WndClient", u"6-12\u4f4d", None))
+#endif // QT_CONFIG(tooltip)
         self.label.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
         self.label_2.setText(QCoreApplication.translate("WndClient", u"\u5bc6\u7801:", None))
         self.btn_login.setText(QCoreApplication.translate("WndClient", u"\u767b \u5f55", None))
         self.label_3.setText(QCoreApplication.translate("WndClient", u"QQ:", None))
         self.label_6.setText(QCoreApplication.translate("WndClient", u"\u5bc6\u7801:", None))
         self.label_5.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
+#if QT_CONFIG(tooltip)
+        self.edt_reg_account.setToolTip(QCoreApplication.translate("WndClient", u"6-12\u4f4d", None))
+#endif // QT_CONFIG(tooltip)
+        self.edt_reg_account.setText(QCoreApplication.translate("WndClient", u"111111", None))
+#if QT_CONFIG(tooltip)
+        self.edt_reg_qq.setToolTip(QCoreApplication.translate("WndClient", u"5-10\u4f4d", None))
+#endif // QT_CONFIG(tooltip)
+        self.edt_reg_qq.setText(QCoreApplication.translate("WndClient", u"333333", None))
+#if QT_CONFIG(tooltip)
+        self.edt_reg_pwd.setToolTip(QCoreApplication.translate("WndClient", u"6-12\u4f4d", None))
+#endif // QT_CONFIG(tooltip)
+        self.edt_reg_pwd.setText(QCoreApplication.translate("WndClient", u"222222", None))
         self.btn_reg.setText(QCoreApplication.translate("WndClient", u"\u6ce8 \u518c", None))
         self.label_13.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
         self.lineEdit_13.setText("")

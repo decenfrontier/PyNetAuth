@@ -69,12 +69,21 @@ class WndClient(QMainWindow, Ui_WndClient):
     def on_btn_login_clicked(self):
         login_account = self.edt_login_account.text()
         login_pwd = self.edt_login_pwd.text()
-        send_data = login_account.encode()
-        try:
-            tcp_socket.send(send_data)
-            self.show_info("客户端发送数据成功")
-        except Exception as e:
-            self.show_info(f"客户端发送数据失败: {e}")
+        bool_list = [
+            len(login_account) in range(6, 13),
+            len(login_pwd) in range(6, 13),
+        ]
+        if False in bool_list:
+            self.show_info("登录失败, 账号密码长度不符合要求")
+            return
+        # 把客户端信息整理成字典, 发送给服务器
+        login_pwd = mf.get_encrypted_str(login_pwd.encode())
+        client_info_dict = {
+            "msg_type": "login",
+            "account": login_account,
+            "pwd": login_pwd,
+        }
+        send_to_server(client_info_dict)
 
     def on_btn_reg_clicked(self):
         # 判断注册信息是否符合要求
@@ -87,12 +96,11 @@ class WndClient(QMainWindow, Ui_WndClient):
             len(reg_qq) in range(5, 11)
         ]
         if False in bool_list:
-            QMessageBox.information(self, "注册失败", "账号密码长度应为6~12位, QQ号长度应为5-10位")
+            self.show_info("注册失败, 账号密码6-12位, QQ号5-10位")
             return
-        # 对重要信息进行单向散列加密
+        # 把客户端信息整理成字典
         reg_pwd = mf.get_encrypted_str(reg_pwd.encode())
         reg_qq = mf.get_encrypted_str(reg_pwd.encode())
-        # 把客户端信息整理成字典
         client_info_dict = {
             "msg_type": "reg",
             "account": reg_account,
@@ -101,15 +109,17 @@ class WndClient(QMainWindow, Ui_WndClient):
             "machine_code": machine_code,
             "reg_ip": reg_ip,
         }
-        # py字典 转 json字符串
-        json_str = json.dumps(client_info_dict, ensure_ascii=False)
-        # 发送客户端注册信息到服务器
-        try:
-            tcp_socket.send(json_str.encode())
-            self.show_info("发送客户端注册信息成功")
-        except Exception as e:
-            self.show_info(f"发送客户端注册信息失败: {e}")
+        send_to_server(client_info_dict)
 
+def send_to_server(client_info_dict: dict):
+    # py字典 转 json字符串
+    json_str = json.dumps(client_info_dict, ensure_ascii=False)
+    # 发送客户端注册信息到服务器
+    try:
+        tcp_socket.send(json_str.encode())
+        wnd_client.show_info("发送客户端注册信息成功")
+    except Exception as e:
+        wnd_client.show_info(f"发送客户端注册信息失败: {e}")
 
 def thd_recv_server():
     while True:

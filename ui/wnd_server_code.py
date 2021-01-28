@@ -123,6 +123,8 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
         client_info_dict.pop("msg_type")
         if msg_type == "reg":
             deal_reg(client_socket, client_info_dict)
+        elif msg_type == "login":
+            ...
 
     wnd_server.show_info(f"客户端{client_addr}已断开连接, 服务结束")
     client_socket.close()
@@ -132,7 +134,6 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
 def deal_reg(client_socket: socket.socket, client_info_dict: dict):
     client_info_dict["reg_time"] = mf.cur_time_format
     account = client_info_dict["account"]
-
     if table_query("all_user", "account", account):  # 查询账号是否存在
         reg_ret = False
         detail = f"失败, 账号{account}已被注册!"

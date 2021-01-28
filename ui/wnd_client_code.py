@@ -136,10 +136,10 @@ def thd_recv_server():
         print(f"收到服务端的消息: {server_info_dict}")
         # 客户端消息处理
         msg_type = server_info_dict["msg_type"]
-        server_info_dict.pop("msg_type")
         if msg_type == "reg":
-            detail = server_info_dict["detail"]  # str
-            wnd_client.show_info(detail)
+            wnd_client.show_info(server_info_dict["detail"])
+        elif msg_type == "login":
+            wnd_client.show_info(server_info_dict["detail"])
     wnd_client.show_info("服务端已断开连接...")
 
 

@@ -36,7 +36,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="toolTip">
-       <string>6-12位</string>
+       <string/>
       </property>
       <property name="currentIndex">
        <number>1</number>
@@ -228,7 +228,7 @@
              <item row="0" column="1">
               <widget class="QLineEdit" name="edt_reg_account">
                <property name="toolTip">
-                <string>6-12位</string>
+                <string>字母数字组合, 6-12位</string>
                </property>
                <property name="text">
                 <string>111111</string>
@@ -238,7 +238,7 @@
              <item row="2" column="1">
               <widget class="QLineEdit" name="edt_reg_qq">
                <property name="toolTip">
-                <string>5-10位</string>
+                <string>字母数字组合, 5-10位</string>
                </property>
                <property name="text">
                 <string>333333</string>
@@ -248,7 +248,7 @@
              <item row="1" column="1">
               <widget class="QLineEdit" name="edt_reg_pwd">
                <property name="toolTip">
-                <string>6-12位</string>
+                <string>字母数字组合, 6-12位</string>
                </property>
                <property name="text">
                 <string>222222</string>

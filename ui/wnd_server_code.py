@@ -121,29 +121,55 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
         # 服务端消息处理
         msg_type = client_info_dict["msg_type"]
         client_info_dict.pop("msg_type")
-        if msg_type == "reg":
-            deal_reg(client_socket, client_info_dict)
-        elif msg_type == "login":
-            ...
-
+        msg_func_dict = {
+            "reg": deal_reg,
+            "login": deal_login,
+        }
+        func = msg_func_dict.get(msg_type)
+        if func is None:
+            wnd_server.show_info(f"消息类型不存在: {msg_type}")
+        else:
+            func(client_socket, client_info_dict)
     wnd_server.show_info(f"客户端{client_addr}已断开连接, 服务结束")
     client_socket.close()
 
 
 # 处理-注册
 def deal_reg(client_socket: socket.socket, client_info_dict: dict):
-    client_info_dict["reg_time"] = mf.cur_time_format
     account = client_info_dict["account"]
-    if table_query("all_user", "account", account):  # 查询账号是否存在
+    # 查询账号是否存在, 不存在则插入记录
+    if table_query("all_user", "account", account):  # 若查到数据
         reg_ret = False
         detail = f"失败, 账号{account}已被注册!"
         wnd_server.show_info(detail)
-    else:  # 插入表
+    else:  # 表插入记录
+        client_info_dict["reg_time"] = mf.cur_time_format
         reg_ret = table_insert("all_user", client_info_dict)
         detail = f"账号{account}注册成功!" if reg_ret else f"账号{account}注册失败!"
         wnd_server.show_info(detail)
-    # 把注册结果整理成py字典
+    # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"msg_type": "reg", "reg_ret": reg_ret, "detail": detail}
+    send_to_client(server_info_dict)
+
+# 处理-登录
+def deal_login(client_socket: socket.socket, client_info_dict: dict):
+    account = client_info_dict["account"]
+    pwd = client_info_dict["pwd"]
+    # 查询账号记录
+    dict_list = table_query("all_user", "account", account)
+    if dict_list:  # 若查到数据
+        query_pwd = dict_list[0].get("pwd")
+        login_ret = True if pwd == query_pwd else False
+        detail = f"账号{account}登录成功!" if login_ret else f"账号{account}登录失败!"
+    else:  # 没查到数据
+        login_ret = False
+        detail = f"账号{account}登录失败!"
+    # 把登录结果整理成py字典, 并发送给客户端
+    server_info_dict = {"msg_type": "login", "login_ret": login_ret, "detail": detail}
+    send_to_client(server_info_dict)
+
+# 发送数据给客户端
+def send_to_client(server_info_dict: dict):
     # py字典 转 json字符串
     json_str = json.dumps(server_info_dict, ensure_ascii=False)
     # 向客户端回复注册结果
@@ -152,7 +178,6 @@ def deal_reg(client_socket: socket.socket, client_info_dict: dict):
         wnd_server.show_info("注册结果向客户端回复成功")
     except Exception as e:
         wnd_server.show_info(f"注册结果向客户端回复失败: {e}")
-
 
 # 表-插入, 成功返回True, 否则返回False
 def table_insert(table_name: str, val_dict: dict):
@@ -176,7 +201,7 @@ def table_insert(table_name: str, val_dict: dict):
     wnd_server.show_info(f"table_insert: {ret}")
     return ret
 
-# 表-查询, 成功返回True, 否则返回False
+# 表-查询, 成功返回字典列表, 否则返回空列表
 def table_query(table_name: str, field: str, val: str):
     # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
     sql = f"select * from {table_name} where {field}=%s;"
@@ -190,9 +215,8 @@ def table_query(table_name: str, field: str, val: str):
     except:
         # 数据库回滚
         db.rollback()
-        ret = ()
-    wnd_server.show_info(f"table_query: {ret}")
-    ret = True if ret else False
+        ret = []
+    wnd_server.show_info(f"表查询结果: {ret}")
     return ret
 
 
@@ -220,7 +244,7 @@ if __name__ == '__main__':
             password="mysql",
             database="network_auth"
         )
-        # 创建游标对象, pymysql.cursors.DictCursor指定 返回的结果类型 为字典  默认是元祖类型
+        # 创建游标对象, 指定返回一个字典列表, 获取的每条数据的类型为字典(默认是元组)
         cursor = db.cursor(pymysql.cursors.DictCursor)
         wnd_server.show_info("连接数据库成功")
     except Exception as e:

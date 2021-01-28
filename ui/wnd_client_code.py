@@ -84,7 +84,7 @@ class WndClient(QMainWindow, Ui_WndClient):
         if False in bool_list:
             QMessageBox.information(self, "注册失败", "账号密码长度应为6~12位, QQ号长度应为5-10位")
             return
-        # 把客户端信息整理成字典, 再转为json
+        # 把客户端信息整理成字典
         client_info_dict = {
             "msg_type": "reg",
             "account": reg_account,
@@ -93,12 +93,17 @@ class WndClient(QMainWindow, Ui_WndClient):
             "machine_code": machine_code,
             "reg_ip": reg_ip,
         }
+        # py字典 转 json字符串
         json_str = json.dumps(client_info_dict, ensure_ascii=False)
+        # 发送客户端注册信息到服务器
         try:
             tcp_socket.send(json_str.encode())
             self.show_info("发送客户端注册信息成功")
         except Exception as e:
             self.show_info(f"发送客户端注册信息失败: {e}")
+        # 等待服务器返回注册结果
+
+
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")

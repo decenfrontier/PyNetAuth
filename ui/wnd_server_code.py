@@ -130,13 +130,24 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
 # 处理-注册
 def deal_reg(client_info_dict: dict):
     client_info_dict["reg_time"] = mf.cur_time_format
-    # 查询账号是否存在
-    if table_query("all_user", "account", client_info_dict["account"]):
-        wnd_server.show_info("错误, 该账号已被注册!")
-        return
-    # 插入表
-    ret = table_insert("all_user", client_info_dict)
-    print("")
+    account = client_info_dict["account"]
+
+    if table_query("all_user", "account", account):  # 查询账号是否存在
+        reg_ret = False
+        wnd_server.show_info(f"错误, 账号{account}已被注册!")
+    else:  # 插入表
+        reg_ret = table_insert("all_user", client_info_dict)
+        wnd_server.show_info(f"账号{account}注册结果: {reg_ret}")
+    # 把注册结果整理成py字典
+    server_info_dict = {"msg_type": "reg_ret", "reg_ret": reg_ret}
+    # py字典 转 json字符串
+    json_str = json.dumps(server_info_dict, ensure_ascii=False)
+    # 向客户端回复注册结果
+    try:
+        tcp_socket.send(json_str.encode())
+        self.show_info("注册结果向客户端回复成功")
+    except Exception as e:
+        self.show_info(f"注册结果向客户端回复失败: {e}")
 
 
 # 表-插入, 成功返回True, 否则返回False

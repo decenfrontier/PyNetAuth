@@ -33,21 +33,8 @@ class Ui_WndClientLogin(object):
         self.gridLayout_6 = QGridLayout(self.widget)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
         self.gridLayout_6.setContentsMargins(0, 0, 0, 0)
-        self.horizontalSpacer_3 = QSpacerItem(41, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_3, 2, 1, 1, 1)
-
-        self.verticalSpacer_2 = QSpacerItem(20, 80, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.gridLayout_6.addItem(self.verticalSpacer_2, 3, 2, 1, 1)
-
         self.gridLayout_2 = QGridLayout()
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.label = QLabel(self.widget)
-        self.label.setObjectName(u"label")
-
-        self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
-
         self.edt_login_account = QLineEdit(self.widget)
         self.edt_login_account.setObjectName(u"edt_login_account")
 
@@ -63,29 +50,47 @@ class Ui_WndClientLogin(object):
 
         self.gridLayout_2.addWidget(self.edt_login_pwd, 1, 1, 1, 1)
 
+        self.label = QLabel(self.widget)
+        self.label.setObjectName(u"label")
 
-        self.gridLayout_6.addLayout(self.gridLayout_2, 1, 1, 1, 3)
+        self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
 
-        self.horizontalSpacer_10 = QSpacerItem(74, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.gridLayout_6.addItem(self.horizontalSpacer_10, 1, 4, 1, 1)
+        self.gridLayout_6.addLayout(self.gridLayout_2, 1, 1, 1, 4)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 80, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout_6.addItem(self.verticalSpacer_2, 3, 2, 1, 1)
+
+        self.horizontalSpacer_3 = QSpacerItem(41, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer_3, 2, 1, 1, 1)
 
         self.horizontalSpacer_4 = QSpacerItem(41, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.gridLayout_6.addItem(self.horizontalSpacer_4, 2, 3, 1, 1)
+        self.gridLayout_6.addItem(self.horizontalSpacer_4, 2, 4, 1, 1)
+
+        self.horizontalSpacer_10 = QSpacerItem(74, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer_10, 1, 5, 1, 1)
 
         self.verticalSpacer = QSpacerItem(20, 81, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.gridLayout_6.addItem(self.verticalSpacer, 0, 2, 1, 1)
+
+        self.horizontalSpacer_9 = QSpacerItem(75, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer_9, 1, 0, 1, 1)
 
         self.btn_login = QPushButton(self.widget)
         self.btn_login.setObjectName(u"btn_login")
 
         self.gridLayout_6.addWidget(self.btn_login, 2, 2, 1, 1)
 
-        self.horizontalSpacer_9 = QSpacerItem(75, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.btn_exit = QPushButton(self.widget)
+        self.btn_exit.setObjectName(u"btn_exit")
 
-        self.gridLayout_6.addItem(self.horizontalSpacer_9, 1, 0, 1, 1)
+        self.gridLayout_6.addWidget(self.btn_exit, 2, 3, 1, 1)
 
 
         self.gridLayout_13.addWidget(self.widget, 0, 0, 1, 1)
@@ -331,9 +336,10 @@ class Ui_WndClientLogin(object):
 #if QT_CONFIG(tooltip)
         self.stack_widget.setToolTip("")
 #endif // QT_CONFIG(tooltip)
-        self.label.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
         self.label_2.setText(QCoreApplication.translate("WndClientLogin", u"\u5bc6\u7801:", None))
+        self.label.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
         self.btn_login.setText(QCoreApplication.translate("WndClientLogin", u"\u767b \u5f55", None))
+        self.btn_exit.setText(QCoreApplication.translate("WndClientLogin", u"\u9000 \u51fa", None))
         self.label_3.setText(QCoreApplication.translate("WndClientLogin", u"QQ:", None))
         self.label_6.setText(QCoreApplication.translate("WndClientLogin", u"\u5bc6\u7801:", None))
         self.label_5.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))

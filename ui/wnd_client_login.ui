@@ -63,18 +63,29 @@
         <property name="bottomMargin">
          <number>0</number>
         </property>
-        <item row="2" column="1">
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>41</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
+        <item row="1" column="1" colspan="4">
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="edt_login_account"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>密码:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="edt_login_pwd"/>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>账号:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item row="3" column="2">
          <spacer name="verticalSpacer_2">
@@ -89,44 +100,20 @@
           </property>
          </spacer>
         </item>
-        <item row="1" column="1" colspan="3">
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>账号:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="edt_login_account"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>密码:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="edt_login_pwd"/>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="4">
-         <spacer name="horizontalSpacer_10">
+        <item row="2" column="1">
+         <spacer name="horizontalSpacer_3">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>74</width>
+            <width>41</width>
             <height>20</height>
            </size>
           </property>
          </spacer>
         </item>
-        <item row="2" column="3">
+        <item row="2" column="4">
          <spacer name="horizontalSpacer_4">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -134,6 +121,19 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>41</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="5">
+         <spacer name="horizontalSpacer_10">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>74</width>
             <height>20</height>
            </size>
           </property>
@@ -152,13 +152,6 @@
           </property>
          </spacer>
         </item>
-        <item row="2" column="2">
-         <widget class="QPushButton" name="btn_login">
-          <property name="text">
-           <string>登 录</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="0">
          <spacer name="horizontalSpacer_9">
           <property name="orientation">
@@ -171,6 +164,20 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="2" column="2">
+         <widget class="QPushButton" name="btn_login">
+          <property name="text">
+           <string>登 录</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QPushButton" name="btn_exit">
+          <property name="text">
+           <string>退 出</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

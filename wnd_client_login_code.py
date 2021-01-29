@@ -1,7 +1,7 @@
 import sys
 
 from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPalette, QPixmap, \
-    QBrush
+    QBrush, QMouseEvent, QPaintEvent, QPainter
 from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayout, \
     QStatusBar, QApplication, QStyleFactory, QWidget
 from PySide2.QtCore import Qt, QRegExp, QSize
@@ -15,7 +15,7 @@ from wnd_client_main_code import WndClientMain
 from res import qres
 import mf
 
-class WndClient(QDialog, Ui_WndClientLogin):
+class WndClientLogin(QDialog, Ui_WndClientLogin):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -35,12 +35,19 @@ class WndClient(QDialog, Ui_WndClientLogin):
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
         self.setWindowFlags(Qt.FramelessWindowHint)  # 设置为无边框, 但任务栏有图标
-        # 设置窗口背景图片
-        palette = QPalette(self.palette())
+        self.start_point = 0  # 使窗口支持拖动移动
+
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.LeftButton:
+            self.start_point = self.frameGeometry().topLeft() - event.globalPos()
+
+    def mouseMoveEvent(self, event: QMouseEvent):
+        self.move(event.globalPos() + self.start_point)
+
+    def paintEvent(self, event: QPaintEvent):
         pix_map = QPixmap(":/back1.jpg").scaled(self.size())
-        palette.setBrush(QPalette.Background, QBrush(pix_map))
-        self.setPalette(palette)
-        self.move(1130, 300)  #
+        painter = QPainter(self)
+        painter.drawPixmap(self.rect(), pix_map)
 
     def init_status_bar(self):
         # 添加一个statusbar
@@ -84,6 +91,7 @@ class WndClient(QDialog, Ui_WndClientLogin):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         self.btn_login.clicked.connect(self.on_btn_login_clicked)
         self.btn_reg.clicked.connect(self.on_btn_reg_clicked)
+        self.btn_exit.clicked.connect(self.on_btn_exit_clicked)
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
@@ -114,6 +122,9 @@ class WndClient(QDialog, Ui_WndClientLogin):
             "pwd": login_pwd,
         }
         send_to_server(client_info_dict)
+
+    def on_btn_exit_clicked(self):
+        self.reject()
 
     def on_btn_reg_clicked(self):
         # 判断注册信息是否符合要求
@@ -172,9 +183,7 @@ def thd_recv_server():
             wnd_client.show_info(server_info_dict["detail"])
             login_ret = server_info_dict["login_ret"]
             if login_ret:
-                wnd_client.close()  # 关闭登录界面
-                wnd_client_main = WndClientMain()
-                wnd_client_main.show()  # 显示主界面
+                wnd_client.accept()  # 接受
     wnd_client.show_info("与服务器断开连接...")
 
 
@@ -186,8 +195,7 @@ if __name__ == '__main__':
     app.setStyle(QStyleFactory.create("fusion"))
     app.setStyleSheet(mf.qss_style)
 
-    wnd_client = WndClient()
-    wnd_client.setWindowModality(Qt.ApplicationModal)  # 设置为模态窗口
+    wnd_client = WndClientLogin()
     wnd_client.show()
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("正在连接服务器...")
@@ -196,7 +204,7 @@ if __name__ == '__main__':
         QMessageBox.critical(wnd_client, "错误", f"连接服务器失败, 错误码: {err_no}")
         sys.exit(-1)
     print(f"连接服务器成功, 开始接收数据...")
-    Thread(target=thd_recv_server).start()
+    Thread(target=thd_recv_server, daemon=True).start()
 
     machine_code = mf.get_machine_code()
     reg_ip = mf.get_outer_ip()

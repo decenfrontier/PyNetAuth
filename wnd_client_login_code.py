@@ -1,8 +1,9 @@
 import sys
 
-from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator
+from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPalette, QPixmap, \
+    QBrush
 from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayout, \
-            QStatusBar, QApplication, QStyleFactory, QWidget
+    QStatusBar, QApplication, QStyleFactory, QWidget
 from PySide2.QtCore import Qt, QRegExp, QSize
 import socket
 from threading import Thread
@@ -34,7 +35,12 @@ class WndClient(QDialog, Ui_WndClientLogin):
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
         self.setWindowFlags(Qt.FramelessWindowHint)  # 设置为无边框, 但任务栏有图标
-        self.move(1130, 300)
+        # 设置窗口背景图片
+        palette = QPalette(self.palette())
+        pix_map = QPixmap(":/back1.jpg").scaled(self.size())
+        palette.setBrush(QPalette.Background, QBrush(pix_map))
+        self.setPalette(palette)
+        self.move(1130, 300)  #
 
     def init_status_bar(self):
         # 添加一个statusbar

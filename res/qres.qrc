@@ -8,5 +8,7 @@
         <file>pay.png</file>
         <file>register.png</file>
         <file>log.png</file>
+        <file>back1.jpg</file>
+        <file>back2.jpg</file>
     </qresource>
 </RCC>

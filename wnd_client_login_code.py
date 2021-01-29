@@ -161,9 +161,9 @@ def send_to_server(client_info_dict: dict):
     # 发送客户端注册信息到服务器
     try:
         tcp_socket.send(json_str.encode())
-        wnd_client.show_info("发送客户端注册信息成功")
+        wnd_client_login.show_info("发送客户端注册信息成功")
     except Exception as e:
-        wnd_client.show_info(f"发送客户端注册信息失败: {e}")
+        wnd_client_login.show_info(f"发送客户端注册信息失败: {e}")
 
 def thd_recv_server():
     while True:
@@ -181,13 +181,13 @@ def thd_recv_server():
         # 客户端消息处理
         msg_type = server_info_dict["msg_type"]
         if msg_type == "reg":
-            wnd_client.show_info(server_info_dict["detail"])
+            wnd_client_login.show_info(server_info_dict["detail"])
         elif msg_type == "login":
-            wnd_client.show_info(server_info_dict["detail"])
+            wnd_client_login.show_info(server_info_dict["detail"])
             login_ret = server_info_dict["login_ret"]
             if login_ret:
-                wnd_client.accept()  # 接受
-    wnd_client.show_info("与服务器断开连接...")
+                wnd_client_login.accept()  # 接受
+    wnd_client_login.show_info("与服务器断开连接...")
 
 
 def thd_get_outer_ip():
@@ -203,19 +203,22 @@ if __name__ == '__main__':
     app.setStyle(QStyleFactory.create("fusion"))
     app.setStyleSheet(mf.qss_style)
 
-    wnd_client = WndClientLogin()
-    wnd_client.show()
+    Thread(target=thd_get_outer_ip, daemon=True).start()
+    wnd_client_login = WndClientLogin()
+    wnd_client_login.show()
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    wnd_client.show_info("正在连接服务器...")
+    wnd_client_login.show_info("正在连接服务器...")
     err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
     if err_no != 0:
-        QMessageBox.critical(wnd_client, "错误", f"连接服务器失败, 错误码: {err_no}")
+        QMessageBox.critical(wnd_client_login, "错误", f"连接服务器失败, 错误码: {err_no}")
         sys.exit(-1)
-    wnd_client.show_info(f"连接服务器成功, 开始接收数据...")
+    wnd_client_login.show_info(f"连接服务器成功, 开始接收数据...")
     Thread(target=thd_recv_server, daemon=True).start()
-    Thread(target=thd_get_outer_ip, daemon=True).start()
     machine_code = mf.get_machine_code()
 
-
-
-    sys.exit(app.exec_())
+    if wnd_client_login.exec_() == QDialog.Accepted:
+        wnd_client_main = WndClientMain()
+        wnd_client_main.show()
+        sys.exit(app.exec_())
+    else:
+        sys.exit(0)

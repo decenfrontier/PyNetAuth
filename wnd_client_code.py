@@ -140,6 +140,12 @@ def thd_recv_server():
             wnd_client.show_info(server_info_dict["detail"])
         elif msg_type == "login":
             wnd_client.show_info(server_info_dict["detail"])
+            login_ret = server_info_dict["login_ret"]
+            if login_ret:
+                wnd_client.close()  # 关闭登录界面
+                wnd_client_main = WndClientMain()
+                wnd_client_main.show()  # 显示主界面
+
     wnd_client.show_info("服务端已断开连接...")
 
 
@@ -147,6 +153,7 @@ def thd_recv_server():
 import sys
 from PySide2.QtWidgets import QApplication, QStyleFactory
 from PySide2.QtCore import Qt
+from wnd_client_main_code import WndClientMain
 
 if __name__ == '__main__':
     # 界面随DPI自动缩放

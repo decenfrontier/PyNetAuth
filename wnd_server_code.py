@@ -149,7 +149,7 @@ def deal_reg(client_socket: socket.socket, client_info_dict: dict):
         wnd_server.show_info(detail)
     # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"msg_type": "reg", "reg_ret": reg_ret, "detail": detail}
-    send_to_client(server_info_dict)
+    send_to_client(client_socket, server_info_dict)
 
 # 处理-登录
 def deal_login(client_socket: socket.socket, client_info_dict: dict):
@@ -166,18 +166,18 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
         detail = f"账号{account}登录失败!"
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"msg_type": "login", "login_ret": login_ret, "detail": detail}
-    send_to_client(server_info_dict)
+    send_to_client(client_socket, server_info_dict)
 
 # 发送数据给客户端
-def send_to_client(server_info_dict: dict):
+def send_to_client(client_socket: socket.socket, server_info_dict: dict):
     # py字典 转 json字符串
     json_str = json.dumps(server_info_dict, ensure_ascii=False)
     # 向客户端回复注册结果
     try:
         client_socket.send(json_str.encode())
-        wnd_server.show_info("注册结果向客户端回复成功")
+        wnd_server.show_info("向客户端回复成功")
     except Exception as e:
-        wnd_server.show_info(f"注册结果向客户端回复失败: {e}")
+        wnd_server.show_info(f"向客户端回复失败: {e}")
 
 # 表-插入, 成功返回True, 否则返回False
 def table_insert(table_name: str, val_dict: dict):

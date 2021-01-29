@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'wnd_client.ui'
+## Form generated from reading UI file 'wnd_client_login.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -13,20 +13,16 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 
-class Ui_WndClient(object):
-    def setupUi(self, WndClient):
-        if not WndClient.objectName():
-            WndClient.setObjectName(u"WndClient")
-        WndClient.resize(334, 244)
-        WndClient.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        self.centralwidget = QWidget(WndClient)
-        self.centralwidget.setObjectName(u"centralwidget")
-        self.gridLayout = QGridLayout(self.centralwidget)
-        self.gridLayout.setSpacing(2)
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.stack_widget = QStackedWidget(self.centralwidget)
+class Ui_WndClientLogin(object):
+    def setupUi(self, WndClientLogin):
+        if not WndClientLogin.objectName():
+            WndClientLogin.setObjectName(u"WndClientLogin")
+        WndClientLogin.resize(351, 270)
+        WndClientLogin.setSizeGripEnabled(False)
+        WndClientLogin.setModal(False)
+        self.stack_widget = QStackedWidget(WndClientLogin)
         self.stack_widget.setObjectName(u"stack_widget")
+        self.stack_widget.setGeometry(QRect(0, 0, 350, 268))
         self.page_login = QWidget()
         self.page_login.setObjectName(u"page_login")
         self.gridLayout_13 = QGridLayout(self.page_login)
@@ -36,13 +32,14 @@ class Ui_WndClient(object):
         self.widget.setObjectName(u"widget")
         self.gridLayout_6 = QGridLayout(self.widget)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
-        self.verticalSpacer = QSpacerItem(20, 81, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.gridLayout_6.setContentsMargins(0, 0, 0, 0)
+        self.horizontalSpacer_3 = QSpacerItem(41, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.gridLayout_6.addItem(self.verticalSpacer, 0, 2, 1, 1)
+        self.gridLayout_6.addItem(self.horizontalSpacer_3, 2, 1, 1, 1)
 
-        self.horizontalSpacer_9 = QSpacerItem(75, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.verticalSpacer_2 = QSpacerItem(20, 80, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        self.gridLayout_6.addItem(self.horizontalSpacer_9, 1, 0, 1, 1)
+        self.gridLayout_6.addItem(self.verticalSpacer_2, 3, 2, 1, 1)
 
         self.gridLayout_2 = QGridLayout()
         self.gridLayout_2.setObjectName(u"gridLayout_2")
@@ -73,22 +70,22 @@ class Ui_WndClient(object):
 
         self.gridLayout_6.addItem(self.horizontalSpacer_10, 1, 4, 1, 1)
 
-        self.horizontalSpacer_3 = QSpacerItem(41, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_4 = QSpacerItem(41, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.gridLayout_6.addItem(self.horizontalSpacer_3, 2, 1, 1, 1)
+        self.gridLayout_6.addItem(self.horizontalSpacer_4, 2, 3, 1, 1)
+
+        self.verticalSpacer = QSpacerItem(20, 81, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout_6.addItem(self.verticalSpacer, 0, 2, 1, 1)
 
         self.btn_login = QPushButton(self.widget)
         self.btn_login.setObjectName(u"btn_login")
 
         self.gridLayout_6.addWidget(self.btn_login, 2, 2, 1, 1)
 
-        self.horizontalSpacer_4 = QSpacerItem(41, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_9 = QSpacerItem(75, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.gridLayout_6.addItem(self.horizontalSpacer_4, 2, 3, 1, 1)
-
-        self.verticalSpacer_2 = QSpacerItem(20, 80, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.gridLayout_6.addItem(self.verticalSpacer_2, 3, 2, 1, 1)
+        self.gridLayout_6.addItem(self.horizontalSpacer_9, 1, 0, 1, 1)
 
 
         self.gridLayout_13.addWidget(self.widget, 0, 0, 1, 1)
@@ -321,60 +318,46 @@ class Ui_WndClient(object):
 
         self.stack_widget.addWidget(self.page_modify)
 
-        self.gridLayout.addWidget(self.stack_widget, 0, 0, 1, 1)
+        self.retranslateUi(WndClientLogin)
 
-        WndClient.setCentralWidget(self.centralwidget)
-        self.status_bar = QStatusBar(WndClient)
-        self.status_bar.setObjectName(u"status_bar")
-        WndClient.setStatusBar(self.status_bar)
-        self.tool_bar = QToolBar(WndClient)
-        self.tool_bar.setObjectName(u"tool_bar")
-        self.tool_bar.setMovable(True)
-        self.tool_bar.setOrientation(Qt.Horizontal)
-        self.tool_bar.setFloatable(True)
-        WndClient.addToolBar(Qt.TopToolBarArea, self.tool_bar)
-
-        self.retranslateUi(WndClient)
-
-        self.stack_widget.setCurrentIndex(1)
+        self.stack_widget.setCurrentIndex(0)
 
 
-        QMetaObject.connectSlotsByName(WndClient)
+        QMetaObject.connectSlotsByName(WndClientLogin)
     # setupUi
 
-    def retranslateUi(self, WndClient):
-        WndClient.setWindowTitle(QCoreApplication.translate("WndClient", u"YZ\u7f51\u7edc\u9a8c\u8bc1-\u5ba2\u6237\u7aef", None))
+    def retranslateUi(self, WndClientLogin):
+        WndClientLogin.setWindowTitle(QCoreApplication.translate("WndClientLogin", u"Login", None))
 #if QT_CONFIG(tooltip)
         self.stack_widget.setToolTip("")
 #endif // QT_CONFIG(tooltip)
-        self.label.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
-        self.label_2.setText(QCoreApplication.translate("WndClient", u"\u5bc6\u7801:", None))
-        self.btn_login.setText(QCoreApplication.translate("WndClient", u"\u767b \u5f55", None))
-        self.label_3.setText(QCoreApplication.translate("WndClient", u"QQ:", None))
-        self.label_6.setText(QCoreApplication.translate("WndClient", u"\u5bc6\u7801:", None))
-        self.label_5.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
+        self.label.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
+        self.label_2.setText(QCoreApplication.translate("WndClientLogin", u"\u5bc6\u7801:", None))
+        self.btn_login.setText(QCoreApplication.translate("WndClientLogin", u"\u767b \u5f55", None))
+        self.label_3.setText(QCoreApplication.translate("WndClientLogin", u"QQ:", None))
+        self.label_6.setText(QCoreApplication.translate("WndClientLogin", u"\u5bc6\u7801:", None))
+        self.label_5.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
 #if QT_CONFIG(tooltip)
-        self.edt_reg_account.setToolTip(QCoreApplication.translate("WndClient", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
+        self.edt_reg_account.setToolTip(QCoreApplication.translate("WndClientLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
 #endif // QT_CONFIG(tooltip)
-        self.edt_reg_account.setText(QCoreApplication.translate("WndClient", u"111111", None))
+        self.edt_reg_account.setText(QCoreApplication.translate("WndClientLogin", u"111111", None))
 #if QT_CONFIG(tooltip)
-        self.edt_reg_qq.setToolTip(QCoreApplication.translate("WndClient", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 5-10\u4f4d", None))
+        self.edt_reg_qq.setToolTip(QCoreApplication.translate("WndClientLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 5-10\u4f4d", None))
 #endif // QT_CONFIG(tooltip)
-        self.edt_reg_qq.setText(QCoreApplication.translate("WndClient", u"333333", None))
+        self.edt_reg_qq.setText(QCoreApplication.translate("WndClientLogin", u"333333", None))
 #if QT_CONFIG(tooltip)
-        self.edt_reg_pwd.setToolTip(QCoreApplication.translate("WndClient", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
+        self.edt_reg_pwd.setToolTip(QCoreApplication.translate("WndClientLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
 #endif // QT_CONFIG(tooltip)
-        self.edt_reg_pwd.setText(QCoreApplication.translate("WndClient", u"222222", None))
-        self.btn_reg.setText(QCoreApplication.translate("WndClient", u"\u6ce8 \u518c", None))
-        self.label_13.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
+        self.edt_reg_pwd.setText(QCoreApplication.translate("WndClientLogin", u"222222", None))
+        self.btn_reg.setText(QCoreApplication.translate("WndClientLogin", u"\u6ce8 \u518c", None))
+        self.label_13.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
         self.lineEdit_13.setText("")
-        self.label_9.setText(QCoreApplication.translate("WndClient", u"\u5145\u503c\u5361\u53f7:", None))
+        self.label_9.setText(QCoreApplication.translate("WndClientLogin", u"\u5145\u503c\u5361\u53f7:", None))
         self.lineEdit_9.setText("")
-        self.pushButton_3.setText(QCoreApplication.translate("WndClient", u"\u5145 \u503c", None))
-        self.label_10.setText(QCoreApplication.translate("WndClient", u"\u8d26\u53f7:", None))
-        self.label_12.setText(QCoreApplication.translate("WndClient", u"QQ:", None))
-        self.label_11.setText(QCoreApplication.translate("WndClient", u"\u65b0\u5bc6\u7801:", None))
-        self.pushButton_4.setText(QCoreApplication.translate("WndClient", u"\u786e\u5b9a\u4fee\u6539", None))
-        self.tool_bar.setWindowTitle(QCoreApplication.translate("WndClient", u"toolBar", None))
+        self.pushButton_3.setText(QCoreApplication.translate("WndClientLogin", u"\u5145 \u503c", None))
+        self.label_10.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
+        self.label_12.setText(QCoreApplication.translate("WndClientLogin", u"QQ:", None))
+        self.label_11.setText(QCoreApplication.translate("WndClientLogin", u"\u65b0\u5bc6\u7801:", None))
+        self.pushButton_4.setText(QCoreApplication.translate("WndClientLogin", u"\u6539 \u5bc6", None))
     # retranslateUi
 

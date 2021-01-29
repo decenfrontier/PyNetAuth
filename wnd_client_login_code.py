@@ -139,6 +139,9 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         if False in bool_list:
             self.show_info("注册失败, 账号密码6-12位, QQ号5-10位")
             return
+        if reg_ip is None:
+            self.show_info("网络连接异常, 请重启软件后再试")
+            return
         # 把客户端信息整理成字典
         reg_pwd = mf.get_encrypted_str(reg_pwd.encode())
         reg_qq = mf.get_encrypted_str(reg_pwd.encode())
@@ -187,6 +190,11 @@ def thd_recv_server():
     wnd_client.show_info("与服务器断开连接...")
 
 
+def thd_get_outer_ip():
+    global reg_ip
+    reg_ip = mf.get_outer_ip()
+
+
 if __name__ == '__main__':
     # 界面随DPI自动缩放
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -198,15 +206,16 @@ if __name__ == '__main__':
     wnd_client = WndClientLogin()
     wnd_client.show()
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print("正在连接服务器...")
+    wnd_client.show_info("正在连接服务器...")
     err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
     if err_no != 0:
         QMessageBox.critical(wnd_client, "错误", f"连接服务器失败, 错误码: {err_no}")
         sys.exit(-1)
-    print(f"连接服务器成功, 开始接收数据...")
+    wnd_client.show_info(f"连接服务器成功, 开始接收数据...")
     Thread(target=thd_recv_server, daemon=True).start()
-
+    Thread(target=thd_get_outer_ip, daemon=True).start()
     machine_code = mf.get_machine_code()
-    reg_ip = mf.get_outer_ip()
+
+
 
     sys.exit(app.exec_())

@@ -3,6 +3,7 @@ from urllib.request import urlopen
 import wmi
 import platform
 import hmac
+import json
 
 qss_style = """
     * {
@@ -27,8 +28,14 @@ server_port = 47123
 
 # 获取取外网IP
 def get_outer_ip() -> str:
-    ip_bytes = urlopen("http://ip.42.pl/raw").read()
-    ip = ip_bytes.decode()
+    # 法一
+    # ip_bytes = urlopen("http://ip.42.pl/raw").read()
+    # ip = ip_bytes.decode()
+
+    # 法二
+    ip = json.load(urlopen("http://httpbin.org/ip"))["origin"]
+
+    print("ip:", ip)
     return ip
 
 

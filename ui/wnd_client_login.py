@@ -17,12 +17,12 @@ class Ui_WndClientLogin(object):
     def setupUi(self, WndClientLogin):
         if not WndClientLogin.objectName():
             WndClientLogin.setObjectName(u"WndClientLogin")
-        WndClientLogin.resize(351, 270)
+        WndClientLogin.resize(501, 270)
         WndClientLogin.setSizeGripEnabled(False)
         WndClientLogin.setModal(False)
         self.stack_widget = QStackedWidget(WndClientLogin)
         self.stack_widget.setObjectName(u"stack_widget")
-        self.stack_widget.setGeometry(QRect(0, 0, 350, 268))
+        self.stack_widget.setGeometry(QRect(0, 0, 502, 268))
         self.page_login = QWidget()
         self.page_login.setObjectName(u"page_login")
         self.gridLayout_13 = QGridLayout(self.page_login)
@@ -32,7 +32,16 @@ class Ui_WndClientLogin(object):
         self.widget.setObjectName(u"widget")
         self.gridLayout_6 = QGridLayout(self.widget)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
-        self.gridLayout_6.setContentsMargins(0, 0, 0, 0)
+        self.verticalSpacer = QSpacerItem(20, 81, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout_6.addItem(self.verticalSpacer, 0, 1, 1, 1)
+
+        self.horizontalSpacer_9 = QSpacerItem(75, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer_9, 1, 0, 1, 1)
+
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout_2 = QGridLayout()
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.edt_login_account = QLineEdit(self.widget)
@@ -56,41 +65,40 @@ class Ui_WndClientLogin(object):
         self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
 
 
-        self.gridLayout_6.addLayout(self.gridLayout_2, 1, 1, 1, 4)
+        self.gridLayout.addLayout(self.gridLayout_2, 0, 0, 1, 4)
 
-        self.verticalSpacer_2 = QSpacerItem(20, 80, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.horizontalSpacer_3 = QSpacerItem(31, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.gridLayout_6.addItem(self.verticalSpacer_2, 3, 2, 1, 1)
-
-        self.horizontalSpacer_3 = QSpacerItem(41, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_3, 2, 1, 1, 1)
-
-        self.horizontalSpacer_4 = QSpacerItem(41, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_4, 2, 4, 1, 1)
-
-        self.horizontalSpacer_10 = QSpacerItem(74, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_10, 1, 5, 1, 1)
-
-        self.verticalSpacer = QSpacerItem(20, 81, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.gridLayout_6.addItem(self.verticalSpacer, 0, 2, 1, 1)
-
-        self.horizontalSpacer_9 = QSpacerItem(75, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_9, 1, 0, 1, 1)
+        self.gridLayout.addItem(self.horizontalSpacer_3, 1, 0, 1, 1)
 
         self.btn_login = QPushButton(self.widget)
         self.btn_login.setObjectName(u"btn_login")
+        self.btn_login.setCursor(QCursor(Qt.PointingHandCursor))
 
-        self.gridLayout_6.addWidget(self.btn_login, 2, 2, 1, 1)
+        self.gridLayout.addWidget(self.btn_login, 1, 1, 1, 1)
+
+        self.btn_unbind = QPushButton(self.widget)
+        self.btn_unbind.setObjectName(u"btn_unbind")
+        self.btn_unbind.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.gridLayout.addWidget(self.btn_unbind, 1, 2, 1, 1)
 
         self.btn_exit = QPushButton(self.widget)
         self.btn_exit.setObjectName(u"btn_exit")
+        self.btn_exit.setCursor(QCursor(Qt.PointingHandCursor))
 
-        self.gridLayout_6.addWidget(self.btn_exit, 2, 3, 1, 1)
+        self.gridLayout.addWidget(self.btn_exit, 1, 3, 1, 1)
+
+
+        self.gridLayout_6.addLayout(self.gridLayout, 1, 1, 1, 1)
+
+        self.horizontalSpacer_10 = QSpacerItem(74, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer_10, 1, 2, 1, 1)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 80, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout_6.addItem(self.verticalSpacer_2, 2, 1, 1, 1)
 
 
         self.gridLayout_13.addWidget(self.widget, 0, 0, 1, 1)
@@ -154,6 +162,7 @@ class Ui_WndClientLogin(object):
 
         self.btn_reg = QPushButton(self.widget_2)
         self.btn_reg.setObjectName(u"btn_reg")
+        self.btn_reg.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.gridLayout_7.addWidget(self.btn_reg, 2, 2, 1, 1)
 
@@ -230,6 +239,7 @@ class Ui_WndClientLogin(object):
 
         self.pushButton_3 = QPushButton(self.widget_3)
         self.pushButton_3.setObjectName(u"pushButton_3")
+        self.pushButton_3.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.gridLayout_8.addWidget(self.pushButton_3, 3, 2, 1, 1)
 
@@ -307,6 +317,7 @@ class Ui_WndClientLogin(object):
 
         self.pushButton_4 = QPushButton(self.widget_4)
         self.pushButton_4.setObjectName(u"pushButton_4")
+        self.pushButton_4.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.gridLayout_4.addWidget(self.pushButton_4, 2, 2, 1, 1)
 
@@ -322,6 +333,10 @@ class Ui_WndClientLogin(object):
         self.gridLayout_16.addWidget(self.widget_4, 0, 0, 1, 1)
 
         self.stack_widget.addWidget(self.page_modify)
+#if QT_CONFIG(shortcut)
+        self.label_2.setBuddy(self.edt_login_pwd)
+        self.label.setBuddy(self.edt_login_account)
+#endif // QT_CONFIG(shortcut)
 
         self.retranslateUi(WndClientLogin)
 
@@ -339,6 +354,7 @@ class Ui_WndClientLogin(object):
         self.label_2.setText(QCoreApplication.translate("WndClientLogin", u"\u5bc6\u7801:", None))
         self.label.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
         self.btn_login.setText(QCoreApplication.translate("WndClientLogin", u"\u767b \u5f55", None))
+        self.btn_unbind.setText(QCoreApplication.translate("WndClientLogin", u"\u89e3 \u7ed1", None))
         self.btn_exit.setText(QCoreApplication.translate("WndClientLogin", u"\u9000 \u51fa", None))
         self.label_3.setText(QCoreApplication.translate("WndClientLogin", u"QQ:", None))
         self.label_6.setText(QCoreApplication.translate("WndClientLogin", u"\u5bc6\u7801:", None))

@@ -4,7 +4,7 @@ from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPalette, QPixma
     QBrush, QMouseEvent, QPaintEvent, QPainter
 from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayout, \
     QStatusBar, QApplication, QStyleFactory, QWidget
-from PySide2.QtCore import Qt, QRegExp, QSize
+from PySide2.QtCore import Qt, QRegExp, QSize, QPoint
 import socket
 from threading import Thread
 import json
@@ -35,7 +35,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
         self.setWindowFlags(Qt.FramelessWindowHint)  # 设置为无边框, 但任务栏有图标
-        self.start_point = 0  # 使窗口支持拖动移动
+        self.start_point = QPoint(0, 0)  # 使窗口支持拖动移动
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
@@ -196,14 +196,15 @@ def thd_get_outer_ip():
 
 
 if __name__ == '__main__':
+    # 提前发出获取公网iP请求, 需要一定时间才能得到
+    Thread(target=thd_get_outer_ip, daemon=True).start()
+
     # 界面随DPI自动缩放
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-
     app = QApplication()
     app.setStyle(QStyleFactory.create("fusion"))
     app.setStyleSheet(mf.qss_style)
 
-    Thread(target=thd_get_outer_ip, daemon=True).start()
     wnd_client_login = WndClientLogin()
     wnd_client_login.show()
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

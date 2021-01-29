@@ -9,7 +9,7 @@ class WndClientMain(QWidget, Ui_WndClientMain):
         self.setupUi(self)
 
 
-from PySide2.QtWidgets import QApplication, QStyleFactory, QPushButton
+from PySide2.QtWidgets import QApplication, QStyleFactory
 from PySide2.QtCore import Qt
 import sys
 

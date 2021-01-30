@@ -1,10 +1,10 @@
 import sys
 
 from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPalette, QPixmap, \
-    QBrush, QMouseEvent, QPaintEvent, QPainter
+    QBrush, QMouseEvent, QPaintEvent, QPainter, QPainterPath, QColor, QBitmap
 from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayout, \
     QStatusBar, QApplication, QStyleFactory, QWidget
-from PySide2.QtCore import Qt, QRegExp, QSize, QPoint
+from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, QObject, QEvent
 import socket
 from threading import Thread
 import json
@@ -34,6 +34,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
+        self.setAttribute(Qt.WA_TranslucentBackground)  # 透明背景
         self.setWindowFlags(Qt.FramelessWindowHint)  # 设置为无边框, 但任务栏有图标
         self.start_point = QPoint(0, 0)  # 使窗口支持拖动移动
 
@@ -45,15 +46,30 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.move(event.globalPos() + self.start_point)
 
     def paintEvent(self, event: QPaintEvent):
+        # 背景
         pix_map = QPixmap(":/back1.jpg").scaled(self.size())
         painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
         painter.drawPixmap(self.rect(), pix_map)
+        # 圆角
+        bmp = QBitmap(self.size())
+        bmp.fill()
+        painter = QPainter(bmp)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(Qt.black)
+        painter.drawRoundedRect(bmp.rect(), 8, 8)
+        self.setMask(bmp)
 
     def init_status_bar(self):
         # 添加一个statusbar
         self.status_bar = QStatusBar()
+        # 设置不可调整窗口尺寸
+        # self.status_bar.setSizeGripEnabled(False)
+        # 添加标签
         self.lbe_info = QLabel()
         self.status_bar.addWidget(self.lbe_info)
+
 
     def init_all_controls(self):
         # 显示第一页
@@ -70,7 +86,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.tool_bar.addAction(QIcon(":/modify.png"), "改密")
         # 布局
         vbox_layout = QVBoxLayout()
-        vbox_layout.setMargin(0)
+        vbox_layout.setMargin(5)
         vbox_layout.addWidget(self.tool_bar)
         vbox_layout.addWidget(self.stack_widget)
         vbox_layout.addWidget(self.status_bar)
@@ -207,6 +223,7 @@ if __name__ == '__main__':
 
     wnd_client_login = WndClientLogin()
     wnd_client_login.show()
+    print("w:", wnd_client_login.width(), "h:", wnd_client_login.height())
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     wnd_client_login.show_info("正在连接服务器...")
     err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))

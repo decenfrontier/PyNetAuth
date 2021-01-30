@@ -17,12 +17,12 @@ class Ui_WndClientLogin(object):
     def setupUi(self, WndClientLogin):
         if not WndClientLogin.objectName():
             WndClientLogin.setObjectName(u"WndClientLogin")
-        WndClientLogin.resize(501, 270)
+        WndClientLogin.resize(441, 268)
         WndClientLogin.setSizeGripEnabled(False)
         WndClientLogin.setModal(False)
         self.stack_widget = QStackedWidget(WndClientLogin)
         self.stack_widget.setObjectName(u"stack_widget")
-        self.stack_widget.setGeometry(QRect(0, 0, 502, 268))
+        self.stack_widget.setGeometry(QRect(0, 0, 441, 268))
         self.page_login = QWidget()
         self.page_login.setObjectName(u"page_login")
         self.gridLayout_13 = QGridLayout(self.page_login)

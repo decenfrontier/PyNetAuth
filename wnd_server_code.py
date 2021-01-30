@@ -113,19 +113,18 @@ class WndServer(QMainWindow, Ui_WndServer):
     def on_btn_card_refresh_clicked(self):
         tbe = self.tbe_card_manage
         dict_list = sql_table_query("card_manage")
-        for info_dict in dict_list:
-            card_key = info_dict.get("card_key")
-            card_type = info_dict.get("card_type")
-            card_state = info_dict.get("card_state")
-            gen_time = info_dict.get("gen_time")
-            use_time = info_dict.get("use_time")
-            row = tbe.rowCount()
-            tbe.setItem(row, 0, QTableWidgetItem(card_key))
-            tbe.setItem(row, 1, QTableWidgetItem(card_type))
-            tbe.setItem(row, 2, QTableWidgetItem(card_state))
-            tbe.setItem(row, 3, QTableWidgetItem(gen_time))
-            tbe.setItem(row, 4, QTableWidgetItem(use_time))
-            tbe.setRowCount(row+1)
+        tbe.setRowCount(len(dict_list))
+        for row, info_dict in enumerate(dict_list):
+            card_key = QTableWidgetItem(info_dict["card_key"])
+            card_type = QTableWidgetItem(info_dict["card_type"])
+            card_state = QTableWidgetItem(info_dict["card_state"])
+            gen_time = QTableWidgetItem(info_dict["gen_time"])
+            use_time = QTableWidgetItem(info_dict["use_time"])
+            self.tbe_card_manage.setItem(row, 0, card_key)
+            self.tbe_card_manage.setItem(row, 1, card_type)
+            self.tbe_card_manage.setItem(row, 2, card_state)
+            self.tbe_card_manage.setItem(row, 3, gen_time)
+            self.tbe_card_manage.setItem(row, 4, use_time)
 
 
     def on_timer_timeout(self):

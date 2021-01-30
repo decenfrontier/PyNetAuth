@@ -26,6 +26,8 @@ cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 server_ip = "127.0.0.1"
 server_port = 47123
 
+card_key_lenth = 30
+
 # 随机数
 def rnd(min: int, max: int):
     return random.randint(min, max)
@@ -68,7 +70,7 @@ def get_encrypted_str(ori_bytes: bytes):
     return encrypted.hexdigest()
 
 # 生成随机卡密
-def gen_rnd_card_key(lenth=30):
+def gen_rnd_card_key(lenth=card_key_lenth):
     char_list = "0123456789qazwsxedcrfvtgbyhnujmikolpQAZWSXEDCRFVTGBYHNUJMIKOLP"
     max_idx = len(char_list) - 1
     card_key = ""

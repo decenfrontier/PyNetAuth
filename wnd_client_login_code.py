@@ -146,8 +146,20 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.reject()
 
     def on_btn_pay_clicked(self):
-
-        ...
+        account = self.edt_pay_account.text()
+        card_key = self.edt_pay_key.text()
+        if len(card_key) != mf.card_key_lenth or len(account) not in range(6,13):
+            self.show_info("账号或卡密错误, 请检查无误后再试")
+            return
+        client_info_dict = {
+            "msg_type": "pay",
+            "account": account,
+            "card_key": card_key,
+        }
+        ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
+                                      QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+        if ret == QMessageBox.Yes:
+            send_to_server(client_info_dict)
 
     def on_btn_reg_clicked(self):
         # 判断注册信息是否符合要求

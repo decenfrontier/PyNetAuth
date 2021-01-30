@@ -100,12 +100,17 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.edt_reg_account.setValidator(QRegExpValidator(reg_exp_acount_pwd))
         self.edt_reg_pwd.setValidator(QRegExpValidator(reg_exp_acount_pwd))
         self.edt_reg_qq.setValidator(QRegExpValidator(reg_exp_qq_number))
+        # 充值页
+        self.lbe_pay_key.setText("""<a href="https://www.baidu.com">充值卡号: </a>""")
+        self.lbe_pay_key.setOpenExternalLinks(True)
+        self.lbe_pay_key.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         self.btn_login.clicked.connect(self.on_btn_login_clicked)
         self.btn_reg.clicked.connect(self.on_btn_reg_clicked)
         self.btn_exit.clicked.connect(self.on_btn_exit_clicked)
+        self.btn_pay.clicked.connect(self.on_btn_pay_clicked)
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
@@ -139,6 +144,10 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
 
     def on_btn_exit_clicked(self):
         self.reject()
+
+    def on_btn_pay_clicked(self):
+
+        ...
 
     def on_btn_reg_clicked(self):
         # 判断注册信息是否符合要求

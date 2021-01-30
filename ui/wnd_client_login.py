@@ -202,10 +202,10 @@ class Ui_WndClientLogin(object):
 
         self.verticalLayout_2.addWidget(self.label_13)
 
-        self.lineEdit_13 = QLineEdit(self.widget_3)
-        self.lineEdit_13.setObjectName(u"lineEdit_13")
+        self.edt_pay_account = QLineEdit(self.widget_3)
+        self.edt_pay_account.setObjectName(u"edt_pay_account")
 
-        self.verticalLayout_2.addWidget(self.lineEdit_13)
+        self.verticalLayout_2.addWidget(self.edt_pay_account)
 
 
         self.gridLayout_8.addLayout(self.verticalLayout_2, 1, 1, 1, 3)
@@ -216,15 +216,17 @@ class Ui_WndClientLogin(object):
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.label_9 = QLabel(self.widget_3)
-        self.label_9.setObjectName(u"label_9")
+        self.lbe_pay_key = QLabel(self.widget_3)
+        self.lbe_pay_key.setObjectName(u"lbe_pay_key")
+        self.lbe_pay_key.setOpenExternalLinks(True)
+        self.lbe_pay_key.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
-        self.verticalLayout.addWidget(self.label_9)
+        self.verticalLayout.addWidget(self.lbe_pay_key)
 
-        self.lineEdit_9 = QLineEdit(self.widget_3)
-        self.lineEdit_9.setObjectName(u"lineEdit_9")
+        self.edt_pay_key = QLineEdit(self.widget_3)
+        self.edt_pay_key.setObjectName(u"edt_pay_key")
 
-        self.verticalLayout.addWidget(self.lineEdit_9)
+        self.verticalLayout.addWidget(self.edt_pay_key)
 
 
         self.gridLayout_8.addLayout(self.verticalLayout, 2, 1, 1, 3)
@@ -237,11 +239,11 @@ class Ui_WndClientLogin(object):
 
         self.gridLayout_8.addItem(self.horizontalSpacer_7, 3, 1, 1, 1)
 
-        self.pushButton_3 = QPushButton(self.widget_3)
-        self.pushButton_3.setObjectName(u"pushButton_3")
-        self.pushButton_3.setCursor(QCursor(Qt.PointingHandCursor))
+        self.btn_pay = QPushButton(self.widget_3)
+        self.btn_pay.setObjectName(u"btn_pay")
+        self.btn_pay.setCursor(QCursor(Qt.PointingHandCursor))
 
-        self.gridLayout_8.addWidget(self.pushButton_3, 3, 2, 1, 1)
+        self.gridLayout_8.addWidget(self.btn_pay, 3, 2, 1, 1)
 
         self.horizontalSpacer_8 = QSpacerItem(42, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -340,7 +342,7 @@ class Ui_WndClientLogin(object):
 
         self.retranslateUi(WndClientLogin)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(WndClientLogin)
@@ -373,10 +375,13 @@ class Ui_WndClientLogin(object):
         self.edt_reg_pwd.setText(QCoreApplication.translate("WndClientLogin", u"222222", None))
         self.btn_reg.setText(QCoreApplication.translate("WndClientLogin", u"\u6ce8 \u518c", None))
         self.label_13.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
-        self.lineEdit_13.setText("")
-        self.label_9.setText(QCoreApplication.translate("WndClientLogin", u"\u5145\u503c\u5361\u53f7:", None))
-        self.lineEdit_9.setText("")
-        self.pushButton_3.setText(QCoreApplication.translate("WndClientLogin", u"\u5145 \u503c", None))
+        self.edt_pay_account.setText("")
+#if QT_CONFIG(tooltip)
+        self.lbe_pay_key.setToolTip(QCoreApplication.translate("WndClientLogin", u">> \u70b9\u6211\u8d2d\u5361 <<", None))
+#endif // QT_CONFIG(tooltip)
+        self.lbe_pay_key.setText(QCoreApplication.translate("WndClientLogin", u"\u5145\u503c\u5361\u53f7:", None))
+        self.edt_pay_key.setText("")
+        self.btn_pay.setText(QCoreApplication.translate("WndClientLogin", u"\u5145 \u503c", None))
         self.label_10.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
         self.label_12.setText(QCoreApplication.translate("WndClientLogin", u"QQ:", None))
         self.label_11.setText(QCoreApplication.translate("WndClientLogin", u"\u65b0\u5bc6\u7801:", None))

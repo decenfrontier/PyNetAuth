@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page_0">
        <layout class="QGridLayout" name="gridLayout_2">
@@ -72,7 +72,7 @@
              <number>100</number>
             </property>
             <attribute name="horizontalHeaderVisible">
-             <bool>true</bool>
+             <bool>false</bool>
             </attribute>
             <attribute name="horizontalHeaderCascadingSectionResizes">
              <bool>false</bool>
@@ -401,7 +401,7 @@
             <row/>
             <column>
              <property name="text">
-              <string>account</string>
+              <string>账号</string>
              </property>
             </column>
             <column>
@@ -507,7 +507,7 @@
              <number>100</number>
             </property>
             <attribute name="horizontalHeaderVisible">
-             <bool>false</bool>
+             <bool>true</bool>
             </attribute>
             <attribute name="horizontalHeaderStretchLastSection">
              <bool>true</bool>
@@ -623,27 +623,27 @@
             <row/>
             <column>
              <property name="text">
-              <string>card_key</string>
+              <string>卡密</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>state</string>
+              <string>卡类型</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>type</string>
+              <string>状态</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>gen_time</string>
+              <string>生成时间</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>use_time</string>
+              <string>使用时间</string>
              </property>
             </column>
            </widget>
@@ -659,6 +659,93 @@
             <property name="title">
              <string/>
             </property>
+            <widget class="QWidget" name="layoutWidget">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>10</y>
+               <width>181</width>
+               <height>106</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_6">
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>生成张数:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>卡密类型:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="edt_card_num">
+                <property name="inputMask">
+                 <string/>
+                </property>
+                <property name="placeholderText">
+                 <string/>
+                </property>
+                <property name="clearButtonEnabled">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0" colspan="2">
+               <widget class="QPushButton" name="btn_card_refresh">
+                <property name="text">
+                 <string>刷新卡密库</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="cmb_card_type">
+                <item>
+                 <property name="text">
+                  <string>天卡</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>周卡</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>月卡</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>季卡</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>年卡</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>永久卡</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="5" column="0" colspan="2">
+               <widget class="QPushButton" name="btn_card_gen">
+                <property name="text">
+                 <string>确定生成</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </widget>
           </item>
          </layout>

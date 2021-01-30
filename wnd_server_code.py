@@ -69,6 +69,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
+        self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -86,6 +87,20 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.stack_widget.setCurrentIndex(2)
         elif action_name == "执行日志":
             self.stack_widget.setCurrentIndex(3)
+
+    def on_btn_card_gen_clicked(self):
+        gen_time = mf.cur_time_format
+        card_type = self.cmb_card_type.currentText()
+        card_num = int(self.edt_card_num.text())
+        for i in range(card_num):
+            card_key = mf.gen_rnd_card_key()
+            val_dict = {
+                "card_key": card_key,
+                "card_type": card_type,
+                "gen_time": gen_time
+            }
+            table_insert("card_manage", val_dict)
+        self.show_info(f"已生成{card_num}张{card_type}")
 
     def on_timer_timeout(self):
         mf.cur_time_stamp += 1

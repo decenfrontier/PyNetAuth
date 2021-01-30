@@ -64,8 +64,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
     def init_status_bar(self):
         # 添加一个statusbar
         self.status_bar = QStatusBar()
-        # 设置不可调整窗口尺寸
-        # self.status_bar.setSizeGripEnabled(False)
         # 添加标签
         self.lbe_info = QLabel()
         self.status_bar.addWidget(self.lbe_info)
@@ -86,7 +84,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.tool_bar.addAction(QIcon(":/modify.png"), "改密")
         # 布局
         vbox_layout = QVBoxLayout()
-        vbox_layout.setMargin(5)
+        vbox_layout.setMargin(4)
         vbox_layout.addWidget(self.tool_bar)
         vbox_layout.addWidget(self.stack_widget)
         vbox_layout.addWidget(self.status_bar)

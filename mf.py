@@ -4,6 +4,7 @@ import wmi
 import platform
 import hmac
 import json
+import random
 
 qss_style = """
     * {
@@ -25,6 +26,9 @@ cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 server_ip = "127.0.0.1"
 server_port = 47123
 
+# 随机数
+def rnd(min: int, max: int):
+    return random.randint(min, max)
 
 # 获取取外网IP
 def get_outer_ip() -> str:
@@ -62,3 +66,14 @@ def get_operation_system():
 def get_encrypted_str(ori_bytes: bytes):
     encrypted = hmac.new(b"dkstFeb.1st", ori_bytes, "sha1")
     return encrypted.hexdigest()
+
+# 生成随机卡密
+def gen_rnd_card_key(lenth=30):
+    char_list = "0123456789qazwsxedcrfvtgbyhnujmikolpQAZWSXEDCRFVTGBYHNUJMIKOLP"
+    max_idx = len(char_list) - 1
+    card_key = ""
+    for _ in range(lenth):
+        idx = rnd(0, max_idx)
+        char = char_list[idx]
+        card_key += char
+    return card_key

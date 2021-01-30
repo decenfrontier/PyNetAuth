@@ -1,6 +1,9 @@
+import sys
+
 from PySide2.QtGui import QIcon, QCloseEvent
-from PySide2.QtWidgets import QMainWindow, QLabel, QMessageBox
-from PySide2.QtCore import QTimer
+from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, \
+    QLabel, QMessageBox, QAbstractItemView, QTableWidget, QTableWidgetItem
+from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
 from threading import Thread
@@ -49,6 +52,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_all_user.horizontalHeader().setVisible(True)
         self.tbe_online_user.horizontalHeader().setVisible(True)
         self.tbe_card_manage.horizontalHeader().setVisible(True)
+        # 所有表格设置不可编辑
+        self.tbe_all_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tbe_online_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tbe_card_manage.setEditTriggers(QAbstractItemView.NoEditTriggers)
         # 全部用户表
         account, pwd, email, machine_code, reg_ip, reg_time, due_time, is_forbid = [i for i in range(8)]
         self.tbe_all_user.setColumnWidth(account, 100)
@@ -70,6 +77,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
+        self.btn_card_refresh.clicked.connect(self.on_btn_card_refresh_clicked)
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -99,8 +107,26 @@ class WndServer(QMainWindow, Ui_WndServer):
                 "card_type": card_type,
                 "gen_time": gen_time
             }
-            table_insert("card_manage", val_dict)
+            sql_table_insert("card_manage", val_dict)
         self.show_info(f"已生成{card_num}张{card_type}")
+
+    def on_btn_card_refresh_clicked(self):
+        tbe = self.tbe_card_manage
+        dict_list = sql_table_query("card_manage")
+        for info_dict in dict_list:
+            card_key = info_dict.get("card_key")
+            card_type = info_dict.get("card_type")
+            card_state = info_dict.get("card_state")
+            gen_time = info_dict.get("gen_time")
+            use_time = info_dict.get("use_time")
+            row = tbe.rowCount()
+            tbe.setItem(row, 0, QTableWidgetItem(card_key))
+            tbe.setItem(row, 1, QTableWidgetItem(card_type))
+            tbe.setItem(row, 2, QTableWidgetItem(card_state))
+            tbe.setItem(row, 3, QTableWidgetItem(gen_time))
+            tbe.setItem(row, 4, QTableWidgetItem(use_time))
+            tbe.setRowCount(row+1)
+
 
     def on_timer_timeout(self):
         mf.cur_time_stamp += 1
@@ -153,13 +179,13 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
 def deal_reg(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["account"]
     # 查询账号是否存在, 不存在则插入记录
-    if table_query("all_user", "account", account):  # 若查到数据
+    if sql_table_query("all_user", "account", account):  # 若查到数据
         reg_ret = False
         detail = f"失败, 账号{account}已被注册!"
         wnd_server.show_info(detail)
     else:  # 表插入记录
         client_info_dict["reg_time"] = mf.cur_time_format
-        reg_ret = table_insert("all_user", client_info_dict)
+        reg_ret = sql_table_insert("all_user", client_info_dict)
         detail = f"账号{account}注册成功!" if reg_ret else f"账号{account}注册失败!"
         wnd_server.show_info(detail)
     # 把注册结果整理成py字典, 并发送给客户端
@@ -171,7 +197,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["account"]
     pwd = client_info_dict["pwd"]
     # 查询账号记录
-    dict_list = table_query("all_user", "account", account)
+    dict_list = sql_table_query("all_user", "account", account)
     if dict_list:  # 若查到数据
         query_pwd = dict_list[0].get("pwd")
         login_ret = True if pwd == query_pwd else False
@@ -195,7 +221,7 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
         wnd_server.show_info(f"向客户端回复失败: {e}")
 
 # 表-插入, 成功返回True, 否则返回False
-def table_insert(table_name: str, val_dict: dict):
+def sql_table_insert(table_name: str, val_dict: dict):
     # keys = "account, pwd,qq, machine_code, reg_ip"
     keys = ", ".join(val_dict.keys())
     # values = "%s, %s, %s,%s,%s,%s"
@@ -210,34 +236,35 @@ def table_insert(table_name: str, val_dict: dict):
             db.commit()
         else:
             raise Exception("执行SQL语句失败")
-    except:
+    except Exception as e:
+        print(f"表插入异常: {e}")
         # 对修改的数据进行撤销
         db.rollback()
-    wnd_server.show_info(f"table_insert: {ret}")
+    print(f"表插入结果: {ret}")
     return ret
 
 # 表-查询, 成功返回字典列表, 否则返回空列表
-def table_query(table_name: str, field: str, val: str):
+def sql_table_query(table_name: str, field="", val=""):
     # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
-    sql = f"select * from {table_name} where {field}=%s;"
+    if field == "":
+        sql = f"select * from {table_name};"
+    else:
+        sql = f"select * from {table_name} where {field}=%s;"
     try:
-        # 执行SQL语句
-        cursor.execute(sql, (val,))
-        # 获取查询, 没查到返回空元组
-        ret = cursor.fetchall()
-        # 提交到数据库
-        db.commit()
+        if val == "":
+            cursor.execute(sql)  # 执行SQL语句
+        else:
+            cursor.execute(sql, (val,))  # 执行SQL语句
+        ret = cursor.fetchall()  # 获取查询结果, 没查到返回空元组
+        db.commit()  # 提交到数据库
     except:
         # 数据库回滚
         db.rollback()
         ret = []
-    wnd_server.show_info(f"表查询结果: {ret}")
+    print(f"表查询结果: {ret}")
     return ret
 
 
-import sys
-from PySide2.QtWidgets import QApplication, QStyleFactory
-from PySide2.QtCore import Qt
 
 if __name__ == '__main__':
     # 界面随DPI自动缩放

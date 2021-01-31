@@ -216,7 +216,8 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     dict_list = sql_table_query("card_manage", {"card_key": card_key})
     pay_ret = False
     if dict_list:
-        if dict_list[0]["use_time"] == "":  # 卡密未被使用
+        card_info = dict_list[0]
+        if card_info["use_time"] == "":  # 卡密未被使用
             user_info_list = sql_table_query("all_user", {"account": account})  # 查找账号是否存在
             if user_info_list:  # 账号存在
                 user_info = user_info_list[0]
@@ -224,7 +225,7 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
                 sql_table_update("card_manage", {"use_time": mf.cur_time_format}, {"card_key": card_key})
                 # 更新账号到期时间
                 type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 120, "年卡": 365, "永久卡": 3650}
-                card_type = dict_list["card_type"]
+                card_type = card_info["card_type"]
                 delta_day = type_time_dict[card_type]
                 pay_ret = update_user_due_time(user_info, delta_day)
                 detail = "充值成功" if pay_ret else "充值失败"
@@ -236,6 +237,7 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
         detail = "失败, 卡密不存在"
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"msg_type": "pay", "pay_ret": pay_ret, "detail": detail}
+    send_to_client(client_socket, server_info_dict)
 
 # 发送数据给客户端
 def send_to_client(client_socket: socket.socket, server_info_dict: dict):
@@ -258,6 +260,7 @@ def update_user_due_time(user_info: dict, delta_day: int):
     now_date_time = datetime.datetime.strptime(ori_time, "%Y-%m-%d %H:%M:%S")
     offset_date_time = datetime.timedelta(days=delta_day)
     due_time = (now_date_time + offset_date_time).strftime("%Y-%m-%d %H:%M:%S")
+    account = user_info["account"]
     ret = sql_table_update("all_user", {"due_time": due_time}, {"account": account})
     return ret
 
@@ -292,7 +295,7 @@ def sql_table_query(table_name: str, condition_dict=dict()):
     else:
         sql = f"select * from {table_name};"
     try:
-        cursor.execute(sql, vals)  # 执行SQL语句
+        ret = cursor.execute(sql, vals)  # 执行SQL语句
         ret = cursor.fetchall()  # 获取查询结果, 没查到返回空列表
         db.commit()  # 提交到数据库
     except:

@@ -179,7 +179,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             return
         # 把客户端信息整理成字典
         reg_pwd = mf.get_encrypted_str(reg_pwd.encode())
-        reg_qq = mf.get_encrypted_str(reg_pwd.encode())
         client_info_dict = {
             "msg_type": "reg",
             "account": reg_account,
@@ -219,9 +218,11 @@ def thd_recv_server():
             wnd_client_login.show_info(server_info_dict["detail"])
         elif msg_type == "login":
             wnd_client_login.show_info(server_info_dict["detail"])
-            login_ret = server_info_dict["login_ret"]
-            if login_ret:
+            if server_info_dict["login_ret"]:
+                # todo: 开一个线程, 从服务器获取客户端重要数据
                 wnd_client_login.accept()  # 接受
+        elif msg_type == "pay":
+            wnd_client_login.show_info(server_info_dict["detail"])
     wnd_client_login.show_info("与服务器断开连接...")
 
 

@@ -1,4 +1,6 @@
 import sys
+import time, datetime
+import json
 
 from PySide2.QtGui import QIcon, QCloseEvent
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, \
@@ -7,13 +9,10 @@ from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
 from threading import Thread
-import time
-import json
 
 from ui.wnd_server import Ui_WndServer
 from res import qres
 import mf
-
 
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
@@ -53,9 +52,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_online_user.horizontalHeader().setVisible(True)
         self.tbe_card_manage.horizontalHeader().setVisible(True)
         # 所有表格设置不可编辑
-        self.tbe_all_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.tbe_online_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.tbe_card_manage.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # self.tbe_all_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # self.tbe_online_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # self.tbe_card_manage.setEditTriggers(QAbstractItemView.NoEditTriggers)
         # 全部用户表
         account, pwd, email, machine_code, reg_ip, reg_time, due_time, is_forbid = [i for i in range(8)]
         self.tbe_all_user.setColumnWidth(account, 100)
@@ -214,15 +213,21 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["account"]
     card_key = client_info_dict["card_key"]
     # 查询数据库, 判断卡密是否存在
-    # todo
     dict_list = sql_table_query("card_manage", {"card_key": card_key})
     pay_ret = False
     if dict_list:
         if dict_list[0]["use_time"] == "":  # 卡密未被使用
-            dl = sql_table_query("all_user", {"account": account})  # 查找账号是否存在
-            if dl:  # 账号存在
-
-                ...
+            user_info_list = sql_table_query("all_user", {"account": account})  # 查找账号是否存在
+            if user_info_list:  # 账号存在
+                user_info = user_info_list[0]
+                # 更新卡密的使用时间
+                sql_table_update("card_manage", {"use_time": mf.cur_time_format}, {"card_key": card_key})
+                # 更新账号到期时间
+                type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 120, "年卡": 365, "永久卡": 3650}
+                card_type = dict_list["card_type"]
+                delta_day = type_time_dict[card_type]
+                pay_ret = update_user_due_time(user_info, delta_day)
+                detail = "充值成功" if pay_ret else "充值失败"
             else:
                 detail = "失败, 账号不存在"
         else:  # 卡密被使用
@@ -242,6 +247,19 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
         wnd_server.show_info("向客户端回复成功")
     except Exception as e:
         wnd_server.show_info(f"向客户端回复失败: {e}")
+
+# 更新用户到期时间
+def update_user_due_time(user_info: dict, delta_day: int):
+    if user_info["due_time"] == "" or user_info["due_time"] < mf.cur_time_format:
+        # 若所有用户表中此项记录没有到期时间, 或到期时间在今天以前, 则从当前时间开始加
+        ori_time = mf.cur_time_format
+    else:  # 否则, 取记录上的到期时间
+        ori_time = user_info["due_time"]
+    now_date_time = datetime.datetime.strptime(ori_time, "%Y-%m-%d %H:%M:%S")
+    offset_date_time = datetime.timedelta(days=delta_day)
+    due_time = (now_date_time + offset_date_time).strftime("%Y-%m-%d %H:%M:%S")
+    ret = sql_table_update("all_user", {"due_time": due_time}, {"account": account})
+    return ret
 
 # 表-插入, 成功返回True, 否则返回False
 def sql_table_insert(table_name: str, val_dict: dict):
@@ -275,7 +293,7 @@ def sql_table_query(table_name: str, condition_dict=dict()):
         sql = f"select * from {table_name};"
     try:
         cursor.execute(sql, vals)  # 执行SQL语句
-        ret = cursor.fetchall()  # 获取查询结果, 没查到返回空元组
+        ret = cursor.fetchall()  # 获取查询结果, 没查到返回空列表
         db.commit()  # 提交到数据库
     except:
         db.rollback()  # 数据库回滚

@@ -34,16 +34,10 @@ def rnd(min: int, max: int):
 
 # 获取取外网IP
 def get_outer_ip() -> str:
-    # 法一
-    # ip_bytes = urlopen("http://ip.42.pl/raw").read()
-    # ip = ip_bytes.decode()
-
-    # 法二
-    ip = json.load(urlopen("http://httpbin.org/ip"))["origin"]
-
+    # ip = urlopen("http://ip.42.pl/raw").read().decode()  # 法一
+    ip = json.load(urlopen("http://httpbin.org/ip"))["origin"]  # 法二
     print("ip:", ip)
     return ip
-
 
 # 获取机器码(主板序列号+硬盘序列号)
 def get_machine_code():

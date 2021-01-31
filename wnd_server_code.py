@@ -164,6 +164,7 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
         msg_func_dict = {
             "reg": deal_reg,
             "login": deal_login,
+            "pay": deal_pay,
         }
         func = msg_func_dict.get(msg_type)
         if func is None:
@@ -178,7 +179,7 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
 def deal_reg(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["account"]
     # 查询账号是否存在, 不存在则插入记录
-    if sql_table_query("all_user", "account", account):  # 若查到数据
+    if sql_table_query("all_user", {"account": account}):  # 若查到数据
         reg_ret = False
         detail = f"失败, 账号{account}已被注册!"
         wnd_server.show_info(detail)
@@ -196,7 +197,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["account"]
     pwd = client_info_dict["pwd"]
     # 查询账号记录
-    dict_list = sql_table_query("all_user", "account", account)
+    dict_list = sql_table_query("all_user", {"account": account})
     if dict_list:  # 若查到数据
         query_pwd = dict_list[0].get("pwd")
         login_ret = True if pwd == query_pwd else False
@@ -207,6 +208,29 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"msg_type": "login", "login_ret": login_ret, "detail": detail}
     send_to_client(client_socket, server_info_dict)
+
+# 处理-充值
+def deal_pay(client_socket: socket.socket, client_info_dict: dict):
+    account = client_info_dict["account"]
+    card_key = client_info_dict["card_key"]
+    # 查询数据库, 判断卡密是否存在
+    # todo
+    dict_list = sql_table_query("card_manage", {"card_key": card_key})
+    pay_ret = False
+    if dict_list:
+        if dict_list[0]["use_time"] == "":  # 卡密未被使用
+            dl = sql_table_query("all_user", {"account": account})  # 查找账号是否存在
+            if dl:  # 账号存在
+
+                ...
+            else:
+                detail = "失败, 账号不存在"
+        else:  # 卡密被使用
+            detail = "失败, 此卡密已被使用"
+    else:  # 没查到数据
+        detail = "失败, 卡密不存在"
+    # 把登录结果整理成py字典, 并发送给客户端
+    server_info_dict = {"msg_type": "pay", "pay_ret": pay_ret, "detail": detail}
 
 # 发送数据给客户端
 def send_to_client(client_socket: socket.socket, server_info_dict: dict):
@@ -223,46 +247,67 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
 def sql_table_insert(table_name: str, val_dict: dict):
     # keys = "account, pwd,qq, machine_code, reg_ip"
     keys = ", ".join(val_dict.keys())
-    # values = "%s, %s, %s,%s,%s,%s"
-    values = ", ".join(["%s"] * len(val_dict))
+    vals = tuple(val_dict.values())
+    # occupys = "%s, %s, %s, %s, %s, %s"
+    occupys = ", ".join(["%s"] * len(val_dict))
     # 准备SQL语句
-    sql = f"insert {table_name}({keys}) values({values});"
+    sql = f"insert {table_name}({keys}) values({occupys});"
     ret = False
     try:
-        # 执行SQL语句
-        ret = cursor.execute(sql, tuple(val_dict.values()))
-        if ret:
-            db.commit()
-        else:
-            raise Exception("执行SQL语句失败")
+        ret = cursor.execute(sql, vals)  # 执行SQL语句
+        db.commit()  # 提交到数据库
     except Exception as e:
         print(f"表插入异常: {e}")
-        # 对修改的数据进行撤销
-        db.rollback()
+        db.rollback()  # 数据库回滚
     print(f"表插入结果: {ret}")
     return ret
 
 # 表-查询, 成功返回字典列表, 否则返回空列表
-def sql_table_query(table_name: str, field="", val=""):
+def sql_table_query(table_name: str, condition_dict=dict()):
+    fields = condition_dict.keys()
+    vals = tuple(condition_dict.values())
+    condition = [f"{field}=%s" for field in fields]
+    condition = " and ".join(condition)
     # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
-    if field == "":
-        sql = f"select * from {table_name};"
+    if condition:
+        sql = f"select * from {table_name} where {condition};"
     else:
-        sql = f"select * from {table_name} where {field}=%s;"
+        sql = f"select * from {table_name};"
     try:
-        if val == "":
-            cursor.execute(sql)  # 执行SQL语句
-        else:
-            cursor.execute(sql, (val,))  # 执行SQL语句
+        cursor.execute(sql, vals)  # 执行SQL语句
         ret = cursor.fetchall()  # 获取查询结果, 没查到返回空元组
         db.commit()  # 提交到数据库
     except:
-        # 数据库回滚
-        db.rollback()
+        db.rollback()  # 数据库回滚
         ret = []
     print(f"表查询结果: {ret}")
     return ret
 
+# 表-更新, 成功返回True, 否则返回False
+def sql_table_update(table_name: str, update_dict: dict, condition_dict=dict()):
+    update_fields = update_dict.keys()
+    update_vals = tuple(update_dict.values())
+    update = [f"{field}=%s" for field in update_fields]
+    update = ", ".join(update)
+
+    condition_fields = condition_dict.keys()
+    condition_vals = tuple(condition_dict.values())
+    condition = [f"{field}=%s" for field in condition_fields]
+    condition = " and ".join(condition)
+    # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
+    if condition:
+        sql = f"update {table_name} set {update} where {condition};"
+    else:
+        sql = f"update {table_name} set {update};"
+    ret = False
+    try:
+        ret = cursor.execute(sql, update_vals + condition_vals)  # 执行SQL语句
+        db.commit()  # 提交到数据库
+    except Exception as e:
+        print(f"表更新异常: {e}")
+        db.rollback()  # 数据库回滚
+    print(f"表更新结果: {ret}")
+    return ret
 
 
 if __name__ == '__main__':

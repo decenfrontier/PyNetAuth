@@ -102,28 +102,26 @@ class WndServer(QMainWindow, Ui_WndServer):
         for i in range(card_num):
             card_key = mf.gen_rnd_card_key()
             val_dict = {
-                "card_key": card_key,
-                "card_type": card_type,
-                "gen_time": gen_time
+                "卡号": card_key,
+                "卡类型": card_type,
+                "制卡时间": gen_time
             }
-            sql_table_insert("card_manage", val_dict)
+            sql_table_insert("3卡密管理", val_dict)
         self.show_info(f"已生成{card_num}张{card_type}")
 
     def on_btn_card_refresh_clicked(self):
         tbe = self.tbe_card_manage
-        dict_list = sql_table_query("card_manage")
+        dict_list = sql_table_query("3卡密管理")
         tbe.setRowCount(len(dict_list))
         for row, info_dict in enumerate(dict_list):
-            card_key = QTableWidgetItem(info_dict["card_key"])
-            card_type = QTableWidgetItem(info_dict["card_type"])
-            card_state = QTableWidgetItem(info_dict["card_state"])
-            gen_time = QTableWidgetItem(info_dict["gen_time"])
-            use_time = QTableWidgetItem(info_dict["use_time"])
+            card_key = QTableWidgetItem(info_dict["卡号"])
+            card_type = QTableWidgetItem(info_dict["卡类型"])
+            gen_time = QTableWidgetItem(info_dict["制卡时间"])
+            use_time = QTableWidgetItem(info_dict["使用时间"])
             self.tbe_card_manage.setItem(row, 0, card_key)
             self.tbe_card_manage.setItem(row, 1, card_type)
-            self.tbe_card_manage.setItem(row, 2, card_state)
-            self.tbe_card_manage.setItem(row, 3, gen_time)
-            self.tbe_card_manage.setItem(row, 4, use_time)
+            self.tbe_card_manage.setItem(row, 2, gen_time)
+            self.tbe_card_manage.setItem(row, 3, use_time)
 
 
     def on_timer_timeout(self):
@@ -158,12 +156,12 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
         client_info_dict = json.loads(json_str)
         wnd_server.show_info(f"收到客户端的消息: {client_info_dict}")
         # 服务端消息处理
-        msg_type = client_info_dict["msg_type"]
-        client_info_dict.pop("msg_type")
+        msg_type = client_info_dict["消息类型"]
+        client_info_dict.pop("消息类型")
         msg_func_dict = {
-            "reg": deal_reg,
-            "login": deal_login,
-            "pay": deal_pay,
+            "注册": deal_reg,
+            "登录": deal_login,
+            "充值": deal_pay,
         }
         func = msg_func_dict.get(msg_type)
         if func is None:
@@ -176,56 +174,57 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
 
 # 处理-注册
 def deal_reg(client_socket: socket.socket, client_info_dict: dict):
-    account = client_info_dict["account"]
+    account = client_info_dict["账号"]
     # 查询账号是否存在, 不存在则插入记录
-    if sql_table_query("all_user", {"account": account}):  # 若查到数据
+    if sql_table_query("2用户管理", {"账号": account}):  # 若查到数据
         reg_ret = False
         detail = f"失败, 账号{account}已被注册!"
         wnd_server.show_info(detail)
     else:  # 表插入记录
-        client_info_dict["reg_time"] = mf.cur_time_format
-        reg_ret = sql_table_insert("all_user", client_info_dict)
+        client_info_dict["注册时间"] = mf.cur_time_format
+        reg_ret = sql_table_insert("2用户管理", client_info_dict)
         detail = f"账号{account}注册成功!" if reg_ret else f"账号{account}注册失败!"
         wnd_server.show_info(detail)
     # 把注册结果整理成py字典, 并发送给客户端
-    server_info_dict = {"msg_type": "reg", "reg_ret": reg_ret, "detail": detail}
+    server_info_dict = {"消息类型": "注册", "结果": reg_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
 
 # 处理-登录
 def deal_login(client_socket: socket.socket, client_info_dict: dict):
-    account = client_info_dict["account"]
-    pwd = client_info_dict["pwd"]
+    account = client_info_dict["账号"]
+    pwd = client_info_dict["密码"]
     # 查询账号记录
-    dict_list = sql_table_query("all_user", {"account": account})
+    dict_list = sql_table_query("2用户管理", {"账号": account})
     if dict_list:  # 若查到数据
-        query_pwd = dict_list[0].get("pwd")
+        user_info = dict_list[0]
+        query_pwd = user_info["密码"]
         login_ret = True if pwd == query_pwd else False
         detail = f"账号{account}登录成功!" if login_ret else f"账号{account}登录失败!"
     else:  # 没查到数据
         login_ret = False
         detail = f"账号{account}登录失败!"
     # 把登录结果整理成py字典, 并发送给客户端
-    server_info_dict = {"msg_type": "login", "login_ret": login_ret, "detail": detail}
+    server_info_dict = {"消息类型": "登录", "结果": login_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
 
 # 处理-充值
 def deal_pay(client_socket: socket.socket, client_info_dict: dict):
-    account = client_info_dict["account"]
-    card_key = client_info_dict["card_key"]
+    account = client_info_dict["账号"]
+    card_key = client_info_dict["卡号"]
     # 查询数据库, 判断卡密是否存在
-    dict_list = sql_table_query("card_manage", {"card_key": card_key})
+    dict_list = sql_table_query("3卡密管理", {"卡号": card_key})
     pay_ret = False
     if dict_list:
         card_info = dict_list[0]
-        if card_info["use_time"] == "":  # 卡密未被使用
-            user_info_list = sql_table_query("all_user", {"account": account})  # 查找账号是否存在
+        if card_info["使用时间"] == "":  # 卡密未被使用
+            user_info_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
             if user_info_list:  # 账号存在
                 user_info = user_info_list[0]
                 # 更新卡密的使用时间
-                sql_table_update("card_manage", {"use_time": mf.cur_time_format}, {"card_key": card_key})
+                sql_table_update("3卡密管理", {"使用时间": mf.cur_time_format}, {"卡号": card_key})
                 # 更新账号到期时间
                 type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 120, "年卡": 365, "永久卡": 3650}
-                card_type = card_info["card_type"]
+                card_type = card_info["卡类型"]
                 delta_day = type_time_dict[card_type]
                 pay_ret = update_user_due_time(user_info, delta_day)
                 detail = "充值成功" if pay_ret else "充值失败"
@@ -236,7 +235,7 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     else:  # 没查到数据
         detail = "失败, 卡密不存在"
     # 把登录结果整理成py字典, 并发送给客户端
-    server_info_dict = {"msg_type": "pay", "pay_ret": pay_ret, "detail": detail}
+    server_info_dict = {"消息类型": "充值", "结果": pay_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
 
 # 发送数据给客户端
@@ -252,16 +251,16 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
 
 # 更新用户到期时间
 def update_user_due_time(user_info: dict, delta_day: int):
-    if user_info["due_time"] == "" or user_info["due_time"] < mf.cur_time_format:
+    if user_info["到期时间"] == "" or user_info["到期时间"] < mf.cur_time_format:
         # 若所有用户表中此项记录没有到期时间, 或到期时间在今天以前, 则从当前时间开始加
         ori_time = mf.cur_time_format
     else:  # 否则, 取记录上的到期时间
-        ori_time = user_info["due_time"]
+        ori_time = user_info["到期时间"]
     now_date_time = datetime.datetime.strptime(ori_time, "%Y-%m-%d %H:%M:%S")
     offset_date_time = datetime.timedelta(days=delta_day)
     due_time = (now_date_time + offset_date_time).strftime("%Y-%m-%d %H:%M:%S")
-    account = user_info["account"]
-    ret = sql_table_update("all_user", {"due_time": due_time}, {"account": account})
+    account = user_info["账号"]
+    ret = sql_table_update("2用户管理", {"到期时间": due_time}, {"账号": account})
     return ret
 
 # 表-插入, 成功返回True, 否则返回False
@@ -349,7 +348,7 @@ if __name__ == '__main__':
             port=3306,
             user="root",
             password="mysql",
-            database="network_auth"
+            database="网络验证"
         )
         # 创建游标对象, 指定返回一个字典列表, 获取的每条数据的类型为字典(默认是元组)
         cursor = db.cursor(pymysql.cursors.DictCursor)

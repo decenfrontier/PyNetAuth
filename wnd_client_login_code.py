@@ -136,9 +136,9 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         # 把客户端信息整理成字典, 发送给服务器
         login_pwd = mf.get_encrypted_str(login_pwd.encode())
         client_info_dict = {
-            "msg_type": "login",
-            "account": login_account,
-            "pwd": login_pwd,
+            "消息类型": "登录",
+            "账号": login_account,
+            "密码": login_pwd,
         }
         send_to_server(client_info_dict)
 
@@ -152,9 +152,10 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             self.show_info("账号或卡密错误, 请检查无误后再试")
             return
         client_info_dict = {
-            "msg_type": "pay",
-            "account": account,
-            "card_key": card_key,
+            "消息类型": "充值",
+            "账号": account,
+            "卡号": card_key,
+            "上次登录IP": login_ip,
         }
         ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
                                       QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
@@ -174,18 +175,17 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         if False in bool_list:
             self.show_info("注册失败, 账号密码6-12位, QQ号5-10位")
             return
-        if reg_ip is None:
+        if login_ip is None:
             self.show_info("网络连接异常, 请重启软件后再试")
             return
         # 把客户端信息整理成字典
         reg_pwd = mf.get_encrypted_str(reg_pwd.encode())
         client_info_dict = {
-            "msg_type": "reg",
-            "account": reg_account,
-            "pwd": reg_pwd,
-            "qq": reg_qq,
-            "machine_code": machine_code,
-            "reg_ip": reg_ip,
+            "消息类型": "注册",
+            "账号": reg_account,
+            "密码": reg_pwd,
+            "QQ": reg_qq,
+            "机器码": machine_code,
         }
         send_to_server(client_info_dict)
 
@@ -199,6 +199,7 @@ def send_to_server(client_info_dict: dict):
     except Exception as e:
         wnd_client_login.show_info(f"发送客户端注册信息失败: {e}")
 
+# 线程_接收服务端消息
 def thd_recv_server():
     while True:
         print("等待服务端发出消息中...")
@@ -213,23 +214,27 @@ def thd_recv_server():
         server_info_dict = json.loads(json_str)
         print(f"收到服务端的消息: {server_info_dict}")
         # 客户端消息处理
-        msg_type = server_info_dict["msg_type"]
-        if msg_type == "reg":
-            wnd_client_login.show_info(server_info_dict["detail"])
-        elif msg_type == "login":
-            wnd_client_login.show_info(server_info_dict["detail"])
-            if server_info_dict["login_ret"]:
-                # todo: 开一个线程, 从服务器获取客户端重要数据
+        消息类型 = server_info_dict["消息类型"]
+        if 消息类型 == "注册":
+            wnd_client_login.show_info(server_info_dict["详情"])
+        elif 消息类型 == "登录":
+            wnd_client_login.show_info(server_info_dict["详情"])
+            if server_info_dict["结果"]:
                 wnd_client_login.accept()  # 接受
-        elif msg_type == "pay":
-            wnd_client_login.show_info(server_info_dict["detail"])
+        elif 消息类型 == "充值":
+            wnd_client_login.show_info(server_info_dict["详情"])
     wnd_client_login.show_info("与服务器断开连接...")
 
-
+# 线程_获取外网IP
 def thd_get_outer_ip():
-    global reg_ip
-    reg_ip = mf.get_outer_ip()
+    global login_ip
+    login_ip = mf.get_outer_ip()
 
+# 线程_获取服务端自定义数据(防山寨)
+def thd_get_server_custom_data():
+    # RSA获取字库密码, 图片密码, 大漠破解地址, 标志位基址
+
+    ...
 
 if __name__ == '__main__':
     # 提前发出获取公网iP请求, 需要一定时间才能得到
@@ -243,7 +248,6 @@ if __name__ == '__main__':
 
     wnd_client_login = WndClientLogin()
     wnd_client_login.show()
-    print("w:", wnd_client_login.width(), "h:", wnd_client_login.height())
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     wnd_client_login.show_info("正在连接服务器...")
     err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
@@ -255,6 +259,8 @@ if __name__ == '__main__':
     machine_code = mf.get_machine_code()
 
     if wnd_client_login.exec_() == QDialog.Accepted:
+        # 开启线程-获取服务端自定义数据
+
         wnd_client_main = WndClientMain()
         wnd_client_main.show()
         sys.exit(app.exec_())

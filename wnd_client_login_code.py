@@ -126,6 +126,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
     def on_btn_login_clicked(self):
         login_account = self.edt_login_account.text()
         login_pwd = self.edt_login_pwd.text()
+
         bool_list = [
             len(login_account) in range(6, 13),
             len(login_pwd) in range(6, 13),
@@ -133,12 +134,18 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         if False in bool_list:
             self.show_info("登录失败, 账号密码长度不符合要求")
             return
-        # 把客户端信息整理成字典, 发送给服务器
         login_pwd = mf.get_encrypted_str(login_pwd.encode())
+        login_time = mf.cur_time_format
+
+        # 把客户端信息整理成字典, 发送给服务器
         client_info_dict = {
             "消息类型": "登录",
             "账号": login_account,
             "密码": login_pwd,
+            "机器码": machine_code,
+            "上次登录时间": login_time,
+            "上次登录IP": login_ip,
+            "上次登录地": login_place,
         }
         send_to_server(client_info_dict)
 
@@ -155,7 +162,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "消息类型": "充值",
             "账号": account,
             "卡号": card_key,
-            "上次登录IP": login_ip,
         }
         ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
                                       QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
@@ -175,9 +181,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         if False in bool_list:
             self.show_info("注册失败, 账号密码6-12位, QQ号5-10位")
             return
-        if login_ip is None:
-            self.show_info("网络连接异常, 请重启软件后再试")
-            return
         # 把客户端信息整理成字典
         reg_pwd = mf.get_encrypted_str(reg_pwd.encode())
         client_info_dict = {
@@ -185,7 +188,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "账号": reg_account,
             "密码": reg_pwd,
             "QQ": reg_qq,
-            "机器码": machine_code,
         }
         send_to_server(client_info_dict)
 
@@ -225,10 +227,12 @@ def thd_recv_server():
             wnd_client_login.show_info(server_info_dict["详情"])
     wnd_client_login.show_info("与服务器断开连接...")
 
-# 线程_获取外网IP
-def thd_get_outer_ip():
-    global login_ip
+# 线程_获取外网IP和归属地
+def thd_get_outer_ip_location():
+    global login_ip, login_place
     login_ip = mf.get_outer_ip()
+    login_place = mf.get_ip_location(login_ip)
+
 
 # 线程_获取服务端自定义数据(防山寨)
 def thd_get_server_custom_data():
@@ -238,7 +242,8 @@ def thd_get_server_custom_data():
 
 if __name__ == '__main__':
     # 提前发出获取公网iP请求, 需要一定时间才能得到
-    Thread(target=thd_get_outer_ip, daemon=True).start()
+    login_ip, login_place = "", ""
+    Thread(target=thd_get_outer_ip_location, daemon=True).start()
 
     # 界面随DPI自动缩放
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)

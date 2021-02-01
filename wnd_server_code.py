@@ -210,6 +210,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "登录", "结果": login_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
+    # todo
 
 # 处理-充值
 def deal_pay(client_socket: socket.socket, client_info_dict: dict):

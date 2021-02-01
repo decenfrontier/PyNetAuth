@@ -1,10 +1,11 @@
 import time
-from urllib.request import urlopen
+import urllib.request
 import wmi
 import platform
 import hmac
 import json
 import random
+import ssl
 
 qss_style = """
     * {
@@ -32,12 +33,35 @@ card_key_lenth = 30
 def rnd(min: int, max: int):
     return random.randint(min, max)
 
-# 获取取外网IP
+# 获取外网IP
 def get_outer_ip() -> str:
-    # ip = urlopen("http://ip.42.pl/raw").read().decode()  # 法一
-    ip = json.load(urlopen("http://httpbin.org/ip"))["origin"]  # 法二
+    # ip = urllib.request.urlopen("http://ip.42.pl/raw").read().decode()  # 法一
+    req = urllib.request.urlopen("http://httpbin.org/ip")
+    ip = json.load(req)["origin"]  # 法二
     print("ip:", ip)
     return ip
+
+# 获取IP归属地
+def get_ip_location(ip: str) -> str:
+    appcode = "3799d32779864269b80bd92e70619498"
+    url = f"https://hcapi20.market.alicloudapi.com/ip?ip={ip}"
+    request = urllib.request.Request(url)
+    request.add_header("Authorization", "APPCODE " + appcode)
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    response = urllib.request.urlopen(request, context=ctx)
+    content = response.read().decode()  # 返回json字符串
+    if not content:
+        return ""
+    ret_dict = json.loads(content)  # json字符串 转 py字典
+    if ret_dict["msg"] != "success":
+        return ""
+    data = ret_dict["data"]
+    country, region, city, isp = data["country"], data["region"], data["city"], data["isp"]
+    location = f"{country}-{region}-{city}-{isp}"
+    print("location:", location)
+    return location
 
 # 获取机器码(主板序列号+硬盘序列号)
 def get_machine_code():
@@ -73,3 +97,7 @@ def gen_rnd_card_key(lenth=card_key_lenth):
         char = char_list[idx]
         card_key += char
     return card_key
+
+if __name__ == '__main__':
+    ip = get_outer_ip()
+    get_ip_location(ip)

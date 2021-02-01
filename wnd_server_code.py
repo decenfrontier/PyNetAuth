@@ -43,7 +43,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 显示第一页
         self.stack_widget.setCurrentIndex(0)
         # 工具栏设置图标
-        self.tool_bar.addAction(QIcon(":/proj.png"), "软件管理")
+        self.tool_bar.addAction(QIcon(":/proj.png"), "项目管理")
         self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
         self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
         self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
@@ -68,12 +68,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.setColumnWidth(due_time, 120)
         self.tbe_user.setColumnWidth(is_forbid, 70)
         # 卡密管理表
-        card_key, state, type, gen_time, use_time = [i for i in range(5)]
-        self.tbe_card.setColumnWidth(card_key, 340)
-        self.tbe_card.setColumnWidth(state, 80)
+        card_key, type, gen_time, use_time, proj_name = [i for i in range(5)]
+        self.tbe_card.setColumnWidth(card_key, 280)
         self.tbe_card.setColumnWidth(type, 80)
         self.tbe_card.setColumnWidth(gen_time, 150)
         self.tbe_card.setColumnWidth(use_time, 150)
+        self.tbe_card.setColumnWidth(proj_name, 150)
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
@@ -88,7 +88,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
         self.show_info(f"切换到 {action_name}")
-        if action_name == "软件管理":
+        if action_name == "项目管理":
             self.stack_widget.setCurrentIndex(0)
         elif action_name == "用户管理":
             self.stack_widget.setCurrentIndex(1)
@@ -115,15 +115,17 @@ class WndServer(QMainWindow, Ui_WndServer):
         tbe = self.tbe_card
         dict_list = sql_table_query("3卡密管理")
         tbe.setRowCount(len(dict_list))
-        for row, info_dict in enumerate(dict_list):
-            card_key = QTableWidgetItem(info_dict["卡号"])
-            card_type = QTableWidgetItem(info_dict["卡类型"])
-            gen_time = QTableWidgetItem(info_dict["制卡时间"])
-            use_time = QTableWidgetItem(info_dict["使用时间"])
+        for row, card_info in enumerate(dict_list):
+            card_key = QTableWidgetItem(card_info["卡号"])
+            card_type = QTableWidgetItem(card_info["卡类型"])
+            gen_time = QTableWidgetItem(card_info["制卡时间"])
+            use_time = QTableWidgetItem(card_info["使用时间"])
+            proj_name = QTableWidgetItem(card_info["项目名称"])
             self.tbe_card.setItem(row, 0, card_key)
             self.tbe_card.setItem(row, 1, card_type)
             self.tbe_card.setItem(row, 2, gen_time)
             self.tbe_card.setItem(row, 3, use_time)
+            self.tbe_card.setItem(row, 4, proj_name)
 
 
     def on_timer_timeout(self):

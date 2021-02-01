@@ -43,35 +43,37 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 显示第一页
         self.stack_widget.setCurrentIndex(0)
         # 工具栏设置图标
-        self.tool_bar.addAction(QIcon(":/users.png"), "全部用户")
-        self.tool_bar.addAction(QIcon(":/user.png"), "在线用户")
+        self.tool_bar.addAction(QIcon(":/proj.png"), "软件管理")
+        self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
         self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
         self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
         # 所有表头可视化
-        self.tbe_all_user.horizontalHeader().setVisible(True)
-        self.tbe_online_user.horizontalHeader().setVisible(True)
-        self.tbe_card_manage.horizontalHeader().setVisible(True)
+        self.tbe_proj.horizontalHeader().setVisible(True)
+        self.tbe_user.horizontalHeader().setVisible(True)
+        self.tbe_card.horizontalHeader().setVisible(True)
         # 所有表格设置不可编辑
-        # self.tbe_all_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # self.tbe_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
         # self.tbe_online_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # self.tbe_card_manage.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # 全部用户表
+        # self.tbe_card.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # 项目管理表
+        # self.tbe_proj
+        # 用户管理表
         account, pwd, email, machine_code, reg_ip, reg_time, due_time, is_forbid = [i for i in range(8)]
-        self.tbe_all_user.setColumnWidth(account, 100)
-        self.tbe_all_user.setColumnWidth(pwd, 100)
-        self.tbe_all_user.setColumnWidth(email, 100)
-        self.tbe_all_user.setColumnWidth(machine_code, 90)
-        self.tbe_all_user.setColumnWidth(reg_ip, 100)
-        self.tbe_all_user.setColumnWidth(reg_time, 120)
-        self.tbe_all_user.setColumnWidth(due_time, 120)
-        self.tbe_all_user.setColumnWidth(is_forbid, 70)
+        self.tbe_user.setColumnWidth(account, 100)
+        self.tbe_user.setColumnWidth(pwd, 100)
+        self.tbe_user.setColumnWidth(email, 100)
+        self.tbe_user.setColumnWidth(machine_code, 90)
+        self.tbe_user.setColumnWidth(reg_ip, 100)
+        self.tbe_user.setColumnWidth(reg_time, 120)
+        self.tbe_user.setColumnWidth(due_time, 120)
+        self.tbe_user.setColumnWidth(is_forbid, 70)
         # 卡密管理表
         card_key, state, type, gen_time, use_time = [i for i in range(5)]
-        self.tbe_card_manage.setColumnWidth(card_key, 340)
-        self.tbe_card_manage.setColumnWidth(state, 80)
-        self.tbe_card_manage.setColumnWidth(type, 80)
-        self.tbe_card_manage.setColumnWidth(gen_time, 150)
-        self.tbe_card_manage.setColumnWidth(use_time, 150)
+        self.tbe_card.setColumnWidth(card_key, 340)
+        self.tbe_card.setColumnWidth(state, 80)
+        self.tbe_card.setColumnWidth(type, 80)
+        self.tbe_card.setColumnWidth(gen_time, 150)
+        self.tbe_card.setColumnWidth(use_time, 150)
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
@@ -86,9 +88,9 @@ class WndServer(QMainWindow, Ui_WndServer):
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
         self.show_info(f"切换到 {action_name}")
-        if action_name == "全部用户":
+        if action_name == "软件管理":
             self.stack_widget.setCurrentIndex(0)
-        elif action_name == "在线用户":
+        elif action_name == "用户管理":
             self.stack_widget.setCurrentIndex(1)
         elif action_name == "卡密管理":
             self.stack_widget.setCurrentIndex(2)
@@ -110,7 +112,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info(f"已生成{card_num}张{card_type}")
 
     def on_btn_card_refresh_clicked(self):
-        tbe = self.tbe_card_manage
+        tbe = self.tbe_card
         dict_list = sql_table_query("3卡密管理")
         tbe.setRowCount(len(dict_list))
         for row, info_dict in enumerate(dict_list):
@@ -118,10 +120,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             card_type = QTableWidgetItem(info_dict["卡类型"])
             gen_time = QTableWidgetItem(info_dict["制卡时间"])
             use_time = QTableWidgetItem(info_dict["使用时间"])
-            self.tbe_card_manage.setItem(row, 0, card_key)
-            self.tbe_card_manage.setItem(row, 1, card_type)
-            self.tbe_card_manage.setItem(row, 2, gen_time)
-            self.tbe_card_manage.setItem(row, 3, use_time)
+            self.tbe_card.setItem(row, 0, card_key)
+            self.tbe_card.setItem(row, 1, card_type)
+            self.tbe_card.setItem(row, 2, gen_time)
+            self.tbe_card.setItem(row, 3, use_time)
 
 
     def on_timer_timeout(self):

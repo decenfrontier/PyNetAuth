@@ -168,7 +168,7 @@ class Ui_WndServer(object):
         self.tbe_card.setWordWrap(True)
         self.tbe_card.setCornerButtonEnabled(False)
         self.tbe_card.setRowCount(0)
-        self.tbe_card.horizontalHeader().setVisible(True)
+        self.tbe_card.horizontalHeader().setVisible(False)
         self.tbe_card.horizontalHeader().setStretchLastSection(True)
         self.tbe_card.verticalHeader().setVisible(False)
         self.tbe_card.verticalHeader().setMinimumSectionSize(20)
@@ -237,6 +237,14 @@ class Ui_WndServer(object):
         self.gridLayout_5.setContentsMargins(0, 0, 0, 0)
         self.tbr_log = QTextBrowser(self.page_3)
         self.tbr_log.setObjectName(u"tbr_log")
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tbr_log.sizePolicy().hasHeightForWidth())
+        self.tbr_log.setSizePolicy(sizePolicy)
+        self.tbr_log.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.tbr_log.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.tbr_log.setLineWrapMode(QTextEdit.WidgetWidth)
 
         self.gridLayout_5.addWidget(self.tbr_log, 1, 0, 1, 1)
 
@@ -262,7 +270,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(2)
+        self.stack_widget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -336,6 +344,7 @@ class Ui_WndServer(object):
         self.cmb_card_type.setItemText(5, QCoreApplication.translate("WndServer", u"\u6c38\u4e45\u5361", None))
 
         self.btn_card_gen.setText(QCoreApplication.translate("WndServer", u"\u786e\u5b9a\u751f\u6210", None))
+        self.tbr_log.setDocumentTitle("")
         self.label.setText(QCoreApplication.translate("WndServer", u"\u6267\u884c\u65e5\u5fd7", None))
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))
     # retranslateUi

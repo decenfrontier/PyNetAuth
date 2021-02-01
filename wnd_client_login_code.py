@@ -15,12 +15,18 @@ from wnd_client_main_code import WndClientMain
 from res import qres
 import mf
 
+tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+machine_code = mf.get_machine_code()
+login_ip = ""
+login_place = ""
+
 class WndClientLogin(QDialog, Ui_WndClientLogin):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.init_wnd()
         self.init_status_bar()
+        self.init_net_auth()
         self.init_all_controls()
         self.init_all_sig_slot()
         self.show_info("窗口初始化成功")
@@ -31,6 +37,43 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
         print(text)
+
+    # 初始化网络验证
+    def init_net_auth(self):
+        self.show_info("正在连接服务器...")
+        err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
+        if err_no != 0:
+            QMessageBox.critical(self, "错误", f"连接服务器失败, 错误码: {err_no}")
+            sys.exit(-1)
+        self.show_info(f"连接服务器成功, 开始接收数据...")
+        Thread(target=self.thd_recv_server, daemon=True).start()
+
+    # 线程_接收服务端消息
+    def thd_recv_server(self):
+        while True:
+            print("等待服务端发出消息中...")
+            try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
+                recv_bytes = tcp_socket.recv(1024)
+            except:
+                recv_bytes = ""
+            if not recv_bytes:  # 若客户端退出,会收到一个空str
+                break
+            # json字符串 转 py字典
+            json_str = recv_bytes.decode()
+            server_info_dict = json.loads(json_str)
+            print(f"收到服务端的消息: {server_info_dict}")
+            # 客户端消息处理
+            消息类型 = server_info_dict["消息类型"]
+            if 消息类型 == "注册":
+                self.show_info(server_info_dict["详情"])
+            elif 消息类型 == "登录":
+                self.show_info(server_info_dict["详情"])
+                if server_info_dict["结果"]:
+                    self.accept()  # 接受
+                    return
+            elif 消息类型 == "充值":
+                self.show_info(server_info_dict["详情"])
+        self.show_info("与服务器断开连接...")
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
@@ -202,31 +245,7 @@ def send_to_server(client_info_dict: dict):
     except Exception as e:
         wnd_client_login.show_info(f"发送客户端注册信息失败: {e}")
 
-# 线程_接收服务端消息
-def thd_recv_server():
-    while True:
-        print("等待服务端发出消息中...")
-        try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
-            recv_bytes = tcp_socket.recv(1024)
-        except:
-            recv_bytes = ""
-        if not recv_bytes:  # 若客户端退出,会收到一个空str
-            break
-        # json字符串 转 py字典
-        json_str = recv_bytes.decode()
-        server_info_dict = json.loads(json_str)
-        print(f"收到服务端的消息: {server_info_dict}")
-        # 客户端消息处理
-        消息类型 = server_info_dict["消息类型"]
-        if 消息类型 == "注册":
-            wnd_client_login.show_info(server_info_dict["详情"])
-        elif 消息类型 == "登录":
-            wnd_client_login.show_info(server_info_dict["详情"])
-            if server_info_dict["结果"]:
-                wnd_client_login.accept()  # 接受
-        elif 消息类型 == "充值":
-            wnd_client_login.show_info(server_info_dict["详情"])
-    wnd_client_login.show_info("与服务器断开连接...")
+
 
 # 线程_获取外网IP和归属地
 def thd_get_outer_ip_location():
@@ -241,9 +260,10 @@ def thd_get_server_custom_data():
 
     ...
 
+
+
 if __name__ == '__main__':
     # 提前发出获取公网iP请求, 需要一定时间才能得到
-    login_ip, login_place = "", ""
     Thread(target=thd_get_outer_ip_location, daemon=True).start()
 
     # 界面随DPI自动缩放
@@ -254,15 +274,6 @@ if __name__ == '__main__':
 
     wnd_client_login = WndClientLogin()
     wnd_client_login.show()
-    tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    wnd_client_login.show_info("正在连接服务器...")
-    err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
-    if err_no != 0:
-        QMessageBox.critical(wnd_client_login, "错误", f"连接服务器失败, 错误码: {err_no}")
-        sys.exit(-1)
-    wnd_client_login.show_info(f"连接服务器成功, 开始接收数据...")
-    Thread(target=thd_recv_server, daemon=True).start()
-    machine_code = mf.get_machine_code()
 
     if wnd_client_login.exec_() == QDialog.Accepted:
         # 开启线程-获取服务端自定义数据

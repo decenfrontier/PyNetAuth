@@ -197,20 +197,29 @@ def deal_reg(client_socket: socket.socket, client_info_dict: dict):
 def deal_login(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["账号"]
     pwd = client_info_dict["密码"]
-    # 查询账号记录
+    machine_code = client_info_dict["机器码"]
+    reason, login_ret, query_user = "", False, {}
+    # todo: 判断机器码是否在黑名单
+    # todo: 判断用户是否到期
+    # 判断是否允许登录
     dict_list = sql_table_query("2用户管理", {"账号": account})
-    if dict_list:  # 若查到数据
-        user_info = dict_list[0]
-        query_pwd = user_info["密码"]
-        login_ret = True if pwd == query_pwd else False
-        detail = f"账号{account}登录成功!" if login_ret else f"账号{account}登录失败!"
-    else:  # 没查到数据
-        login_ret = False
-        detail = f"账号{account}登录失败!"
+    if dict_list:  # 判断账号是否存在
+        query_user = dict_list[0]
+        if pwd == query_user["密码"]:  # 判断密码是否符合
+            if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
+                login_ret = True
+            else:
+                reason = "异机登录, 请先换绑"
+        else:
+            reason = "密码错误"
+    else:
+        reason = "账号不存在"
+    detail = f"登录成功" if login_ret else f"登录失败, 原因:{reason}"
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "登录", "结果": login_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
-    # todo
+    # 把客户端发送过来的数据记录到数据库
+    update_db_user_login_info(client_info_dict, query_user, login_ret)
 
 # 处理-充值
 def deal_pay(client_socket: socket.socket, client_info_dict: dict):
@@ -222,16 +231,16 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     if dict_list:
         card_info = dict_list[0]
         if card_info["使用时间"] == "":  # 卡密未被使用
-            user_info_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
-            if user_info_list:  # 账号存在
-                user_info = user_info_list[0]
+            query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
+            if query_user_list:  # 账号存在
+                query_user = query_user_list[0]
                 # 更新卡密的使用时间
                 sql_table_update("3卡密管理", {"使用时间": mf.cur_time_format}, {"卡号": card_key})
                 # 更新账号到期时间
                 type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 120, "年卡": 365, "永久卡": 3650}
                 card_type = card_info["卡类型"]
                 delta_day = type_time_dict[card_type]
-                pay_ret = update_user_due_time(user_info, delta_day)
+                pay_ret = update_db_user_due_time(query_user, delta_day)
                 detail = "充值成功" if pay_ret else "充值失败"
             else:
                 detail = "失败, 账号不存在"
@@ -254,19 +263,36 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
     except Exception as e:
         wnd_server.show_info(f"向客户端回复失败: {e}")
 
-# 更新用户到期时间
-def update_user_due_time(user_info: dict, delta_day: int):
-    if user_info["到期时间"] == "" or user_info["到期时间"] < mf.cur_time_format:
+# 更新数据库_用户到期时间
+def update_db_user_due_time(query_user: dict, delta_day: int):
+    account = query_user["账号"]
+    if query_user["到期时间"] == "" or query_user["到期时间"] < mf.cur_time_format:
         # 若所有用户表中此项记录没有到期时间, 或到期时间在今天以前, 则从当前时间开始加
         ori_time = mf.cur_time_format
     else:  # 否则, 取记录上的到期时间
-        ori_time = user_info["到期时间"]
+        ori_time = query_user["到期时间"]
     now_date_time = datetime.datetime.strptime(ori_time, "%Y-%m-%d %H:%M:%S")
     offset_date_time = datetime.timedelta(days=delta_day)
     due_time = (now_date_time + offset_date_time).strftime("%Y-%m-%d %H:%M:%S")
-    account = user_info["账号"]
     ret = sql_table_update("2用户管理", {"到期时间": due_time}, {"账号": account})
     return ret
+
+# 更新数据库_用户登录数据
+def update_db_user_login_info(client_info_dict: dict, query_user: dict,login_ret: bool):
+    if not query_user:  # 若该账号不存在
+        return
+    account = query_user["账号"]
+    # 无论是否登录成功, 登录次数+1
+    update_dict = {"今日登录次数": query_user["今日登录次数"]+1,
+                   "备注": client_info_dict["备注"]}
+    # 若登录成功, 才更新
+    if login_ret:
+        update_dict["机器码"] = client_info_dict["机器码"]
+        update_dict["上次登录时间"] = client_info_dict["上次登录时间"]
+        update_dict["上次登录IP"] = client_info_dict["上次登录IP"]
+        update_dict["上次登录地"] = client_info_dict["上次登录地"]
+    sql_table_update("2用户管理", update_dict, {"账号": account})
+
 
 # 表-插入, 成功返回True, 否则返回False
 def sql_table_insert(table_name: str, val_dict: dict):
@@ -288,7 +314,7 @@ def sql_table_insert(table_name: str, val_dict: dict):
     return ret
 
 # 表-查询, 成功返回字典列表, 否则返回空列表
-def sql_table_query(table_name: str, condition_dict=dict()):
+def sql_table_query(table_name: str, condition_dict={}):
     fields = condition_dict.keys()
     vals = tuple(condition_dict.values())
     condition = [f"{field}=%s" for field in fields]
@@ -309,7 +335,7 @@ def sql_table_query(table_name: str, condition_dict=dict()):
     return ret
 
 # 表-更新, 成功返回True, 否则返回False
-def sql_table_update(table_name: str, update_dict: dict, condition_dict=dict()):
+def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
     update_fields = update_dict.keys()
     update_vals = tuple(update_dict.values())
     update = [f"{field}=%s" for field in update_fields]

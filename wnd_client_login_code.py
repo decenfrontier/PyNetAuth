@@ -136,7 +136,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             return
         login_pwd = mf.get_encrypted_str(login_pwd.encode())
         login_time = mf.cur_time_format
-
+        comment = mf.get_operation_system()
         # 把客户端信息整理成字典, 发送给服务器
         client_info_dict = {
             "消息类型": "登录",
@@ -146,6 +146,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "上次登录时间": login_time,
             "上次登录IP": login_ip,
             "上次登录地": login_place,
+            "备注": comment,
         }
         send_to_server(client_info_dict)
 

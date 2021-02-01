@@ -79,11 +79,11 @@ def get_machine_code():
     return machine_code
 
 # 获取操作系统
-def get_operation_system():
+def get_operation_system() -> str:
     return platform.platform()
 
 # 获取加密后字符
-def get_encrypted_str(ori_bytes: bytes):
+def get_encrypted_str(ori_bytes: bytes) -> str:
     encrypted = hmac.new(b"dkstFeb.1st", ori_bytes, "sha1")
     return encrypted.hexdigest()
 

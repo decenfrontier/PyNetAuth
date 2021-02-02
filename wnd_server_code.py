@@ -187,12 +187,14 @@ def deal_reg(client_socket: socket.socket, client_info_dict: dict):
         wnd_server.show_info(detail)
     else:  # 表插入记录
         client_info_dict["注册时间"] = mf.cur_time_format
+        client_info_dict["到期时间"] = mf.cur_time_format
         reg_ret = sql_table_insert("2用户管理", client_info_dict)
         detail = f"账号{account}注册成功!" if reg_ret else f"账号{account}注册失败!"
         wnd_server.show_info(detail)
     # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "注册", "结果": reg_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
+
 
 # 处理-登录
 def deal_login(client_socket: socket.socket, client_info_dict: dict):

@@ -28,7 +28,6 @@ class WndClientMain(QWidget, Ui_WndClientMain):
     def init_net_auth(self):
         self.error_count = 0
         Thread(target=self.thd_heart_beat, daemon=True).start()
-        ...
 
     def thd_heart_beat(self):
         while True:
@@ -43,19 +42,21 @@ class WndClientMain(QWidget, Ui_WndClientMain):
                 }
                 mf.send_to_server(tcp_socket, client_info_dict)
                 self.recv_from_server(tcp_socket)
-                tcp_socket.close()  # 发送接收完立刻断开
             else:
                 self.error_count += 1
+            tcp_socket.close()  # 发送接收完立刻断开
             if self.error_count > 5:
-                self.show_info("网络连接已断开")
+                self.show_info("与服务器断开连接...")
                 sys.exit(-1)
 
     # 接收来自服务端的数据
     def recv_from_server(self, tcp_socket: socket.socket):
+        tcp_socket.settimeout(5)  # 设置为非阻塞接收, 只等5秒
         try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
             recv_bytes = tcp_socket.recv(1024)
         except:
             recv_bytes = ""
+        tcp_socket.settimeout(None)  # 重新设置为阻塞模式
         if not recv_bytes:  # 若客户端退出,会收到一个空str
             return
         json_str = recv_bytes.decode()
@@ -66,13 +67,12 @@ class WndClientMain(QWidget, Ui_WndClientMain):
         msg_type = server_info_dict["消息类型"]
         if msg_type != "心跳":
             return
-        detail = server_info_dict["详情"]
-        if detail == "正常":
+        heart_ret = server_info_dict["结果"]
+        if heart_ret == "正常":
             self.error_count = 0
-        elif detail == "下线":
+        elif heart_ret == "下线":
             self.error_count = 10
-        else:  # 其它异常情况
-            self.error_count += 1
+            self.show_info(server_info_dict["详情"])
 
 
 from PySide2.QtWidgets import QApplication, QStyleFactory

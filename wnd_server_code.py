@@ -13,7 +13,24 @@ from threading import Thread
 
 from ui.wnd_server import Ui_WndServer
 from res import qres
-import mf
+
+cur_time_stamp = time.time()
+cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
+server_ip = "127.0.0.1"
+server_port = 47123
+qss_style = """
+    * {
+        font-size: 12px;
+        font-family: "Microsoft YaHei";
+    }
+    QTableView {
+        selection-color: #000000;
+	    selection-background-color: #c4e1d2; 
+    }
+    QTableView::item:hover	{	
+	    background-color: #a1b1c9;		
+    }
+"""
 
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
@@ -89,7 +106,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
-        self.tbr_log.append(f"{mf.cur_time_format}  {text}")
+        self.tbr_log.append(f"{cur_time_format}  {text}")
         print(text)
 
     def on_tool_bar_actionTriggered(self, action):
@@ -105,11 +122,11 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.stack_widget.setCurrentIndex(3)
 
     def on_btn_card_gen_clicked(self):
-        gen_time = mf.cur_time_format
+        gen_time = cur_time_format
         card_type = self.cmb_card_type.currentText()
         card_num = int(self.edt_card_num.text())
         for i in range(card_num):
-            card_key = mf.gen_rnd_card_key()
+            card_key = gen_rnd_card_key()
             val_dict = {
                 "卡号": card_key,
                 "卡类型": card_type,
@@ -135,8 +152,9 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_card.setItem(row, 4, proj_name)
 
     def on_timer_timeout(self):
-        mf.cur_time_stamp += 1
-        mf.cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
+        global cur_time_stamp, cur_time_format
+        cur_time_stamp += 1
+        cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def thd_accept_client():
@@ -192,8 +210,8 @@ def deal_reg(client_socket: socket.socket, client_info_dict: dict):
         detail = f"失败, 账号{account}已被注册!"
         wnd_server.show_info(detail)
     else:  # 表插入记录
-        client_info_dict["注册时间"] = mf.cur_time_format
-        client_info_dict["到期时间"] = mf.cur_time_format
+        client_info_dict["注册时间"] = cur_time_format
+        client_info_dict["到期时间"] = cur_time_format
         reg_ret = sql_table_insert("2用户管理", client_info_dict)
         detail = f"账号{account}注册成功!" if reg_ret else f"账号{account}注册失败!"
         wnd_server.show_info(detail)
@@ -213,7 +231,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
         query_user = dict_list[0]
         if query_user["状态"] == "冻结":
             reason = query_user["备注"]
-        elif mf.cur_time_format > query_user["到期时间"]:
+        elif cur_time_format > query_user["到期时间"]:
             reason = "此账号已到期"
         elif pwd == query_user["密码"]:  # 判断密码是否符合
             if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
@@ -245,7 +263,7 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
             if query_user_list:  # 账号存在
                 query_user = query_user_list[0]
                 # 更新卡密的使用时间
-                sql_table_update("3卡密管理", {"使用时间": mf.cur_time_format}, {"卡号": card_key})
+                sql_table_update("3卡密管理", {"使用时间": cur_time_format}, {"卡号": card_key})
                 # 更新账号到期时间
                 type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 120, "年卡": 365, "永久卡": 3650}
                 card_type = card_info["卡类型"]
@@ -266,13 +284,13 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
 def deal_heart(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["账号"]
     comment = client_info_dict["备注"]
-    update_dict = {"心跳时间": mf.cur_time_format, "备注": comment}
+    update_dict = {"心跳时间": cur_time_format, "备注": comment}
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
     if query_user_list:
         query_user = query_user_list[0]
         if query_user["状态"] == "冻结":  # 服务端已冻结此账号, 则令其下线
             heart_ret, detail = "下线", "此账号已被冻结"
-        elif mf.cur_time_format > query_user["到期时间"]:
+        elif cur_time_format > query_user["到期时间"]:
             heart_ret, detail = "下线", "此账号已到期"
         elif "发现" in comment:  # 发现客户危险行为
             heart_ret, detail = "下线", "检测到非法程序"
@@ -302,9 +320,9 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
 # 更新数据库_用户到期时间
 def update_db_user_due_time(query_user: dict, delta_day: int):
     account = query_user["账号"]
-    if query_user["到期时间"] == "" or query_user["到期时间"] < mf.cur_time_format:
+    if query_user["到期时间"] == "" or query_user["到期时间"] < cur_time_format:
         # 若所有用户表中此项记录没有到期时间, 或到期时间在今天以前, 则从当前时间开始加
-        ori_time = mf.cur_time_format
+        ori_time = cur_time_format
     else:  # 否则, 取记录上的到期时间
         ori_time = query_user["到期时间"]
     now_date_time = datetime.datetime.strptime(ori_time, "%Y-%m-%d %H:%M:%S")
@@ -397,6 +415,16 @@ def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
     print(f"表更新结果: {ret}")
     return ret
 
+# 生成随机卡密
+def gen_rnd_card_key(lenth=30):
+    char_list = "0123456789qazwsxedcrfvtgbyhnujmikolpQAZWSXEDCRFVTGBYHNUJMIKOLP"
+    max_idx = len(char_list) - 1
+    card_key = ""
+    for _ in range(lenth):
+        idx = rnd(0, max_idx)
+        char = char_list[idx]
+        card_key += char
+    return card_key
 
 if __name__ == '__main__':
     # 界面随DPI自动缩放
@@ -404,7 +432,7 @@ if __name__ == '__main__':
     # 应用程序
     app = QApplication()
     app.setStyle(QStyleFactory.create("fusion"))
-    app.setStyleSheet(mf.qss_style)
+    app.setStyleSheet(qss_style)
     # 窗口
     wnd_server = WndServer()
     wnd_server.show()
@@ -427,7 +455,7 @@ if __name__ == '__main__':
     # 初始化tcp连接
     try:
         tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tcp_socket.bind((mf.server_ip, mf.server_port))  # 主机号+端口号
+        tcp_socket.bind((server_ip, server_port))  # 主机号+端口号
         tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
         Thread(target=thd_accept_client, daemon=True).start()
     except Exception as e:

@@ -1,4 +1,5 @@
-import socket
+# my function, 客户端登录界面, 和 主界面的函数库
+
 import time
 import urllib.request
 import wmi
@@ -75,7 +76,7 @@ def log_debug(msg):
     logging.debug(msg)
     print(msg)
 
-# ------------------------- 网络验证专用 -------------------------
+# ------------------------- 网络验证-客户端专用 -------------------------
 server_ip = "127.0.0.1"
 server_port = 47123
 client_account = ""
@@ -137,13 +138,3 @@ def get_encrypted_str(ori_bytes: bytes) -> str:
     encrypted = hmac.new(b"dkstFeb.1st", ori_bytes, "sha1")
     return encrypted.hexdigest()
 
-# 生成随机卡密
-def gen_rnd_card_key(lenth=30):
-    char_list = "0123456789qazwsxedcrfvtgbyhnujmikolpQAZWSXEDCRFVTGBYHNUJMIKOLP"
-    max_idx = len(char_list) - 1
-    card_key = ""
-    for _ in range(lenth):
-        idx = rnd(0, max_idx)
-        char = char_list[idx]
-        card_key += char
-    return card_key

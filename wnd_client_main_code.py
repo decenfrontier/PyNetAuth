@@ -39,7 +39,7 @@ class WndClientMain(QWidget, Ui_WndClientMain):
                 client_info_dict = {
                     "消息类型": "心跳",
                     "账号": mf.client_account,
-                    "错误次数": error_count,
+                    "备注": mf.client_comment,
                 }
                 mf.send_to_server(tcp_socket, client_info_dict)
                 self.recv_from_server(tcp_socket)

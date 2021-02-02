@@ -166,6 +166,7 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
             "注册": deal_reg,
             "登录": deal_login,
             "充值": deal_pay,
+            "心跳": deal_heart,
         }
         func = msg_func_dict.get(msg_type)
         if func is None:
@@ -201,7 +202,6 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     reason, login_ret, query_user = "", False, {}
     # todo: 判断机器码是否在黑名单
     # todo: 判断用户是否到期
-    # 判断是否允许登录
     dict_list = sql_table_query("2用户管理", {"账号": account})
     if dict_list:  # 判断账号是否存在
         query_user = dict_list[0]
@@ -216,7 +216,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
         reason = "账号不存在"
     detail = f"登录成功" if login_ret else f"登录失败, 原因:{reason}"
     # 把登录结果整理成py字典, 并发送给客户端
-    server_info_dict = {"消息类型": "登录", "结果": login_ret, "详情": detail}
+    server_info_dict = {"消息类型": "登录", "结果": login_ret, "详情": detail, "账号": account}
     send_to_client(client_socket, server_info_dict)
     # 把客户端发送过来的数据记录到数据库
     update_db_user_login_info(client_info_dict, query_user, login_ret)
@@ -252,6 +252,32 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     server_info_dict = {"消息类型": "充值", "结果": pay_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
 
+# 处理-心跳
+def deal_heart(client_socket: socket.socket, client_info_dict: dict):
+    account = client_info_dict["账号"]
+    comment = client_info_dict["备注"]
+    update_dict = {"心跳时间": mf.cur_time_format, "备注": comment}
+    query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
+    if query_user_list:
+        query_user = query_user_list[0]
+        if query_user["状态"] == "冻结":  # 服务端已冻结此账号, 则令其下线
+            heart_ret, detail = "下线", "此账号已被冻结"
+        elif mf.cur_time_format > query_user["到期时间"]:
+            heart_ret, detail = "下线", "此账号已到期"
+        elif "发现" in comment:  # 发现客户危险行为
+            heart_ret, detail = "下线", "检测到非法程序"
+            update_dict["状态"] = "冻结"
+        else:
+            heart_ret, detail = "正常", ""
+    else:
+        heart_ret, detail = "下线", "此账号不存在"
+    # 发送消息回客户端
+    server_info_dict = {"消息类型": "心跳", "结果": heart_ret, "详情": detail}
+    send_to_client(client_socket, server_info_dict)
+    # 更新用户数据
+    sql_table_update("2用户管理", update_dict, {"账号": account})
+
+
 # 发送数据给客户端
 def send_to_client(client_socket: socket.socket, server_info_dict: dict):
     # py字典 转 json字符串
@@ -284,6 +310,7 @@ def update_db_user_login_info(client_info_dict: dict, query_user: dict,login_ret
     account = query_user["账号"]
     # 无论是否登录成功, 登录次数+1
     update_dict = {"今日登录次数": query_user["今日登录次数"]+1,
+                   "操作系统": client_info_dict["操作系统"],
                    "备注": client_info_dict["备注"]}
     # 若登录成功, 才更新
     if login_ret:

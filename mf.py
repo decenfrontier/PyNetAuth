@@ -81,6 +81,7 @@ def log_debug(msg):
 server_ip = "127.0.0.1"
 server_port = 47123
 client_account = ""
+client_comment = ""
 
 # 发送数据给服务端
 def send_to_server(tcp_socket: socket.socket, client_info_dict: dict):

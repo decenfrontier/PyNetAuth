@@ -84,8 +84,8 @@ class Ui_WndServer(object):
         self.horizontalLayout_2.setSpacing(2)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.tbe_user = QTableWidget(self.page_1)
-        if (self.tbe_user.columnCount() < 14):
-            self.tbe_user.setColumnCount(14)
+        if (self.tbe_user.columnCount() < 15):
+            self.tbe_user.setColumnCount(15)
         __qtablewidgetitem6 = QTableWidgetItem()
         self.tbe_user.setHorizontalHeaderItem(0, __qtablewidgetitem6)
         __qtablewidgetitem7 = QTableWidgetItem()
@@ -114,6 +114,8 @@ class Ui_WndServer(object):
         self.tbe_user.setHorizontalHeaderItem(12, __qtablewidgetitem18)
         __qtablewidgetitem19 = QTableWidgetItem()
         self.tbe_user.setHorizontalHeaderItem(13, __qtablewidgetitem19)
+        __qtablewidgetitem20 = QTableWidgetItem()
+        self.tbe_user.setHorizontalHeaderItem(14, __qtablewidgetitem20)
         self.tbe_user.setObjectName(u"tbe_user")
         self.tbe_user.setAlternatingRowColors(True)
         self.tbe_user.setTextElideMode(Qt.ElideNone)
@@ -121,7 +123,7 @@ class Ui_WndServer(object):
         self.tbe_user.setWordWrap(True)
         self.tbe_user.setCornerButtonEnabled(False)
         self.tbe_user.setRowCount(0)
-        self.tbe_user.horizontalHeader().setVisible(False)
+        self.tbe_user.horizontalHeader().setVisible(True)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_user.verticalHeader().setVisible(False)
         self.tbe_user.verticalHeader().setMinimumSectionSize(20)
@@ -151,16 +153,16 @@ class Ui_WndServer(object):
         self.tbe_card = QTableWidget(self.page_2)
         if (self.tbe_card.columnCount() < 5):
             self.tbe_card.setColumnCount(5)
-        __qtablewidgetitem20 = QTableWidgetItem()
-        self.tbe_card.setHorizontalHeaderItem(0, __qtablewidgetitem20)
         __qtablewidgetitem21 = QTableWidgetItem()
-        self.tbe_card.setHorizontalHeaderItem(1, __qtablewidgetitem21)
+        self.tbe_card.setHorizontalHeaderItem(0, __qtablewidgetitem21)
         __qtablewidgetitem22 = QTableWidgetItem()
-        self.tbe_card.setHorizontalHeaderItem(2, __qtablewidgetitem22)
+        self.tbe_card.setHorizontalHeaderItem(1, __qtablewidgetitem22)
         __qtablewidgetitem23 = QTableWidgetItem()
-        self.tbe_card.setHorizontalHeaderItem(3, __qtablewidgetitem23)
+        self.tbe_card.setHorizontalHeaderItem(2, __qtablewidgetitem23)
         __qtablewidgetitem24 = QTableWidgetItem()
-        self.tbe_card.setHorizontalHeaderItem(4, __qtablewidgetitem24)
+        self.tbe_card.setHorizontalHeaderItem(3, __qtablewidgetitem24)
+        __qtablewidgetitem25 = QTableWidgetItem()
+        self.tbe_card.setHorizontalHeaderItem(4, __qtablewidgetitem25)
         self.tbe_card.setObjectName(u"tbe_card")
         self.tbe_card.setAlternatingRowColors(True)
         self.tbe_card.setTextElideMode(Qt.ElideNone)
@@ -270,7 +272,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(3)
+        self.stack_widget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -318,18 +320,20 @@ class Ui_WndServer(object):
         ___qtablewidgetitem18 = self.tbe_user.horizontalHeaderItem(12)
         ___qtablewidgetitem18.setText(QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u65f6\u95f4", None));
         ___qtablewidgetitem19 = self.tbe_user.horizontalHeaderItem(13)
-        ___qtablewidgetitem19.setText(QCoreApplication.translate("WndServer", u"\u5907\u6ce8", None));
+        ___qtablewidgetitem19.setText(QCoreApplication.translate("WndServer", u"\u64cd\u4f5c\u7cfb\u7edf", None));
+        ___qtablewidgetitem20 = self.tbe_user.horizontalHeaderItem(14)
+        ___qtablewidgetitem20.setText(QCoreApplication.translate("WndServer", u"\u5907\u6ce8", None));
         self.groupBox_2.setTitle("")
-        ___qtablewidgetitem20 = self.tbe_card.horizontalHeaderItem(0)
-        ___qtablewidgetitem20.setText(QCoreApplication.translate("WndServer", u"\u5361\u5bc6", None));
-        ___qtablewidgetitem21 = self.tbe_card.horizontalHeaderItem(1)
-        ___qtablewidgetitem21.setText(QCoreApplication.translate("WndServer", u"\u5361\u7c7b\u578b", None));
-        ___qtablewidgetitem22 = self.tbe_card.horizontalHeaderItem(2)
-        ___qtablewidgetitem22.setText(QCoreApplication.translate("WndServer", u"\u5236\u5361\u65f6\u95f4", None));
-        ___qtablewidgetitem23 = self.tbe_card.horizontalHeaderItem(3)
-        ___qtablewidgetitem23.setText(QCoreApplication.translate("WndServer", u"\u4f7f\u7528\u65f6\u95f4", None));
-        ___qtablewidgetitem24 = self.tbe_card.horizontalHeaderItem(4)
-        ___qtablewidgetitem24.setText(QCoreApplication.translate("WndServer", u"\u9879\u76ee\u540d\u79f0", None));
+        ___qtablewidgetitem21 = self.tbe_card.horizontalHeaderItem(0)
+        ___qtablewidgetitem21.setText(QCoreApplication.translate("WndServer", u"\u5361\u5bc6", None));
+        ___qtablewidgetitem22 = self.tbe_card.horizontalHeaderItem(1)
+        ___qtablewidgetitem22.setText(QCoreApplication.translate("WndServer", u"\u5361\u7c7b\u578b", None));
+        ___qtablewidgetitem23 = self.tbe_card.horizontalHeaderItem(2)
+        ___qtablewidgetitem23.setText(QCoreApplication.translate("WndServer", u"\u5236\u5361\u65f6\u95f4", None));
+        ___qtablewidgetitem24 = self.tbe_card.horizontalHeaderItem(3)
+        ___qtablewidgetitem24.setText(QCoreApplication.translate("WndServer", u"\u4f7f\u7528\u65f6\u95f4", None));
+        ___qtablewidgetitem25 = self.tbe_card.horizontalHeaderItem(4)
+        ___qtablewidgetitem25.setText(QCoreApplication.translate("WndServer", u"\u9879\u76ee\u540d\u79f0", None));
         self.groupBox_3.setTitle("")
         self.label_2.setText(QCoreApplication.translate("WndServer", u"\u751f\u6210\u5f20\u6570:", None))
         self.label_4.setText(QCoreApplication.translate("WndServer", u"\u5361\u5bc6\u7c7b\u578b:", None))

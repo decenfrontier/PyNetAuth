@@ -67,6 +67,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             elif msg_type == "登录":
                 self.show_info(server_info_dict["详情"])
                 if server_info_dict["结果"]:
+                    mf.client_account = server_info_dict["账号"]
                     tcp_socket.close()  # 先关闭套接字
                     self.accept()  # 接受
                     return
@@ -178,7 +179,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             return
         login_pwd = mf.get_encrypted_str(login_pwd.encode())
         login_time = mf.cur_time_format
-        comment = mf.get_operation_system()
+        login_system = mf.get_operation_system()
         # 把客户端信息整理成字典, 发送给服务器
         client_info_dict = {
             "消息类型": "登录",
@@ -188,7 +189,8 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "上次登录时间": login_time,
             "上次登录IP": login_ip,
             "上次登录地": login_place,
-            "备注": comment,
+            "操作系统": login_system,
+            "备注": mf.client_comment,
         }
         mf.send_to_server(tcp_socket, client_info_dict)
 

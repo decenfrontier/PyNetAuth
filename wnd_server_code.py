@@ -200,12 +200,14 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     pwd = client_info_dict["密码"]
     machine_code = client_info_dict["机器码"]
     reason, login_ret, query_user = "", False, {}
-    # todo: 判断机器码是否在黑名单
-    # todo: 判断用户是否到期
     dict_list = sql_table_query("2用户管理", {"账号": account})
     if dict_list:  # 判断账号是否存在
         query_user = dict_list[0]
-        if pwd == query_user["密码"]:  # 判断密码是否符合
+        if query_user["状态"] == "冻结":
+            reason = query_user["备注"]
+        elif mf.cur_time_format > query_user["到期时间"]:
+            reason = "此账号已到期"
+        elif pwd == query_user["密码"]:  # 判断密码是否符合
             if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
                 login_ret = True
             else:

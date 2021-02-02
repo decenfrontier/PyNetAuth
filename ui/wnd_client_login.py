@@ -218,7 +218,7 @@ class Ui_WndClientLogin(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.lbe_pay_key = QLabel(self.widget_3)
         self.lbe_pay_key.setObjectName(u"lbe_pay_key")
-        self.lbe_pay_key.setOpenExternalLinks(True)
+        self.lbe_pay_key.setOpenExternalLinks(False)
         self.lbe_pay_key.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
         self.verticalLayout.addWidget(self.lbe_pay_key)
@@ -342,7 +342,7 @@ class Ui_WndClientLogin(object):
 
         self.retranslateUi(WndClientLogin)
 
-        self.stack_widget.setCurrentIndex(2)
+        self.stack_widget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(WndClientLogin)
@@ -353,7 +353,9 @@ class Ui_WndClientLogin(object):
 #if QT_CONFIG(tooltip)
         self.stack_widget.setToolTip("")
 #endif // QT_CONFIG(tooltip)
+        self.edt_login_account.setText(QCoreApplication.translate("WndClientLogin", u"111111", None))
         self.label_2.setText(QCoreApplication.translate("WndClientLogin", u"\u5bc6\u7801:", None))
+        self.edt_login_pwd.setText(QCoreApplication.translate("WndClientLogin", u"222222", None))
         self.label.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
         self.btn_login.setText(QCoreApplication.translate("WndClientLogin", u"\u767b \u5f55", None))
         self.btn_unbind.setText(QCoreApplication.translate("WndClientLogin", u"\u89e3 \u7ed1", None))

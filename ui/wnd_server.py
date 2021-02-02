@@ -17,7 +17,7 @@ class Ui_WndServer(object):
     def setupUi(self, WndServer):
         if not WndServer.objectName():
             WndServer.setObjectName(u"WndServer")
-        WndServer.resize(1117, 590)
+        WndServer.resize(1097, 633)
         WndServer.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.centralwidget = QWidget(WndServer)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -123,7 +123,7 @@ class Ui_WndServer(object):
         self.tbe_user.setWordWrap(True)
         self.tbe_user.setCornerButtonEnabled(False)
         self.tbe_user.setRowCount(0)
-        self.tbe_user.horizontalHeader().setVisible(True)
+        self.tbe_user.horizontalHeader().setVisible(False)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_user.verticalHeader().setVisible(False)
         self.tbe_user.verticalHeader().setMinimumSectionSize(20)
@@ -233,28 +233,19 @@ class Ui_WndServer(object):
         self.stack_widget.addWidget(self.page_2)
         self.page_3 = QWidget()
         self.page_3.setObjectName(u"page_3")
-        self.gridLayout_5 = QGridLayout(self.page_3)
-        self.gridLayout_5.setSpacing(2)
-        self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.gridLayout_5.setContentsMargins(0, 0, 0, 0)
-        self.tbr_log = QTextBrowser(self.page_3)
-        self.tbr_log.setObjectName(u"tbr_log")
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.tbr_log.sizePolicy().hasHeightForWidth())
-        self.tbr_log.setSizePolicy(sizePolicy)
-        self.tbr_log.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.tbr_log.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.tbr_log.setLineWrapMode(QTextEdit.WidgetWidth)
+        sizePolicy.setHeightForWidth(self.page_3.sizePolicy().hasHeightForWidth())
+        self.page_3.setSizePolicy(sizePolicy)
+        self.page_3.setMaximumSize(QSize(16777215, 16777215))
+        self.verticalLayout = QVBoxLayout(self.page_3)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(2, 2, 2, 2)
+        self.tbr_log = QTextBrowser(self.page_3)
+        self.tbr_log.setObjectName(u"tbr_log")
 
-        self.gridLayout_5.addWidget(self.tbr_log, 1, 0, 1, 1)
-
-        self.label = QLabel(self.page_3)
-        self.label.setObjectName(u"label")
-        self.label.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_5.addWidget(self.label, 0, 0, 1, 1)
+        self.verticalLayout.addWidget(self.tbr_log)
 
         self.stack_widget.addWidget(self.page_3)
 
@@ -272,7 +263,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(1)
+        self.stack_widget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -348,8 +339,7 @@ class Ui_WndServer(object):
         self.cmb_card_type.setItemText(5, QCoreApplication.translate("WndServer", u"\u6c38\u4e45\u5361", None))
 
         self.btn_card_gen.setText(QCoreApplication.translate("WndServer", u"\u786e\u5b9a\u751f\u6210", None))
-        self.tbr_log.setDocumentTitle("")
-        self.label.setText(QCoreApplication.translate("WndServer", u"\u6267\u884c\u65e5\u5fd7", None))
+        self.tbr_log.setDocumentTitle(QCoreApplication.translate("WndServer", u"\u6267\u884c\u65e5\u5fd7", None))
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))
     # retranslateUi
 

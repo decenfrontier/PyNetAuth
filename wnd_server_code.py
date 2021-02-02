@@ -3,8 +3,9 @@ import time, datetime
 import json
 
 from PySide2.QtGui import QIcon, QCloseEvent
-from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, \
-    QLabel, QMessageBox, QAbstractItemView, QTableWidget, QTableWidgetItem
+from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
+    QMessageBox, QAbstractItemView, QTableWidget, QTableWidgetItem, QSizePolicy, \
+    QLayout
 from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
@@ -19,6 +20,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         super().__init__()
         self.setupUi(self)
         self.init_status_bar()
+        self.init_wnd()
         self.init_timer()
         self.init_all_controls()
         self.init_all_sig_slot()
@@ -38,6 +40,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer = QTimer()
         self.timer.timeout.connect(self.on_timer_timeout)
         self.timer.start(1000)
+
+    def init_wnd(self):
+        # 设置窗口不可调整大小
+        self.setFixedSize(self.size())
+        self.status_bar.setSizeGripEnabled(False)
 
     def init_all_controls(self):
         # 显示第一页
@@ -69,7 +76,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.setColumnWidth(is_forbid, 70)
         # 卡密管理表
         card_key, type, gen_time, use_time, proj_name = [i for i in range(5)]
-        self.tbe_card.setColumnWidth(card_key, 280)
+        self.tbe_card.setColumnWidth(card_key, 260)
         self.tbe_card.setColumnWidth(type, 80)
         self.tbe_card.setColumnWidth(gen_time, 150)
         self.tbe_card.setColumnWidth(use_time, 150)
@@ -200,7 +207,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["账号"]
     pwd = client_info_dict["密码"]
     machine_code = client_info_dict["机器码"]
-    reason, login_ret, query_user = "", False, {}
+    reason, login_ret, query_user = "原因未知", False, {}
     dict_list = sql_table_query("2用户管理", {"账号": account})
     if dict_list:  # 判断账号是否存在
         query_user = dict_list[0]
@@ -217,7 +224,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
             reason = "密码错误"
     else:
         reason = "账号不存在"
-    detail = f"登录成功" if login_ret else f"登录失败, 原因:{reason}"
+    detail = f"登录成功" if login_ret else f"登录失败, {reason}"
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "登录", "结果": login_ret, "详情": detail, "账号": account}
     send_to_client(client_socket, server_info_dict)

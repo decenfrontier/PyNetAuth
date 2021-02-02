@@ -32,7 +32,7 @@
     <string/>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="page_login">
     <layout class="QGridLayout" name="gridLayout_13">
@@ -82,7 +82,11 @@
           <item row="0" column="0" colspan="4">
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="1">
-             <widget class="QLineEdit" name="edt_login_account"/>
+             <widget class="QLineEdit" name="edt_login_account">
+              <property name="text">
+               <string>111111</string>
+              </property>
+             </widget>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_2">
@@ -95,7 +99,11 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="edt_login_pwd"/>
+             <widget class="QLineEdit" name="edt_login_pwd">
+              <property name="text">
+               <string>222222</string>
+              </property>
+             </widget>
             </item>
             <item row="0" column="0">
              <widget class="QLabel" name="label">

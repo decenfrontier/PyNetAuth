@@ -1,3 +1,4 @@
+import socket
 import time
 import urllib.request
 import wmi
@@ -6,6 +7,12 @@ import hmac
 import json
 import random
 import ssl
+import logging
+import os
+
+from PySide2.QtCore import QThread
+
+from wnd_client_login_code import wnd_client_login
 
 qss_style = """
     * {
@@ -24,14 +31,71 @@ qss_style = """
 cur_time_stamp = time.time()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
-server_ip = "127.0.0.1"
-server_port = 47123
-
-card_key_lenth = 30
+PATH_WORK = os.getcwd()
+PATH_SAVE = "C:\\a_b_c"
+PATH_GNRL_JSON = f"{PATH_SAVE}\\gnrl.json"
+PATH_PLAN_JSON = f"{PATH_SAVE}\\plan.json"
 
 # 随机数
 def rnd(min: int, max: int):
     return random.randint(min, max)
+
+def time_diff(start_sec, end_sec):
+    gap_sec = end_sec - start_sec
+    gap_min = gap_sec // 60
+    return gap_min
+
+# def mdelay(min_ms: int, max_ms=None):
+#     if max_ms is None:
+#         t_ms = min_ms
+#     else:
+#         t_ms = rnd(min_ms, max_ms)
+#     t_s = t_ms / 1000
+#     time.sleep(t_s)
+
+def msleep(min_ms: int, max_ms=None):
+    if max_ms is None:
+        t_ms = min_ms
+    else:
+        t_ms = rnd(min_ms, max_ms)
+    QThread.msleep(t_ms)
+
+def init_logging():
+    logging.basicConfig(level=logging.DEBUG,
+                        format="%(asctime)s  %(message)s",
+                        filename=f"{PATH_SAVE}\\run.log",
+                        filemode="w",
+                        datefmt="%m-%d  %H:%M:%S")
+    log_info("初始化日志模块成功")
+
+def log_info(msg):
+    logging.info(msg)
+    print(msg)
+
+
+def log_debug(msg):
+    logging.debug(msg)
+    print(msg)
+
+# ------------------------- 网络验证专用 -------------------------
+server_ip = "127.0.0.1"
+server_port = 47123
+client_account = ""
+
+# 发送数据给服务端
+def send_to_server(tcp_socket: socket.socket, client_info_dict: dict):
+    # py字典 转 json字符串
+    json_str = json.dumps(client_info_dict, ensure_ascii=False)
+    # 发送客户端注册信息到服务器
+    try:
+        tcp_socket.send(json_str.encode())
+        wnd_client_login.show_info("发送客户端注册信息成功")
+    except Exception as e:
+        wnd_client_login.show_info(f"发送客户端注册信息失败: {e}")
+
+
+
+
 
 # 获取外网IP
 def get_outer_ip() -> str:
@@ -88,7 +152,7 @@ def get_encrypted_str(ori_bytes: bytes) -> str:
     return encrypted.hexdigest()
 
 # 生成随机卡密
-def gen_rnd_card_key(lenth=card_key_lenth):
+def gen_rnd_card_key(lenth=30):
     char_list = "0123456789qazwsxedcrfvtgbyhnujmikolpQAZWSXEDCRFVTGBYHNUJMIKOLP"
     max_idx = len(char_list) - 1
     card_key = ""
@@ -101,3 +165,5 @@ def gen_rnd_card_key(lenth=card_key_lenth):
 if __name__ == '__main__':
     ip = get_outer_ip()
     get_ip_location(ip)
+
+

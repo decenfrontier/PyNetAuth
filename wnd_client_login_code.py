@@ -1,18 +1,16 @@
 import sys
 
-from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPalette, QPixmap, \
-    QBrush, QMouseEvent, QPaintEvent, QPainter, QPainterPath, QColor, QBitmap
+from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
+    QMouseEvent, QPaintEvent, QPainter, QBitmap
 from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayout, \
-    QStatusBar, QApplication, QStyleFactory, QWidget
-from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, QObject, QEvent
+    QStatusBar, QApplication, QStyleFactory
+from PySide2.QtCore import Qt, QRegExp, QSize, QPoint
 import socket
 from threading import Thread
 import json
-import hashlib
 
 from ui.wnd_client_login import Ui_WndClientLogin
 from wnd_client_main_code import WndClientMain
-from res import qres
 import mf
 
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -36,7 +34,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
-        print(text)
+        mf.log_info(text)
 
     # 初始化网络验证
     def init_net_auth(self):
@@ -51,7 +49,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
     # 线程_接收服务端消息
     def thd_recv_server(self):
         while True:
-            print("等待服务端发出消息中...")
+            mf.log_info("等待服务端发出消息中...")
             try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
                 recv_bytes = tcp_socket.recv(1024)
             except:
@@ -61,17 +59,18 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             # json字符串 转 py字典
             json_str = recv_bytes.decode()
             server_info_dict = json.loads(json_str)
-            print(f"收到服务端的消息: {server_info_dict}")
+            mf.log_info(f"收到服务端的消息: {server_info_dict}")
             # 客户端消息处理
-            消息类型 = server_info_dict["消息类型"]
-            if 消息类型 == "注册":
+            msg_type = server_info_dict["消息类型"]
+            if msg_type == "注册":
                 self.show_info(server_info_dict["详情"])
-            elif 消息类型 == "登录":
+            elif msg_type == "登录":
                 self.show_info(server_info_dict["详情"])
                 if server_info_dict["结果"]:
+                    tcp_socket.close()  # 先关闭套接字
                     self.accept()  # 接受
                     return
-            elif 消息类型 == "充值":
+            elif msg_type == "充值":
                 self.show_info(server_info_dict["详情"])
         self.show_info("与服务器断开连接...")
 
@@ -191,7 +190,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "上次登录地": login_place,
             "备注": comment,
         }
-        send_to_server(client_info_dict)
+        mf.send_to_server(tcp_socket, client_info_dict)
 
     def on_btn_exit_clicked(self):
         self.reject()
@@ -210,7 +209,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
                                       QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
         if ret == QMessageBox.Yes:
-            send_to_server(client_info_dict)
+            mf.send_to_server(tcp_socket, client_info_dict)
 
     def on_btn_reg_clicked(self):
         # 判断注册信息是否符合要求
@@ -233,18 +232,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "密码": reg_pwd,
             "QQ": reg_qq,
         }
-        send_to_server(client_info_dict)
-
-def send_to_server(client_info_dict: dict):
-    # py字典 转 json字符串
-    json_str = json.dumps(client_info_dict, ensure_ascii=False)
-    # 发送客户端注册信息到服务器
-    try:
-        tcp_socket.send(json_str.encode())
-        wnd_client_login.show_info("发送客户端注册信息成功")
-    except Exception as e:
-        wnd_client_login.show_info(f"发送客户端注册信息失败: {e}")
-
+        mf.send_to_server(tcp_socket, client_info_dict)
 
 
 # 线程_获取外网IP和归属地
@@ -272,6 +260,7 @@ if __name__ == '__main__':
     app.setStyle(QStyleFactory.create("fusion"))
     app.setStyleSheet(mf.qss_style)
 
+    mf.init_logging()
     wnd_client_login = WndClientLogin()
     wnd_client_login.show()
 
@@ -281,5 +270,5 @@ if __name__ == '__main__':
         wnd_client_main = WndClientMain()
         wnd_client_main.show()
         sys.exit(app.exec_())
-    else:
-        sys.exit(0)
+
+    sys.exit(0)

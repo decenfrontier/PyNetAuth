@@ -11,6 +11,7 @@ import json
 
 from ui.wnd_client_login import Ui_WndClientLogin
 from wnd_client_main_code import WndClientMain
+from res import qres
 import mf
 
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -192,7 +193,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "操作系统": login_system,
             "备注": mf.client_comment,
         }
-        mf.send_to_server(tcp_socket, client_info_dict)
+        self.send_to_server(tcp_socket, client_info_dict)
 
     def on_btn_exit_clicked(self):
         self.reject()
@@ -200,7 +201,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
     def on_btn_pay_clicked(self):
         account = self.edt_pay_account.text()
         card_key = self.edt_pay_key.text()
-        if len(card_key) != mf.card_key_lenth or len(account) not in range(6,13):
+        if len(card_key) != 30 or len(account) not in range(6,13):
             self.show_info("账号或卡密错误, 请检查无误后再试")
             return
         client_info_dict = {
@@ -211,7 +212,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
                                       QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
         if ret == QMessageBox.Yes:
-            mf.send_to_server(tcp_socket, client_info_dict)
+            self.send_to_server(tcp_socket, client_info_dict)
 
     def on_btn_reg_clicked(self):
         # 判断注册信息是否符合要求
@@ -234,7 +235,18 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "密码": reg_pwd,
             "QQ": reg_qq,
         }
-        mf.send_to_server(tcp_socket, client_info_dict)
+        self.send_to_server(tcp_socket, client_info_dict)
+
+    # 发送数据给服务端
+    def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
+        # py字典 转 json字符串
+        json_str = json.dumps(client_info_dict, ensure_ascii=False)
+        # 发送客户端注册信息到服务器
+        try:
+            tcp_socket.send(json_str.encode())
+            self.show_info("发送客户端注册信息成功")
+        except Exception as e:
+            self.show_info(f"发送客户端注册信息失败: {e}")
 
 
 # 线程_获取外网IP和归属地

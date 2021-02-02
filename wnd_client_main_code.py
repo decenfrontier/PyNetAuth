@@ -8,7 +8,6 @@ from threading import Thread
 from ui.wnd_client_main import Ui_WndClientMain
 import mf
 
-
 class WndClientMain(QWidget, Ui_WndClientMain):
     def __init__(self):
         super().__init__()
@@ -40,7 +39,7 @@ class WndClientMain(QWidget, Ui_WndClientMain):
                     "账号": mf.client_account,
                     "备注": mf.client_comment,
                 }
-                mf.send_to_server(tcp_socket, client_info_dict)
+                self.send_to_server(tcp_socket, client_info_dict)
                 self.recv_from_server(tcp_socket)
             else:
                 self.error_count += 1
@@ -48,6 +47,17 @@ class WndClientMain(QWidget, Ui_WndClientMain):
             if self.error_count > 5:
                 self.show_info("与服务器断开连接...")
                 sys.exit(-1)
+
+    # 发送数据给服务端
+    def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
+        # py字典 转 json字符串
+        json_str = json.dumps(client_info_dict, ensure_ascii=False)
+        # 发送客户端注册信息到服务器
+        try:
+            tcp_socket.send(json_str.encode())
+            self.show_info("发送客户端注册信息成功")
+        except Exception as e:
+            self.show_info(f"发送客户端注册信息失败: {e}")
 
     # 接收来自服务端的数据
     def recv_from_server(self, tcp_socket: socket.socket):

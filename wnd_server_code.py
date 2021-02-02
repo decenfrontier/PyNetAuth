@@ -127,7 +127,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_card.setItem(row, 3, use_time)
             self.tbe_card.setItem(row, 4, proj_name)
 
-
     def on_timer_timeout(self):
         mf.cur_time_stamp += 1
         mf.cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")

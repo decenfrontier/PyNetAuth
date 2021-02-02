@@ -12,8 +12,6 @@ import os
 
 from PySide2.QtCore import QThread
 
-from wnd_client_login_code import wnd_client_login
-
 qss_style = """
     * {
         font-size: 12px;
@@ -83,21 +81,6 @@ server_port = 47123
 client_account = ""
 client_comment = ""
 
-# 发送数据给服务端
-def send_to_server(tcp_socket: socket.socket, client_info_dict: dict):
-    # py字典 转 json字符串
-    json_str = json.dumps(client_info_dict, ensure_ascii=False)
-    # 发送客户端注册信息到服务器
-    try:
-        tcp_socket.send(json_str.encode())
-        wnd_client_login.show_info("发送客户端注册信息成功")
-    except Exception as e:
-        wnd_client_login.show_info(f"发送客户端注册信息失败: {e}")
-
-
-
-
-
 # 获取外网IP
 def get_outer_ip() -> str:
     # ip = urllib.request.urlopen("http://ip.42.pl/raw").read().decode()  # 法一
@@ -162,9 +145,3 @@ def gen_rnd_card_key(lenth=30):
         char = char_list[idx]
         card_key += char
     return card_key
-
-if __name__ == '__main__':
-    ip = get_outer_ip()
-    get_ip_location(ip)
-
-

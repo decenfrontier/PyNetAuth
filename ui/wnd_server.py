@@ -110,7 +110,17 @@ class Ui_WndServer(object):
         self.btn_proj_confirm = QPushButton(self.groupBox)
         self.btn_proj_confirm.setObjectName(u"btn_proj_confirm")
 
-        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.btn_proj_confirm)
+        self.formLayout.setWidget(7, QFormLayout.FieldRole, self.btn_proj_confirm)
+
+        self.edt_proj_heart_gap_sec = QLineEdit(self.groupBox)
+        self.edt_proj_heart_gap_sec.setObjectName(u"edt_proj_heart_gap_sec")
+
+        self.formLayout.setWidget(6, QFormLayout.FieldRole, self.edt_proj_heart_gap_sec)
+
+        self.label_10 = QLabel(self.groupBox)
+        self.label_10.setObjectName(u"label_10")
+
+        self.formLayout.setWidget(6, QFormLayout.LabelRole, self.label_10)
 
 
         self.horizontalLayout.addWidget(self.groupBox)
@@ -122,17 +132,17 @@ class Ui_WndServer(object):
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setSpacing(6)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.tableWidget = QTableWidget(self.page_0)
-        if (self.tableWidget.columnCount() < 2):
-            self.tableWidget.setColumnCount(2)
+        self.tbe_custom = QTableWidget(self.page_0)
+        if (self.tbe_custom.columnCount() < 2):
+            self.tbe_custom.setColumnCount(2)
         __qtablewidgetitem5 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem5)
+        self.tbe_custom.setHorizontalHeaderItem(0, __qtablewidgetitem5)
         __qtablewidgetitem6 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem6)
-        self.tableWidget.setObjectName(u"tableWidget")
-        self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tbe_custom.setHorizontalHeaderItem(1, __qtablewidgetitem6)
+        self.tbe_custom.setObjectName(u"tbe_custom")
+        self.tbe_custom.horizontalHeader().setStretchLastSection(True)
 
-        self.horizontalLayout_4.addWidget(self.tableWidget)
+        self.horizontalLayout_4.addWidget(self.tbe_custom)
 
         self.groupBox_4 = QGroupBox(self.page_0)
         self.groupBox_4.setObjectName(u"groupBox_4")
@@ -384,9 +394,10 @@ class Ui_WndServer(object):
         self.label_6.setText(QCoreApplication.translate("WndServer", u"\u53d1\u5361\u5730\u5740", None))
         self.label_7.setText(QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u8d60\u9001\u5929\u6570", None))
         self.btn_proj_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u5b9a\u6dfb\u52a0\u6216\u4fee\u6539", None))
-        ___qtablewidgetitem5 = self.tableWidget.horizontalHeaderItem(0)
+        self.label_10.setText(QCoreApplication.translate("WndServer", u"\u5fc3\u8df3\u95f4\u9694\u79d2\u6570", None))
+        ___qtablewidgetitem5 = self.tbe_custom.horizontalHeaderItem(0)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("WndServer", u"Key", None));
-        ___qtablewidgetitem6 = self.tableWidget.horizontalHeaderItem(1)
+        ___qtablewidgetitem6 = self.tbe_custom.horizontalHeaderItem(1)
         ___qtablewidgetitem6.setText(QCoreApplication.translate("WndServer", u"Value", None));
         self.groupBox_4.setTitle(QCoreApplication.translate("WndServer", u"\u81ea\u5b9a\u4e49\u6570\u636e", None))
         self.label_8.setText(QCoreApplication.translate("WndServer", u"Key", None))

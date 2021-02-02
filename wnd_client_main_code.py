@@ -1,14 +1,15 @@
 import time
 import sys
 import socket
+import json
 
-from PySide2.QtWidgets import QWidget
+from PySide2.QtWidgets import QMainWindow, QLabel
 from threading import Thread
 
 from ui.wnd_client_main import Ui_WndClientMain
 import mf
 
-class WndClientMain(QWidget, Ui_WndClientMain):
+class WndClientMain(QMainWindow, Ui_WndClientMain):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -18,7 +19,7 @@ class WndClientMain(QWidget, Ui_WndClientMain):
     def init_status_bar(self):
         # info标签
         self.lbe_info = QLabel(self)
-        self.statusbar.addWidget(self.lbe_info)
+        self.status_bar.addWidget(self.lbe_info)
 
     def show_info(self, info):
         self.lbe_info.setText(f"<提示> : {info}")
@@ -30,7 +31,6 @@ class WndClientMain(QWidget, Ui_WndClientMain):
 
     def thd_heart_beat(self):
         while True:
-            time.sleep(600)  # 等待600秒(10分钟)
             tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
             if err_no == 0:
@@ -45,8 +45,10 @@ class WndClientMain(QWidget, Ui_WndClientMain):
                 self.error_count += 1
             tcp_socket.close()  # 发送接收完立刻断开
             if self.error_count > 5:
-                self.show_info("与服务器断开连接...")
-                sys.exit(-1)
+                break
+            time.sleep(mf.heart_gap_sec)
+        self.show_info("与服务器断开连接...")
+        sys.exit(-1)
 
     # 发送数据给服务端
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
@@ -55,9 +57,9 @@ class WndClientMain(QWidget, Ui_WndClientMain):
         # 发送客户端注册信息到服务器
         try:
             tcp_socket.send(json_str.encode())
-            self.show_info("发送客户端注册信息成功")
+            self.show_info("客户端数据, 发送成功")
         except Exception as e:
-            self.show_info(f"发送客户端注册信息失败: {e}")
+            self.show_info(f"客户端数据, 发送失败: {e}")
 
     # 接收来自服务端的数据
     def recv_from_server(self, tcp_socket: socket.socket):

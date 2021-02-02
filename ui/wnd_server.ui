@@ -145,10 +145,20 @@
              <item row="4" column="1">
               <widget class="QLineEdit" name="edt_proj_reg_gift_day"/>
              </item>
-             <item row="5" column="1">
+             <item row="7" column="1">
               <widget class="QPushButton" name="btn_proj_confirm">
                <property name="text">
                 <string>确定添加或修改</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QLineEdit" name="edt_proj_heart_gap_sec"/>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>心跳间隔秒数</string>
                </property>
               </widget>
              </item>
@@ -163,7 +173,7 @@
            <number>6</number>
           </property>
           <item>
-           <widget class="QTableWidget" name="tableWidget">
+           <widget class="QTableWidget" name="tbe_custom">
             <attribute name="horizontalHeaderStretchLastSection">
              <bool>true</bool>
             </attribute>

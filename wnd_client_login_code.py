@@ -244,9 +244,9 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         # 发送客户端注册信息到服务器
         try:
             tcp_socket.send(json_str.encode())
-            self.show_info("发送客户端注册信息成功")
+            self.show_info("客户端数据, 发送成功")
         except Exception as e:
-            self.show_info(f"发送客户端注册信息失败: {e}")
+            self.show_info(f"客户端数据, 发送失败: {e}")
 
 
 # 线程_获取外网IP和归属地

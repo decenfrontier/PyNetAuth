@@ -1,13 +1,14 @@
 import sys
+import socket
+from threading import Thread
+import json
+import pythoncom
 
 from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
     QMouseEvent, QPaintEvent, QPainter, QBitmap
 from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayout, \
     QStatusBar, QApplication, QStyleFactory
 from PySide2.QtCore import Qt, QRegExp, QSize, QPoint
-import socket
-from threading import Thread
-import json
 
 from ui.wnd_client_login import Ui_WndClientLogin
 from wnd_client_main_code import WndClientMain
@@ -15,21 +16,36 @@ from res import qres
 import mf
 
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-machine_code = mf.get_machine_code()
+machine_code = ""
 login_ip = ""
+
+# 线程_获取全局变量
+def thd_get_global_var():
+    def thd_get_outer_ip():
+        global login_ip
+        login_ip = mf.get_outer_ip()
+    def thd_get_machine_code():
+        global machine_code
+        machine_code = mf.get_machine_code()
+    t1 = Thread(target=thd_get_outer_ip)
+    t2 = Thread(target=thd_get_machine_code)
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join()
 
 class WndClientLogin(QDialog, Ui_WndClientLogin):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        t = Thread(target=self.thd_get_outer_ip, daemon=True)
-        t.start()
+        thd1 = Thread(target=thd_get_global_var, daemon=True)
+        thd1.start()
         self.init_wnd()
         self.init_status_bar()
         self.init_net_auth()
         self.init_all_controls()
         self.init_all_sig_slot()
-        t.join(3)  # 等待外网IP获取完成
+        thd1.join()
         self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):
@@ -48,11 +64,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             self.close()
         self.show_info(f"连接服务器成功, 开始接收数据...")
         Thread(target=self.thd_recv_server, daemon=True).start()
-
-    # 线程_获取外网IP
-    def thd_get_outer_ip(self):
-        global login_ip
-        login_ip = mf.get_outer_ip()
 
     # 线程_接收服务端消息
     def thd_recv_server(self):
@@ -267,10 +278,7 @@ if __name__ == '__main__':
     wnd_client_login.show()
 
     if wnd_client_login.exec_() == QDialog.Accepted:
-        # 开启线程-获取服务端自定义数据
-
         wnd_client_main = WndClientMain()
         wnd_client_main.show()
         sys.exit(app.exec_())
-
     sys.exit(0)

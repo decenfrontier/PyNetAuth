@@ -10,6 +10,7 @@ import random
 import ssl
 import logging
 import os
+import pythoncom
 
 from PySide2.QtCore import QThread
 
@@ -116,6 +117,7 @@ def get_ip_location(ip: str) -> str:
 
 # 获取机器码(主板序列号+硬盘序列号)
 def get_machine_code():
+    pythoncom.CoInitialize()
     c = wmi.WMI()
     try:
         board_serial = c.Win32_BaseBoard()[0].SerialNumber

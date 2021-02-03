@@ -176,12 +176,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             card_type = QTableWidgetItem(card_info["卡类型"])
             gen_time = QTableWidgetItem(card_info["制卡时间"])
             use_time = QTableWidgetItem(card_info["使用时间"])
-            proj_name = QTableWidgetItem(card_info["项目名称"])
             self.tbe_card.setItem(row, 0, card_key)
             self.tbe_card.setItem(row, 1, card_type)
             self.tbe_card.setItem(row, 2, gen_time)
             self.tbe_card.setItem(row, 3, use_time)
-            self.tbe_card.setItem(row, 4, proj_name)
 
     def on_timer_timeout(self):
         global cur_time_stamp, cur_time_format, today, path_log
@@ -422,9 +420,9 @@ def sql_table_insert(table_name: str, val_dict: dict):
         ret = cursor.execute(sql, vals)  # 执行SQL语句
         db.commit()  # 提交到数据库
     except Exception as e:
-        print(f"表插入异常: {e}")
+        log_append_content(f"表插入异常: {e}")
         db.rollback()  # 数据库回滚
-    print(f"表插入结果: {ret}")
+    log_append_content(f"表插入结果: {ret}")
     return ret
 
 
@@ -439,14 +437,15 @@ def sql_table_query(table_name: str, condition_dict={}):
         sql = f"select * from {table_name} where {condition};"
     else:
         sql = f"select * from {table_name};"
+    ret = []
     try:
-        ret = cursor.execute(sql, vals)  # 执行SQL语句
+        cursor.execute(sql, vals)  # 执行SQL语句
         ret = cursor.fetchall()  # 获取查询结果, 没查到返回空列表
         db.commit()  # 提交到数据库
     except:
+        log_append_content(f"表查询异常: {e}")
         db.rollback()  # 数据库回滚
-        ret = []
-    print(f"表查询结果: {ret}")
+    log_append_content(f"表查询结果: {ret}")
     return ret
 
 
@@ -471,9 +470,9 @@ def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
         ret = cursor.execute(sql, update_vals + condition_vals)  # 执行SQL语句
         db.commit()  # 提交到数据库
     except Exception as e:
-        print(f"表更新异常: {e}")
+        log_append_content(f"表更新异常: {e}")
         db.rollback()  # 数据库回滚
-    print(f"表更新结果: {ret}")
+    log_append_content(f"表更新结果: {ret}")
     return ret
 
 

@@ -14,6 +14,7 @@ import socket
 from ui.wnd_server import Ui_WndServer
 from res import qres
 
+lock = Lock()
 cur_time_stamp = time.time()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_format[:10]
@@ -48,7 +49,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):
-        self.tcp_socket.close()
+        tcp_socket.close()
         cursor.close()
         db.close()
 
@@ -78,9 +79,10 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_net_auth(self):
         # 初始化tcp连接
         try:
-            self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.tcp_socket.bind((server_ip, server_port))  # 主机号+端口号
-            self.tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
+            global tcp_socket
+            tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            tcp_socket.bind((server_ip, server_port))  # 主机号+端口号
+            tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
             Thread(target=self.thd_accept_client, daemon=True).start()
         except Exception as e:
             log_append_content(f"tcp连接失败: {e}")
@@ -197,7 +199,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         while True:
             log_append_content("等待接收新客户端...")
             try:
-                client_socket, client_addr = self.tcp_socket.accept()
+                client_socket, client_addr = tcp_socket.accept()
             except:
                 break
             log_append_content(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
@@ -378,6 +380,7 @@ def update_db_user_login_info(client_info_dict: dict, query_user: dict, login_re
                    "备注": client_info_dict["备注"]}
     # 若登录成功, 才更新
     if login_ret:
+        update_dict["状态"] = "在线"
         update_dict["机器码"] = client_info_dict["机器码"]
         update_dict["上次登录时间"] = client_info_dict["上次登录时间"]
         update_dict["上次登录IP"] = client_info_dict["上次登录IP"]
@@ -477,7 +480,7 @@ def log_read_content() -> str:
         print(f"未找到文件:{path_log}")
     return content
 
-lock = Lock()
+
 # 日志添加内容
 def log_append_content(content: str):
     with lock:

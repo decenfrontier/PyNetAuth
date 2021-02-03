@@ -162,8 +162,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         if cur_day != today:  # 日期改变
             today = cur_day
             path_log = f"C:\\net_auth_{today}.log"
-            # todo
-            # sql_table_update("2用户管理", )
+            update_dict = {"今日登录次数": 0, "今日换绑次数": 0}
+            sql_table_update("2用户管理", update_dict)
 
 
 def thd_accept_client():
@@ -481,7 +481,7 @@ if __name__ == '__main__':
             port=3306,
             user="root",
             password="mysql",
-            database="网络验证"
+            database="net_auth"
         )
         # 创建游标对象, 指定返回一个字典列表, 获取的每条数据的类型为字典(默认是元组)
         cursor = db.cursor(pymysql.cursors.DictCursor)

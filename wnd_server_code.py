@@ -227,6 +227,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 "登录": deal_login,
                 "充值": deal_pay,
                 "心跳": deal_heart,
+                "离线": deal_offline,
             }
             func = msg_func_dict.get(msg_type)
             if func is None:
@@ -341,6 +342,21 @@ def deal_heart(client_socket: socket.socket, client_info_dict: dict):
     send_to_client(client_socket, server_info_dict)
     # 更新用户数据
     sql_table_update("2用户管理", update_dict, {"账号": account})
+
+# 处理_离线
+def deal_offline(client_socket: socket.socket, client_info_dict: dict):
+    account = client_info_dict["账号"]
+    comment = client_info_dict["备注"]
+    update_dict = {"心跳时间": cur_time_format, "备注": comment, "状态": "离线"}
+    query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
+    if query_user_list:
+        query_user = query_user_list[0]
+        # 若账号在线时有非法操作, 服务端自动冻结其账号, 客户端离线时不要改变冻结状态
+        if query_user["状态"] == "冻结":
+            update_dict["状态"] = "冻结"
+    # 更新用户数据
+    sql_table_update("2用户管理", update_dict, {"账号": account})
+
 
 # 发送数据给客户端
 def send_to_client(client_socket: socket.socket, server_info_dict: dict):

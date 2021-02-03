@@ -3,11 +3,13 @@ import sys
 import socket
 import json
 
+from PySide2.QtGui import QCloseEvent
 from PySide2.QtWidgets import QMainWindow, QLabel
 from threading import Thread
 
 from ui.wnd_client_main import Ui_WndClientMain
 import mf
+
 
 class WndClientMain(QMainWindow, Ui_WndClientMain):
     def __init__(self):
@@ -15,6 +17,17 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         self.setupUi(self)
         self.init_status_bar()
         self.init_net_auth()
+
+    def closeEvent(self, event: QCloseEvent):
+        tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
+        if err_no == 0:
+            client_info_dict = {
+                "消息类型": "离线",
+                "账号": mf.client_account,
+                "备注": mf.client_comment,
+            }
+            self.send_to_server(tcp_socket, client_info_dict)
 
     def init_status_bar(self):
         # info标签

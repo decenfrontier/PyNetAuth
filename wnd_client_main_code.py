@@ -48,7 +48,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
                 break
             time.sleep(mf.heart_gap_sec)
         self.show_info("与服务器断开连接...")
-        assert False, "与服务器断开连接..."
+        self.close()
 
     # 发送数据给服务端
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
@@ -57,7 +57,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         # 发送客户端注册信息到服务器
         try:
             tcp_socket.send(json_str.encode())
-            self.show_info("客户端数据, 发送成功")
+            self.show_info(f"客户端数据, 发送成功: {json_str}")
         except Exception as e:
             self.show_info(f"客户端数据, 发送失败: {e}")
 
@@ -75,7 +75,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         # json字符串 转 py字典
         json_str = recv_bytes.decode()
         server_info_dict = json.loads(json_str)
-        mf.log_info(f"收到服务端的消息: {server_info_dict}")
+        mf.log_info(f"收到服务端的消息: {json_str}")
         msg_type = server_info_dict["消息类型"]
         if msg_type != "心跳":
             return

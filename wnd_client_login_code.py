@@ -60,7 +60,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             # json字符串 转 py字典
             json_str = recv_bytes.decode()
             server_info_dict = json.loads(json_str)
-            mf.log_info(f"收到服务端的消息: {server_info_dict}")
+            mf.log_info(f"收到服务端的消息: {json_str}")
             # 客户端消息处理
             msg_type = server_info_dict["消息类型"]
             if msg_type == "注册":
@@ -244,7 +244,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         # 发送客户端注册信息到服务器
         try:
             tcp_socket.send(json_str.encode())
-            self.show_info("客户端数据, 发送成功")
+            self.show_info(f"客户端数据, 发送成功: {json_str}")
         except Exception as e:
             self.show_info(f"客户端数据, 发送失败: {e}")
 

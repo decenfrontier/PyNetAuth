@@ -1,15 +1,15 @@
 import sys
 import time, datetime
 import json
+from threading import Thread
 
-from PySide2.QtGui import QIcon, QCloseEvent
+from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
     QMessageBox, QAbstractItemView, QTableWidget, QTableWidgetItem, QSizePolicy, \
     QLayout
 from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
-from threading import Thread
 
 from ui.wnd_server import Ui_WndServer
 from res import qres
@@ -17,6 +17,7 @@ from res import qres
 cur_time_stamp = time.time()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_format[:10]
+path_log = f"C:\\net_auth_{today}.log"
 server_ip = "127.0.0.1"
 server_port = 47123
 qss_style = """
@@ -32,7 +33,7 @@ qss_style = """
 	    background-color: #a1b1c9;		
     }
 """
-path_log = f"C:\\net_auth_{today}.log"
+
 
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
@@ -107,10 +108,11 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
+        log_append_content(text)
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
-        self.show_info(f"切换到 {action_name}")
+        # self.show_info(f"切换到 {action_name}")
         if action_name == "项目管理":
             self.stack_widget.setCurrentIndex(0)
         elif action_name == "用户管理":
@@ -118,8 +120,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         elif action_name == "卡密管理":
             self.stack_widget.setCurrentIndex(2)
         elif action_name == "执行日志":
-            text = log_read_content()
-            self.tbr_log.setText(text)
+            self.tbr_log.setText(log_read_content())
+            self.tbr_log.moveCursor(QTextCursor.End)
             self.stack_widget.setCurrentIndex(3)
 
     def on_btn_card_gen_clicked(self):
@@ -160,13 +162,14 @@ class WndServer(QMainWindow, Ui_WndServer):
         if cur_day != today:  # 日期改变
             today = cur_day
             path_log = f"C:\\net_auth_{today}.log"
-            sql_table_update("2用户管理", )
+            # todo
+            # sql_table_update("2用户管理", )
 
 
 def thd_accept_client():
     log_append_content("服务器已开启, 准备接受客户请求...")
     while True:
-        log_append_content("正在等待客户端发出连接请求...")
+        # log_append_content("等待接收新客户端...")
         try:
             client_socket, client_addr = tcp_socket.accept()
         except:
@@ -178,7 +181,7 @@ def thd_accept_client():
 
 def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
     while True:
-        log_append_content("等待客户端发出消息中...")
+        # log_append_content("等待客户端发出消息中...")
         try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
             recv_bytes = client_socket.recv(1024)
         except:
@@ -188,7 +191,7 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
         # json字符串 转 py字典
         json_str = recv_bytes.decode()
         client_info_dict = json.loads(json_str)
-        log_append_content(f"收到客户端的消息: {client_info_dict}")
+        log_append_content(f"收到客户端的消息: {json_str}")
         # 服务端消息处理
         msg_type = client_info_dict["消息类型"]
         client_info_dict.pop("消息类型")
@@ -321,7 +324,7 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
     # 向客户端回复注册结果
     try:
         client_socket.send(json_str.encode())
-        log_append_content("向客户端回复成功")
+        log_append_content(f"向客户端回复成功: {json_str}")
     except Exception as e:
         log_append_content(f"向客户端回复失败: {e}")
 
@@ -448,17 +451,19 @@ def log_read_content() -> str:
         with open(path_log, "r", encoding="utf8") as f:
             content = f.read()
     except:
-        print(f"未找到文件:{path}")
+        print(f"未找到文件:{path_log}")
     return content
 
 # 日志添加内容
 def log_append_content(content: str):
     # 添加文件内容, 若没有文件会自动创建文件
     with open(path_log, "a", encoding="utf8") as f:
-        f.write(f"{content}\n")
+        text = f"{cur_time_format} {content}\n"
+        f.write(text)
 
 
 if __name__ == '__main__':
+    log_append_content("------------------------------------------------------------------")
     # 界面随DPI自动缩放
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     # 应用程序

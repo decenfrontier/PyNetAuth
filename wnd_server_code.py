@@ -16,6 +16,7 @@ from res import qres
 
 cur_time_stamp = time.time()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
+today = cur_time_format[:10]
 server_ip = "127.0.0.1"
 server_port = 47123
 qss_style = """
@@ -31,6 +32,7 @@ qss_style = """
 	    background-color: #a1b1c9;		
     }
 """
+path_log = f"C:\\net_auth_{today}.log"
 
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
@@ -60,7 +62,6 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def init_wnd(self):
         # 设置窗口不可调整大小
-        self.setFixedSize(self.size())
         self.status_bar.setSizeGripEnabled(False)
 
     def init_all_controls(self):
@@ -106,8 +107,6 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
-        self.tbr_log.append(f"{cur_time_format}  {text}")
-        print(text)
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
@@ -119,6 +118,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         elif action_name == "卡密管理":
             self.stack_widget.setCurrentIndex(2)
         elif action_name == "执行日志":
+            text = log_read_content()
+            self.tbr_log.setText(text)
             self.stack_widget.setCurrentIndex(3)
 
     def on_btn_card_gen_clicked(self):
@@ -152,27 +153,32 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_card.setItem(row, 4, proj_name)
 
     def on_timer_timeout(self):
-        global cur_time_stamp, cur_time_format
+        global cur_time_stamp, cur_time_format, today, path_log
         cur_time_stamp += 1
         cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
+        cur_day = cur_time_format[:10]
+        if cur_day != today:  # 日期改变
+            today = cur_day
+            path_log = f"C:\\net_auth_{today}.log"
+            sql_table_update("2用户管理", )
 
 
 def thd_accept_client():
-    wnd_server.show_info("服务器已开启, 准备接受客户请求...")
+    log_append_content("服务器已开启, 准备接受客户请求...")
     while True:
-        wnd_server.show_info("正在等待客户端发出连接请求...")
+        log_append_content("正在等待客户端发出连接请求...")
         try:
             client_socket, client_addr = tcp_socket.accept()
         except:
             break
-        wnd_server.show_info(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
+        log_append_content(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
         Thread(target=thd_serve_client, args=(client_socket, client_addr), daemon=True).start()
-    wnd_server.show_info("服务端已关闭, 停止接受客户端请求...")
+    log_append_content("服务端已关闭, 停止接受客户端请求...")
 
 
 def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
     while True:
-        wnd_server.show_info("等待客户端发出消息中...")
+        log_append_content("等待客户端发出消息中...")
         try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
             recv_bytes = client_socket.recv(1024)
         except:
@@ -182,7 +188,7 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
         # json字符串 转 py字典
         json_str = recv_bytes.decode()
         client_info_dict = json.loads(json_str)
-        wnd_server.show_info(f"收到客户端的消息: {client_info_dict}")
+        log_append_content(f"收到客户端的消息: {client_info_dict}")
         # 服务端消息处理
         msg_type = client_info_dict["消息类型"]
         client_info_dict.pop("消息类型")
@@ -194,10 +200,10 @@ def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
         }
         func = msg_func_dict.get(msg_type)
         if func is None:
-            wnd_server.show_info(f"消息类型不存在: {msg_type}")
+            log_append_content(f"消息类型不存在: {msg_type}")
         else:
             func(client_socket, client_info_dict)
-    wnd_server.show_info(f"客户端{client_addr}已断开连接, 服务结束")
+    log_append_content(f"客户端{client_addr}已断开连接, 服务结束")
     client_socket.close()
 
 
@@ -208,13 +214,13 @@ def deal_reg(client_socket: socket.socket, client_info_dict: dict):
     if sql_table_query("2用户管理", {"账号": account}):  # 若查到数据
         reg_ret = False
         detail = f"失败, 账号{account}已被注册!"
-        wnd_server.show_info(detail)
+        log_append_content(detail)
     else:  # 表插入记录
         client_info_dict["注册时间"] = cur_time_format
         client_info_dict["到期时间"] = cur_time_format
         reg_ret = sql_table_insert("2用户管理", client_info_dict)
         detail = f"账号{account}注册成功!" if reg_ret else f"账号{account}注册失败!"
-        wnd_server.show_info(detail)
+        log_append_content(detail)
     # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "注册", "结果": reg_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
@@ -249,6 +255,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     # 把客户端发送过来的数据记录到数据库
     update_db_user_login_info(client_info_dict, query_user, login_ret)
 
+
 # 处理-充值
 def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["账号"]
@@ -279,6 +286,7 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "充值", "结果": pay_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
+
 
 # 处理-心跳
 def deal_heart(client_socket: socket.socket, client_info_dict: dict):
@@ -313,9 +321,10 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
     # 向客户端回复注册结果
     try:
         client_socket.send(json_str.encode())
-        wnd_server.show_info("向客户端回复成功")
+        log_append_content("向客户端回复成功")
     except Exception as e:
-        wnd_server.show_info(f"向客户端回复失败: {e}")
+        log_append_content(f"向客户端回复失败: {e}")
+
 
 # 更新数据库_用户到期时间
 def update_db_user_due_time(query_user: dict, delta_day: int):
@@ -331,13 +340,14 @@ def update_db_user_due_time(query_user: dict, delta_day: int):
     ret = sql_table_update("2用户管理", {"到期时间": due_time}, {"账号": account})
     return ret
 
+
 # 更新数据库_用户登录数据
-def update_db_user_login_info(client_info_dict: dict, query_user: dict,login_ret: bool):
+def update_db_user_login_info(client_info_dict: dict, query_user: dict, login_ret: bool):
     if not query_user:  # 若该账号不存在
         return
     account = query_user["账号"]
     # 无论是否登录成功, 登录次数+1
-    update_dict = {"今日登录次数": query_user["今日登录次数"]+1,
+    update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
                    "操作系统": client_info_dict["操作系统"],
                    "备注": client_info_dict["备注"]}
     # 若登录成功, 才更新
@@ -368,6 +378,7 @@ def sql_table_insert(table_name: str, val_dict: dict):
     print(f"表插入结果: {ret}")
     return ret
 
+
 # 表-查询, 成功返回字典列表, 否则返回空列表
 def sql_table_query(table_name: str, condition_dict={}):
     fields = condition_dict.keys()
@@ -388,6 +399,7 @@ def sql_table_query(table_name: str, condition_dict={}):
         ret = []
     print(f"表查询结果: {ret}")
     return ret
+
 
 # 表-更新, 成功返回True, 否则返回False
 def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
@@ -415,6 +427,7 @@ def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
     print(f"表更新结果: {ret}")
     return ret
 
+
 # 生成随机卡密
 def gen_rnd_card_key(lenth=30):
     char_list = "0123456789qazwsxedcrfvtgbyhnujmikolpQAZWSXEDCRFVTGBYHNUJMIKOLP"
@@ -425,6 +438,25 @@ def gen_rnd_card_key(lenth=30):
         char = char_list[idx]
         card_key += char
     return card_key
+
+# 日志读内容
+def log_read_content() -> str:
+    # 读取文件内容
+    content = ""
+    # 读的时候, 若没有文件会报错
+    try:
+        with open(path_log, "r", encoding="utf8") as f:
+            content = f.read()
+    except:
+        print(f"未找到文件:{path}")
+    return content
+
+# 日志添加内容
+def log_append_content(content: str):
+    # 添加文件内容, 若没有文件会自动创建文件
+    with open(path_log, "a", encoding="utf8") as f:
+        f.write(f"{content}\n")
+
 
 if __name__ == '__main__':
     # 界面随DPI自动缩放
@@ -448,8 +480,9 @@ if __name__ == '__main__':
         )
         # 创建游标对象, 指定返回一个字典列表, 获取的每条数据的类型为字典(默认是元组)
         cursor = db.cursor(pymysql.cursors.DictCursor)
-        wnd_server.show_info("连接数据库成功")
+        log_append_content("连接数据库成功")
     except Exception as e:
+        log_append_content(f"mysql连接失败: {e}")
         QMessageBox.critical(wnd_server, "错误", f"mysql连接失败: {e}")
         sys.exit(-1)
     # 初始化tcp连接

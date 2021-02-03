@@ -48,7 +48,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
                 break
             time.sleep(mf.heart_gap_sec)
         self.show_info("与服务器断开连接...")
-        sys.exit(-1)
+        assert False, "与服务器断开连接..."
 
     # 发送数据给服务端
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):

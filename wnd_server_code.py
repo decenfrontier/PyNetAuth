@@ -1,7 +1,7 @@
 import sys
 import time, datetime
 import json
-from threading import Thread
+from threading import Thread, Lock
 
 from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
@@ -34,13 +34,13 @@ qss_style = """
     }
 """
 
-
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.init_status_bar()
-        self.init_wnd()
+        self.init_mysql()
+        self.init_net_auth()
         self.init_timer()
         self.init_all_controls()
         self.init_all_sig_slot()
@@ -48,22 +48,49 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):
-        tcp_socket.close()
+        self.tcp_socket.close()
         cursor.close()
         db.close()
 
     def init_status_bar(self):
         self.lbe_info = QLabel()
         self.status_bar.addWidget(self.lbe_info)
+        
+    def init_mysql(self):
+        try:
+            global db, cursor
+            # 创建数据库对象
+            db = pymysql.connect(
+                host="localhost",
+                port=3306,
+                user="root",
+                password="mysql",
+                database="net_auth"
+            )
+            # 创建游标对象, 指定返回一个字典列表, 获取的每条数据的类型为字典(默认是元组)
+            cursor = db.cursor(pymysql.cursors.DictCursor)
+            log_append_content("连接数据库成功")
+        except Exception as e:
+            log_append_content(f"mysql连接失败: {e}")
+            QMessageBox.critical(self, "错误", f"mysql连接失败: {e}")
+            self.close()
+            
+    def init_net_auth(self):
+        # 初始化tcp连接
+        try:
+            self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.tcp_socket.bind((server_ip, server_port))  # 主机号+端口号
+            self.tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
+            Thread(target=self.thd_accept_client, daemon=True).start()
+        except Exception as e:
+            log_append_content(f"tcp连接失败: {e}")
+            QMessageBox.critical(self, "错误", f"tcp连接失败: {e}")
+            self.close()
 
     def init_timer(self):
         self.timer = QTimer()
         self.timer.timeout.connect(self.on_timer_timeout)
         self.timer.start(1000)
-
-    def init_wnd(self):
-        # 设置窗口不可调整大小
-        self.status_bar.setSizeGripEnabled(False)
 
     def init_all_controls(self):
         # 显示第一页
@@ -165,49 +192,47 @@ class WndServer(QMainWindow, Ui_WndServer):
             update_dict = {"今日登录次数": 0, "今日换绑次数": 0}
             sql_table_update("2用户管理", update_dict)
 
+    def thd_accept_client(self):
+        log_append_content("服务端已开启, 准备接受客户请求...")
+        while True:
+            log_append_content("等待接收新客户端...")
+            try:
+                client_socket, client_addr = self.tcp_socket.accept()
+            except:
+                break
+            log_append_content(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
+            Thread(target=self.thd_serve_client, args=(client_socket, client_addr), daemon=True).start()
+        log_append_content("服务端已关闭, 停止接受客户端请求...")
 
-def thd_accept_client():
-    log_append_content("服务器已开启, 准备接受客户请求...")
-    while True:
-        # log_append_content("等待接收新客户端...")
-        try:
-            client_socket, client_addr = tcp_socket.accept()
-        except:
-            break
-        log_append_content(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
-        Thread(target=thd_serve_client, args=(client_socket, client_addr), daemon=True).start()
-    log_append_content("服务端已关闭, 停止接受客户端请求...")
-
-
-def thd_serve_client(client_socket: socket.socket, client_addr: tuple):
-    while True:
-        # log_append_content("等待客户端发出消息中...")
-        try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
-            recv_bytes = client_socket.recv(1024)
-        except:
-            recv_bytes = ""
-        if not recv_bytes:  # 若客户端退出,会收到一个空str
-            break
-        # json字符串 转 py字典
-        json_str = recv_bytes.decode()
-        client_info_dict = json.loads(json_str)
-        log_append_content(f"收到客户端的消息: {json_str}")
-        # 服务端消息处理
-        msg_type = client_info_dict["消息类型"]
-        client_info_dict.pop("消息类型")
-        msg_func_dict = {
-            "注册": deal_reg,
-            "登录": deal_login,
-            "充值": deal_pay,
-            "心跳": deal_heart,
-        }
-        func = msg_func_dict.get(msg_type)
-        if func is None:
-            log_append_content(f"消息类型不存在: {msg_type}")
-        else:
-            func(client_socket, client_info_dict)
-    log_append_content(f"客户端{client_addr}已断开连接, 服务结束")
-    client_socket.close()
+    def thd_serve_client(self, client_socket: socket.socket, client_addr: tuple):
+        while True:
+            log_append_content("等待客户端发出消息中...")
+            try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
+                recv_bytes = client_socket.recv(1024)
+            except:
+                recv_bytes = ""
+            if not recv_bytes:  # 若客户端退出,会收到一个空str
+                break
+            # json字符串 转 py字典
+            json_str = recv_bytes.decode()
+            client_info_dict = json.loads(json_str)
+            log_append_content(f"收到客户端的消息: {json_str}")
+            # 服务端消息处理
+            msg_type = client_info_dict["消息类型"]
+            client_info_dict.pop("消息类型")
+            msg_func_dict = {
+                "注册": deal_reg,
+                "登录": deal_login,
+                "充值": deal_pay,
+                "心跳": deal_heart,
+            }
+            func = msg_func_dict.get(msg_type)
+            if func is None:
+                log_append_content(f"消息类型不存在: {msg_type}")
+            else:
+                func(client_socket, client_info_dict)
+        log_append_content(f"客户端{client_addr}已断开连接, 服务结束")
+        client_socket.close()
 
 
 # 处理-注册
@@ -235,9 +260,9 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     pwd = client_info_dict["密码"]
     machine_code = client_info_dict["机器码"]
     reason, login_ret, query_user = "原因未知", False, {}
-    dict_list = sql_table_query("2用户管理", {"账号": account})
-    if dict_list:  # 判断账号是否存在
-        query_user = dict_list[0]
+    query_user_list = sql_table_query("2用户管理", {"账号": account})
+    if query_user_list:  # 判断账号是否存在
+        query_user = query_user_list[0]
         if query_user["状态"] == "冻结":
             reason = query_user["备注"]
         elif cur_time_format > query_user["到期时间"]:
@@ -290,7 +315,6 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     server_info_dict = {"消息类型": "充值", "结果": pay_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
 
-
 # 处理-心跳
 def deal_heart(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["账号"]
@@ -315,7 +339,6 @@ def deal_heart(client_socket: socket.socket, client_info_dict: dict):
     send_to_client(client_socket, server_info_dict)
     # 更新用户数据
     sql_table_update("2用户管理", update_dict, {"账号": account})
-
 
 # 发送数据给客户端
 def send_to_client(client_socket: socket.socket, server_info_dict: dict):
@@ -454,13 +477,13 @@ def log_read_content() -> str:
         print(f"未找到文件:{path_log}")
     return content
 
+lock = Lock()
 # 日志添加内容
 def log_append_content(content: str):
-    # 添加文件内容, 若没有文件会自动创建文件
-    with open(path_log, "a", encoding="utf8") as f:
-        text = f"{cur_time_format} {content}\n"
-        f.write(text)
-
+    with lock:
+        with open(path_log, "a", encoding="utf8") as f:
+            text = f"{cur_time_format} {content}\n"
+            f.write(text)
 
 if __name__ == '__main__':
     log_append_content("------------------------------------------------------------------")
@@ -473,31 +496,5 @@ if __name__ == '__main__':
     # 窗口
     wnd_server = WndServer()
     wnd_server.show()
-    # 初始化mysql
-    try:
-        # 创建数据库对象
-        db = pymysql.connect(
-            host="localhost",
-            port=3306,
-            user="root",
-            password="mysql",
-            database="net_auth"
-        )
-        # 创建游标对象, 指定返回一个字典列表, 获取的每条数据的类型为字典(默认是元组)
-        cursor = db.cursor(pymysql.cursors.DictCursor)
-        log_append_content("连接数据库成功")
-    except Exception as e:
-        log_append_content(f"mysql连接失败: {e}")
-        QMessageBox.critical(wnd_server, "错误", f"mysql连接失败: {e}")
-        sys.exit(-1)
-    # 初始化tcp连接
-    try:
-        tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tcp_socket.bind((server_ip, server_port))  # 主机号+端口号
-        tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
-        Thread(target=thd_accept_client, daemon=True).start()
-    except Exception as e:
-        QMessageBox.critical(wnd_server, "错误", f"tcp连接失败: {e}")
-        sys.exit(-1)
     # 消息循环
     sys.exit(app.exec_())

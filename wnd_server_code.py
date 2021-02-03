@@ -241,6 +241,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 # 处理-注册
 def deal_reg(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["账号"]
+    log_append_content(f"[注册] 正在处理账号: {account}")
     # 查询账号是否存在, 不存在则插入记录
     if sql_table_query("2用户管理", {"账号": account}):  # 若查到数据
         reg_ret = False
@@ -260,6 +261,7 @@ def deal_reg(client_socket: socket.socket, client_info_dict: dict):
 # 处理-登录
 def deal_login(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["账号"]
+    log_append_content(f"[登录] 正在处理账号: {account}")
     pwd = client_info_dict["密码"]
     machine_code = client_info_dict["机器码"]
     reason, login_ret, query_user = "原因未知", False, {}
@@ -290,6 +292,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
 # 处理-充值
 def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["账号"]
+    log_append_content(f"[充值] 正在处理账号: {account}")
     card_key = client_info_dict["卡号"]
     # 查询数据库, 判断卡密是否存在
     dict_list = sql_table_query("3卡密管理", {"卡号": card_key})
@@ -321,6 +324,7 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
 # 处理-心跳
 def deal_heart(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["账号"]
+    log_append_content(f"[心跳] 正在处理账号: {account}")
     comment = client_info_dict["备注"]
     update_dict = {"心跳时间": cur_time_format, "备注": comment}
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
@@ -346,6 +350,7 @@ def deal_heart(client_socket: socket.socket, client_info_dict: dict):
 # 处理_离线
 def deal_offline(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["账号"]
+    log_append_content(f"[离线] 正在处理账号: {account}")
     comment = client_info_dict["备注"]
     update_dict = {"心跳时间": cur_time_format, "备注": comment, "状态": "离线"}
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在

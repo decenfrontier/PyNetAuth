@@ -17,17 +17,19 @@ import mf
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 machine_code = mf.get_machine_code()
 login_ip = ""
-login_place = ""
 
 class WndClientLogin(QDialog, Ui_WndClientLogin):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        t = Thread(target=self.thd_get_outer_ip, daemon=True)
+        t.start()
         self.init_wnd()
         self.init_status_bar()
         self.init_net_auth()
         self.init_all_controls()
         self.init_all_sig_slot()
+        t.join(3)  # 等待外网IP获取完成
         self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):
@@ -43,9 +45,14 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
         if err_no != 0:
             QMessageBox.critical(self, "错误", f"连接服务器失败, 错误码: {err_no}")
-            sys.exit(-1)
+            self.close()
         self.show_info(f"连接服务器成功, 开始接收数据...")
         Thread(target=self.thd_recv_server, daemon=True).start()
+
+    # 线程_获取外网IP
+    def thd_get_outer_ip(self):
+        global login_ip
+        login_ip = mf.get_outer_ip()
 
     # 线程_接收服务端消息
     def thd_recv_server(self):
@@ -189,7 +196,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "机器码": machine_code,
             "上次登录时间": login_time,
             "上次登录IP": login_ip,
-            "上次登录地": login_place,
             "操作系统": login_system,
             "备注": mf.client_comment,
         }
@@ -249,25 +255,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             mf.log_info(f"客户端数据, 发送失败: {e}")
 
 
-# 线程_获取外网IP和归属地
-def thd_get_outer_ip_location():
-    global login_ip, login_place
-    login_ip = mf.get_outer_ip()
-    login_place = mf.get_ip_location(login_ip)
-
-
-# 线程_获取服务端自定义数据(防山寨)
-def thd_get_server_custom_data():
-    # RSA获取字库密码, 图片密码, 大漠破解地址, 标志位基址
-
-    ...
-
-
-
 if __name__ == '__main__':
-    # 提前发出获取公网iP请求, 需要一定时间才能得到
-    Thread(target=thd_get_outer_ip_location, daemon=True).start()
-
     # 界面随DPI自动缩放
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication()

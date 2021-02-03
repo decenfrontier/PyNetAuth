@@ -405,7 +405,6 @@ def update_db_user_login_info(client_info_dict: dict, query_user: dict, login_re
         update_dict["机器码"] = client_info_dict["机器码"]
         update_dict["上次登录时间"] = client_info_dict["上次登录时间"]
         update_dict["上次登录IP"] = client_info_dict["上次登录IP"]
-        update_dict["上次登录地"] = client_info_dict["上次登录地"]
     sql_table_update("2用户管理", update_dict, {"账号": account})
 
 

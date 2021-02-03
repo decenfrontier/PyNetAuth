@@ -63,6 +63,12 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         self.show_info("与服务器断开连接...")
         self.close()
 
+    # 线程_获取服务端自定义数据(防山寨)
+    def thd_get_server_custom_data(self):
+        # RSA获取字库密码, 图片密码, 大漠破解地址, 标志位基址
+
+        ...
+
     # 发送数据给服务端
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
         # py字典 转 json字符串

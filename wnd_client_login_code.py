@@ -57,8 +57,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.show_info(f"连接服务器成功, 开始接收数据...")
         Thread(target=self.thd_recv_server, daemon=True).start()
 
-
-
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
         self.setAttribute(Qt.WA_TranslucentBackground)  # 透明背景
@@ -292,5 +290,6 @@ if __name__ == '__main__':
     if wnd_client_login.exec_() == QDialog.Accepted:
         wnd_client_main = WndClientMain()
         wnd_client_main.show()
+        wnd_client_main.start_heart_beat()
         sys.exit(app.exec_())
     sys.exit(0)

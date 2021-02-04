@@ -14,7 +14,6 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         super().__init__()
         self.setupUi(self)
         self.init_status_bar()
-        self.init_net_auth()
 
     def closeEvent(self, event: QCloseEvent):
         tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -36,7 +35,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         self.lbe_info.setText(f"<提示> : {info}")
         mf.log_info(info)
 
-    def init_net_auth(self):
+    def start_heart_beat(self):
         self.error_count = 0
         Thread(target=self.thd_heart_beat, daemon=True).start()
 

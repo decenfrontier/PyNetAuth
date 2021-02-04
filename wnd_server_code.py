@@ -427,7 +427,6 @@ def update_db_user_login_info(client_info_dict: dict, query_user: dict, login_re
                    "备注": client_info_dict["备注"]}
     # 若登录成功, 才更新
     if login_ret:
-        update_dict["状态"] = "在线"
         update_dict["机器码"] = client_info_dict["机器码"]
         update_dict["上次登录时间"] = client_info_dict["上次登录时间"]
         update_dict["上次登录IP"] = client_info_dict["上次登录IP"]

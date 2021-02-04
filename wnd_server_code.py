@@ -116,9 +116,15 @@ class WndServer(QMainWindow, Ui_WndServer):
         # self.tbe_online_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
         # self.tbe_card.setEditTriggers(QAbstractItemView.NoEditTriggers)
         # 项目管理表
-        # self.tbe_proj
+        id, ver, pub_notice, url_update, url_card = [i for i in range(5)]
+        self.tbe_proj.setColumnWidth(id, 40)
+        self.tbe_proj.setColumnWidth(ver, 100)
+        self.tbe_proj.setColumnWidth(pub_notice, 160)
+        self.tbe_proj.setColumnWidth(url_update, 120)
+        self.tbe_proj.setColumnWidth(url_card, 120)
         # 用户管理表
-        account, pwd, email, machine_code, reg_ip, reg_time, due_time, is_forbid = [i for i in range(8)]
+        id, account, pwd, email, machine_code, reg_ip, reg_time, due_time, is_forbid = [i for i in range(9)]
+        self.tbe_user.setColumnWidth(id, 40)
         self.tbe_user.setColumnWidth(account, 100)
         self.tbe_user.setColumnWidth(pwd, 100)
         self.tbe_user.setColumnWidth(email, 100)
@@ -128,12 +134,20 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.setColumnWidth(due_time, 120)
         self.tbe_user.setColumnWidth(is_forbid, 70)
         # 卡密管理表
-        card_key, type, gen_time, use_time, proj_name = [i for i in range(5)]
+        id, card_key, type, gen_time, use_time, proj_name = [i for i in range(6)]
+        self.tbe_card.setColumnWidth(id, 40)
         self.tbe_card.setColumnWidth(card_key, 260)
         self.tbe_card.setColumnWidth(type, 80)
         self.tbe_card.setColumnWidth(gen_time, 150)
         self.tbe_card.setColumnWidth(use_time, 150)
         self.tbe_card.setColumnWidth(proj_name, 150)
+        # 自定义数据表
+        id, key, val, eval = [i for i in range(4)]
+        self.tbe_custom.setColumnWidth(id, 40)
+        self.tbe_custom.setColumnWidth(key, 100)
+        self.tbe_custom.setColumnWidth(val, 120)
+        self.tbe_custom.setColumnWidth(eval, 200)
+
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
@@ -176,14 +190,16 @@ class WndServer(QMainWindow, Ui_WndServer):
         dict_list = sql_table_query("3卡密管理")
         tbe.setRowCount(len(dict_list))
         for row, card_info in enumerate(dict_list):
+            id = QTableWidgetItem(str(card_info["ID"]))
             card_key = QTableWidgetItem(card_info["卡号"])
             card_type = QTableWidgetItem(card_info["卡类型"])
             gen_time = QTableWidgetItem(card_info["制卡时间"])
             use_time = QTableWidgetItem(card_info["使用时间"])
-            self.tbe_card.setItem(row, 0, card_key)
-            self.tbe_card.setItem(row, 1, card_type)
-            self.tbe_card.setItem(row, 2, gen_time)
-            self.tbe_card.setItem(row, 3, use_time)
+            self.tbe_card.setItem(row, 0, id)
+            self.tbe_card.setItem(row, 1, card_key)
+            self.tbe_card.setItem(row, 2, card_type)
+            self.tbe_card.setItem(row, 3, gen_time)
+            self.tbe_card.setItem(row, 4, use_time)
 
     def on_timer_sec_timeout(self):
         global cur_time_stamp, cur_time_format

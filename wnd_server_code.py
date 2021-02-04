@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import time, datetime
 import json
 from threading import Thread, Lock
@@ -141,7 +141,6 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
-        # self.show_info(f"切换到 {action_name}")
         if action_name == "项目管理":
             self.stack_widget.setCurrentIndex(0)
         elif action_name == "用户管理":
@@ -149,9 +148,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         elif action_name == "卡密管理":
             self.stack_widget.setCurrentIndex(2)
         elif action_name == "执行日志":
+            self.stack_widget.setCurrentIndex(3)
             self.tbr_log.setText(log_read_content())
             self.tbr_log.moveCursor(QTextCursor.End)
-            self.stack_widget.setCurrentIndex(3)
 
     def on_btn_card_gen_clicked(self):
         gen_time = cur_time_format

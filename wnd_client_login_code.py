@@ -21,18 +21,9 @@ login_ip = ""
 
 # 线程_获取全局变量
 def thd_get_global_var():
-    def thd_get_outer_ip():
-        global login_ip
-        login_ip = mf.get_outer_ip()
-    def thd_get_machine_code():
-        global machine_code
-        machine_code = mf.get_machine_code()
-    t1 = Thread(target=thd_get_outer_ip)
-    t2 = Thread(target=thd_get_machine_code)
-    t1.start()
-    t2.start()
-    t1.join()
-    t2.join()
+    global login_ip, machine_code
+    login_ip = mf.get_outer_ip()
+    machine_code = mf.get_machine_code()
 
 class WndClientLogin(QDialog, Ui_WndClientLogin):
     def __init__(self):
@@ -45,7 +36,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.init_net_auth()
         self.init_all_controls()
         self.init_all_sig_slot()
-        thd1.join()
+        thd1.join(2)
         self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):

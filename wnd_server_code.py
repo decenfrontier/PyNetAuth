@@ -153,6 +153,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
         self.btn_card_refresh.clicked.connect(self.on_btn_card_refresh_clicked)
         self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)
+        self.btn_proj_refresh.clicked.connect(self.on_btn_proj_refresh_clicked)
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -218,6 +219,23 @@ class WndServer(QMainWindow, Ui_WndServer):
             sql_table_update("1项目管理", val_dict, {"客户端版本": client_ver})
         else:
             sql_table_insert("1项目管理", val_dict)
+
+    def on_btn_proj_refresh_clicked(self):
+        query_proj_list = sql_table_query("1项目管理")
+        self.tbe_proj.setRowCount(len(query_proj_list))
+        for row, proj_info in enumerate(query_proj_list):
+            id = QTableWidgetItem(str(proj_info["ID"]))
+            client_ver = QTableWidgetItem(proj_info["客户端版本"])
+            pub_notice = QTableWidgetItem(proj_info["客户端公告"])
+            url_update = QTableWidgetItem(proj_info["更新地址"])
+            url_card = QTableWidgetItem(proj_info["发卡地址"])
+            reg_gift_day = QTableWidgetItem(str(proj_info["注册赠送天数"]))
+            self.tbe_proj.setItem(row, 0, id)
+            self.tbe_proj.setItem(row, 1, client_ver)
+            self.tbe_proj.setItem(row, 2, pub_notice)
+            self.tbe_proj.setItem(row, 3, url_update)
+            self.tbe_proj.setItem(row, 4, url_card)
+            self.tbe_proj.setItem(row, 5, reg_gift_day)
 
     def on_timer_sec_timeout(self):
         global cur_time_stamp, cur_time_format

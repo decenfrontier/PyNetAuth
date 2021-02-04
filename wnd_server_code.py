@@ -91,9 +91,13 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.close()
 
     def init_timer(self):
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.on_timer_timeout)
-        self.timer.start(1000)
+        self.timer_sec = QTimer()
+        self.timer_sec.timeout.connect(self.on_timer_sec_timeout)
+        self.timer_sec.start(1000)
+        self.timer_min = QTimer()
+        self.timer_min.timeout.connect(self.on_timer_min_timeout)
+        self.timer_min.start(1000*60*15)
+
 
     def init_all_controls(self):
         # 显示第一页
@@ -181,16 +185,22 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_card.setItem(row, 2, gen_time)
             self.tbe_card.setItem(row, 3, use_time)
 
-    def on_timer_timeout(self):
-        global cur_time_stamp, cur_time_format, today, path_log
+    def on_timer_sec_timeout(self):
+        global cur_time_stamp, cur_time_format
         cur_time_stamp += 1
         cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    def on_timer_min_timeout(self):
+        global today, path_log
         cur_day = cur_time_format[:10]
-        if cur_day != today:  # 日期改变
+        # 1 检测日期改变
+        if cur_day != today:
             today = cur_day
             path_log = f"C:\\net_auth_{today}.log"
-            update_dict = {"今日登录次数": 0, "今日解绑次数": 0}
-            sql_table_update("2用户管理", update_dict)
+            sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})
+        # 2 刷新所有用户状态
+        # todo
+        # sql_table_update("2用户管理", {"状态": "离线"}, )
 
     def thd_accept_client(self):
         log_append_content("服务端已开启, 准备接受客户请求...")

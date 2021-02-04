@@ -339,6 +339,7 @@ def deal_heart(client_socket: socket.socket, client_info_dict: dict):
             update_dict["状态"] = "冻结"
         else:
             heart_ret, detail = "正常", ""
+            update_dict["状态"] = "在线"
     else:
         heart_ret, detail = "下线", "此账号不存在"
     # 发送消息回客户端

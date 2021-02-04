@@ -4,9 +4,9 @@ import json
 from threading import Thread, Lock
 from random import randint
 
-from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor
+from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor, QCursor
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
-    QMessageBox, QTableWidgetItem
+    QMessageBox, QTableWidgetItem, QMenu, QAction
 from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
@@ -44,6 +44,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_net_auth()
         self.init_timer()
         self.init_all_controls()
+        self.init_all_menu()
         self.init_all_sig_slot()
         self.move(0, 160)
         self.show_info("窗口初始化成功")
@@ -147,6 +148,16 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_custom.setColumnWidth(val, 120)
         self.tbe_custom.setColumnWidth(eval, 200)
 
+    def init_all_menu(self):
+        # 项目管理表
+        self.tbe_proj.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.menu_tbe_proj = QMenu()
+        self.action_proj_del_record = QAction("删除此记录")
+        self.menu_tbe_proj.addAction(self.action_proj_del_record)
+        self.action_proj_del_record.triggered.connect(self.on_action_proj_del_record_triggered)
+        self.tbe_proj.customContextMenuRequested.connect(
+            lambda : self.menu_tbe_proj.exec_(QCursor.pos())
+        )
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
@@ -157,6 +168,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_proj_refresh.clicked.connect(self.on_btn_proj_refresh_clicked)
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
+
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -254,6 +266,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.edt_proj_url_update.setText(url_update)
         self.edt_proj_url_card.setText(url_card)
         self.edt_proj_reg_gift_day.setText(reg_gift_day)
+
+    def on_action_proj_del_record_triggered(self):
+        # 若不在行内点, 则默认返回0
+        row = self.tbe_proj.currentRow()
+        client_ver = self.tbe_proj.item(row, 1).text()
+        # todo: 从数据库删除记录
 
     def on_timer_sec_timeout(self):
         global cur_time_stamp, cur_time_format

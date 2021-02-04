@@ -150,10 +150,13 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
+        # 按钮相关
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
         self.btn_card_refresh.clicked.connect(self.on_btn_card_refresh_clicked)
         self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)
         self.btn_proj_refresh.clicked.connect(self.on_btn_proj_refresh_clicked)
+        # 表格相关
+        self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -187,10 +190,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info(f"已生成{card_num}张{card_type}")
 
     def on_btn_card_refresh_clicked(self):
-        tbe = self.tbe_card
-        dict_list = sql_table_query("3卡密管理")
-        tbe.setRowCount(len(dict_list))
-        for row, card_info in enumerate(dict_list):
+        query_card_list = sql_table_query("3卡密管理")
+        self.tbe_card.setRowCount(len(query_card_list))
+        for row, card_info in enumerate(query_card_list):
             id = QTableWidgetItem(str(card_info["ID"]))
             card_key = QTableWidgetItem(card_info["卡号"])
             card_type = QTableWidgetItem(card_info["卡类型"])
@@ -236,6 +238,19 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_proj.setItem(row, 3, url_update)
             self.tbe_proj.setItem(row, 4, url_card)
             self.tbe_proj.setItem(row, 5, reg_gift_day)
+
+    def on_tbe_proj_cellClicked(self, row: int, col: int):
+        client_ver = self.tbe_proj.item(row, 1).text()
+        pub_notice = self.tbe_proj.item(row, 2).text()
+        url_update = self.tbe_proj.item(row, 3).text()
+        url_card = self.tbe_proj.item(row, 4).text()
+        reg_gift_day = self.tbe_proj.item(row, 5).text()
+
+        self.edt_proj_client_ver.setText(client_ver)
+        self.pedt_proj_public_notice.setPlainText(pub_notice)
+        self.edt_proj_url_update.setText(url_update)
+        self.edt_proj_url_card.setText(url_card)
+        self.edt_proj_reg_gift_day.setText(reg_gift_day)
 
     def on_timer_sec_timeout(self):
         global cur_time_stamp, cur_time_format

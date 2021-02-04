@@ -35,7 +35,6 @@ qss_style = """
     }
 """
 
-
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
         super().__init__()
@@ -153,6 +152,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
         self.btn_card_refresh.clicked.connect(self.on_btn_card_refresh_clicked)
+        self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -200,6 +200,24 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_card.setItem(row, 2, card_type)
             self.tbe_card.setItem(row, 3, gen_time)
             self.tbe_card.setItem(row, 4, use_time)
+
+    def on_btn_proj_confirm_clicked(self):
+        client_ver = self.edt_proj_client_ver.text()
+        reg_gift_day = self.edt_proj_reg_gift_day.text()
+        url_card = self.edt_proj_url_card.text()
+        url_update = self.edt_proj_url_update.text()
+        pub_notice = self.pedt_proj_public_notice.toPlainText()
+        val_dict = {
+            "客户端版本": client_ver,
+            "客户端公告": pub_notice,
+            "更新地址": url_update,
+            "发卡地址": url_card,
+            "注册赠送天数": reg_gift_day,
+        }
+        if sql_table_query("1项目管理", {"客户端版本": client_ver}):
+            sql_table_update("1项目管理", val_dict, {"客户端版本": client_ver})
+        else:
+            sql_table_insert("1项目管理", val_dict)
 
     def on_timer_sec_timeout(self):
         global cur_time_stamp, cur_time_format

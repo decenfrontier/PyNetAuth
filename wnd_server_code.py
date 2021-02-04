@@ -219,8 +219,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         }
         if sql_table_query("1项目管理", {"客户端版本": client_ver}):
             sql_table_update("1项目管理", val_dict, {"客户端版本": client_ver})
+            self.show_info("已更新项目记录")
         else:
             sql_table_insert("1项目管理", val_dict)
+            self.show_info("已插入项目新记录")
+        self.on_btn_proj_refresh_clicked()
 
     def on_btn_proj_refresh_clicked(self):
         query_proj_list = sql_table_query("1项目管理")

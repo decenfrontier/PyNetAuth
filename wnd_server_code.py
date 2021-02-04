@@ -1,12 +1,12 @@
-import sys, os
+import sys
 import time, datetime
 import json
 from threading import Thread, Lock
+from random import randint
 
 from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
-    QMessageBox, QAbstractItemView, QTableWidget, QTableWidgetItem, QSizePolicy, \
-    QLayout
+    QMessageBox, QTableWidgetItem
 from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
@@ -35,6 +35,7 @@ qss_style = """
     }
 """
 
+
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
         super().__init__()
@@ -56,7 +57,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_status_bar(self):
         self.lbe_info = QLabel()
         self.status_bar.addWidget(self.lbe_info)
-        
+
     def init_mysql(self):
         try:
             global db, cursor
@@ -75,7 +76,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             log_append_content(f"mysql连接失败: {e}")
             QMessageBox.critical(self, "错误", f"mysql连接失败: {e}")
             self.close()
-            
+
     def init_net_auth(self):
         # 初始化tcp连接
         try:
@@ -188,7 +189,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         if cur_day != today:  # 日期改变
             today = cur_day
             path_log = f"C:\\net_auth_{today}.log"
-            update_dict = {"今日登录次数": 0, "今日换绑次数": 0}
+            update_dict = {"今日登录次数": 0, "今日解绑次数": 0}
             sql_table_update("2用户管理", update_dict)
 
     def thd_accept_client(self):
@@ -225,6 +226,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 "充值": deal_pay,
                 "心跳": deal_heart,
                 "离线": deal_offline,
+                "解绑": deal_unbind,
             }
             func = msg_func_dict.get(msg_type)
             if func is None:
@@ -242,13 +244,13 @@ def deal_reg(client_socket: socket.socket, client_info_dict: dict):
     # 查询账号是否存在, 不存在则插入记录
     if sql_table_query("2用户管理", {"账号": account}):  # 若查到数据
         reg_ret = False
-        detail = f"失败, 账号{account}已被注册!"
+        detail = f"注册失败, 此账号已被注册!"
         log_append_content(detail)
     else:  # 表插入记录
         client_info_dict["注册时间"] = cur_time_format
         client_info_dict["到期时间"] = cur_time_format
         reg_ret = sql_table_insert("2用户管理", client_info_dict)
-        detail = f"账号{account}注册成功!" if reg_ret else f"账号{account}注册失败!"
+        detail = "注册成功" if reg_ret else "注册失败, 数据库异常"
         log_append_content(detail)
     # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "注册", "结果": reg_ret, "详情": detail}
@@ -261,24 +263,24 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     log_append_content(f"[登录] 正在处理账号: {account}")
     pwd = client_info_dict["密码"]
     machine_code = client_info_dict["机器码"]
-    reason, login_ret, query_user = "原因未知", False, {}
+    login_ret, query_user = False, {}
     query_user_list = sql_table_query("2用户管理", {"账号": account})
     if query_user_list:  # 判断账号是否存在
         query_user = query_user_list[0]
         if query_user["状态"] == "冻结":
-            reason = query_user["备注"]
+            detail = "登录失败, 此账号已冻结"
         elif cur_time_format > query_user["到期时间"]:
-            reason = "此账号已到期"
+            detail = "登录失败, 此账号已到期"
         elif pwd == query_user["密码"]:  # 判断密码是否符合
             if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
                 login_ret = True
+                detail = "登录成功"
             else:
-                reason = "异机登录, 请先换绑"
+                detail = "登录失败, 异机登录请先解绑"
         else:
-            reason = "密码错误"
+            detail = "登录失败, 密码错误"
     else:
-        reason = "账号不存在"
-    detail = f"登录成功" if login_ret else f"登录失败, {reason}"
+        detail = "登录失败, 账号不存在"
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "登录", "结果": login_ret, "详情": detail, "账号": account}
     send_to_client(client_socket, server_info_dict)
@@ -307,16 +309,17 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
                 card_type = card_info["卡类型"]
                 delta_day = type_time_dict[card_type]
                 pay_ret = update_db_user_due_time(query_user, delta_day)
-                detail = "充值成功" if pay_ret else "充值失败"
+                detail = "充值成功" if pay_ret else "充值失败, 数据库异常"
             else:
-                detail = "失败, 账号不存在"
+                detail = "充值失败, 账号不存在"
         else:  # 卡密被使用
-            detail = "失败, 此卡密已被使用"
+            detail = "充值失败, 此卡密已被使用"
     else:  # 没查到数据
-        detail = "失败, 卡密不存在"
+        detail = "充值失败, 卡密不存在"
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "充值", "结果": pay_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
+
 
 # 处理-心跳
 def deal_heart(client_socket: socket.socket, client_info_dict: dict):
@@ -344,6 +347,7 @@ def deal_heart(client_socket: socket.socket, client_info_dict: dict):
     # 更新用户数据
     sql_table_update("2用户管理", update_dict, {"账号": account})
 
+
 # 处理_离线
 def deal_offline(client_socket: socket.socket, client_info_dict: dict):
     account = client_info_dict["账号"]
@@ -358,6 +362,27 @@ def deal_offline(client_socket: socket.socket, client_info_dict: dict):
             update_dict["状态"] = "冻结"
     # 更新用户数据
     sql_table_update("2用户管理", update_dict, {"账号": account})
+
+
+# 处理_解绑
+def deal_unbind(client_socket: socket.socket, client_info_dict: dict):
+    account = client_info_dict["账号"]
+    log_append_content(f"[解绑] 正在处理账号: {account}")
+    pwd = client_info_dict["密码"]
+    unbind_ret = False
+    query_user_list = sql_table_query("2用户管理", {"账号": account})
+    if query_user_list:  # 判断账号是否存在
+        query_user = query_user_list[0]
+        if pwd == query_user["密码"]:  # 密码正确, 把机器码置为空
+            unbind_ret = sql_table_update("2用户管理", {"机器码": ""}, {"账号": account})
+            detail = "解绑成功" if unbind_ret else "解绑失败, 数据库异常"
+        else:
+            detail = "解绑失败, 密码错误"
+    else:
+        detail = "解绑失败, 账号不存在"
+    # 发送消息回客户端
+    server_info_dict = {"消息类型": "解绑", "结果": unbind_ret, "详情": detail}
+    send_to_client(client_socket, server_info_dict)
 
 
 # 发送数据给客户端
@@ -441,7 +466,7 @@ def sql_table_query(table_name: str, condition_dict={}):
         cursor.execute(sql, vals)  # 执行SQL语句
         ret = cursor.fetchall()  # 获取查询结果, 没查到返回空列表
         db.commit()  # 提交到数据库
-    except:
+    except Exception as e:
         log_append_content(f"表查询异常: {e}")
         db.rollback()  # 数据库回滚
     log_append_content(f"表查询结果: {ret}")
@@ -481,10 +506,11 @@ def gen_rnd_card_key(lenth=30):
     max_idx = len(char_list) - 1
     card_key = ""
     for _ in range(lenth):
-        idx = rnd(0, max_idx)
+        idx = randint(0, max_idx)
         char = char_list[idx]
         card_key += char
     return card_key
+
 
 # 日志读内容
 def log_read_content() -> str:
@@ -505,6 +531,7 @@ def log_append_content(content: str):
         with open(path_log, "a", encoding="utf8") as f:
             text = f"{cur_time_format} {content}\n"
             f.write(text)
+
 
 if __name__ == '__main__':
     log_append_content("------------------------------------------------------------------")

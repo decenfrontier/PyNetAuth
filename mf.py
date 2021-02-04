@@ -45,14 +45,6 @@ def time_diff(start_sec, end_sec):
     gap_min = gap_sec // 60
     return gap_min
 
-# def mdelay(min_ms: int, max_ms=None):
-#     if max_ms is None:
-#         t_ms = min_ms
-#     else:
-#         t_ms = rnd(min_ms, max_ms)
-#     t_s = t_ms / 1000
-#     time.sleep(t_s)
-
 def msleep(min_ms: int, max_ms=None):
     if max_ms is None:
         t_ms = min_ms

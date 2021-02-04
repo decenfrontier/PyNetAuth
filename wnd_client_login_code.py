@@ -56,34 +56,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.show_info(f"连接服务器成功, 开始接收数据...")
         Thread(target=self.thd_recv_server, daemon=True).start()
 
-    # 线程_接收服务端消息
-    def thd_recv_server(self):
-        while True:
-            mf.log_info("等待服务端发出消息中...")
-            try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
-                recv_bytes = tcp_socket.recv(1024)
-            except:
-                recv_bytes = ""
-            if not recv_bytes:  # 若客户端退出,会收到一个空str
-                break
-            # json字符串 转 py字典
-            json_str = recv_bytes.decode()
-            server_info_dict = json.loads(json_str)
-            mf.log_info(f"收到服务端的消息: {json_str}")
-            # 客户端消息处理
-            msg_type = server_info_dict["消息类型"]
-            if msg_type == "注册":
-                self.show_info(server_info_dict["详情"])
-            elif msg_type == "登录":
-                self.show_info(server_info_dict["详情"])
-                if server_info_dict["结果"]:
-                    mf.client_account = server_info_dict["账号"]
-                    tcp_socket.close()  # 先关闭套接字
-                    self.accept()  # 接受
-                    return
-            elif msg_type == "充值":
-                self.show_info(server_info_dict["详情"])
-        self.show_info("与服务器断开连接...")
+
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
@@ -164,6 +137,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.btn_reg.clicked.connect(self.on_btn_reg_clicked)
         self.btn_exit.clicked.connect(self.on_btn_exit_clicked)
         self.btn_pay.clicked.connect(self.on_btn_pay_clicked)
+        self.btn_unbind.clicked.connect(self.on_btn_unbind_clicked)
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
@@ -203,25 +177,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         }
         self.send_to_server(tcp_socket, client_info_dict)
 
-    def on_btn_exit_clicked(self):
-        self.reject()
-
-    def on_btn_pay_clicked(self):
-        account = self.edt_pay_account.text()
-        card_key = self.edt_pay_key.text()
-        if len(card_key) != 30 or len(account) not in range(6,13):
-            self.show_info("账号或卡密错误, 请检查无误后再试")
-            return
-        client_info_dict = {
-            "消息类型": "充值",
-            "账号": account,
-            "卡号": card_key,
-        }
-        ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
-                                      QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
-        if ret == QMessageBox.Yes:
-            self.send_to_server(tcp_socket, client_info_dict)
-
     def on_btn_reg_clicked(self):
         # 判断注册信息是否符合要求
         reg_account = self.edt_reg_account.text()
@@ -245,6 +200,44 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         }
         self.send_to_server(tcp_socket, client_info_dict)
 
+    def on_btn_exit_clicked(self):
+        self.reject()
+
+    def on_btn_pay_clicked(self):
+        account = self.edt_pay_account.text()
+        card_key = self.edt_pay_key.text()
+        if len(card_key) != 30 or len(account) not in range(6,13):
+            self.show_info("账号或卡密错误, 请检查无误后再试")
+            return
+        client_info_dict = {
+            "消息类型": "充值",
+            "账号": account,
+            "卡号": card_key,
+        }
+        ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
+                                      QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+        if ret == QMessageBox.Yes:
+            self.send_to_server(tcp_socket, client_info_dict)
+
+    def on_btn_unbind_clicked(self):
+        account = self.edt_login_account.text()
+        pwd = self.edt_login_pwd.text()
+        bool_list = [
+            len(account) in range(6, 13),
+            len(pwd) in range(6, 13),
+        ]
+        if False in bool_list:
+            self.show_info("解绑失败, 请先确保账号密码输入正确")
+            return
+        pwd = mf.get_encrypted_str(pwd.encode())
+        # 允许异地解绑. 不用发机器码
+        client_info_dict = {
+            "消息类型": "解绑",
+            "账号": account,
+            "密码": pwd,
+        }
+        self.send_to_server(tcp_socket, client_info_dict)
+
     # 发送数据给服务端
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
         # py字典 转 json字符串
@@ -255,6 +248,33 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             mf.log_info(f"客户端数据, 发送成功: {json_str}")
         except Exception as e:
             mf.log_info(f"客户端数据, 发送失败: {e}")
+
+    # 线程_接收服务端消息
+    def thd_recv_server(self):
+        while True:
+            mf.log_info("等待服务端发出消息中...")
+            try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
+                recv_bytes = tcp_socket.recv(1024)
+            except:
+                recv_bytes = ""
+            if not recv_bytes:  # 若客户端退出,会收到一个空str
+                break
+            # json字符串 转 py字典
+            json_str = recv_bytes.decode()
+            server_info_dict = json.loads(json_str)
+            mf.log_info(f"收到服务端的消息: {json_str}")
+            # 客户端消息处理
+            msg_type = server_info_dict["消息类型"]
+            if msg_type in ("注册", "充值", "解绑"):
+                self.show_info(server_info_dict["详情"])
+            elif msg_type == "登录":
+                self.show_info(server_info_dict["详情"])
+                if server_info_dict["结果"]:
+                    mf.client_account = server_info_dict["账号"]
+                    tcp_socket.close()  # 先关闭套接字
+                    self.accept()  # 接受
+                    return
+        self.show_info("与服务器断开连接...")
 
 
 if __name__ == '__main__':

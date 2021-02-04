@@ -373,8 +373,12 @@ def deal_unbind(client_socket: socket.socket, client_info_dict: dict):
     query_user_list = sql_table_query("2用户管理", {"账号": account})
     if query_user_list:  # 判断账号是否存在
         query_user = query_user_list[0]
-        if pwd == query_user["密码"]:  # 密码正确, 把机器码置为空
-            unbind_ret = sql_table_update("2用户管理", {"机器码": ""}, {"账号": account})
+        if query_user["机器码"] == "":  # 若原本就没绑定机器
+            detail = "此账号未绑定机器, 无需解绑"
+        elif pwd == query_user["密码"]:  # 密码正确, 把机器码置为空
+            ori_unbind_count = int(query_user["今日解绑次数"])
+            unbind_count = ori_unbind_count + 1
+            unbind_ret = sql_table_update("2用户管理", {"机器码": "", "今日解绑次数": unbind_count}, {"账号": account})
             detail = "解绑成功" if unbind_ret else "解绑失败, 数据库异常"
         else:
             detail = "解绑失败, 密码错误"

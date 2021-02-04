@@ -24,6 +24,7 @@ def thd_get_global_var():
     global login_ip, machine_code
     login_ip = mf.get_outer_ip()
     machine_code = mf.get_machine_code()
+    print("线程_获取全局变量 执行完成")
 
 class WndClientLogin(QDialog, Ui_WndClientLogin):
     def __init__(self):

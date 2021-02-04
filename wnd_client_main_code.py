@@ -1,5 +1,4 @@
 import time
-import sys
 import socket
 import json
 
@@ -9,7 +8,6 @@ from threading import Thread
 
 from ui.wnd_client_main import Ui_WndClientMain
 import mf
-
 
 class WndClientMain(QMainWindow, Ui_WndClientMain):
     def __init__(self):

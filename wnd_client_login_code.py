@@ -1,6 +1,6 @@
 import sys
 import socket
-from threading import Thread
+from threading import Thread, Lock
 import json
 import pythoncom
 
@@ -18,6 +18,7 @@ import mf
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 machine_code = ""
 login_ip = ""
+lock = Lock()
 
 # 线程_获取全局变量
 def thd_get_global_var():
@@ -71,20 +72,21 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.move(event.globalPos() + self.start_point)
 
     def paintEvent(self, event: QPaintEvent):
-        # 背景
-        pix_map = QPixmap(":/back1.jpg").scaled(self.size())
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        painter.drawPixmap(self.rect(), pix_map)
-        # 圆角
-        bmp = QBitmap(self.size())
-        bmp.fill()
-        painter = QPainter(bmp)
-        painter.setRenderHint(QPainter.Antialiasing)
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(Qt.black)
-        painter.drawRoundedRect(bmp.rect(), 8, 8)
-        self.setMask(bmp)
+        with lock:
+            # 背景
+            pix_map = QPixmap(":/back1.jpg").scaled(self.size())
+            painter = QPainter(self)
+            painter.setRenderHint(QPainter.Antialiasing)
+            painter.drawPixmap(self.rect(), pix_map)
+            # 圆角
+            bmp = QBitmap(self.size())
+            bmp.fill()
+            painter = QPainter(bmp)
+            painter.setRenderHint(QPainter.Antialiasing)
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(Qt.black)
+            painter.drawRoundedRect(bmp.rect(), 8, 8)
+            self.setMask(bmp)
 
     def init_status_bar(self):
         # 添加一个statusbar
@@ -270,8 +272,10 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                 self.show_info(server_info_dict["详情"])
                 if server_info_dict["结果"]:
                     mf.client_account = server_info_dict["账号"]
+                    print(mf.client_account)
                     tcp_socket.close()  # 先关闭套接字
-                    self.accept()  # 接受
+                    with lock:
+                        self.accept()  # 接受
                     return
         self.show_info("与服务器断开连接...")
 

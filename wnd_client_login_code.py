@@ -8,7 +8,7 @@ from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
     QMouseEvent, QPaintEvent, QPainter, QBitmap
 from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayout, \
     QStatusBar, QApplication, QStyleFactory
-from PySide2.QtCore import Qt, QRegExp, QSize, QPoint
+from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, QTimer
 
 from ui.wnd_client_login import Ui_WndClientLogin
 from wnd_client_main_code import WndClientMain
@@ -23,8 +23,8 @@ lock = Lock()
 # 线程_获取全局变量
 def thd_get_global_var():
     global login_ip, machine_code
-    login_ip = mf.get_outer_ip()
     machine_code = mf.get_machine_code()
+    login_ip = mf.get_outer_ip()
     print("线程_获取全局变量 执行完成")
 
 class WndClientLogin(QDialog, Ui_WndClientLogin):
@@ -38,6 +38,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.init_net_auth()
         self.init_all_controls()
         self.init_all_sig_slot()
+        self.init_timer()
         thd1.join(2)
         self.show_info("窗口初始化成功")
 
@@ -140,6 +141,16 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.btn_pay.clicked.connect(self.on_btn_pay_clicked)
         self.btn_unbind.clicked.connect(self.on_btn_unbind_clicked)
 
+    def init_timer(self):
+        self.timer_sec = QTimer()
+        self.timer_sec.timeout.connect(
+            lambda: {
+                self.show_info("长时间未操作, 已自动关闭"),
+                self.close()
+            }
+        )
+        self.timer_sec.start(1000*60*5)  # 5分钟
+
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
         if action_name == "登录":
@@ -154,7 +165,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
     def on_btn_login_clicked(self):
         login_account = self.edt_login_account.text()
         login_pwd = self.edt_login_pwd.text()
-
         bool_list = [
             len(login_account) in range(6, 13),
             len(login_pwd) in range(6, 13),
@@ -202,7 +212,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.send_to_server(tcp_socket, client_info_dict)
 
     def on_btn_exit_clicked(self):
-        self.reject()
+        self.close()
 
     def on_btn_pay_clicked(self):
         account = self.edt_pay_account.text()

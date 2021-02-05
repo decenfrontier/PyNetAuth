@@ -265,6 +265,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         if False in bool_list:
             self.show_info("改密失败, 请确保数据有效")
             return
+        new_pwd = mf.get_encrypted_str(new_pwd.encode())
         client_info_dict = {
             "消息类型": "改密",
             "账号": account,

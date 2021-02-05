@@ -110,6 +110,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.tool_bar.addAction(QIcon(":/register.png"), "注册")
         self.tool_bar.addAction(QIcon(":/pay.png"), "充值")
         self.tool_bar.addAction(QIcon(":/modify.png"), "改密")
+        self.tool_bar.addAction(QIcon(":/notice.png"), "公告")
         # 布局
         vbox_layout = QVBoxLayout()
         vbox_layout.setMargin(4)
@@ -161,6 +162,8 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             self.stack_widget.setCurrentIndex(2)
         elif action_name == "改密":
             self.stack_widget.setCurrentIndex(3)
+        elif action_name == "公告":
+            self.stack_widget.setCurrentIndex(4)
 
     def on_btn_login_clicked(self):
         login_account = self.edt_login_account.text()

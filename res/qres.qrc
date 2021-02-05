@@ -10,5 +10,6 @@
         <file>back2.jpg</file>
         <file>proj.png</file>
         <file>users.png</file>
+        <file>notice.png</file>
     </qresource>
 </RCC>

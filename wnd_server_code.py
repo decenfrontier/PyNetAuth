@@ -151,9 +151,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 项目管理表
         self.tbe_proj.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_proj = QMenu()
-        self.action_proj_del_record = QAction("删除此记录")
-        self.menu_tbe_proj.addAction(self.action_proj_del_record)
-        self.action_proj_del_record.triggered.connect(self.on_action_proj_del_record_triggered)
+        self.action_proj_del = QAction("删除此记录")
+        self.action_proj_refresh = QAction("刷新记录")
+        self.menu_tbe_proj.addAction(self.action_proj_del)
+        self.menu_tbe_proj.addAction(self.action_proj_refresh)
+        self.action_proj_del.triggered.connect(self.on_action_proj_del_record_triggered)
+        self.action_proj_refresh.triggered.connect(self.on_btn_proj_refresh_clicked)
         self.tbe_proj.customContextMenuRequested.connect(
             lambda : self.menu_tbe_proj.exec_(QCursor.pos())
         )

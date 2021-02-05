@@ -281,30 +281,30 @@ class Ui_WndClientLogin(object):
 
         self.gridLayout_5.addWidget(self.label_10, 0, 0, 1, 1)
 
-        self.lineEdit_10 = QLineEdit(self.widget_4)
-        self.lineEdit_10.setObjectName(u"lineEdit_10")
+        self.edt_modify_account = QLineEdit(self.widget_4)
+        self.edt_modify_account.setObjectName(u"edt_modify_account")
 
-        self.gridLayout_5.addWidget(self.lineEdit_10, 0, 1, 1, 1)
+        self.gridLayout_5.addWidget(self.edt_modify_account, 0, 1, 1, 1)
 
         self.label_12 = QLabel(self.widget_4)
         self.label_12.setObjectName(u"label_12")
 
         self.gridLayout_5.addWidget(self.label_12, 1, 0, 1, 1)
 
-        self.lineEdit_12 = QLineEdit(self.widget_4)
-        self.lineEdit_12.setObjectName(u"lineEdit_12")
+        self.edt_modify_qq = QLineEdit(self.widget_4)
+        self.edt_modify_qq.setObjectName(u"edt_modify_qq")
 
-        self.gridLayout_5.addWidget(self.lineEdit_12, 1, 1, 1, 1)
+        self.gridLayout_5.addWidget(self.edt_modify_qq, 1, 1, 1, 1)
 
         self.label_11 = QLabel(self.widget_4)
         self.label_11.setObjectName(u"label_11")
 
         self.gridLayout_5.addWidget(self.label_11, 2, 0, 1, 1)
 
-        self.lineEdit_11 = QLineEdit(self.widget_4)
-        self.lineEdit_11.setObjectName(u"lineEdit_11")
+        self.edt_modify_new_pwd = QLineEdit(self.widget_4)
+        self.edt_modify_new_pwd.setObjectName(u"edt_modify_new_pwd")
 
-        self.gridLayout_5.addWidget(self.lineEdit_11, 2, 1, 1, 1)
+        self.gridLayout_5.addWidget(self.edt_modify_new_pwd, 2, 1, 1, 1)
 
 
         self.gridLayout_4.addLayout(self.gridLayout_5, 1, 1, 1, 3)
@@ -317,11 +317,11 @@ class Ui_WndClientLogin(object):
 
         self.gridLayout_4.addItem(self.horizontalSpacer_2, 2, 1, 1, 1)
 
-        self.pushButton_4 = QPushButton(self.widget_4)
-        self.pushButton_4.setObjectName(u"pushButton_4")
-        self.pushButton_4.setCursor(QCursor(Qt.PointingHandCursor))
+        self.btn_modify = QPushButton(self.widget_4)
+        self.btn_modify.setObjectName(u"btn_modify")
+        self.btn_modify.setCursor(QCursor(Qt.PointingHandCursor))
 
-        self.gridLayout_4.addWidget(self.pushButton_4, 2, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.btn_modify, 2, 2, 1, 1)
 
         self.horizontalSpacer = QSpacerItem(47, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -366,7 +366,7 @@ class Ui_WndClientLogin(object):
 
         self.retranslateUi(WndClientLogin)
 
-        self.stack_widget.setCurrentIndex(4)
+        self.stack_widget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(WndClientLogin)
@@ -411,7 +411,7 @@ class Ui_WndClientLogin(object):
         self.label_10.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
         self.label_12.setText(QCoreApplication.translate("WndClientLogin", u"QQ:", None))
         self.label_11.setText(QCoreApplication.translate("WndClientLogin", u"\u65b0\u5bc6\u7801:", None))
-        self.pushButton_4.setText(QCoreApplication.translate("WndClientLogin", u"\u6539 \u5bc6", None))
+        self.btn_modify.setText(QCoreApplication.translate("WndClientLogin", u"\u6539 \u5bc6", None))
         self.lbe_notice.setText(QCoreApplication.translate("WndClientLogin", u"aabbcc", None))
         self.label_4.setText(QCoreApplication.translate("WndClientLogin", u"\u516c \u544a", None))
     # retranslateUi

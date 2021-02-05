@@ -141,6 +141,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.btn_exit.clicked.connect(self.on_btn_exit_clicked)
         self.btn_pay.clicked.connect(self.on_btn_pay_clicked)
         self.btn_unbind.clicked.connect(self.on_btn_unbind_clicked)
+        self.btn_modify.clicked.connect(self.on_btn_modify_clicked)
 
     def init_timer(self):
         self.timer_sec = QTimer()
@@ -249,6 +250,26 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "消息类型": "解绑",
             "账号": account,
             "密码": pwd,
+        }
+        self.send_to_server(tcp_socket, client_info_dict)
+
+    def on_btn_modify_clicked(self):
+        account = self.edt_modify_account.text()
+        qq = self.edt_modify_qq.text()
+        new_pwd = self.edt_modify_new_pwd.text()
+        bool_list = [
+            len(account) in range(6, 13),
+            len(new_pwd) in range(6, 13),
+            len(qq) in range(5, 10),
+        ]
+        if False in bool_list:
+            self.show_info("改密失败, 请确保数据有效")
+            return
+        client_info_dict = {
+            "消息类型": "改密",
+            "账号": account,
+            "QQ": qq,
+            "密码": new_pwd,
         }
         self.send_to_server(tcp_socket, client_info_dict)
 

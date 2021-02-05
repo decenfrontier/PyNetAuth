@@ -375,6 +375,8 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
         query_user = query_user_list[0]
         if query_user["状态"] == "冻结":
             detail = "登录失败, 此账号已冻结"
+        elif query_user["状态"] == "在线":
+            detail = "登录失败, 此账号在线中, 请15分钟后再试"
         elif cur_time_format > query_user["到期时间"]:
             detail = "登录失败, 此账号已到期"
         elif pwd == query_user["密码"]:  # 判断密码是否符合
@@ -482,6 +484,10 @@ def deal_unbind(client_socket: socket.socket, client_info_dict: dict):
         query_user = query_user_list[0]
         if query_user["机器码"] == "":  # 若原本就没绑定机器
             detail = "此账号未绑定机器, 无需解绑"
+        elif query_user["状态"] == "在线":
+            detail = "此账号在线中, 无法解绑, 请15分钟后再试"
+        elif query_user["状态"] == "冻结":
+            detail = "此账号已冻结, 无法解绑"
         elif pwd == query_user["密码"]:  # 密码正确, 把机器码置为空
             ori_unbind_count = int(query_user["今日解绑次数"])
             unbind_count = ori_unbind_count + 1

@@ -270,7 +270,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 若不在行内点, 则默认返回0
         row = self.tbe_proj.currentRow()
         client_ver = self.tbe_proj.item(row, 1).text()
-        # todo: 从数据库删除记录
+        ret = QMessageBox.information(self, "提示", f"是否确定删除以下客户端版本: \n{client_ver}",
+                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        if ret == QMessageBox.Yes:
+            sql_table_del("1项目管理", {"客户端版本": client_ver})
+            self.show_info(f"已删除项目表记录: {client_ver}")
+            self.on_btn_proj_refresh_clicked()
 
     def on_timer_sec_timeout(self):
         global cur_time_format
@@ -532,7 +537,7 @@ def update_db_user_login_info(client_info_dict: dict, query_user: dict, login_re
     sql_table_update("2用户管理", update_dict, {"账号": account})
 
 
-# 表-插入, 成功返回True, 否则返回False
+# 表_插入, 成功返回True, 否则返回False
 def sql_table_insert(table_name: str, val_dict: dict):
     # keys = "account, pwd,qq, machine_code, reg_ip"
     keys = ", ".join(val_dict.keys())
@@ -552,7 +557,7 @@ def sql_table_insert(table_name: str, val_dict: dict):
     return ret
 
 
-# 表-查询, 成功返回字典列表, 否则返回空列表
+# 表_查询, 成功返回字典列表, 否则返回空列表
 def sql_table_query(table_name: str, condition_dict={}):
     fields = condition_dict.keys()
     vals = tuple(condition_dict.values())
@@ -575,7 +580,7 @@ def sql_table_query(table_name: str, condition_dict={}):
     return ret
 
 
-# 表-更新, 成功返回True, 否则返回False
+# 表_更新, 成功返回True, 否则返回False
 def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
     update_fields = update_dict.keys()
     update_vals = tuple(update_dict.values())
@@ -601,7 +606,7 @@ def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
     log_append_content(f"表更新结果: {ret}")
     return ret
 
-# 表-更新扩展, 成功返回True, 否则返回False
+# 表_更新扩展, 成功返回True, 否则返回False
 def sql_table_update_ex(table_name: str, update_dict: dict, condition=""):
     update_fields = update_dict.keys()
     update_vals = tuple(update_dict.values())
@@ -621,6 +626,27 @@ def sql_table_update_ex(table_name: str, update_dict: dict, condition=""):
         log_append_content(f"表更新异常: {e}")
         db.rollback()  # 数据库回滚
     log_append_content(f"表更新结果: {ret}")
+    return ret
+
+# 表_删除
+def sql_table_del(table_name: str, condition_dict: dict):
+    fields = condition_dict.keys()
+    vals = tuple(condition_dict.values())
+    condition = [f"{field}=%s" for field in fields]
+    condition = " and ".join(condition)
+    # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
+    if condition:
+        sql = f"delete from {table_name} where {condition};"
+    else:
+        sql = f"delete from {table_name};"  # 全删
+    ret = []
+    try:
+        ret = cursor.execute(sql, vals)  # 执行SQL语句
+        db.commit()  # 提交到数据库
+    except Exception as e:
+        log_append_content(f"表删除异常: {e}")
+        db.rollback()  # 数据库回滚
+    log_append_content(f"表删除结果: {ret}")
     return ret
 
 

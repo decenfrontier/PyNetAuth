@@ -15,7 +15,6 @@ from ui.wnd_server import Ui_WndServer
 from res import qres
 
 lock = Lock()
-cur_time_stamp = time.time()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_format[:10]
 path_log = f"C:\\net_auth_{today}.log"
@@ -274,8 +273,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # todo: 从数据库删除记录
 
     def on_timer_sec_timeout(self):
-        global cur_time_stamp, cur_time_format
-        cur_time_stamp += 1
+        global cur_time_format
         cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
     def on_timer_min_timeout(self):
@@ -286,9 +284,11 @@ class WndServer(QMainWindow, Ui_WndServer):
             today = cur_day
             path_log = f"C:\\net_auth_{today}.log"
             sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})
-        # 2 刷新所有用户状态
-        # todo
-        # sql_table_update("2用户管理", {"状态": "离线"}, )
+        # 2 刷新所有用户状态(状态为在线, 且心跳时间在15分钟前, 置为离线)
+        now_date_time = datetime.datetime.strptime(cur_time_format, "%Y-%m-%d %H:%M:%S")
+        offset_date_time = datetime.timedelta(minutes=-15)
+        due_time = (now_date_time + offset_date_time).strftime("%Y-%m-%d %H:%M:%S")
+        sql_table_update_ex("2用户管理", {"状态": "离线"}, f"状态='在线' and 心跳时间<'{due_time}'")
 
     def thd_accept_client(self):
         log_append_content("服务端已开启, 准备接受客户请求...")
@@ -594,6 +594,28 @@ def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
     ret = False
     try:
         ret = cursor.execute(sql, update_vals + condition_vals)  # 执行SQL语句
+        db.commit()  # 提交到数据库
+    except Exception as e:
+        log_append_content(f"表更新异常: {e}")
+        db.rollback()  # 数据库回滚
+    log_append_content(f"表更新结果: {ret}")
+    return ret
+
+# 表-更新扩展, 成功返回True, 否则返回False
+def sql_table_update_ex(table_name: str, update_dict: dict, condition=""):
+    update_fields = update_dict.keys()
+    update_vals = tuple(update_dict.values())
+    update = [f"{field}=%s" for field in update_fields]
+    update = ", ".join(update)
+
+    # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
+    if condition:
+        sql = f"update {table_name} set {update} where {condition};"
+    else:
+        sql = f"update {table_name} set {update};"
+    ret = False
+    try:
+        ret = cursor.execute(sql, update_vals)  # 执行SQL语句
         db.commit()  # 提交到数据库
     except Exception as e:
         log_append_content(f"表更新异常: {e}")

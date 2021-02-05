@@ -301,7 +301,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             mf.log_info(f"收到服务端的消息: {json_str}")
             # 客户端消息处理
             msg_type = server_info_dict["消息类型"]
-            if msg_type in ("注册", "充值", "解绑"):
+            if msg_type in ("注册", "充值", "解绑", "改密"):
                 self.show_info(server_info_dict["详情"])
             elif msg_type == "登录":
                 self.show_info(server_info_dict["详情"])

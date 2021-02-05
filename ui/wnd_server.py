@@ -219,9 +219,117 @@ class Ui_WndServer(object):
         self.gridLayout_3 = QGridLayout(self.page_1)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.gridLayout_3.setContentsMargins(2, 2, 2, 2)
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setSpacing(2)
+        self.verticalLayout_3 = QVBoxLayout()
+        self.verticalLayout_3.setSpacing(2)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.groupBox_2 = QGroupBox(self.page_1)
+        self.groupBox_2.setObjectName(u"groupBox_2")
+        self.groupBox_2.setMinimumSize(QSize(220, 0))
+        self.horizontalLayout_8 = QHBoxLayout(self.groupBox_2)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.horizontalLayout_8.setContentsMargins(3, 0, 3, 0)
+        self.groupBox_5 = QGroupBox(self.groupBox_2)
+        self.groupBox_5.setObjectName(u"groupBox_5")
+        self.horizontalLayout_2 = QHBoxLayout(self.groupBox_5)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(3, 3, 3, 3)
+        self.comboBox = QComboBox(self.groupBox_5)
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.setObjectName(u"comboBox")
+
+        self.horizontalLayout_2.addWidget(self.comboBox)
+
+        self.comboBox_2 = QComboBox(self.groupBox_5)
+        self.comboBox_2.addItem("")
+        self.comboBox_2.addItem("")
+        self.comboBox_2.addItem("")
+        self.comboBox_2.addItem("")
+        self.comboBox_2.addItem("")
+        self.comboBox_2.addItem("")
+        self.comboBox_2.setObjectName(u"comboBox_2")
+
+        self.horizontalLayout_2.addWidget(self.comboBox_2)
+
+        self.lineEdit = QLineEdit(self.groupBox_5)
+        self.lineEdit.setObjectName(u"lineEdit")
+
+        self.horizontalLayout_2.addWidget(self.lineEdit)
+
+        self.pushButton = QPushButton(self.groupBox_5)
+        self.pushButton.setObjectName(u"pushButton")
+
+        self.horizontalLayout_2.addWidget(self.pushButton)
+
+
+        self.horizontalLayout_8.addWidget(self.groupBox_5)
+
+        self.groupBox_6 = QGroupBox(self.groupBox_2)
+        self.groupBox_6.setObjectName(u"groupBox_6")
+        self.horizontalLayout_5 = QHBoxLayout(self.groupBox_6)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalLayout_5.setContentsMargins(3, 3, 3, 3)
+        self.lineEdit_2 = QLineEdit(self.groupBox_6)
+        self.lineEdit_2.setObjectName(u"lineEdit_2")
+
+        self.horizontalLayout_5.addWidget(self.lineEdit_2)
+
+        self.pushButton_2 = QPushButton(self.groupBox_6)
+        self.pushButton_2.setObjectName(u"pushButton_2")
+
+        self.horizontalLayout_5.addWidget(self.pushButton_2)
+
+
+        self.horizontalLayout_8.addWidget(self.groupBox_6)
+
+        self.groupBox_7 = QGroupBox(self.groupBox_2)
+        self.groupBox_7.setObjectName(u"groupBox_7")
+        self.horizontalLayout_6 = QHBoxLayout(self.groupBox_7)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.horizontalLayout_6.setContentsMargins(3, 3, 3, 3)
+        self.lineEdit_3 = QLineEdit(self.groupBox_7)
+        self.lineEdit_3.setObjectName(u"lineEdit_3")
+
+        self.horizontalLayout_6.addWidget(self.lineEdit_3)
+
+        self.pushButton_3 = QPushButton(self.groupBox_7)
+        self.pushButton_3.setObjectName(u"pushButton_3")
+
+        self.horizontalLayout_6.addWidget(self.pushButton_3)
+
+
+        self.horizontalLayout_8.addWidget(self.groupBox_7)
+
+        self.groupBox_8 = QGroupBox(self.groupBox_2)
+        self.groupBox_8.setObjectName(u"groupBox_8")
+        self.horizontalLayout_7 = QHBoxLayout(self.groupBox_8)
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.horizontalLayout_7.setContentsMargins(3, 3, 3, 3)
+        self.lineEdit_4 = QLineEdit(self.groupBox_8)
+        self.lineEdit_4.setObjectName(u"lineEdit_4")
+
+        self.horizontalLayout_7.addWidget(self.lineEdit_4)
+
+        self.pushButton_4 = QPushButton(self.groupBox_8)
+        self.pushButton_4.setObjectName(u"pushButton_4")
+
+        self.horizontalLayout_7.addWidget(self.pushButton_4)
+
+
+        self.horizontalLayout_8.addWidget(self.groupBox_8)
+
+
+        self.verticalLayout_3.addWidget(self.groupBox_2)
+
         self.tbe_user = QTableWidget(self.page_1)
         if (self.tbe_user.columnCount() < 16):
             self.tbe_user.setColumnCount(16)
@@ -268,22 +376,18 @@ class Ui_WndServer(object):
         self.tbe_user.setWordWrap(True)
         self.tbe_user.setCornerButtonEnabled(False)
         self.tbe_user.setRowCount(1)
-        self.tbe_user.horizontalHeader().setVisible(False)
+        self.tbe_user.horizontalHeader().setVisible(True)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_user.verticalHeader().setVisible(False)
         self.tbe_user.verticalHeader().setMinimumSectionSize(20)
         self.tbe_user.verticalHeader().setDefaultSectionSize(20)
 
-        self.horizontalLayout_2.addWidget(self.tbe_user)
+        self.verticalLayout_3.addWidget(self.tbe_user)
 
-        self.groupBox_2 = QGroupBox(self.page_1)
-        self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setMinimumSize(QSize(220, 0))
+        self.verticalLayout_3.setStretch(0, 1)
+        self.verticalLayout_3.setStretch(1, 12)
 
-        self.horizontalLayout_2.addWidget(self.groupBox_2)
-
-
-        self.gridLayout_3.addLayout(self.horizontalLayout_2, 0, 0, 1, 1)
+        self.gridLayout_3.addLayout(self.verticalLayout_3, 0, 0, 1, 1)
 
         self.stack_widget.addWidget(self.page_1)
         self.page_2 = QWidget()
@@ -413,7 +517,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -459,6 +563,34 @@ class Ui_WndServer(object):
         self.btn_custom_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u8ba4\u6dfb\u52a0\u6216\u4fee\u6539", None))
         self.btn_custom_refresh.setText(QCoreApplication.translate("WndServer", u"\u5237\u65b0\u81ea\u5b9a\u4e49\u6570\u636e\u8868", None))
         self.label_10.setText(QCoreApplication.translate("WndServer", u"EVAL", None))
+        self.groupBox_2.setTitle("")
+        self.groupBox_5.setTitle("")
+        self.comboBox.setItemText(0, QCoreApplication.translate("WndServer", u"\u8d26\u53f7", None))
+        self.comboBox.setItemText(1, QCoreApplication.translate("WndServer", u"\u5bc6\u7801", None))
+        self.comboBox.setItemText(2, QCoreApplication.translate("WndServer", u"QQ", None))
+        self.comboBox.setItemText(3, QCoreApplication.translate("WndServer", u"\u72b6\u6001", None))
+        self.comboBox.setItemText(4, QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55\u65f6\u95f4", None))
+        self.comboBox.setItemText(5, QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55IP", None))
+        self.comboBox.setItemText(6, QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u767b\u5f55\u6b21\u6570", None))
+        self.comboBox.setItemText(7, QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u89e3\u7ed1\u6b21\u6570", None))
+        self.comboBox.setItemText(8, QCoreApplication.translate("WndServer", u"\u673a\u5668\u7801", None))
+        self.comboBox.setItemText(9, QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u65f6\u95f4", None))
+        self.comboBox.setItemText(10, QCoreApplication.translate("WndServer", u"\u5907\u6ce8", None))
+
+        self.comboBox_2.setItemText(0, QCoreApplication.translate("WndServer", u"=", None))
+        self.comboBox_2.setItemText(1, QCoreApplication.translate("WndServer", u"!=", None))
+        self.comboBox_2.setItemText(2, QCoreApplication.translate("WndServer", u">", None))
+        self.comboBox_2.setItemText(3, QCoreApplication.translate("WndServer", u"<", None))
+        self.comboBox_2.setItemText(4, QCoreApplication.translate("WndServer", u"like", None))
+        self.comboBox_2.setItemText(5, QCoreApplication.translate("WndServer", u"rlike", None))
+
+        self.pushButton.setText(QCoreApplication.translate("WndServer", u"\u67e5\u8be2", None))
+        self.groupBox_6.setTitle("")
+        self.pushButton_2.setText(QCoreApplication.translate("WndServer", u"\u6279\u91cf\u7eed\u8d39", None))
+        self.groupBox_7.setTitle("")
+        self.pushButton_3.setText(QCoreApplication.translate("WndServer", u"\u6279\u91cf\u51bb\u7ed3\u673a\u5668", None))
+        self.groupBox_8.setTitle("")
+        self.pushButton_4.setText(QCoreApplication.translate("WndServer", u"\u6279\u91cf\u51bb\u7ed3IP", None))
         ___qtablewidgetitem12 = self.tbe_user.horizontalHeaderItem(0)
         ___qtablewidgetitem12.setText(QCoreApplication.translate("WndServer", u"ID", None));
         ___qtablewidgetitem13 = self.tbe_user.horizontalHeaderItem(1)
@@ -493,7 +625,6 @@ class Ui_WndServer(object):
         ___qtablewidgetitem27.setText(QCoreApplication.translate("WndServer", u"\u5907\u6ce8", None));
         ___qtablewidgetitem28 = self.tbe_user.verticalHeaderItem(0)
         ___qtablewidgetitem28.setText(QCoreApplication.translate("WndServer", u"1", None));
-        self.groupBox_2.setTitle("")
         ___qtablewidgetitem29 = self.tbe_card.horizontalHeaderItem(0)
         ___qtablewidgetitem29.setText(QCoreApplication.translate("WndServer", u"ID", None));
         ___qtablewidgetitem30 = self.tbe_card.horizontalHeaderItem(1)

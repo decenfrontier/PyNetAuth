@@ -4,7 +4,7 @@ import json
 from threading import Thread, Lock
 from random import randint
 
-from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor, QCursor
+from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor, QCursor, QIntValidator
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
     QMessageBox, QTableWidgetItem, QMenu, QAction
 from PySide2.QtCore import Qt, QTimer
@@ -106,6 +106,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
         self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
         self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
+        # ------------------ 设置编辑框格式 -----------------
+        self.edt_user_gift_day.setValidator(QIntValidator(0, 99))
         # 所有表头可视化
         self.tbe_proj.horizontalHeader().setVisible(True)
         self.tbe_user.horizontalHeader().setVisible(True)
@@ -145,7 +147,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 项目管理表
         self.tbe_proj.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_proj = QMenu()
-        self.action_proj_show_all = QAction("获取全部项目信息")
+        self.action_proj_show_all = QAction("显示全部项目信息")
         self.action_proj_del = QAction("删除此记录")
         self.menu_tbe_proj.addAction(self.action_proj_show_all)
         self.menu_tbe_proj.addAction(self.action_proj_del)
@@ -157,7 +159,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 用户管理表
         self.tbe_user.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_user = QMenu()
-        self.action_user_show_all = QAction("获取全部用户信息")
+        self.action_user_show_all = QAction("显示全部用户信息")
         self.menu_tbe_user.addAction(self.action_user_show_all)
         self.action_user_show_all.triggered.connect(self.on_action_user_show_all_triggered)
         self.tbe_user.customContextMenuRequested.connect(
@@ -171,6 +173,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_proj_show_all.clicked.connect(self.on_btn_proj_show_all_clicked)
 
         self.btn_user_query.clicked.connect(self.on_btn_user_query_clicked)
+        self.btn_user_gift_day.clicked.connect(self.on_btn_user_gift_day_clicked)
 
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
         self.btn_card_show_all.clicked.connect(self.on_btn_card_show_all_clicked)
@@ -246,6 +249,14 @@ class WndServer(QMainWindow, Ui_WndServer):
         else:
             self.show_info("用户记录查询失败")
 
+    def on_btn_user_gift_day_clicked(self):
+        gift_day = self.edt_user_gift_day.text()
+        gift_day = 0 if gift_day == "" else int(gift_day)
+        ret = QMessageBox.information(self, "提示", f"所有用户续费{gift_day}天?",
+                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        if ret == QMessageBox.Yes:
+            sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
+                                "状态 in ('在线', '离线')")
 
     def on_btn_card_gen_clicked(self):
         gen_time = cur_time_format
@@ -359,7 +370,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         now_date_time = datetime.datetime.strptime(cur_time_format, "%Y-%m-%d %H:%M:%S")
         offset_date_time = datetime.timedelta(minutes=-15)
         due_time = (now_date_time + offset_date_time).strftime("%Y-%m-%d %H:%M:%S")
-        sql_table_update_ex("2用户管理", {"状态": "离线"}, f"状态='在线' and 心跳时间<'{due_time}'")
+        sql_table_update_ex("2用户管理", "状态='离线'", f"状态='在线' and 心跳时间<'{due_time}'")
 
     def thd_accept_client(self):
         log_append_content("服务端已开启, 准备接受客户请求...")
@@ -740,20 +751,14 @@ def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
     return ret
 
 # 表_更新扩展, 成功返回True, 否则返回False
-def sql_table_update_ex(table_name: str, update_dict: dict, condition=""):
-    update_fields = update_dict.keys()
-    update_vals = tuple(update_dict.values())
-    update = [f"{field}=%s" for field in update_fields]
-    update = ", ".join(update)
-
-    # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
+def sql_table_update_ex(table_name: str, update: str, condition=""):
     if condition:
         sql = f"update {table_name} set {update} where {condition};"
     else:
         sql = f"update {table_name} set {update};"
     ret = False
     try:
-        ret = cursor.execute(sql, update_vals)  # 执行SQL语句
+        ret = cursor.execute(sql)  # 执行SQL语句
         db.commit()  # 提交到数据库
     except Exception as e:
         log_append_content(f"表更新异常: {e}")

@@ -373,10 +373,10 @@ class Ui_WndServer(object):
         self.tbe_user.setAlternatingRowColors(True)
         self.tbe_user.setTextElideMode(Qt.ElideNone)
         self.tbe_user.setShowGrid(True)
-        self.tbe_user.setWordWrap(True)
+        self.tbe_user.setWordWrap(False)
         self.tbe_user.setCornerButtonEnabled(False)
         self.tbe_user.setRowCount(1)
-        self.tbe_user.horizontalHeader().setVisible(False)
+        self.tbe_user.horizontalHeader().setVisible(True)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_user.verticalHeader().setVisible(False)
         self.tbe_user.verticalHeader().setMinimumSectionSize(20)
@@ -420,7 +420,7 @@ class Ui_WndServer(object):
         self.tbe_card.setAlternatingRowColors(True)
         self.tbe_card.setTextElideMode(Qt.ElideNone)
         self.tbe_card.setShowGrid(True)
-        self.tbe_card.setWordWrap(True)
+        self.tbe_card.setWordWrap(False)
         self.tbe_card.setCornerButtonEnabled(False)
         self.tbe_card.setRowCount(1)
         self.tbe_card.horizontalHeader().setVisible(False)
@@ -517,7 +517,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(2)
+        self.stack_widget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(WndServer)

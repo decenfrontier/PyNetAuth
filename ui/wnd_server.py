@@ -425,7 +425,7 @@ class Ui_WndServer(object):
         self.tbe_card.setWordWrap(False)
         self.tbe_card.setCornerButtonEnabled(False)
         self.tbe_card.setRowCount(1)
-        self.tbe_card.horizontalHeader().setVisible(True)
+        self.tbe_card.horizontalHeader().setVisible(False)
         self.tbe_card.horizontalHeader().setDefaultSectionSize(150)
         self.tbe_card.horizontalHeader().setStretchLastSection(True)
         self.tbe_card.verticalHeader().setVisible(False)
@@ -514,7 +514,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(2)
+        self.stack_widget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(WndServer)

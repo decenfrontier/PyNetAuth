@@ -151,7 +151,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_proj.addAction(self.action_proj_show_all)
         self.menu_tbe_proj.addAction(self.action_proj_del)
         self.action_proj_del.triggered.connect(self.on_action_proj_del_record_triggered)
-        self.action_proj_show_all.triggered.connect(self.on_btn_proj_show_all_clicked)
+        self.action_proj_show_all.triggered.connect(self.show_all_tbe_proj)
         self.tbe_proj.customContextMenuRequested.connect(
             lambda : self.menu_tbe_proj.exec_(QCursor.pos())
         )
@@ -160,7 +160,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_user = QMenu()
         self.action_user_show_all = QAction("显示全部用户信息")
         self.menu_tbe_user.addAction(self.action_user_show_all)
-        self.action_user_show_all.triggered.connect(self.on_action_user_show_all_triggered)
+        self.action_user_show_all.triggered.connect(self.show_all_tbe_user)
         self.tbe_user.customContextMenuRequested.connect(
             lambda : self.menu_tbe_user.exec_(QCursor.pos())
         )
@@ -175,7 +175,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_card.addAction(self.action_card_show_unuse)
         self.menu_tbe_card.addAction(self.action_card_show_sale)
         self.menu_tbe_card.addAction(self.action_card_del_used)
-        self.action_card_show_all.triggered.connect(self.on_action_card_show_all_triggered)
+        self.action_card_show_all.triggered.connect(self.show_all_tbe_card)
         self.action_card_show_unuse.triggered.connect(self.on_action_card_show_unuse_triggered)
         self.action_card_show_sale.triggered.connect(self.on_action_card_show_sale_triggered)
         self.action_card_del_used.triggered.connect(self.on_action_card_del_used_triggered)
@@ -187,7 +187,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         # 按钮相关
         self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)
-        self.btn_proj_show_all.clicked.connect(self.on_btn_proj_show_all_clicked)
 
         self.btn_user_query.clicked.connect(self.on_btn_user_query_clicked)
         self.btn_user_gift_day.clicked.connect(self.on_btn_user_gift_day_clicked)
@@ -234,24 +233,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         else:
             sql_table_insert("1项目管理", val_dict)
             self.show_info("已插入项目新记录")
-        self.on_btn_proj_show_all_clicked()
-
-    def on_btn_proj_show_all_clicked(self):
-        query_proj_list = sql_table_query("1项目管理")
-        self.tbe_proj.setRowCount(len(query_proj_list))
-        for row, proj_info in enumerate(query_proj_list):
-            id = QTableWidgetItem(str(proj_info["ID"]))
-            client_ver = QTableWidgetItem(proj_info["客户端版本"])
-            pub_notice = QTableWidgetItem(proj_info["客户端公告"])
-            url_update = QTableWidgetItem(proj_info["更新地址"])
-            url_card = QTableWidgetItem(proj_info["发卡地址"])
-            reg_gift_day = QTableWidgetItem(str(proj_info["注册赠送天数"]))
-            self.tbe_proj.setItem(row, 0, id)
-            self.tbe_proj.setItem(row, 1, client_ver)
-            self.tbe_proj.setItem(row, 2, pub_notice)
-            self.tbe_proj.setItem(row, 3, url_update)
-            self.tbe_proj.setItem(row, 4, url_card)
-            self.tbe_proj.setItem(row, 5, reg_gift_day)
+        self.show_all_tbe_proj()
 
     def on_btn_user_query_clicked(self):
         field = self.cmb_user_field.currentText()
@@ -259,8 +241,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         value = self.edt_user_value.text()
         condition = f"{field} {operator} {value}"
         query_user_list = sql_table_query_ex("2用户管理", condition)
-        ret = self.refresh_tbe_user(query_user_list)
-        if ret:
+        if self.refresh_tbe_user(query_user_list):
             self.show_info("用户记录查询成功")
         else:
             self.show_info("用户记录查询失败")
@@ -270,10 +251,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         gift_day = 0 if gift_day == "" else int(gift_day)
         ret = QMessageBox.information(self, "提示", f"所有用户续费{gift_day}天?",
                                       QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-        if ret == QMessageBox.Yes:
-            # todo: 已到期的用户不要加时间
-            sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
-                                "状态 in ('在线', '离线')")
+        if ret != QMessageBox.Yes:
+            return
+        # todo: 已到期的用户不要加时间
+        sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
+                            "状态 in ('在线', '离线')")
 
     def on_btn_card_gen_clicked(self):
         gen_time = cur_time_format
@@ -286,9 +268,11 @@ class WndServer(QMainWindow, Ui_WndServer):
                 "卡类型": card_type,
                 "制卡时间": gen_time
             }
-            sql_table_insert("3卡密管理", val_dict)
-        self.show_info(f"已生成{card_num}张{card_type}")
-
+            if sql_table_insert("3卡密管理", val_dict):
+                self.show_info(f"生成{card_type}{card_key}成功")
+            else:
+                self.show_info(f"生成{card_type}{card_key}失败")
+        self.show_all_tbe_card()
 
     def on_tbe_proj_cellClicked(self, row: int, col: int):
         client_ver = self.tbe_proj.item(row, 1).text()
@@ -304,23 +288,17 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.edt_proj_reg_gift_day.setText(reg_gift_day)
 
     def on_action_proj_del_record_triggered(self):
-        # 若不在行内点, 则默认返回0
-        row = self.tbe_proj.currentRow()
+        row = self.tbe_proj.currentRow()  # 若不在行内点, 则默认返回0
         client_ver = self.tbe_proj.item(row, 1).text()
         ret = QMessageBox.information(self, "提示", f"是否确定删除以下客户端版本: \n{client_ver}",
                                       QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-        if ret == QMessageBox.Yes:
-            sql_table_del("1项目管理", {"客户端版本": client_ver})
-            self.show_info(f"已删除项目表记录: {client_ver}")
-            self.on_btn_proj_show_all_clicked()
-
-    def on_action_user_show_all_triggered(self):
-        query_user_list = sql_table_query("2用户管理")
-        self.refresh_tbe_user(query_user_list)
-
-    def on_action_card_show_all_triggered(self):
-        query_card_list = sql_table_query("3卡密管理")
-        self.refresh_tbe_card(query_card_list)
+        if ret != QMessageBox.Yes:
+            return
+        if sql_table_del("1项目管理", {"客户端版本": client_ver}):
+            self.show_info(f"删除项目表记录: {client_ver}成功")
+        else:
+            self.show_info(f"删除项目表记录: {client_ver}失败")
+        self.show_all_tbe_proj()
 
     def on_action_card_show_unuse_triggered(self):
         query_card_list = sql_table_query_ex("3卡密管理", "使用时间 is null")
@@ -331,8 +309,51 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.refresh_tbe_card(query_card_list)
 
     def on_action_card_del_used_triggered(self):
-        query_card_list = sql_table_query_ex("3卡密管理", "使用时间 is not null")
-        self.refresh_tbe_card(query_card_list)
+        ret = QMessageBox.information(self, "提示", "是否确定删除已使用的卡号?",
+                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        if ret != QMessageBox.Yes:
+            return
+        if sql_table_del_ex("3卡密管理", "使用时间 is not null"):
+            self.show_info("删除已使用的卡号成功")
+        else:
+            self.show_info("删除已使用的卡号失败")
+
+    def show_all_tbe_proj(self):
+        query_proj_list = sql_table_query("1项目管理")
+        if self.refresh_tbe_proj(query_proj_list):
+            self.show_info("显示所有项目成功")
+        else:
+            self.show_info("显示所有项目失败")
+
+    def show_all_tbe_user(self):
+        query_user_list = sql_table_query("2用户管理")
+        if self.refresh_tbe_user(query_user_list):
+            self.show_info("显示所有用户成功")
+        else:
+            self.show_info("显示所有用户失败")
+
+    def show_all_tbe_card(self):
+        query_card_list = sql_table_query("3卡密管理")
+        if self.refresh_tbe_card(query_card_list):
+            self.show_info("显示所有卡密成功")
+        else:
+            self.show_info("显示所有卡密失败")
+
+    def refresh_tbe_proj(self, query_proj_list):
+        self.tbe_proj.setRowCount(len(query_proj_list))
+        for row, query_proj in enumerate(query_proj_list):
+            id = QTableWidgetItem(str(query_proj["ID"]))
+            client_ver = QTableWidgetItem(query_proj["客户端版本"])
+            pub_notice = QTableWidgetItem(query_proj["客户端公告"])
+            url_update = QTableWidgetItem(query_proj["更新地址"])
+            url_card = QTableWidgetItem(query_proj["发卡地址"])
+            reg_gift_day = QTableWidgetItem(str(query_proj["注册赠送天数"]))
+            self.tbe_proj.setItem(row, 0, id)
+            self.tbe_proj.setItem(row, 1, client_ver)
+            self.tbe_proj.setItem(row, 2, pub_notice)
+            self.tbe_proj.setItem(row, 3, url_update)
+            self.tbe_proj.setItem(row, 4, url_card)
+            self.tbe_proj.setItem(row, 5, reg_gift_day)
 
     def refresh_tbe_user(self, query_user_list):
         if not query_user_list:
@@ -807,9 +828,25 @@ def sql_table_del(table_name: str, condition_dict: dict):
         sql = f"delete from {table_name} where {condition};"
     else:
         sql = f"delete from {table_name};"  # 全删
-    ret = []
+    ret = False
     try:
         ret = cursor.execute(sql, vals)  # 执行SQL语句
+        db.commit()  # 提交到数据库
+    except Exception as e:
+        log_append_content(f"表删除异常: {e}")
+        db.rollback()  # 数据库回滚
+    log_append_content(f"表删除结果: {ret}")
+    return ret
+
+# 表_删除扩展
+def sql_table_del_ex(table_name: str, condition: str):
+    if condition:
+        sql = f"delete from {table_name} where {condition};"
+    else:
+        sql = f"delete from {table_name};"  # 全删
+    ret = False
+    try:
+        ret = cursor.execute(sql)  # 执行SQL语句
         db.commit()  # 提交到数据库
     except Exception as e:
         log_append_content(f"表删除异常: {e}")

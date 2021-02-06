@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page_0">
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -734,7 +734,7 @@
              <number>1</number>
             </property>
             <attribute name="horizontalHeaderVisible">
-             <bool>true</bool>
+             <bool>false</bool>
             </attribute>
             <attribute name="horizontalHeaderDefaultSectionSize">
              <number>150</number>

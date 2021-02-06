@@ -494,7 +494,7 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
                 type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 120, "年卡": 365, "永久卡": 3650}
                 card_type = query_card["卡类型"]
                 delta_day = type_time_dict[card_type]
-                pay_ret = update_db_user_due_time(query_user, delta_day)
+                pay_ret = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {delta_day} day)")
                 detail = "充值成功" if pay_ret else "充值失败, 数据库异常"
             else:
                 detail = "充值失败, 账号不存在"
@@ -630,21 +630,6 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
         log_append_content(f"向客户端回复成功: {json_str}")
     except Exception as e:
         log_append_content(f"向客户端回复失败: {e}")
-
-
-# 更新数据库_用户到期时间
-def update_db_user_due_time(query_user: dict, delta_day: int):
-    account = query_user["账号"]
-    if query_user["到期时间"] == "" or query_user["到期时间"] < cur_time_format:
-        # 若所有用户表中此项记录没有到期时间, 或到期时间在今天以前, 则从当前时间开始加
-        ori_time = cur_time_format
-    else:  # 否则, 取记录上的到期时间
-        ori_time = query_user["到期时间"]
-    now_date_time = datetime.datetime.strptime(ori_time, "%Y-%m-%d %H:%M:%S")
-    offset_date_time = datetime.timedelta(days=delta_day)
-    due_time = (now_date_time + offset_date_time).strftime("%Y-%m-%d %H:%M:%S")
-    ret = sql_table_update("2用户管理", {"到期时间": due_time}, {"账号": account})
-    return ret
 
 
 # 更新数据库_用户登录数据

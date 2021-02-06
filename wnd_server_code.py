@@ -129,19 +129,19 @@ class WndServer(QMainWindow, Ui_WndServer):
         opration_system, comment= [i for i in range(16)]
         self.tbe_user.setColumnWidth(id, 40)
         # 卡密管理表
-        id, card_key, type, gen_time, use_time, proj_name = [i for i in range(6)]
+        id, card_key, type, gen_time, sale_time, use_time = [i for i in range(6)]
         self.tbe_card.setColumnWidth(id, 40)
         self.tbe_card.setColumnWidth(card_key, 260)
         self.tbe_card.setColumnWidth(type, 80)
         self.tbe_card.setColumnWidth(gen_time, 150)
+        self.tbe_card.setColumnWidth(sale_time, 150)
         self.tbe_card.setColumnWidth(use_time, 150)
-        self.tbe_card.setColumnWidth(proj_name, 150)
         # 自定义数据表
-        id, key, val, eval = [i for i in range(4)]
+        id, key, val, en_val = [i for i in range(4)]
         self.tbe_custom.setColumnWidth(id, 40)
         self.tbe_custom.setColumnWidth(key, 100)
         self.tbe_custom.setColumnWidth(val, 120)
-        self.tbe_custom.setColumnWidth(eval, 200)
+        self.tbe_custom.setColumnWidth(en_val, 200)
 
     def init_all_menu(self):
         # 项目管理表
@@ -279,11 +279,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         for row, query_card in enumerate(query_card_list):
             query_card["制卡时间"] = "" if query_card["制卡时间"] is None else str(query_card["制卡时间"])
             query_card["使用时间"] = "" if query_card["使用时间"] is None else str(query_card["使用时间"])
+            query_card["销售时间"] = "" if query_card["销售时间"] is None else str(query_card["销售时间"])
             id = QTableWidgetItem(str(query_card["ID"]))
             card_key = QTableWidgetItem(query_card["卡号"])
             card_type = QTableWidgetItem(query_card["卡类型"])
             gen_time = QTableWidgetItem(query_card["制卡时间"])
             use_time = QTableWidgetItem(query_card["使用时间"])
+            sale_time = QTableWidgetItem(query_card["销售时间"])
             self.tbe_card.setItem(row, 0, id)
             self.tbe_card.setItem(row, 1, card_key)
             self.tbe_card.setItem(row, 2, card_type)

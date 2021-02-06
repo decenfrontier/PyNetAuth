@@ -122,16 +122,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_proj.setColumnWidth(url_update, 120)
         self.tbe_proj.setColumnWidth(url_card, 120)
         # 用户管理表
-        id, account, pwd, email, machine_code, reg_ip, reg_time, due_time, is_forbid = [i for i in range(9)]
+        id, account, pwd, qq, state, heart_time, due_time, last_login_time, last_login_ip,\
+        last_login_place, today_login_count, today_unbind_count, machine_code, reg_time, \
+        opration_system, comment= [i for i in range(16)]
         self.tbe_user.setColumnWidth(id, 40)
-        self.tbe_user.setColumnWidth(account, 100)
-        self.tbe_user.setColumnWidth(pwd, 100)
-        self.tbe_user.setColumnWidth(email, 100)
-        self.tbe_user.setColumnWidth(machine_code, 90)
-        self.tbe_user.setColumnWidth(reg_ip, 100)
-        self.tbe_user.setColumnWidth(reg_time, 120)
-        self.tbe_user.setColumnWidth(due_time, 120)
-        self.tbe_user.setColumnWidth(is_forbid, 70)
         # 卡密管理表
         id, card_key, type, gen_time, use_time, proj_name = [i for i in range(6)]
         self.tbe_card.setColumnWidth(id, 40)
@@ -176,7 +170,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)
         self.btn_proj_show_all.clicked.connect(self.on_btn_proj_show_all_clicked)
 
-        self.btn_user_query.clicked.connect(self.btn_user_query_clicked)
+        self.btn_user_query.clicked.connect(self.on_btn_user_query_clicked)
 
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
         self.btn_card_show_all.clicked.connect(self.on_btn_card_show_all_clicked)
@@ -240,16 +234,17 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_proj.setItem(row, 4, url_card)
             self.tbe_proj.setItem(row, 5, reg_gift_day)
 
-    def btn_user_query_clicked(self):
+    def on_btn_user_query_clicked(self):
         field = self.cmb_user_field.currentText()
         operator = self.cmb_user_operator.currentText()
         value = self.edt_user_value.text()
         condition = f"{field} {operator} {value}"
         query_user_list = sql_table_query_ex("2用户管理", condition)
-        if query_user_list:
-            self.show_info("查询到记录")
+        ret = self.refresh_tbe_user(query_user_list)
+        if ret:
+            self.show_info("用户记录查询成功")
         else:
-            self.show_info("未查询到记录")
+            self.show_info("用户记录查询失败")
 
 
     def on_btn_card_gen_clicked(self):

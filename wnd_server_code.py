@@ -165,6 +165,21 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.customContextMenuRequested.connect(
             lambda : self.menu_tbe_user.exec_(QCursor.pos())
         )
+        # 卡密管理表
+        self.tbe_card.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.menu_tbe_card = QMenu()
+        self.action_card_show_all = QAction("显示全部卡密信息")
+        self.action_card_show_unuse = QAction("显示未使用卡密")
+        self.action_card_show_sale = QAction("显示销售中卡密")
+        self.action_card_del_used = QAction("删除已使用卡密")
+        self.menu_tbe_card.addAction(self.action_card_show_all)
+        self.menu_tbe_card.addAction(self.action_card_show_unuse)
+        self.menu_tbe_card.addAction(self.action_card_show_sale)
+        self.menu_tbe_card.addAction(self.action_card_del_used)
+
+        self.tbe_card.customContextMenuRequested.connect(
+            lambda : self.menu_tbe_card.exec_(QCursor.pos())
+        )
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)

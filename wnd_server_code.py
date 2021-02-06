@@ -164,10 +164,14 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         # 按钮相关
-        self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
-        self.btn_card_refresh.clicked.connect(self.on_btn_card_refresh_clicked)
         self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)
         self.btn_proj_refresh.clicked.connect(self.on_btn_proj_refresh_clicked)
+
+        self.btn_user_query.clicked.connect(self.btn_user_query_clicked)
+
+        self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
+        self.btn_card_refresh.clicked.connect(self.on_btn_card_refresh_clicked)
+
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
 
@@ -188,35 +192,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.stack_widget.setCurrentIndex(3)
             self.tbr_log.setText(log_read_content())
             self.tbr_log.moveCursor(QTextCursor.End)
-
-    def on_btn_card_gen_clicked(self):
-        gen_time = cur_time_format
-        card_type = self.cmb_card_type.currentText()
-        card_num = int(self.edt_card_num.text())
-        for i in range(card_num):
-            card_key = gen_rnd_card_key()
-            val_dict = {
-                "卡号": card_key,
-                "卡类型": card_type,
-                "制卡时间": gen_time
-            }
-            sql_table_insert("3卡密管理", val_dict)
-        self.show_info(f"已生成{card_num}张{card_type}")
-
-    def on_btn_card_refresh_clicked(self):
-        query_card_list = sql_table_query("3卡密管理")
-        self.tbe_card.setRowCount(len(query_card_list))
-        for row, card_info in enumerate(query_card_list):
-            id = QTableWidgetItem(str(card_info["ID"]))
-            card_key = QTableWidgetItem(card_info["卡号"])
-            card_type = QTableWidgetItem(card_info["卡类型"])
-            gen_time = QTableWidgetItem(card_info["制卡时间"])
-            use_time = QTableWidgetItem(card_info["使用时间"])
-            self.tbe_card.setItem(row, 0, id)
-            self.tbe_card.setItem(row, 1, card_key)
-            self.tbe_card.setItem(row, 2, card_type)
-            self.tbe_card.setItem(row, 3, gen_time)
-            self.tbe_card.setItem(row, 4, use_time)
 
     def on_btn_proj_confirm_clicked(self):
         client_ver = self.edt_proj_client_ver.text()
@@ -255,6 +230,47 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_proj.setItem(row, 3, url_update)
             self.tbe_proj.setItem(row, 4, url_card)
             self.tbe_proj.setItem(row, 5, reg_gift_day)
+
+    def btn_user_query_clicked(self):
+        field = self.cmb_user_field.currentText()
+        operator = self.cmb_user_operator.currentText()
+        value = self.edt_user_value.text()
+        condition = f"{field} {operator} {value}"
+        query_user_list = sql_table_query_ex("2用户管理", condition)
+        if query_user_list:
+            self.show_info("查询到记录")
+        else:
+            self.show_info("未查询到记录")
+
+
+    def on_btn_card_gen_clicked(self):
+        gen_time = cur_time_format
+        card_type = self.cmb_card_type.currentText()
+        card_num = int(self.edt_card_num.text())
+        for i in range(card_num):
+            card_key = gen_rnd_card_key()
+            val_dict = {
+                "卡号": card_key,
+                "卡类型": card_type,
+                "制卡时间": gen_time
+            }
+            sql_table_insert("3卡密管理", val_dict)
+        self.show_info(f"已生成{card_num}张{card_type}")
+
+    def on_btn_card_refresh_clicked(self):
+        query_card_list = sql_table_query("3卡密管理")
+        self.tbe_card.setRowCount(len(query_card_list))
+        for row, card_info in enumerate(query_card_list):
+            id = QTableWidgetItem(str(card_info["ID"]))
+            card_key = QTableWidgetItem(card_info["卡号"])
+            card_type = QTableWidgetItem(card_info["卡类型"])
+            gen_time = QTableWidgetItem(card_info["制卡时间"])
+            use_time = QTableWidgetItem(card_info["使用时间"])
+            self.tbe_card.setItem(row, 0, id)
+            self.tbe_card.setItem(row, 1, card_key)
+            self.tbe_card.setItem(row, 2, card_type)
+            self.tbe_card.setItem(row, 3, gen_time)
+            self.tbe_card.setItem(row, 4, use_time)
 
     def on_tbe_proj_cellClicked(self, row: int, col: int):
         client_ver = self.tbe_proj.item(row, 1).text()
@@ -632,6 +648,23 @@ def sql_table_query(table_name: str, condition_dict={}):
     log_append_content(f"表查询结果: {ret}")
     return ret
 
+# 表_查询, 成功返回字典列表, 否则返回空列表
+def sql_table_query_ex(table_name: str, condition=""):
+    # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
+    if condition:
+        sql = f"select * from {table_name} where {condition};"
+    else:
+        sql = f"select * from {table_name};"
+    ret = []
+    try:
+        cursor.execute(sql)  # 执行SQL语句
+        ret = cursor.fetchall()  # 获取查询结果, 没查到返回空列表
+        db.commit()  # 提交到数据库
+    except Exception as e:
+        log_append_content(f"表查询异常: {e}")
+        db.rollback()  # 数据库回滚
+    log_append_content(f"表查询结果: {ret}")
+    return ret
 
 # 表_更新, 成功返回True, 否则返回False
 def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):

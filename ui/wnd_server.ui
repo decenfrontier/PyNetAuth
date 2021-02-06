@@ -355,7 +355,7 @@
                  <number>3</number>
                 </property>
                 <item>
-                 <widget class="QComboBox" name="comboBox">
+                 <widget class="QComboBox" name="cmb_user_field">
                   <item>
                    <property name="text">
                     <string>账号</string>
@@ -414,7 +414,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="comboBox_2">
+                 <widget class="QComboBox" name="cmb_user_operator">
                   <item>
                    <property name="text">
                     <string>=</string>
@@ -448,10 +448,10 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit"/>
+                 <widget class="QLineEdit" name="edt_user_value"/>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton">
+                 <widget class="QPushButton" name="btn_user_query">
                   <property name="text">
                    <string>查询</string>
                   </property>
@@ -479,10 +479,10 @@
                  <number>3</number>
                 </property>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_2"/>
+                 <widget class="QLineEdit" name="edt_user_gift_day"/>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_2">
+                 <widget class="QPushButton" name="btn_user_gift_day">
                   <property name="text">
                    <string>批量续费</string>
                   </property>
@@ -510,10 +510,10 @@
                  <number>3</number>
                 </property>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_3"/>
+                 <widget class="QLineEdit" name="edt_user_frozen_machine"/>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_3">
+                 <widget class="QPushButton" name="btn_user_frozen_machine">
                   <property name="text">
                    <string>批量冻结机器</string>
                   </property>
@@ -541,10 +541,10 @@
                  <number>3</number>
                 </property>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_4"/>
+                 <widget class="QLineEdit" name="edt_user_frozen_ip"/>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_4">
+                 <widget class="QPushButton" name="btn_user_frozen_ip">
                   <property name="text">
                    <string>批量冻结IP</string>
                   </property>

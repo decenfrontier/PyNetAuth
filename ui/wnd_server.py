@@ -439,31 +439,10 @@ class Ui_WndServer(object):
         self.groupBox_3.setMinimumSize(QSize(220, 0))
         self.layoutWidget = QWidget(self.groupBox_3)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(20, 10, 181, 106))
+        self.layoutWidget.setGeometry(QRect(20, 10, 181, 101))
         self.gridLayout_6 = QGridLayout(self.layoutWidget)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
         self.gridLayout_6.setContentsMargins(0, 0, 0, 0)
-        self.label_2 = QLabel(self.layoutWidget)
-        self.label_2.setObjectName(u"label_2")
-
-        self.gridLayout_6.addWidget(self.label_2, 1, 0, 1, 1)
-
-        self.label_4 = QLabel(self.layoutWidget)
-        self.label_4.setObjectName(u"label_4")
-
-        self.gridLayout_6.addWidget(self.label_4, 0, 0, 1, 1)
-
-        self.edt_card_num = QLineEdit(self.layoutWidget)
-        self.edt_card_num.setObjectName(u"edt_card_num")
-        self.edt_card_num.setClearButtonEnabled(False)
-
-        self.gridLayout_6.addWidget(self.edt_card_num, 1, 1, 1, 1)
-
-        self.btn_card_show_all = QPushButton(self.layoutWidget)
-        self.btn_card_show_all.setObjectName(u"btn_card_show_all")
-
-        self.gridLayout_6.addWidget(self.btn_card_show_all, 6, 0, 1, 2)
-
         self.cmb_card_type = QComboBox(self.layoutWidget)
         self.cmb_card_type.addItem("")
         self.cmb_card_type.addItem("")
@@ -475,10 +454,26 @@ class Ui_WndServer(object):
 
         self.gridLayout_6.addWidget(self.cmb_card_type, 0, 1, 1, 1)
 
+        self.label_2 = QLabel(self.layoutWidget)
+        self.label_2.setObjectName(u"label_2")
+
+        self.gridLayout_6.addWidget(self.label_2, 1, 0, 1, 1)
+
+        self.edt_card_num = QLineEdit(self.layoutWidget)
+        self.edt_card_num.setObjectName(u"edt_card_num")
+        self.edt_card_num.setClearButtonEnabled(False)
+
+        self.gridLayout_6.addWidget(self.edt_card_num, 1, 1, 1, 1)
+
+        self.label_4 = QLabel(self.layoutWidget)
+        self.label_4.setObjectName(u"label_4")
+
+        self.gridLayout_6.addWidget(self.label_4, 0, 0, 1, 1)
+
         self.btn_card_gen = QPushButton(self.layoutWidget)
         self.btn_card_gen.setObjectName(u"btn_card_gen")
 
-        self.gridLayout_6.addWidget(self.btn_card_gen, 5, 0, 1, 2)
+        self.gridLayout_6.addWidget(self.btn_card_gen, 2, 1, 1, 1)
 
 
         self.horizontalLayout_3.addWidget(self.groupBox_3)
@@ -642,11 +637,6 @@ class Ui_WndServer(object):
         ___qtablewidgetitem35 = self.tbe_card.verticalHeaderItem(0)
         ___qtablewidgetitem35.setText(QCoreApplication.translate("WndServer", u"1", None));
         self.groupBox_3.setTitle("")
-        self.label_2.setText(QCoreApplication.translate("WndServer", u"\u751f\u6210\u5f20\u6570:", None))
-        self.label_4.setText(QCoreApplication.translate("WndServer", u"\u5361\u5bc6\u7c7b\u578b:", None))
-        self.edt_card_num.setInputMask("")
-        self.edt_card_num.setPlaceholderText("")
-        self.btn_card_show_all.setText(QCoreApplication.translate("WndServer", u"\u663e\u793a\u6240\u6709\u8868\u9879", None))
         self.cmb_card_type.setItemText(0, QCoreApplication.translate("WndServer", u"\u5929\u5361", None))
         self.cmb_card_type.setItemText(1, QCoreApplication.translate("WndServer", u"\u5468\u5361", None))
         self.cmb_card_type.setItemText(2, QCoreApplication.translate("WndServer", u"\u6708\u5361", None))
@@ -654,6 +644,10 @@ class Ui_WndServer(object):
         self.cmb_card_type.setItemText(4, QCoreApplication.translate("WndServer", u"\u5e74\u5361", None))
         self.cmb_card_type.setItemText(5, QCoreApplication.translate("WndServer", u"\u6c38\u4e45\u5361", None))
 
+        self.label_2.setText(QCoreApplication.translate("WndServer", u"\u751f\u6210\u5f20\u6570:", None))
+        self.edt_card_num.setInputMask("")
+        self.edt_card_num.setPlaceholderText("")
+        self.label_4.setText(QCoreApplication.translate("WndServer", u"\u5361\u5bc6\u7c7b\u578b:", None))
         self.btn_card_gen.setText(QCoreApplication.translate("WndServer", u"\u786e\u5b9a\u751f\u6210", None))
         self.tbr_log.setDocumentTitle(QCoreApplication.translate("WndServer", u"\u6267\u884c\u65e5\u5fd7", None))
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))

@@ -132,10 +132,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         id, card_key, type, gen_time, sale_time, use_time = [i for i in range(6)]
         self.tbe_card.setColumnWidth(id, 40)
         self.tbe_card.setColumnWidth(card_key, 260)
-        self.tbe_card.setColumnWidth(type, 80)
-        self.tbe_card.setColumnWidth(gen_time, 150)
-        self.tbe_card.setColumnWidth(sale_time, 150)
-        self.tbe_card.setColumnWidth(use_time, 150)
+        self.tbe_card.setColumnWidth(type, 60)
+        self.tbe_card.setColumnWidth(gen_time, 145)
+        self.tbe_card.setColumnWidth(sale_time, 145)
         # 自定义数据表
         id, key, val, en_val = [i for i in range(4)]
         self.tbe_custom.setColumnWidth(id, 40)
@@ -176,7 +175,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_card.addAction(self.action_card_show_unuse)
         self.menu_tbe_card.addAction(self.action_card_show_sale)
         self.menu_tbe_card.addAction(self.action_card_del_used)
-
+        self.action_card_show_all.triggered.connect(self.on_action_card_show_all_triggered)
+        self.action_card_show_unuse.triggered.connect(self.on_action_card_show_unuse_triggered)
+        self.action_card_show_sale.triggered.connect(self.on_action_card_show_sale_triggered)
+        self.action_card_del_used.triggered.connect(self.on_action_card_del_used_triggered)
         self.tbe_card.customContextMenuRequested.connect(
             lambda : self.menu_tbe_card.exec_(QCursor.pos())
         )
@@ -191,7 +193,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_user_gift_day.clicked.connect(self.on_btn_user_gift_day_clicked)
 
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
-        self.btn_card_show_all.clicked.connect(self.on_btn_card_show_all_clicked)
 
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
@@ -288,24 +289,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             sql_table_insert("3卡密管理", val_dict)
         self.show_info(f"已生成{card_num}张{card_type}")
 
-    def on_btn_card_show_all_clicked(self):
-        query_card_list = sql_table_query("3卡密管理")
-        self.tbe_card.setRowCount(len(query_card_list))
-        for row, query_card in enumerate(query_card_list):
-            query_card["制卡时间"] = "" if query_card["制卡时间"] is None else str(query_card["制卡时间"])
-            query_card["使用时间"] = "" if query_card["使用时间"] is None else str(query_card["使用时间"])
-            query_card["销售时间"] = "" if query_card["销售时间"] is None else str(query_card["销售时间"])
-            id = QTableWidgetItem(str(query_card["ID"]))
-            card_key = QTableWidgetItem(query_card["卡号"])
-            card_type = QTableWidgetItem(query_card["卡类型"])
-            gen_time = QTableWidgetItem(query_card["制卡时间"])
-            use_time = QTableWidgetItem(query_card["使用时间"])
-            sale_time = QTableWidgetItem(query_card["销售时间"])
-            self.tbe_card.setItem(row, 0, id)
-            self.tbe_card.setItem(row, 1, card_key)
-            self.tbe_card.setItem(row, 2, card_type)
-            self.tbe_card.setItem(row, 3, gen_time)
-            self.tbe_card.setItem(row, 4, use_time)
 
     def on_tbe_proj_cellClicked(self, row: int, col: int):
         client_ver = self.tbe_proj.item(row, 1).text()
@@ -335,8 +318,24 @@ class WndServer(QMainWindow, Ui_WndServer):
         query_user_list = sql_table_query("2用户管理")
         self.refresh_tbe_user(query_user_list)
 
+    def on_action_card_show_all_triggered(self):
+        query_card_list = sql_table_query("3卡密管理")
+        self.refresh_tbe_card(query_card_list)
+
+    def on_action_card_show_unuse_triggered(self):
+        query_card_list = sql_table_query_ex("3卡密管理", "使用时间 is null")
+        self.refresh_tbe_card(query_card_list)
+
+    def on_action_card_show_sale_triggered(self):
+        query_card_list = sql_table_query_ex("3卡密管理", "销售时间 is not null")
+        self.refresh_tbe_card(query_card_list)
+
+    def on_action_card_del_used_triggered(self):
+        query_card_list = sql_table_query_ex("3卡密管理", "使用时间 is not null")
+        self.refresh_tbe_card(query_card_list)
+
     def refresh_tbe_user(self, query_user_list):
-        if len(query_user_list) == 0:
+        if not query_user_list:
             return False
         self.tbe_user.setRowCount(len(query_user_list))
         for row, query_user in enumerate(query_user_list):
@@ -376,6 +375,28 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setItem(row, 13, reg_time)
             self.tbe_user.setItem(row, 14, opration_system)
             self.tbe_user.setItem(row, 15, comment)
+        return True
+
+    def refresh_tbe_card(self, query_card_list):
+        if not query_card_list:
+            return False
+        self.tbe_card.setRowCount(len(query_card_list))
+        for row, query_card in enumerate(query_card_list):
+            query_card["制卡时间"] = "" if query_card["制卡时间"] is None else str(query_card["制卡时间"])
+            query_card["使用时间"] = "" if query_card["使用时间"] is None else str(query_card["使用时间"])
+            query_card["销售时间"] = "" if query_card["销售时间"] is None else str(query_card["销售时间"])
+            id = QTableWidgetItem(str(query_card["ID"]))
+            card_key = QTableWidgetItem(query_card["卡号"])
+            card_type = QTableWidgetItem(query_card["卡类型"])
+            gen_time = QTableWidgetItem(query_card["制卡时间"])
+            use_time = QTableWidgetItem(query_card["使用时间"])
+            sale_time = QTableWidgetItem(query_card["销售时间"])
+            self.tbe_card.setItem(row, 0, id)
+            self.tbe_card.setItem(row, 1, card_key)
+            self.tbe_card.setItem(row, 2, card_type)
+            self.tbe_card.setItem(row, 3, gen_time)
+            self.tbe_card.setItem(row, 4, use_time)
+            self.tbe_card.setItem(row, 5, sale_time)
         return True
 
     def on_timer_sec_timeout(self):

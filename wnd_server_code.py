@@ -151,21 +151,30 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 项目管理表
         self.tbe_proj.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_proj = QMenu()
+        self.action_proj_show_all = QAction("获取全部项目信息")
         self.action_proj_del = QAction("删除此记录")
-        self.action_proj_refresh = QAction("刷新记录")
+        self.menu_tbe_proj.addAction(self.action_proj_show_all)
         self.menu_tbe_proj.addAction(self.action_proj_del)
-        self.menu_tbe_proj.addAction(self.action_proj_refresh)
         self.action_proj_del.triggered.connect(self.on_action_proj_del_record_triggered)
-        self.action_proj_refresh.triggered.connect(self.on_btn_proj_refresh_clicked)
+        self.action_proj_show_all.triggered.connect(self.on_btn_proj_show_all_clicked)
         self.tbe_proj.customContextMenuRequested.connect(
             lambda : self.menu_tbe_proj.exec_(QCursor.pos())
+        )
+        # 用户管理表
+        self.tbe_user.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.menu_tbe_user = QMenu()
+        self.action_user_show_all = QAction("获取全部用户信息")
+        self.menu_tbe_user.addAction(self.action_user_show_all)
+        self.action_user_show_all.triggered.connect(self.on_action_user_show_all_triggered)
+        self.tbe_user.customContextMenuRequested.connect(
+            lambda : self.menu_tbe_user.exec_(QCursor.pos())
         )
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         # 按钮相关
         self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)
-        self.btn_proj_refresh.clicked.connect(self.on_btn_proj_refresh_clicked)
+        self.btn_proj_show_all.clicked.connect(self.on_btn_proj_show_all_clicked)
 
         self.btn_user_query.clicked.connect(self.btn_user_query_clicked)
 
@@ -212,9 +221,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         else:
             sql_table_insert("1项目管理", val_dict)
             self.show_info("已插入项目新记录")
-        self.on_btn_proj_refresh_clicked()
+        self.on_btn_proj_show_all_clicked()
 
-    def on_btn_proj_refresh_clicked(self):
+    def on_btn_proj_show_all_clicked(self):
         query_proj_list = sql_table_query("1项目管理")
         self.tbe_proj.setRowCount(len(query_proj_list))
         for row, proj_info in enumerate(query_proj_list):
@@ -294,7 +303,50 @@ class WndServer(QMainWindow, Ui_WndServer):
         if ret == QMessageBox.Yes:
             sql_table_del("1项目管理", {"客户端版本": client_ver})
             self.show_info(f"已删除项目表记录: {client_ver}")
-            self.on_btn_proj_refresh_clicked()
+            self.on_btn_proj_show_all_clicked()
+
+    def on_action_user_show_all_triggered(self):
+        query_user_list = sql_table_query("2用户管理")
+        self.refresh_tbe_user(query_user_list)
+
+    def refresh_tbe_user(self, query_user_list):
+        if len(query_user_list) == 0:
+            return False
+        self.tbe_user.setRowCount(len(query_user_list))
+        for row, query_user in enumerate(query_user_list):
+            id = QTableWidgetItem(str(query_user["ID"]))
+            account = QTableWidgetItem(query_user["账号"])
+            pwd = QTableWidgetItem(query_user["密码"])
+            qq = QTableWidgetItem(query_user["QQ"])
+            state = QTableWidgetItem(query_user["状态"])
+            heart_time = QTableWidgetItem(query_user["心跳时间"])
+            due_time = QTableWidgetItem(query_user["到期时间"])
+            last_login_time = QTableWidgetItem(query_user["上次登录时间"])
+            last_login_ip = QTableWidgetItem(query_user["上次登录IP"])
+            last_login_place = QTableWidgetItem(query_user["上次登录地"])
+            today_login_count = QTableWidgetItem(query_user["今日登录次数"])
+            today_unbind_count = QTableWidgetItem(query_user["今日解绑次数"])
+            machine_code = QTableWidgetItem(query_user["机器码"])
+            reg_time = QTableWidgetItem(query_user["注册时间"])
+            opration_system = QTableWidgetItem(query_user["操作系统"])
+            comment = QTableWidgetItem(query_user["备注"])
+            self.tbe_user.setItem(row, 0, id)
+            self.tbe_user.setItem(row, 1, account)
+            self.tbe_user.setItem(row, 2, pwd)
+            self.tbe_user.setItem(row, 3, qq)
+            self.tbe_user.setItem(row, 4, state)
+            self.tbe_user.setItem(row, 5, heart_time)
+            self.tbe_user.setItem(row, 6, due_time)
+            self.tbe_user.setItem(row, 7, last_login_time)
+            self.tbe_user.setItem(row, 8, last_login_ip)
+            self.tbe_user.setItem(row, 9, last_login_place)
+            self.tbe_user.setItem(row, 10, today_login_count)
+            self.tbe_user.setItem(row, 11, today_unbind_count)
+            self.tbe_user.setItem(row, 12, machine_code)
+            self.tbe_user.setItem(row, 13, reg_time)
+            self.tbe_user.setItem(row, 14, opration_system)
+            self.tbe_user.setItem(row, 15, comment)
+        return True
 
     def on_timer_sec_timeout(self):
         global cur_time_format

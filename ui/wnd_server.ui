@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page_0">
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -268,7 +268,7 @@
              <item row="5" column="1">
               <widget class="QPushButton" name="btn_custom_show_all">
                <property name="text">
-                <string>刷新自定义数据表</string>
+                <string>显示所有表项</string>
                </property>
               </widget>
              </item>
@@ -832,9 +832,9 @@
                </widget>
               </item>
               <item row="6" column="0" colspan="2">
-               <widget class="QPushButton" name="btn_card_refresh">
+               <widget class="QPushButton" name="btn_card_show_all">
                 <property name="text">
-                 <string>刷新卡密库</string>
+                 <string>显示所有表项</string>
                 </property>
                </widget>
               </item>

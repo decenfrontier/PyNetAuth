@@ -179,7 +179,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_user_query.clicked.connect(self.btn_user_query_clicked)
 
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
-        self.btn_card_refresh.clicked.connect(self.on_btn_card_refresh_clicked)
+        self.btn_card_show_all.clicked.connect(self.on_btn_card_show_all_clicked)
 
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
@@ -266,7 +266,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             sql_table_insert("3卡密管理", val_dict)
         self.show_info(f"已生成{card_num}张{card_type}")
 
-    def on_btn_card_refresh_clicked(self):
+    def on_btn_card_show_all_clicked(self):
         query_card_list = sql_table_query("3卡密管理")
         self.tbe_card.setRowCount(len(query_card_list))
         for row, card_info in enumerate(query_card_list):

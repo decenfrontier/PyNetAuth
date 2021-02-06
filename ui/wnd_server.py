@@ -457,10 +457,10 @@ class Ui_WndServer(object):
 
         self.gridLayout_6.addWidget(self.edt_card_num, 1, 1, 1, 1)
 
-        self.btn_card_refresh = QPushButton(self.layoutWidget)
-        self.btn_card_refresh.setObjectName(u"btn_card_refresh")
+        self.btn_card_show_all = QPushButton(self.layoutWidget)
+        self.btn_card_show_all.setObjectName(u"btn_card_show_all")
 
-        self.gridLayout_6.addWidget(self.btn_card_refresh, 6, 0, 1, 2)
+        self.gridLayout_6.addWidget(self.btn_card_show_all, 6, 0, 1, 2)
 
         self.cmb_card_type = QComboBox(self.layoutWidget)
         self.cmb_card_type.addItem("")
@@ -517,7 +517,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -561,7 +561,7 @@ class Ui_WndServer(object):
         self.label_8.setText(QCoreApplication.translate("WndServer", u"KEY", None))
         self.label_9.setText(QCoreApplication.translate("WndServer", u"VAL", None))
         self.btn_custom_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u8ba4\u6dfb\u52a0\u6216\u4fee\u6539", None))
-        self.btn_custom_show_all.setText(QCoreApplication.translate("WndServer", u"\u5237\u65b0\u81ea\u5b9a\u4e49\u6570\u636e\u8868", None))
+        self.btn_custom_show_all.setText(QCoreApplication.translate("WndServer", u"\u663e\u793a\u6240\u6709\u8868\u9879", None))
         self.label_10.setText(QCoreApplication.translate("WndServer", u"EVAL", None))
         self.groupBox_2.setTitle("")
         self.groupBox_5.setTitle("")
@@ -642,7 +642,7 @@ class Ui_WndServer(object):
         self.label_4.setText(QCoreApplication.translate("WndServer", u"\u5361\u5bc6\u7c7b\u578b:", None))
         self.edt_card_num.setInputMask("")
         self.edt_card_num.setPlaceholderText("")
-        self.btn_card_refresh.setText(QCoreApplication.translate("WndServer", u"\u5237\u65b0\u5361\u5bc6\u5e93", None))
+        self.btn_card_show_all.setText(QCoreApplication.translate("WndServer", u"\u663e\u793a\u6240\u6709\u8868\u9879", None))
         self.cmb_card_type.setItemText(0, QCoreApplication.translate("WndServer", u"\u5929\u5361", None))
         self.cmb_card_type.setItemText(1, QCoreApplication.translate("WndServer", u"\u5468\u5361", None))
         self.cmb_card_type.setItemText(2, QCoreApplication.translate("WndServer", u"\u6708\u5361", None))

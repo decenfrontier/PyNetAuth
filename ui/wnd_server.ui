@@ -763,7 +763,7 @@
             </column>
             <column>
              <property name="text">
-              <string>卡密</string>
+              <string>卡号</string>
              </property>
             </column>
             <column>

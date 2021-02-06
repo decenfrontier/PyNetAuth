@@ -383,20 +383,20 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_card.setRowCount(len(query_card_list))
         for row, query_card in enumerate(query_card_list):
             query_card["制卡时间"] = "" if query_card["制卡时间"] is None else str(query_card["制卡时间"])
-            query_card["使用时间"] = "" if query_card["使用时间"] is None else str(query_card["使用时间"])
             query_card["销售时间"] = "" if query_card["销售时间"] is None else str(query_card["销售时间"])
+            query_card["使用时间"] = "" if query_card["使用时间"] is None else str(query_card["使用时间"])
             id = QTableWidgetItem(str(query_card["ID"]))
             card_key = QTableWidgetItem(query_card["卡号"])
             card_type = QTableWidgetItem(query_card["卡类型"])
             gen_time = QTableWidgetItem(query_card["制卡时间"])
-            use_time = QTableWidgetItem(query_card["使用时间"])
             sale_time = QTableWidgetItem(query_card["销售时间"])
+            use_time = QTableWidgetItem(query_card["使用时间"])
             self.tbe_card.setItem(row, 0, id)
             self.tbe_card.setItem(row, 1, card_key)
             self.tbe_card.setItem(row, 2, card_type)
             self.tbe_card.setItem(row, 3, gen_time)
-            self.tbe_card.setItem(row, 4, use_time)
-            self.tbe_card.setItem(row, 5, sale_time)
+            self.tbe_card.setItem(row, 4, sale_time)
+            self.tbe_card.setItem(row, 5, use_time)
         return True
 
     def on_timer_sec_timeout(self):
@@ -529,7 +529,7 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     query_card_list = sql_table_query("3卡密管理", {"卡号": card_key})  # 查询数据库, 判断卡密是否存在
     if query_card_list:
         query_card = query_card_list[0]
-        if query_card["使用时间"] == "":  # 卡密未被使用
+        if not query_card["使用时间"]:  # 卡密未被使用
             query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
             if query_user_list:  # 账号存在
                 query_user = query_user_list[0]

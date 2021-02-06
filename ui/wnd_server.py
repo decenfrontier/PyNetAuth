@@ -625,7 +625,7 @@ class Ui_WndServer(object):
         ___qtablewidgetitem29 = self.tbe_card.horizontalHeaderItem(0)
         ___qtablewidgetitem29.setText(QCoreApplication.translate("WndServer", u"ID", None));
         ___qtablewidgetitem30 = self.tbe_card.horizontalHeaderItem(1)
-        ___qtablewidgetitem30.setText(QCoreApplication.translate("WndServer", u"\u5361\u5bc6", None));
+        ___qtablewidgetitem30.setText(QCoreApplication.translate("WndServer", u"\u5361\u53f7", None));
         ___qtablewidgetitem31 = self.tbe_card.horizontalHeaderItem(2)
         ___qtablewidgetitem31.setText(QCoreApplication.translate("WndServer", u"\u5361\u7c7b\u578b", None));
         ___qtablewidgetitem32 = self.tbe_card.horizontalHeaderItem(3)

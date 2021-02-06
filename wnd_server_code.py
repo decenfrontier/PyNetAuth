@@ -128,6 +128,15 @@ class WndServer(QMainWindow, Ui_WndServer):
         last_login_place, today_login_count, today_unbind_count, machine_code, reg_time, \
         opration_system, comment= [i for i in range(16)]
         self.tbe_user.setColumnWidth(id, 40)
+        self.tbe_user.setColumnWidth(account, 70)
+        self.tbe_user.setColumnWidth(pwd, 40)
+        self.tbe_user.setColumnWidth(qq, 70)
+        self.tbe_user.setColumnWidth(state, 50)
+        self.tbe_user.setColumnWidth(heart_time, 130)
+        self.tbe_user.setColumnWidth(due_time, 130)
+        self.tbe_user.setColumnWidth(last_login_time, 130)
+        self.tbe_user.setColumnWidth(reg_time, 130)
+        self.tbe_user.setColumnWidth(opration_system, 130)
         # 卡密管理表
         id, card_key, type, gen_time, sale_time, use_time = [i for i in range(6)]
         self.tbe_card.setColumnWidth(id, 40)
@@ -302,11 +311,17 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def on_action_card_show_unuse_triggered(self):
         query_card_list = sql_table_query_ex("3卡密管理", "使用时间 is null")
-        self.refresh_tbe_card(query_card_list)
+        if self.refresh_tbe_card(query_card_list):
+            self.show_info("显示未使用卡密成功")
+        else:
+            self.show_info("显示未使用卡密失败")
 
     def on_action_card_show_sale_triggered(self):
         query_card_list = sql_table_query_ex("3卡密管理", "销售时间 is not null")
-        self.refresh_tbe_card(query_card_list)
+        if self.refresh_tbe_card(query_card_list):
+            self.show_info("显示销售中卡密成功")
+        else:
+            self.show_info("显示销售中卡密失败")
 
     def on_action_card_del_used_triggered(self):
         ret = QMessageBox.information(self, "提示", "是否确定删除已使用的卡号?",
@@ -317,6 +332,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.show_info("删除已使用的卡号成功")
         else:
             self.show_info("删除已使用的卡号失败")
+        self.show_all_tbe_card()
 
     def show_all_tbe_proj(self):
         query_proj_list = sql_table_query("1项目管理")
@@ -366,7 +382,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             reg_time = "" if query_user["注册时间"] is None else str(query_user["注册时间"])
             id = QTableWidgetItem(str(query_user["ID"]))
             account = QTableWidgetItem(query_user["账号"])
-            pwd = QTableWidgetItem(query_user["密码"])
+            pwd = QTableWidgetItem("***")
             qq = QTableWidgetItem(query_user["QQ"])
             state = QTableWidgetItem(query_user["状态"])
             heart_time = QTableWidgetItem(heart_time)

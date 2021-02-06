@@ -121,11 +121,6 @@ class Ui_WndServer(object):
 
         self.formLayout.setWidget(6, QFormLayout.FieldRole, self.btn_proj_confirm)
 
-        self.btn_proj_show_all = QPushButton(self.groupBox)
-        self.btn_proj_show_all.setObjectName(u"btn_proj_show_all")
-
-        self.formLayout.setWidget(7, QFormLayout.FieldRole, self.btn_proj_show_all)
-
 
         self.horizontalLayout.addWidget(self.groupBox)
 
@@ -184,15 +179,10 @@ class Ui_WndServer(object):
 
         self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.edt_custom_val)
 
-        self.btn_custom_confirm = QPushButton(self.groupBox_4)
-        self.btn_custom_confirm.setObjectName(u"btn_custom_confirm")
+        self.label_10 = QLabel(self.groupBox_4)
+        self.label_10.setObjectName(u"label_10")
 
-        self.formLayout_2.setWidget(4, QFormLayout.FieldRole, self.btn_custom_confirm)
-
-        self.btn_custom_show_all = QPushButton(self.groupBox_4)
-        self.btn_custom_show_all.setObjectName(u"btn_custom_show_all")
-
-        self.formLayout_2.setWidget(5, QFormLayout.FieldRole, self.btn_custom_show_all)
+        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.label_10)
 
         self.edt_custom_eval = QLineEdit(self.groupBox_4)
         self.edt_custom_eval.setObjectName(u"edt_custom_eval")
@@ -200,10 +190,10 @@ class Ui_WndServer(object):
 
         self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.edt_custom_eval)
 
-        self.label_10 = QLabel(self.groupBox_4)
-        self.label_10.setObjectName(u"label_10")
+        self.btn_custom_confirm = QPushButton(self.groupBox_4)
+        self.btn_custom_confirm.setObjectName(u"btn_custom_confirm")
 
-        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.label_10)
+        self.formLayout_2.setWidget(4, QFormLayout.FieldRole, self.btn_custom_confirm)
 
 
         self.horizontalLayout_4.addWidget(self.groupBox_4)
@@ -225,15 +215,13 @@ class Ui_WndServer(object):
         self.groupBox_2 = QGroupBox(self.page_1)
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.groupBox_2.setMinimumSize(QSize(220, 0))
+        self.groupBox_2.setMaximumSize(QSize(16777215, 32))
         self.horizontalLayout_8 = QHBoxLayout(self.groupBox_2)
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.horizontalLayout_8.setContentsMargins(3, 0, 3, 0)
-        self.groupBox_5 = QGroupBox(self.groupBox_2)
-        self.groupBox_5.setObjectName(u"groupBox_5")
-        self.horizontalLayout_2 = QHBoxLayout(self.groupBox_5)
+        self.horizontalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalLayout_2.setContentsMargins(3, 3, 3, 3)
-        self.cmb_user_field = QComboBox(self.groupBox_5)
+        self.cmb_user_field = QComboBox(self.groupBox_2)
         self.cmb_user_field.addItem("")
         self.cmb_user_field.addItem("")
         self.cmb_user_field.addItem("")
@@ -249,7 +237,7 @@ class Ui_WndServer(object):
 
         self.horizontalLayout_2.addWidget(self.cmb_user_field)
 
-        self.cmb_user_operator = QComboBox(self.groupBox_5)
+        self.cmb_user_operator = QComboBox(self.groupBox_2)
         self.cmb_user_operator.addItem("")
         self.cmb_user_operator.addItem("")
         self.cmb_user_operator.addItem("")
@@ -260,72 +248,75 @@ class Ui_WndServer(object):
 
         self.horizontalLayout_2.addWidget(self.cmb_user_operator)
 
-        self.edt_user_value = QLineEdit(self.groupBox_5)
+        self.edt_user_value = QLineEdit(self.groupBox_2)
         self.edt_user_value.setObjectName(u"edt_user_value")
 
         self.horizontalLayout_2.addWidget(self.edt_user_value)
 
-        self.btn_user_query = QPushButton(self.groupBox_5)
+        self.btn_user_query = QPushButton(self.groupBox_2)
         self.btn_user_query.setObjectName(u"btn_user_query")
 
         self.horizontalLayout_2.addWidget(self.btn_user_query)
 
 
-        self.horizontalLayout_8.addWidget(self.groupBox_5)
+        self.horizontalLayout_8.addLayout(self.horizontalLayout_2)
 
-        self.groupBox_6 = QGroupBox(self.groupBox_2)
-        self.groupBox_6.setObjectName(u"groupBox_6")
-        self.horizontalLayout_5 = QHBoxLayout(self.groupBox_6)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_8.addItem(self.horizontalSpacer)
+
+        self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.horizontalLayout_5.setContentsMargins(3, 3, 3, 3)
-        self.edt_user_gift_day = QLineEdit(self.groupBox_6)
+        self.edt_user_gift_day = QLineEdit(self.groupBox_2)
         self.edt_user_gift_day.setObjectName(u"edt_user_gift_day")
 
         self.horizontalLayout_5.addWidget(self.edt_user_gift_day)
 
-        self.btn_user_gift_day = QPushButton(self.groupBox_6)
+        self.btn_user_gift_day = QPushButton(self.groupBox_2)
         self.btn_user_gift_day.setObjectName(u"btn_user_gift_day")
 
         self.horizontalLayout_5.addWidget(self.btn_user_gift_day)
 
 
-        self.horizontalLayout_8.addWidget(self.groupBox_6)
+        self.horizontalLayout_8.addLayout(self.horizontalLayout_5)
 
-        self.groupBox_7 = QGroupBox(self.groupBox_2)
-        self.groupBox_7.setObjectName(u"groupBox_7")
-        self.horizontalLayout_6 = QHBoxLayout(self.groupBox_7)
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_8.addItem(self.horizontalSpacer_2)
+
+        self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.horizontalLayout_6.setContentsMargins(3, 3, 3, 3)
-        self.edt_user_frozen_machine = QLineEdit(self.groupBox_7)
+        self.edt_user_frozen_machine = QLineEdit(self.groupBox_2)
         self.edt_user_frozen_machine.setObjectName(u"edt_user_frozen_machine")
 
         self.horizontalLayout_6.addWidget(self.edt_user_frozen_machine)
 
-        self.btn_user_frozen_machine = QPushButton(self.groupBox_7)
+        self.btn_user_frozen_machine = QPushButton(self.groupBox_2)
         self.btn_user_frozen_machine.setObjectName(u"btn_user_frozen_machine")
 
         self.horizontalLayout_6.addWidget(self.btn_user_frozen_machine)
 
 
-        self.horizontalLayout_8.addWidget(self.groupBox_7)
+        self.horizontalLayout_8.addLayout(self.horizontalLayout_6)
 
-        self.groupBox_8 = QGroupBox(self.groupBox_2)
-        self.groupBox_8.setObjectName(u"groupBox_8")
-        self.horizontalLayout_7 = QHBoxLayout(self.groupBox_8)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_8.addItem(self.horizontalSpacer_3)
+
+        self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.horizontalLayout_7.setContentsMargins(3, 3, 3, 3)
-        self.edt_user_frozen_ip = QLineEdit(self.groupBox_8)
+        self.edt_user_frozen_ip = QLineEdit(self.groupBox_2)
         self.edt_user_frozen_ip.setObjectName(u"edt_user_frozen_ip")
 
         self.horizontalLayout_7.addWidget(self.edt_user_frozen_ip)
 
-        self.btn_user_frozen_ip = QPushButton(self.groupBox_8)
+        self.btn_user_frozen_ip = QPushButton(self.groupBox_2)
         self.btn_user_frozen_ip.setObjectName(u"btn_user_frozen_ip")
 
         self.horizontalLayout_7.addWidget(self.btn_user_frozen_ip)
 
 
-        self.horizontalLayout_8.addWidget(self.groupBox_8)
+        self.horizontalLayout_8.addLayout(self.horizontalLayout_7)
 
 
         self.verticalLayout_3.addWidget(self.groupBox_2)
@@ -514,7 +505,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -543,7 +534,6 @@ class Ui_WndServer(object):
         self.label_6.setText(QCoreApplication.translate("WndServer", u"\u53d1\u5361\u5730\u5740", None))
         self.label_7.setText(QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u8d60\u9001\u5929\u6570", None))
         self.btn_proj_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u5b9a\u6dfb\u52a0\u6216\u4fee\u6539", None))
-        self.btn_proj_show_all.setText(QCoreApplication.translate("WndServer", u"\u663e\u793a\u6240\u6709\u8868\u9879", None))
         ___qtablewidgetitem7 = self.tbe_custom.horizontalHeaderItem(0)
         ___qtablewidgetitem7.setText(QCoreApplication.translate("WndServer", u"ID", None));
         ___qtablewidgetitem8 = self.tbe_custom.horizontalHeaderItem(1)
@@ -557,11 +547,9 @@ class Ui_WndServer(object):
         self.groupBox_4.setTitle(QCoreApplication.translate("WndServer", u"\u81ea\u5b9a\u4e49\u6570\u636e", None))
         self.label_8.setText(QCoreApplication.translate("WndServer", u"KEY", None))
         self.label_9.setText(QCoreApplication.translate("WndServer", u"VAL", None))
-        self.btn_custom_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u8ba4\u6dfb\u52a0\u6216\u4fee\u6539", None))
-        self.btn_custom_show_all.setText(QCoreApplication.translate("WndServer", u"\u663e\u793a\u6240\u6709\u8868\u9879", None))
         self.label_10.setText(QCoreApplication.translate("WndServer", u"EVAL", None))
+        self.btn_custom_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u8ba4\u6dfb\u52a0\u6216\u4fee\u6539", None))
         self.groupBox_2.setTitle("")
-        self.groupBox_5.setTitle("")
         self.cmb_user_field.setItemText(0, QCoreApplication.translate("WndServer", u"\u8d26\u53f7", None))
         self.cmb_user_field.setItemText(1, QCoreApplication.translate("WndServer", u"\u5bc6\u7801", None))
         self.cmb_user_field.setItemText(2, QCoreApplication.translate("WndServer", u"QQ", None))
@@ -582,11 +570,8 @@ class Ui_WndServer(object):
         self.cmb_user_operator.setItemText(5, QCoreApplication.translate("WndServer", u"rlike", None))
 
         self.btn_user_query.setText(QCoreApplication.translate("WndServer", u"\u67e5\u8be2", None))
-        self.groupBox_6.setTitle("")
         self.btn_user_gift_day.setText(QCoreApplication.translate("WndServer", u"\u6279\u91cf\u7eed\u8d39", None))
-        self.groupBox_7.setTitle("")
         self.btn_user_frozen_machine.setText(QCoreApplication.translate("WndServer", u"\u6279\u91cf\u51bb\u7ed3\u673a\u5668", None))
-        self.groupBox_8.setTitle("")
         self.btn_user_frozen_ip.setText(QCoreApplication.translate("WndServer", u"\u6279\u91cf\u51bb\u7ed3IP", None))
         ___qtablewidgetitem12 = self.tbe_user.horizontalHeaderItem(0)
         ___qtablewidgetitem12.setText(QCoreApplication.translate("WndServer", u"ID", None));

@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page_0">
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -171,13 +171,6 @@
                </property>
               </widget>
              </item>
-             <item row="7" column="1">
-              <widget class="QPushButton" name="btn_proj_show_all">
-               <property name="text">
-                <string>显示所有表项</string>
-               </property>
-              </widget>
-             </item>
             </layout>
            </widget>
           </item>
@@ -258,17 +251,10 @@
              <item row="1" column="1">
               <widget class="QLineEdit" name="edt_custom_val"/>
              </item>
-             <item row="4" column="1">
-              <widget class="QPushButton" name="btn_custom_confirm">
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_10">
                <property name="text">
-                <string>确认添加或修改</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="1">
-              <widget class="QPushButton" name="btn_custom_show_all">
-               <property name="text">
-                <string>显示所有表项</string>
+                <string>EVAL</string>
                </property>
               </widget>
              </item>
@@ -279,10 +265,10 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_10">
+             <item row="4" column="1">
+              <widget class="QPushButton" name="btn_custom_confirm">
                <property name="text">
-                <string>EVAL</string>
+                <string>确认添加或修改</string>
                </property>
               </widget>
              </item>
@@ -320,238 +306,215 @@
               <height>0</height>
              </size>
             </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>32</height>
+             </size>
+            </property>
             <property name="title">
              <string/>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_8">
              <property name="leftMargin">
-              <number>3</number>
+              <number>0</number>
              </property>
              <property name="topMargin">
               <number>0</number>
              </property>
              <property name="rightMargin">
-              <number>3</number>
+              <number>0</number>
              </property>
              <property name="bottomMargin">
               <number>0</number>
              </property>
              <item>
-              <widget class="QGroupBox" name="groupBox_5">
-               <property name="title">
-                <string/>
-               </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_2">
-                <property name="leftMargin">
-                 <number>3</number>
-                </property>
-                <property name="topMargin">
-                 <number>3</number>
-                </property>
-                <property name="rightMargin">
-                 <number>3</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>3</number>
-                </property>
-                <item>
-                 <widget class="QComboBox" name="cmb_user_field">
-                  <item>
-                   <property name="text">
-                    <string>账号</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>密码</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>QQ</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>状态</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>上次登录时间</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>上次登录IP</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>今日登录次数</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>今日解绑次数</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>机器码</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>注册时间</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>备注</string>
-                   </property>
-                  </item>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QComboBox" name="cmb_user_operator">
-                  <item>
-                   <property name="text">
-                    <string>=</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>!=</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>&gt;</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>&lt;</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>like</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>rlike</string>
-                   </property>
-                  </item>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="edt_user_value"/>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="btn_user_query">
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <item>
+                <widget class="QComboBox" name="cmb_user_field">
+                 <item>
                   <property name="text">
-                   <string>查询</string>
+                   <string>账号</string>
                   </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>密码</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>QQ</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>状态</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>上次登录时间</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>上次登录IP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>今日登录次数</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>今日解绑次数</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>机器码</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>注册时间</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>备注</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="cmb_user_operator">
+                 <item>
+                  <property name="text">
+                   <string>=</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>!=</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>&gt;</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>&lt;</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>like</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>rlike</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="edt_user_value"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btn_user_query">
+                 <property name="text">
+                  <string>查询</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox_6">
-               <property name="title">
-                <string/>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
                </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_5">
-                <property name="leftMargin">
-                 <number>3</number>
-                </property>
-                <property name="topMargin">
-                 <number>3</number>
-                </property>
-                <property name="rightMargin">
-                 <number>3</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>3</number>
-                </property>
-                <item>
-                 <widget class="QLineEdit" name="edt_user_gift_day"/>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="btn_user_gift_day">
-                  <property name="text">
-                   <string>批量续费</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox_7">
-               <property name="title">
-                <string/>
-               </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_6">
-                <property name="leftMargin">
-                 <number>3</number>
-                </property>
-                <property name="topMargin">
-                 <number>3</number>
-                </property>
-                <property name="rightMargin">
-                 <number>3</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>3</number>
-                </property>
-                <item>
-                 <widget class="QLineEdit" name="edt_user_frozen_machine"/>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="btn_user_frozen_machine">
-                  <property name="text">
-                   <string>批量冻结机器</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <item>
+                <widget class="QLineEdit" name="edt_user_gift_day"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btn_user_gift_day">
+                 <property name="text">
+                  <string>批量续费</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox_8">
-               <property name="title">
-                <string/>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
                </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_7">
-                <property name="leftMargin">
-                 <number>3</number>
-                </property>
-                <property name="topMargin">
-                 <number>3</number>
-                </property>
-                <property name="rightMargin">
-                 <number>3</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>3</number>
-                </property>
-                <item>
-                 <widget class="QLineEdit" name="edt_user_frozen_ip"/>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="btn_user_frozen_ip">
-                  <property name="text">
-                   <string>批量冻结IP</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="QLineEdit" name="edt_user_frozen_machine"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btn_user_frozen_machine">
+                 <property name="text">
+                  <string>批量冻结机器</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <widget class="QLineEdit" name="edt_user_frozen_ip"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btn_user_frozen_ip">
+                 <property name="text">
+                  <string>批量冻结IP</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>

@@ -255,6 +255,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         ret = QMessageBox.information(self, "提示", f"所有用户续费{gift_day}天?",
                                       QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if ret == QMessageBox.Yes:
+            # todo: 已到期的用户不要加时间
             sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
                                 "状态 in ('在线', '离线')")
 
@@ -275,12 +276,14 @@ class WndServer(QMainWindow, Ui_WndServer):
     def on_btn_card_show_all_clicked(self):
         query_card_list = sql_table_query("3卡密管理")
         self.tbe_card.setRowCount(len(query_card_list))
-        for row, card_info in enumerate(query_card_list):
-            id = QTableWidgetItem(str(card_info["ID"]))
-            card_key = QTableWidgetItem(card_info["卡号"])
-            card_type = QTableWidgetItem(card_info["卡类型"])
-            gen_time = QTableWidgetItem(card_info["制卡时间"])
-            use_time = QTableWidgetItem(card_info["使用时间"])
+        for row, query_card in enumerate(query_card_list):
+            query_card["制卡时间"] = "" if query_card["制卡时间"] is None else str(query_card["制卡时间"])
+            query_card["使用时间"] = "" if query_card["使用时间"] is None else str(query_card["使用时间"])
+            id = QTableWidgetItem(str(query_card["ID"]))
+            card_key = QTableWidgetItem(query_card["卡号"])
+            card_type = QTableWidgetItem(query_card["卡类型"])
+            gen_time = QTableWidgetItem(query_card["制卡时间"])
+            use_time = QTableWidgetItem(query_card["使用时间"])
             self.tbe_card.setItem(row, 0, id)
             self.tbe_card.setItem(row, 1, card_key)
             self.tbe_card.setItem(row, 2, card_type)

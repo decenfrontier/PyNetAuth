@@ -646,13 +646,13 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     card_key = client_info_dict["卡号"]
     pay_ret = False
 
-    query_card_list = sql_table_query("3卡密管理", {"卡号": card_key})  # 查询数据库, 判断卡密是否存在
-    if query_card_list:
-        query_card = query_card_list[0]
-        if not query_card["使用时间"]:  # 卡密未被使用
-            query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
-            if query_user_list:  # 账号存在
-                query_user = query_user_list[0]
+    query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
+    if query_user_list:  # 账号存在
+        query_user = query_user_list[0]
+        query_card_list = sql_table_query("3卡密管理", {"卡号": card_key})  # 查询数据库, 判断卡密是否存在
+        if query_card_list:
+            query_card = query_card_list[0]
+            if not query_card["使用时间"]:  # 卡密未被使用
                 # 更新卡密的使用时间
                 sql_table_update("3卡密管理", {"使用时间": cur_time_format}, {"卡号": card_key})
                 # 更新账号到期时间
@@ -666,11 +666,11 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
                                               f"账号='{account}'")
                 detail = "充值成功" if pay_ret else "充值失败, 数据库异常"
             else:
-                detail = "充值失败, 账号不存在"
-        else:  # 卡密被使用
-            detail = "充值失败, 此卡密已被使用"
-    else:  # 没查到数据
-        detail = "充值失败, 卡密不存在"
+                detail = "充值失败, 此卡密已被使用"
+        else:  # 没查到数据
+            detail = "充值失败, 卡密不存在"
+    else:
+        detail = "充值失败, 账号不存在"
     # 记录到日志
     log_append_content(f"账号{account} {detail}")
     # 把充值结果整理成py字典, 并发送给客户端

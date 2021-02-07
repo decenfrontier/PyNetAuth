@@ -659,8 +659,11 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
                 type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 120, "年卡": 365, "永久卡": 3650}
                 card_type = query_card["卡类型"]
                 delta_day = type_time_dict[card_type]
-                # todo: 修复bug
-                pay_ret = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {delta_day} day)")
+                account = query_user["账号"]
+                # 若到期时间大于当前时间, 则从到期时间开始加, 否则从当前时间开始加
+                start_day = "到期时间" if str(query_user["到期时间"]) > cur_time_format else "now()"
+                pay_ret = sql_table_update_ex("2用户管理", f"到期时间 = date_add({start_day}, interval {delta_day} day)",
+                                              f"账号='{account}'")
                 detail = "充值成功" if pay_ret else "充值失败, 数据库异常"
             else:
                 detail = "充值失败, 账号不存在"

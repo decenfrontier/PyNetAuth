@@ -179,18 +179,21 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_card_show_all = QAction("显示全部卡密信息")
         self.action_card_show_unuse = QAction("显示未使用卡密")
         self.action_card_show_sale = QAction("显示销售中卡密")
+        self.action_card_del_sel = QAction("删除选中卡密")
         self.action_card_del_used = QAction("删除已使用卡密")
         self.action_card_export_sale = QAction("批量导出销售")
-        self.menu_tbe_card.addAction(self.action_card_show_all)
-        self.menu_tbe_card.addAction(self.action_card_show_unuse)
-        self.menu_tbe_card.addAction(self.action_card_show_sale)
+        self.menu_tbe_card.addActions([self.action_card_show_all,
+                                       self.action_card_show_unuse,
+                                       self.action_card_show_sale])
         self.menu_tbe_card.addSeparator()
-        self.menu_tbe_card.addAction(self.action_card_del_used)
+        self.menu_tbe_card.addActions([self.action_card_del_sel,
+                                       self.action_card_del_used])
         self.menu_tbe_card.addSeparator()
         self.menu_tbe_card.addAction(self.action_card_export_sale)
         self.action_card_show_all.triggered.connect(self.show_all_tbe_card)
         self.action_card_show_unuse.triggered.connect(self.on_action_card_show_unuse_triggered)
         self.action_card_show_sale.triggered.connect(self.on_action_card_show_sale_triggered)
+        self.action_card_del_sel.triggered.connect(self.on_action_card_del_sel_triggered)
         self.action_card_del_used.triggered.connect(self.on_action_card_del_used_triggered)
         self.action_card_export_sale.triggered.connect(self.on_action_card_export_sale_triggered)
         self.tbe_card.customContextMenuRequested.connect(
@@ -327,6 +330,19 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.show_info("显示销售中卡密成功")
         else:
             self.show_info("显示销售中卡密失败")
+
+    def on_action_card_del_sel_triggered(self):
+        ret = QMessageBox.information(self, "提示", "是否确定删除选中的卡号?",
+                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        if ret != QMessageBox.Yes:
+            return
+        item_list = self.tbe_card.selectedItems()
+        for item in item_list:
+            row = item.row()
+            card_key = self.tbe_card.item(row, 1).text()
+            sql_table_del("3卡密管理", {"卡号": card_key})
+        self.show_info("已删除选中的卡号")
+        self.show_all_tbe_card()
 
     def on_action_card_del_used_triggered(self):
         ret = QMessageBox.information(self, "提示", "是否确定删除已使用的卡号?",

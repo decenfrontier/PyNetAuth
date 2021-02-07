@@ -271,10 +271,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         value = self.edt_user_value.text()
         condition = f"{field} {operator} {value}"
         query_user_list = sql_table_query_ex("2用户管理", condition)
-        if self.refresh_tbe_user(query_user_list):
-            self.show_info("用户记录查询成功")
-        else:
-            self.show_info("用户记录查询失败")
+        num = len(query_user_list)
+        self.show_info(f"查询到{num}个符合条件的用户")
+        self.refresh_tbe_user(query_user_list)
+
 
     def on_btn_user_gift_day_clicked(self):
         gift_day = self.edt_user_gift_day.text()
@@ -283,9 +283,11 @@ class WndServer(QMainWindow, Ui_WndServer):
                                       QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if ret != QMessageBox.Yes:
             return
-        # todo: 已到期的用户不要加时间
-        sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
-                            "状态 in ('在线', '离线')")
+        num = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
+                            "now() < 到期时间 and 状态 not in ('', '冻结')")
+        self.show_info(f"{num}个用户续费{gift_day}天成功")
+        self.show_all_tbe_user()
+
 
     def on_btn_card_gen_clicked(self):
         gen_time = cur_time_format
@@ -426,24 +428,15 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def show_all_tbe_proj(self):
         query_proj_list = sql_table_query("1项目管理")
-        if self.refresh_tbe_proj(query_proj_list):
-            self.show_info("显示所有项目成功")
-        else:
-            self.show_info("显示所有项目失败")
+        self.refresh_tbe_proj(query_proj_list)
 
     def show_all_tbe_user(self):
         query_user_list = sql_table_query("2用户管理")
-        if self.refresh_tbe_user(query_user_list):
-            self.show_info("显示所有用户成功")
-        else:
-            self.show_info("显示所有用户失败")
+        self.refresh_tbe_user(query_user_list)
 
     def show_all_tbe_card(self):
         query_card_list = sql_table_query("3卡密管理")
-        if self.refresh_tbe_card(query_card_list):
-            self.show_info("显示所有卡密成功")
-        else:
-            self.show_info("显示所有卡密失败")
+        self.refresh_tbe_card(query_card_list)
 
     def refresh_tbe_proj(self, query_proj_list):
         self.tbe_proj.setRowCount(len(query_proj_list))

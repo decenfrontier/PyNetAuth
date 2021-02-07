@@ -99,6 +99,53 @@ class WndServer(QMainWindow, Ui_WndServer):
 
 
     def init_all_controls(self):
+        def init_all_table():
+            # 所有表头可视化
+            self.tbe_proj.horizontalHeader().setVisible(True)
+            self.tbe_user.horizontalHeader().setVisible(True)
+            self.tbe_card.horizontalHeader().setVisible(True)
+            # 所有表格设置不可编辑
+            # self.tbe_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            # self.tbe_online_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            # self.tbe_card.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            # 项目管理表
+            id, ver, pub_notice, url_update, url_card = [i for i in range(5)]
+            self.tbe_proj.setColumnWidth(id, 40)
+            self.tbe_proj.setColumnWidth(ver, 100)
+            self.tbe_proj.setColumnWidth(pub_notice, 160)
+            self.tbe_proj.setColumnWidth(url_update, 120)
+            self.tbe_proj.setColumnWidth(url_card, 120)
+            # 用户管理表
+            id, account, pwd, qq, state, heart_time, due_time, last_login_time, last_login_ip, \
+            last_login_place, today_login_count, today_unbind_count, machine_code, reg_time, \
+            opration_system, comment = [i for i in range(16)]
+            self.tbe_user.setColumnWidth(id, 40)
+            self.tbe_user.setColumnWidth(account, 70)
+            self.tbe_user.setColumnWidth(pwd, 40)
+            self.tbe_user.setColumnWidth(qq, 70)
+            self.tbe_user.setColumnWidth(state, 50)
+            self.tbe_user.setColumnWidth(heart_time, 130)
+            self.tbe_user.setColumnWidth(due_time, 130)
+            self.tbe_user.setColumnWidth(last_login_time, 130)
+            self.tbe_user.setColumnWidth(reg_time, 130)
+            self.tbe_user.setColumnWidth(opration_system, 130)
+            # 卡密管理表
+            id, card_key, type, gen_time, sale_time, use_time = [i for i in range(6)]
+            self.tbe_card.setColumnWidth(id, 40)
+            self.tbe_card.setColumnWidth(card_key, 260)
+            self.tbe_card.setColumnWidth(type, 60)
+            self.tbe_card.setColumnWidth(gen_time, 145)
+            self.tbe_card.setColumnWidth(sale_time, 145)
+            # 自定义数据表
+            id, key, val, en_val = [i for i in range(4)]
+            self.tbe_custom.setColumnWidth(id, 40)
+            self.tbe_custom.setColumnWidth(key, 100)
+            self.tbe_custom.setColumnWidth(val, 120)
+            self.tbe_custom.setColumnWidth(en_val, 200)
+            # 显示全部
+            self.show_all_tbe_proj()
+            self.show_all_tbe_user()
+            self.show_all_tbe_card()
         # 显示第一页
         self.stack_widget.setCurrentIndex(0)
         # 工具栏设置图标
@@ -106,50 +153,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
         self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
         self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
-        # ------------------ 设置编辑框格式 -----------------
+        # 设置编辑框格式
         self.edt_user_gift_day.setValidator(QIntValidator(0, 99))
-        # 所有表头可视化
-        self.tbe_proj.horizontalHeader().setVisible(True)
-        self.tbe_user.horizontalHeader().setVisible(True)
-        self.tbe_card.horizontalHeader().setVisible(True)
-        # 所有表格设置不可编辑
-        # self.tbe_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # self.tbe_online_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # self.tbe_card.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # 项目管理表
-        id, ver, pub_notice, url_update, url_card = [i for i in range(5)]
-        self.tbe_proj.setColumnWidth(id, 40)
-        self.tbe_proj.setColumnWidth(ver, 100)
-        self.tbe_proj.setColumnWidth(pub_notice, 160)
-        self.tbe_proj.setColumnWidth(url_update, 120)
-        self.tbe_proj.setColumnWidth(url_card, 120)
-        # 用户管理表
-        id, account, pwd, qq, state, heart_time, due_time, last_login_time, last_login_ip,\
-        last_login_place, today_login_count, today_unbind_count, machine_code, reg_time, \
-        opration_system, comment= [i for i in range(16)]
-        self.tbe_user.setColumnWidth(id, 40)
-        self.tbe_user.setColumnWidth(account, 70)
-        self.tbe_user.setColumnWidth(pwd, 40)
-        self.tbe_user.setColumnWidth(qq, 70)
-        self.tbe_user.setColumnWidth(state, 50)
-        self.tbe_user.setColumnWidth(heart_time, 130)
-        self.tbe_user.setColumnWidth(due_time, 130)
-        self.tbe_user.setColumnWidth(last_login_time, 130)
-        self.tbe_user.setColumnWidth(reg_time, 130)
-        self.tbe_user.setColumnWidth(opration_system, 130)
-        # 卡密管理表
-        id, card_key, type, gen_time, sale_time, use_time = [i for i in range(6)]
-        self.tbe_card.setColumnWidth(id, 40)
-        self.tbe_card.setColumnWidth(card_key, 260)
-        self.tbe_card.setColumnWidth(type, 60)
-        self.tbe_card.setColumnWidth(gen_time, 145)
-        self.tbe_card.setColumnWidth(sale_time, 145)
-        # 自定义数据表
-        id, key, val, en_val = [i for i in range(4)]
-        self.tbe_custom.setColumnWidth(id, 40)
-        self.tbe_custom.setColumnWidth(key, 100)
-        self.tbe_custom.setColumnWidth(val, 120)
-        self.tbe_custom.setColumnWidth(en_val, 200)
+        # 初始化所有表格
+        init_all_table()
 
     def init_all_menu(self):
         # 项目管理表

@@ -6,7 +6,7 @@ from random import randint
 
 from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor, QCursor, QIntValidator
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
-    QMessageBox, QTableWidgetItem, QMenu, QAction
+    QMessageBox, QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit
 from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
@@ -175,8 +175,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_user = QMenu()
         self.action_user_show_all = QAction("显示全部用户信息")
+        self.action_user_frozen_sel = QAction("冻结选中用户")
+        self.action_user_unfrozen_sel = QAction("解冻选中用户")
         self.menu_tbe_user.addAction(self.action_user_show_all)
+        self.menu_tbe_user.addAction(self.action_user_frozen_sel)
+        self.menu_tbe_user.addAction(self.action_user_unfrozen_sel)
         self.action_user_show_all.triggered.connect(self.show_all_tbe_user)
+        self.action_user_frozen_sel.triggered.connect(self.on_action_user_frozen_sel_triggered)
         self.tbe_user.customContextMenuRequested.connect(
             lambda : self.menu_tbe_user.exec_(QCursor.pos())
         )
@@ -323,6 +328,26 @@ class WndServer(QMainWindow, Ui_WndServer):
         else:
             self.show_info(f"删除项目表记录: {client_ver}失败")
         self.show_all_tbe_proj()
+
+    def on_action_user_frozen_sel_triggered(self):
+        item_list = self.tbe_user.selectedItems()
+        account_list = []
+        for item in item_list:
+            row = item.row()
+            account = self.tbe_user.item(row, 1).text()
+            account_list.append(account)
+        if not account_list:
+            return
+        comment, ok_pressed = QInputDialog.getText(self, "备注", "冻结原因", QLineEdit.Normal)
+        if not ok_pressed:
+            self.show_info("取消冻结账号操作")
+            return
+        accounts = tuple(account_list)
+        if sql_table_update_ex("2用户管理", f"状态='冻结', 备注='{comment}'", f"账号 in {accounts}"):
+            self.show_info("冻结选中账号成功")
+        else:
+            self.show_info("冻结选中账号失败")
+        self.show_all_tbe_user()
 
     def on_action_card_show_unuse_triggered(self):
         query_card_list = sql_table_query_ex("3卡密管理", "使用时间 is null")

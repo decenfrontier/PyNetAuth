@@ -180,14 +180,19 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_card_show_unuse = QAction("显示未使用卡密")
         self.action_card_show_sale = QAction("显示销售中卡密")
         self.action_card_del_used = QAction("删除已使用卡密")
+        self.action_card_export_sale = QAction("批量导出销售")
         self.menu_tbe_card.addAction(self.action_card_show_all)
         self.menu_tbe_card.addAction(self.action_card_show_unuse)
         self.menu_tbe_card.addAction(self.action_card_show_sale)
+        self.menu_tbe_card.addSeparator()
         self.menu_tbe_card.addAction(self.action_card_del_used)
+        self.menu_tbe_card.addSeparator()
+        self.menu_tbe_card.addAction(self.action_card_export_sale)
         self.action_card_show_all.triggered.connect(self.show_all_tbe_card)
         self.action_card_show_unuse.triggered.connect(self.on_action_card_show_unuse_triggered)
         self.action_card_show_sale.triggered.connect(self.on_action_card_show_sale_triggered)
         self.action_card_del_used.triggered.connect(self.on_action_card_del_used_triggered)
+        self.action_card_export_sale.triggered.connect(self.on_action_card_export_sale_triggered)
         self.tbe_card.customContextMenuRequested.connect(
             lambda : self.menu_tbe_card.exec_(QCursor.pos())
         )
@@ -333,6 +338,20 @@ class WndServer(QMainWindow, Ui_WndServer):
         else:
             self.show_info("删除已使用的卡号失败")
         self.show_all_tbe_card()
+
+    def on_action_card_export_sale_triggered(self):
+        item_list = self.tbe_card.selectedItems()
+        card_key_list = []
+        for item in item_list:
+            row = item.row()
+            card_key = self.tbe_card.item(row, 1).text()
+            card_key_list.append(card_key)
+            sql_table_update("3卡密管理", {"销售时间": cur_time_format}, {"卡号": card_key})
+        export_card_key = "\n".join(card_key_list)
+        clip_copy(export_card_key)
+        self.show_info("已复制到剪切板")
+        self.show_all_tbe_card()
+
 
     def show_all_tbe_proj(self):
         query_proj_list = sql_table_query("1项目管理")
@@ -902,6 +921,11 @@ def log_append_content(content: str):
         with open(path_log, "a", encoding="utf8") as f:
             text = f"{cur_time_format} {content}\n"
             f.write(text)
+
+# 剪切板拷贝
+def clip_copy(content: str):
+    clip_bd = QApplication.clipboard()
+    clip_bd.setText(content)
 
 
 if __name__ == '__main__':

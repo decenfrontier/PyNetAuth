@@ -182,6 +182,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_user.addAction(self.action_user_unfrozen_sel)
         self.action_user_show_all.triggered.connect(self.show_all_tbe_user)
         self.action_user_frozen_sel.triggered.connect(self.on_action_user_frozen_sel_triggered)
+        self.action_user_unfrozen_sel.triggered.connect(self.on_action_user_unfrozen_sel_triggered)
         self.tbe_user.customContextMenuRequested.connect(
             lambda : self.menu_tbe_user.exec_(QCursor.pos())
         )
@@ -338,7 +339,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             account_list.append(account)
         if not account_list:
             return
-        comment, ok_pressed = QInputDialog.getText(self, "备注", "冻结原因", QLineEdit.Normal)
+        comment, ok_pressed = QInputDialog.getText(self, "冻结", "备注原因:", QLineEdit.Normal)
         if not ok_pressed:
             self.show_info("取消冻结账号操作")
             return
@@ -347,6 +348,28 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.show_info("冻结选中账号成功")
         else:
             self.show_info("冻结选中账号失败")
+        self.show_all_tbe_user()
+
+    def on_action_user_unfrozen_sel_triggered(self):
+        item_list = self.tbe_user.selectedItems()
+        account_list = []
+        for item in item_list:
+            row = item.row()
+            if self.tbe_user.item(row, 4).text() != "冻结":
+                continue
+            account = self.tbe_user.item(row, 1).text()
+            account_list.append(account)
+        if not account_list:
+            return
+        ret = QMessageBox.information(self, "提示", "确定解冻选中账号?", QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+        if ret != QMessageBox.Yes:
+            return
+        accounts = tuple(account_list)
+        # 解冻时备注应加天数
+        if sql_table_update_ex("2用户管理", f"状态='离线', 备注=datediff(到期时间, 心跳时间)", f"账号 in {accounts}"):
+            self.show_info("解冻选中账号成功")
+        else:
+            self.show_info("解冻选中账号失败")
         self.show_all_tbe_user()
 
     def on_action_card_show_unuse_triggered(self):
@@ -643,6 +666,7 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
                 type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 120, "年卡": 365, "永久卡": 3650}
                 card_type = query_card["卡类型"]
                 delta_day = type_time_dict[card_type]
+                # todo: 修复bug
                 pay_ret = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {delta_day} day)")
                 detail = "充值成功" if pay_ret else "充值失败, 数据库异常"
             else:

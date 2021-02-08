@@ -9,7 +9,7 @@ from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
     QMouseEvent, QPaintEvent, QPainter, QBitmap
 from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayout, \
     QStatusBar, QApplication, QStyleFactory
-from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, QTimer
+from PySide2.QtCore import Qt, QRegExp, QSize, QPoint
 
 from ui.wnd_client_login import Ui_WndClientLogin
 from wnd_client_main_code import WndClientMain
@@ -40,7 +40,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.init_all_controls()
         self.init_all_sig_slot()
         Thread(target=self.thd_close_login, daemon=True).start()
-        thd1.join(2)
+        thd1.join(1)
         self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):
@@ -146,7 +146,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
 
     def thd_close_login(self):
         time.sleep(60*5)  # 5分钟
-        self.show_info("长时间未操作, 已自动关闭"),
+        self.show_info("长时间未操作, 已自动关闭")
         self.close()
 
     def on_tool_bar_actionTriggered(self, action):

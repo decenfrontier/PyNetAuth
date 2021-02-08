@@ -11,6 +11,7 @@ import ssl
 import logging
 import os
 import pythoncom
+from threading import Thread
 
 from PySide2.QtCore import QThread
 
@@ -79,13 +80,18 @@ heart_gap_sec = 10  # 心跳间隔秒数, 默认600秒, 即10分钟
 
 # 获取外网IP
 def get_outer_ip() -> str:
-    try:
-        ip = urllib.request.urlopen("http://ip.42.pl/raw").read().decode()  # 法一
-        # 法二
-        # req = urllib.request.urlopen("http://httpbin.org/ip")
-        # ip = json.load(req)["origin"]
-    except:
-        ip = ""
+    ip = ""
+    def method1():
+        nonlocal ip
+        ip = urllib.request.urlopen("http://ip.42.pl/raw").read().decode()
+    def method2():
+        nonlocal ip
+        req = urllib.request.urlopen("http://httpbin.org/ip")
+        ip = json.load(req)["origin"]
+    Thread(target=method1, daemon=True).start()
+    Thread(target=method2, daemon=True).start()
+    while ip == "":
+        time.sleep(0.1)
     print("ip:", ip)
     return ip
 

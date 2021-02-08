@@ -3,6 +3,7 @@ import socket
 from threading import Thread, Lock
 import json
 import pythoncom
+import time
 
 from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
     QMouseEvent, QPaintEvent, QPainter, QBitmap
@@ -38,7 +39,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.init_net_auth()
         self.init_all_controls()
         self.init_all_sig_slot()
-        self.init_timer()
+        Thread(target=self.thd_close_login, daemon=True).start()
         thd1.join(2)
         self.show_info("窗口初始化成功")
 
@@ -143,15 +144,10 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.btn_unbind.clicked.connect(self.on_btn_unbind_clicked)
         self.btn_modify.clicked.connect(self.on_btn_modify_clicked)
 
-    def init_timer(self):
-        self.timer_sec = QTimer()
-        self.timer_sec.timeout.connect(
-            lambda: {
-                self.show_info("长时间未操作, 已自动关闭"),
-                self.close()
-            }
-        )
-        self.timer_sec.start(1000*60*5)  # 5分钟
+    def thd_close_login(self):
+        time.sleep(60*5)  # 5分钟
+        self.show_info("长时间未操作, 已自动关闭"),
+        self.close()
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
@@ -311,7 +307,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                     tcp_socket.close()  # 先关闭套接字
                     with lock:
                         self.accept()  # 接受
-                    return
+                        return
         self.show_info("与服务器断开连接...")
 
 

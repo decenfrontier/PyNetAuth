@@ -80,9 +80,10 @@ heart_gap_sec = 10  # 心跳间隔秒数, 默认600秒, 即10分钟
 # 获取外网IP
 def get_outer_ip() -> str:
     try:
-        # ip = urllib.request.urlopen("http://ip.42.pl/raw").read().decode()  # 法一
-        req = urllib.request.urlopen("http://httpbin.org/ip")
-        ip = json.load(req)["origin"]  # 法二
+        ip = urllib.request.urlopen("http://ip.42.pl/raw").read().decode()  # 法一
+        # 法二
+        # req = urllib.request.urlopen("http://httpbin.org/ip")
+        # ip = json.load(req)["origin"]
     except:
         ip = ""
     print("ip:", ip)

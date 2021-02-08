@@ -652,7 +652,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
             detail = "登录失败, 此账号已冻结"
         elif query_user["状态"] == "在线":
             detail = "登录失败, 此账号在线中, 请15分钟后再试"
-        elif cur_time_format > query_user["到期时间"]:
+        elif cur_time_format > str(query_user["到期时间"]):
             detail = "登录失败, 此账号已到期"
         elif pwd == query_user["密码"]:  # 判断密码是否符合
             if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
@@ -749,7 +749,7 @@ def deal_heart(client_socket: socket.socket, client_info_dict: dict):
         query_user = query_user_list[0]
         if query_user["状态"] == "冻结":  # 服务端已冻结此账号, 则令其下线
             heart_ret, detail = "下线", "此账号已被冻结"
-        elif cur_time_format > query_user["到期时间"]:
+        elif cur_time_format > str(query_user["到期时间"]):
             heart_ret, detail = "下线", "此账号已到期"
         elif "发现" in comment:  # 发现客户危险行为
             heart_ret, detail = "下线", "检测到非法程序"

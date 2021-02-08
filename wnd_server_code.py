@@ -388,9 +388,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not account_list:
             self.show_info("未选中任何账号")
             return
-        gift_day, ok_pressed = QInputDialog.getInt(self, "续费", "续费天数:", QLineEdit.Normal)
+        gift_day, ok_pressed = QInputDialog.getInt(self, "续费选中", "续费天数:", QLineEdit.Normal)
         if not ok_pressed:
-            self.show_info("取消续费账号操作")
+            self.show_info("取消续费选中账号操作")
             return
         accounts = tuple(account_list)
         num = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
@@ -399,7 +399,14 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_all_tbe_user()
 
     def on_action_user_charge_all_triggered(self):
-        ...
+        gift_day, ok_pressed = QInputDialog.getInt(self, "续费全部", "续费天数:", QLineEdit.Normal)
+        if not ok_pressed:
+            self.show_info("取消续费全部账号操作")
+            return
+        num = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
+                                  f"now() < 到期时间 and 状态 not in ('', '冻结')")
+        self.show_info(f"{num}个用户续费{gift_day}天成功")
+        self.show_all_tbe_user()
 
     def on_action_card_show_unuse_triggered(self):
         query_card_list = sql_table_query_ex("3卡密管理", "使用时间 is null")

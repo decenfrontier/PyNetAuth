@@ -184,11 +184,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_user = QMenu()
         self.action_user_show_all = QAction("显示全部用户信息")
+        self.action_user_state_sel = QAction("设置选中用户状态")  # 二级菜单
         self.action_user_frozen_sel = QAction("冻结选中用户")
         self.action_user_unfrozen_sel = QAction("解冻选中用户")
         self.action_user_charge_sel = QAction("续费选中用户")
         self.action_user_charge_all = QAction("续费全部用户")
         self.menu_tbe_user.addAction(self.action_user_show_all)
+        self.menu_tbe_user.addAction(self.action_user_state_sel)
         self.menu_tbe_user.addSeparator()
         self.menu_tbe_user.addActions([self.action_user_frozen_sel,
                                        self.action_user_unfrozen_sel])
@@ -203,6 +205,18 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.customContextMenuRequested.connect(
             lambda : self.menu_tbe_user.exec_(QCursor.pos())
         )
+        self.sub_menu_user_state = QMenu()
+        self.sub_action_offline = QAction("离线")
+        self.sub_action_frozen = QAction("冻结")
+        self.sub_action_online = QAction("在线")
+        self.action_user_state_sel.setMenu(self.sub_menu_user_state)
+        self.sub_menu_user_state.addActions([self.sub_action_offline,
+                                             self.sub_action_frozen,
+                                             self.sub_action_online])
+        self.sub_action_offline.triggered.connect(self.on_set_user_state)
+        self.sub_action_frozen.triggered.connect(self.on_set_user_state)
+        self.sub_action_online.triggered.connect(self.on_set_user_state)
+
         # 卡密管理表
         self.tbe_card.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_card = QMenu()
@@ -419,6 +433,21 @@ class WndServer(QMainWindow, Ui_WndServer):
         num = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
                                   f"now() < 到期时间 and 状态 not in ('', '冻结')")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
+        self.show_all_tbe_user()
+
+    def on_set_user_state(self):
+        state = self.sender().text()
+        item_list = self.tbe_user.selectedItems()
+        account_list = []
+        for item in item_list:
+            row = item.row()
+            account = self.tbe_user.item(row, 1).text()
+            account_list.append(account)
+        if not account_list:
+            return
+        accounts = tuple(account_list)
+        num = sql_table_update_ex("2用户管理", f"状态='{state}'", f"账号 in {accounts}")
+        self.show_info(f"{num}个用户设置状态 {state} 成功")
         self.show_all_tbe_user()
 
     def on_action_card_show_unuse_triggered(self):

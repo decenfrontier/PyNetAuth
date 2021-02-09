@@ -36,7 +36,7 @@
        <number>0</number>
       </property>
       <widget class="QWidget" name="page_0">
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="5,2">
         <property name="spacing">
          <number>6</number>
         </property>
@@ -113,6 +113,21 @@
             </column>
             <column>
              <property name="text">
+              <string>允许登录</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>允许注册</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>允许解绑</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
               <string>最后修改时间</string>
              </property>
             </column>
@@ -174,30 +189,64 @@
              <item row="4" column="1">
               <widget class="QLineEdit" name="edt_proj_reg_gift_day"/>
              </item>
-             <item row="9" column="1">
-              <widget class="QPushButton" name="btn_proj_confirm">
-               <property name="text">
-                <string>确定添加或修改</string>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="1">
-              <widget class="QLineEdit" name="edt_proj_free_unbind_count"/>
-             </item>
-             <item row="6" column="0">
+             <item row="5" column="0">
               <widget class="QLabel" name="label_11">
                <property name="text">
                 <string>免费解绑次数</string>
                </property>
               </widget>
              </item>
-             <item row="8" column="1">
-              <widget class="QLineEdit" name="edt_proj_unbind_sub_hour"/>
+             <item row="5" column="1">
+              <widget class="QLineEdit" name="edt_proj_free_unbind_count"/>
              </item>
-             <item row="8" column="0">
+             <item row="6" column="0">
               <widget class="QLabel" name="label_12">
                <property name="text">
                 <string>解绑扣除小时</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QLineEdit" name="edt_proj_unbind_sub_hour"/>
+             </item>
+             <item row="7" column="0" colspan="2">
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="QCheckBox" name="chk_proj_login">
+                 <property name="text">
+                  <string>允许登录</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="chk_proj_reg">
+                 <property name="text">
+                  <string>允许注册</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="chk_proj_unbind">
+                 <property name="text">
+                  <string>允许解绑</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="8" column="1">
+              <widget class="QPushButton" name="btn_proj_confirm">
+               <property name="text">
+                <string>确定添加或修改</string>
                </property>
               </widget>
              </item>

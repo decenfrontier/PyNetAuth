@@ -9,7 +9,7 @@ from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
     QMouseEvent, QPaintEvent, QPainter, QBitmap
 from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayout, \
     QStatusBar, QApplication, QStyleFactory
-from PySide2.QtCore import Qt, QRegExp, QSize, QPoint
+from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, QObject, Signal
 
 from ui.wnd_client_login import Ui_WndClientLogin
 from wnd_client_main_code import WndClientMain
@@ -29,6 +29,7 @@ def thd_get_global_var():
     print("线程_获取全局变量 执行完成")
 
 class WndClientLogin(QDialog, Ui_WndClientLogin):
+    login = Signal()
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -136,6 +137,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.lbe_pay_key.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
 
     def init_all_sig_slot(self):
+        self.login.connect(self.accept)
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         self.btn_login.clicked.connect(self.on_btn_login_clicked)
         self.btn_reg.clicked.connect(self.on_btn_reg_clicked)
@@ -145,7 +147,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.btn_modify.clicked.connect(self.on_btn_modify_clicked)
 
     def thd_close_login(self):
-        time.sleep(60*5)  # 5分钟
+        time.sleep(60*3)  # 3分钟
         self.show_info("长时间未操作, 已自动关闭")
         self.close()
 
@@ -306,7 +308,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                     print(mf.client_account)
                     tcp_socket.close()  # 先关闭套接字
                     with lock:
-                        self.accept()  # 接受
+                        self.login.emit()
                         return
         self.show_info("与服务器断开连接...")
 

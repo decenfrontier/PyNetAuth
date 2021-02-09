@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page_0">
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -53,7 +53,7 @@
          <number>2</number>
         </property>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,0">
+         <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,1">
           <item>
            <widget class="QTableWidget" name="tbe_proj">
             <attribute name="horizontalHeaderDefaultSectionSize">
@@ -93,17 +93,32 @@
             </column>
             <column>
              <property name="text">
-              <string>更新地址</string>
+              <string>更新网址</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>发卡地址</string>
+              <string>发卡网址</string>
              </property>
             </column>
             <column>
              <property name="text">
               <string>注册赠送天数</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>免费解绑次数</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>解绑扣除小时</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>最后修改时间</string>
              </property>
             </column>
            </widget>
@@ -137,7 +152,7 @@
              <item row="2" column="0">
               <widget class="QLabel" name="label_5">
                <property name="text">
-                <string>更新地址</string>
+                <string>更新网址</string>
                </property>
               </widget>
              </item>
@@ -147,7 +162,7 @@
              <item row="3" column="0">
               <widget class="QLabel" name="label_6">
                <property name="text">
-                <string>发卡地址</string>
+                <string>发卡网址</string>
                </property>
               </widget>
              </item>
@@ -164,10 +179,30 @@
              <item row="4" column="1">
               <widget class="QLineEdit" name="edt_proj_reg_gift_day"/>
              </item>
-             <item row="6" column="1">
+             <item row="9" column="1">
               <widget class="QPushButton" name="btn_proj_confirm">
                <property name="text">
                 <string>确定添加或修改</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QLineEdit" name="edt_proj_free_unbind_count"/>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>免费解绑次数</string>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="1">
+              <widget class="QLineEdit" name="edt_proj_unbind_sub_hour"/>
+             </item>
+             <item row="8" column="0">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>解绑扣除小时</string>
                </property>
               </widget>
              </item>
@@ -177,7 +212,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="5,2">
+         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="3,1">
           <property name="spacing">
            <number>6</number>
           </property>

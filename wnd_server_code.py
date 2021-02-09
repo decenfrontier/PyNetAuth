@@ -109,12 +109,9 @@ class WndServer(QMainWindow, Ui_WndServer):
             # self.tbe_online_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
             # self.tbe_card.setEditTriggers(QAbstractItemView.NoEditTriggers)
             # 项目管理表
-            id, ver, pub_notice, url_update, url_card = [i for i in range(5)]
+            id, last_modify_time = 0, 8
             self.tbe_proj.setColumnWidth(id, 40)
-            self.tbe_proj.setColumnWidth(ver, 100)
-            self.tbe_proj.setColumnWidth(pub_notice, 160)
-            self.tbe_proj.setColumnWidth(url_update, 120)
-            self.tbe_proj.setColumnWidth(url_card, 120)
+            self.tbe_proj.setColumnWidth(last_modify_time, 130)
             # 用户管理表
             id, account, pwd, qq, state, heart_time, due_time, last_login_time, last_login_ip, \
             last_login_place, today_login_count, today_unbind_count, machine_code, reg_time, \
@@ -261,8 +258,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         val_dict = {
             "客户端版本": client_ver,
             "客户端公告": pub_notice,
-            "更新地址": url_update,
-            "发卡地址": url_card,
+            "更新网址": url_update,
+            "发卡网址": url_card,
             "注册赠送天数": reg_gift_day,
         }
         if sql_table_query("1项目管理", {"客户端版本": client_ver}):
@@ -475,18 +472,25 @@ class WndServer(QMainWindow, Ui_WndServer):
     def refresh_tbe_proj(self, query_proj_list):
         self.tbe_proj.setRowCount(len(query_proj_list))
         for row, query_proj in enumerate(query_proj_list):
+            print(query_proj["最后修改时间"], type(query_proj["最后修改时间"]))
             id = QTableWidgetItem(str(query_proj["ID"]))
             client_ver = QTableWidgetItem(query_proj["客户端版本"])
             pub_notice = QTableWidgetItem(query_proj["客户端公告"])
-            url_update = QTableWidgetItem(query_proj["更新地址"])
-            url_card = QTableWidgetItem(query_proj["发卡地址"])
+            url_update = QTableWidgetItem(query_proj["更新网址"])
+            url_card = QTableWidgetItem(query_proj["发卡网址"])
             reg_gift_day = QTableWidgetItem(str(query_proj["注册赠送天数"]))
+            free_unbind_count = QTableWidgetItem(str(query_proj["免费解绑次数"]))
+            unbind_sub_count = QTableWidgetItem(str(query_proj["解绑扣除小时"]))
+            last_modify_time = QTableWidgetItem(str(query_proj["最后修改时间"]))
             self.tbe_proj.setItem(row, 0, id)
             self.tbe_proj.setItem(row, 1, client_ver)
             self.tbe_proj.setItem(row, 2, pub_notice)
             self.tbe_proj.setItem(row, 3, url_update)
             self.tbe_proj.setItem(row, 4, url_card)
             self.tbe_proj.setItem(row, 5, reg_gift_day)
+            self.tbe_proj.setItem(row, 6, free_unbind_count)
+            self.tbe_proj.setItem(row, 7, unbind_sub_count)
+            self.tbe_proj.setItem(row, 8, last_modify_time)
 
     def refresh_tbe_user(self, query_user_list):
         if not query_user_list:

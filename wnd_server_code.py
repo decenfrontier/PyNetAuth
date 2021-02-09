@@ -134,12 +134,12 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setColumnWidth(reg_time, 130)
             self.tbe_user.setColumnWidth(opration_system, 130)
             # 卡密管理表
-            id, card_key, type, gen_time, sale_time, use_time = [i for i in range(6)]
+            id, card_key, type, gen_time, export_time, use_time = [i for i in range(6)]
             self.tbe_card.setColumnWidth(id, 40)
             self.tbe_card.setColumnWidth(card_key, 250)
             self.tbe_card.setColumnWidth(type, 60)
             self.tbe_card.setColumnWidth(gen_time, 145)
-            self.tbe_card.setColumnWidth(sale_time, 145)
+            self.tbe_card.setColumnWidth(export_time, 145)
             # 自定义数据表
             id, key, val, en_val = [i for i in range(4)]
             self.tbe_custom.setColumnWidth(id, 40)
@@ -208,24 +208,24 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_card = QMenu()
         self.action_card_show_all = QAction("显示全部卡密信息")
         self.action_card_show_unuse = QAction("显示未使用卡密")
-        self.action_card_show_sale = QAction("显示已导出卡密")
+        self.action_card_show_export = QAction("显示已导出卡密")
         self.action_card_del_sel = QAction("删除选中卡密")
         self.action_card_del_used = QAction("删除已使用卡密")
-        self.action_card_export_sale = QAction("导出选中卡号")
+        self.action_card_export_sel = QAction("导出选中卡号")
         self.menu_tbe_card.addActions([self.action_card_show_all,
                                        self.action_card_show_unuse,
-                                       self.action_card_show_sale])
+                                       self.action_card_show_export])
         self.menu_tbe_card.addSeparator()
         self.menu_tbe_card.addActions([self.action_card_del_sel,
                                        self.action_card_del_used])
         self.menu_tbe_card.addSeparator()
-        self.menu_tbe_card.addAction(self.action_card_export_sale)
+        self.menu_tbe_card.addAction(self.action_card_export_sel)
         self.action_card_show_all.triggered.connect(self.show_all_tbe_card)
         self.action_card_show_unuse.triggered.connect(self.on_action_card_show_unuse_triggered)
-        self.action_card_show_sale.triggered.connect(self.on_action_card_show_sale_triggered)
+        self.action_card_show_export.triggered.connect(self.on_action_card_show_export_triggered)
         self.action_card_del_sel.triggered.connect(self.on_action_card_del_sel_triggered)
         self.action_card_del_used.triggered.connect(self.on_action_card_del_used_triggered)
-        self.action_card_export_sale.triggered.connect(self.on_action_card_export_sale_triggered)
+        self.action_card_export_sel.triggered.connect(self.on_action_card_export_sel_triggered)
         self.tbe_card.customContextMenuRequested.connect(
             lambda : self.menu_tbe_card.exec_(QCursor.pos())
         )
@@ -428,12 +428,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         else:
             self.show_info("显示未使用卡密失败")
 
-    def on_action_card_show_sale_triggered(self):
-        query_card_list = sql_table_query_ex("3卡密管理", "销售时间 is not null")
+    def on_action_card_show_export_triggered(self):
+        query_card_list = sql_table_query_ex("3卡密管理", "导出时间 is not null")
         if self.refresh_tbe_card(query_card_list):
-            self.show_info("显示销售中卡密成功")
+            self.show_info("显示导出中卡密成功")
         else:
-            self.show_info("显示销售中卡密失败")
+            self.show_info("显示导出中卡密失败")
 
     def on_action_card_del_sel_triggered(self):
         ret = QMessageBox.information(self, "提示", "是否确定删除选中的卡号?",
@@ -459,14 +459,14 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.show_info("删除已使用的卡号失败")
         self.show_all_tbe_card()
 
-    def on_action_card_export_sale_triggered(self):
+    def on_action_card_export_sel_triggered(self):
         item_list = self.tbe_card.selectedItems()
         card_key_list = []
         for item in item_list:
             row = item.row()
             card_key = self.tbe_card.item(row, 1).text()
             card_key_list.append(card_key)
-            sql_table_update("3卡密管理", {"销售时间": cur_time_format}, {"卡号": card_key})
+            sql_table_update("3卡密管理", {"导出时间": cur_time_format}, {"卡号": card_key})
         export_card_key = "\n".join(card_key_list)
         clip_copy(export_card_key)
         self.show_info("已复制到剪切板")
@@ -551,19 +551,19 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_card.setRowCount(len(query_card_list))
         for row, query_card in enumerate(query_card_list):
             query_card["制卡时间"] = "" if query_card["制卡时间"] is None else str(query_card["制卡时间"])
-            query_card["销售时间"] = "" if query_card["销售时间"] is None else str(query_card["销售时间"])
+            query_card["导出时间"] = "" if query_card["导出时间"] is None else str(query_card["导出时间"])
             query_card["使用时间"] = "" if query_card["使用时间"] is None else str(query_card["使用时间"])
             id = QTableWidgetItem(str(query_card["ID"]))
             card_key = QTableWidgetItem(query_card["卡号"])
             card_type = QTableWidgetItem(query_card["卡类型"])
             gen_time = QTableWidgetItem(query_card["制卡时间"])
-            sale_time = QTableWidgetItem(query_card["销售时间"])
+            export_time = QTableWidgetItem(query_card["导出时间"])
             use_time = QTableWidgetItem(query_card["使用时间"])
             self.tbe_card.setItem(row, 0, id)
             self.tbe_card.setItem(row, 1, card_key)
             self.tbe_card.setItem(row, 2, card_type)
             self.tbe_card.setItem(row, 3, gen_time)
-            self.tbe_card.setItem(row, 4, sale_time)
+            self.tbe_card.setItem(row, 4, export_time)
             self.tbe_card.setItem(row, 5, use_time)
         return True
 

@@ -236,7 +236,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)
         self.btn_user_query.clicked.connect(self.on_btn_user_query_clicked)
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
-
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
 
@@ -262,16 +261,26 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def on_btn_proj_confirm_clicked(self):
         client_ver = self.edt_proj_client_ver.text()
-        reg_gift_day = self.edt_proj_reg_gift_day.text()
-        url_card = self.edt_proj_url_card.text()
-        url_update = self.edt_proj_url_update.text()
         pub_notice = self.pedt_proj_public_notice.toPlainText()
+        url_update = self.edt_proj_url_update.text()
+        url_card = self.edt_proj_url_card.text()
+        reg_gift_day = self.edt_proj_reg_gift_day.text()
+        free_unbind_count = self.edt_proj_free_unbind_count.text()
+        unbind_sub_hour = self.edt_proj_unbind_sub_hour.text()
+        allow_login = int(self.chk_proj_login.isChecked())
+        allow_reg = int(self.chk_proj_reg.isChecked())
+        allow_unbind = int(self.chk_proj_unbind.isChecked())
         val_dict = {
             "客户端版本": client_ver,
             "客户端公告": pub_notice,
             "更新网址": url_update,
             "发卡网址": url_card,
             "注册赠送天数": reg_gift_day,
+            "免费解绑次数": free_unbind_count,
+            "解绑扣除小时": unbind_sub_hour,
+            "允许登录": allow_login,
+            "允许注册": allow_reg,
+            "允许解绑": allow_unbind,
         }
         if sql_table_query("1项目管理", {"客户端版本": client_ver}):
             sql_table_update("1项目管理", val_dict, {"客户端版本": client_ver})
@@ -314,12 +323,22 @@ class WndServer(QMainWindow, Ui_WndServer):
         url_update = self.tbe_proj.item(row, 3).text()
         url_card = self.tbe_proj.item(row, 4).text()
         reg_gift_day = self.tbe_proj.item(row, 5).text()
+        free_unbind_count = self.tbe_proj.item(row, 6).text()
+        unbind_sub_hour = self.tbe_proj.item(row, 7).text()
+        allow_login = self.tbe_proj.item(row, 8).text()
+        allow_reg = self.tbe_proj.item(row, 9).text()
+        allow_unbind = self.tbe_proj.item(row, 10).text()
 
         self.edt_proj_client_ver.setText(client_ver)
         self.pedt_proj_public_notice.setPlainText(pub_notice)
         self.edt_proj_url_update.setText(url_update)
         self.edt_proj_url_card.setText(url_card)
         self.edt_proj_reg_gift_day.setText(reg_gift_day)
+        self.edt_proj_free_unbind_count.setText(free_unbind_count)
+        self.edt_proj_unbind_sub_hour.setText(unbind_sub_hour)
+        self.chk_proj_login.setChecked(int(allow_login))
+        self.chk_proj_reg.setChecked(int(allow_reg))
+        self.chk_proj_unbind.setChecked(int(allow_unbind))
 
     def on_action_proj_del_record_triggered(self):
         row = self.tbe_proj.currentRow()  # 若不在行内点, 则默认返回0

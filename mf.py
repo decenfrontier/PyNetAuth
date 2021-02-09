@@ -76,7 +76,7 @@ server_port = 47123
 client_account = ""
 client_comment = ""
 # 登录时从服务端获取的数据
-heart_gap_sec = 10  # 心跳间隔秒数, 默认600秒, 即10分钟
+
 
 # 获取外网IP
 def get_outer_ip() -> str:

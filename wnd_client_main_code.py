@@ -40,8 +40,8 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         Thread(target=self.thd_heart_beat, daemon=True).start()
 
     def thd_heart_beat(self):
+        tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         while True:
-            tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
             if err_no == 0:
                 client_info_dict = {
@@ -51,12 +51,15 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
                 }
                 self.send_to_server(tcp_socket, client_info_dict)
                 self.recv_from_server(tcp_socket)
+                sleep_time = 60*10
             else:
                 self.error_count += 1
+                sleep_time = 10
             tcp_socket.close()  # 发送接收完立刻断开
-            if self.error_count > 5:
+            if self.error_count >= 5:
                 break
-            time.sleep(mf.heart_gap_sec)
+            print("等待时间:", sleep_time)
+            time.sleep(sleep_time)
         self.show_info("与服务器断开连接...")
         self.close()
 

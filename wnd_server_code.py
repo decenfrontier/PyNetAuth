@@ -380,8 +380,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not ok_pressed:
             self.show_info("取消冻结账号操作")
             return
-        accounts = tuple(account_list)
-        if sql_table_update_ex("2用户管理", f"状态='冻结', 备注='{comment}'", f"账号 in {accounts}"):
+        accounts = "','".join(account_list)
+        if sql_table_update_ex("2用户管理", f"状态='冻结', 备注='{comment}'", f"账号 in ('{accounts}')"):
             self.show_info("冻结选中账号成功")
         else:
             self.show_info("冻结选中账号失败")
@@ -401,9 +401,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         ret = QMessageBox.information(self, "提示", "确定解冻选中账号?", QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
         if ret != QMessageBox.Yes:
             return
-        accounts = tuple(account_list)
+        accounts = "','".join(account_list)
         # 解冻时备注应加天数
-        if sql_table_update_ex("2用户管理", f"状态='离线', 备注=datediff(到期时间, 心跳时间)", f"账号 in {accounts}"):
+        if sql_table_update_ex("2用户管理", f"状态='离线', 备注=datediff(到期时间, 心跳时间)", f"账号 in ('{accounts}')"):
             self.show_info("解冻选中账号成功")
         else:
             self.show_info("解冻选中账号失败")
@@ -419,9 +419,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not ok_pressed:
             self.show_info("取消续费选中账号操作")
             return
-        accounts = tuple(account_list)
+        accounts = "','".join(account_list)
         num = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
-                                  f"账号 in {accounts} and now() < 到期时间 and 状态 not in ('', '冻结')")
+                                  f"账号 in ('{accounts}') and now() < 到期时间 and 状态 not in ('', '冻结')")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
         self.show_all_tbe_user()
 
@@ -445,8 +445,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             account_list.append(account)
         if not account_list:
             return
-        accounts = tuple(account_list)
-        num = sql_table_update_ex("2用户管理", f"状态='{state}'", f"账号 in {accounts}")
+        accounts = "','".join(account_list)
+        num = sql_table_update_ex("2用户管理", f"状态='{state}'", f"账号 in ('{accounts}')")
         self.show_info(f"{num}个用户设置状态 {state} 成功")
         self.show_all_tbe_user()
 
@@ -470,10 +470,15 @@ class WndServer(QMainWindow, Ui_WndServer):
         if ret != QMessageBox.Yes:
             return
         item_list = self.tbe_card.selectedItems()
+        card_list = []
         for item in item_list:
             row = item.row()
             card_key = self.tbe_card.item(row, 1).text()
-            sql_table_del("3卡密管理", {"卡号": card_key})
+            card_list.append(card_key)
+        if not card_list:
+            return
+        cards = "','".join(card_list)
+        sql_table_del_ex("3卡密管理", f"卡号 in ('{cards}')")
         self.show_info("已删除选中的卡号")
         self.show_all_tbe_card()
 
@@ -490,13 +495,16 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def on_action_card_export_sel_triggered(self):
         item_list = self.tbe_card.selectedItems()
-        card_key_list = []
+        card_list = []
         for item in item_list:
             row = item.row()
-            card_key = self.tbe_card.item(row, 1).text()
-            card_key_list.append(card_key)
-            sql_table_update("3卡密管理", {"导出时间": cur_time_format}, {"卡号": card_key})
-        export_card_key = "\n".join(card_key_list)
+            card = self.tbe_card.item(row, 1).text()
+            card_list.append(card)
+        if not card_list:
+            return
+        cards = "','".join(card_list)
+        sql_table_update_ex("3卡密管理", f"导出时间='{cur_time_format}'", f"卡号 in ('{cards}')")
+        export_card_key = "\n".join(card_list)
         clip_copy(export_card_key)
         self.show_info("已复制到剪切板")
         self.show_all_tbe_card()

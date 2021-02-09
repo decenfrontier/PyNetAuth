@@ -11,5 +11,6 @@
         <file>proj.png</file>
         <file>users.png</file>
         <file>notice.png</file>
+        <file>flow.png</file>
     </qresource>
 </RCC>

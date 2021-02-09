@@ -97,7 +97,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer_min.timeout.connect(self.on_timer_min_timeout)
         self.timer_min.start(1000*60*15)
 
-
     def init_all_controls(self):
         def init_all_table():
             # 所有表头可视化
@@ -129,7 +128,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             # 卡密管理表
             id, card_key, type, gen_time, sale_time, use_time = [i for i in range(6)]
             self.tbe_card.setColumnWidth(id, 40)
-            self.tbe_card.setColumnWidth(card_key, 260)
+            self.tbe_card.setColumnWidth(card_key, 250)
             self.tbe_card.setColumnWidth(type, 60)
             self.tbe_card.setColumnWidth(gen_time, 145)
             self.tbe_card.setColumnWidth(sale_time, 145)
@@ -139,19 +138,24 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_custom.setColumnWidth(key, 100)
             self.tbe_custom.setColumnWidth(val, 120)
             self.tbe_custom.setColumnWidth(en_val, 200)
+            # 每日流水表
+            id, date= 0, 1
+            self.tbe_everyday.setColumnWidth(id, 40)
+            self.tbe_everyday.setColumnWidth(date, 130)
             # 显示全部
             self.show_all_tbe_proj()
             self.show_all_tbe_user()
             self.show_all_tbe_card()
+        def init_tool_bar():
+            self.tool_bar.addAction(QIcon(":/proj.png"), "项目管理")
+            self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
+            self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
+            self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
+            self.tool_bar.addAction(QIcon(":/flow.png"), "每日流水")
         # 显示第一页
         self.stack_widget.setCurrentIndex(0)
         # 工具栏设置图标
-        self.tool_bar.addAction(QIcon(":/proj.png"), "项目管理")
-        self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
-        self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
-        self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
-        # 设置编辑框格式
-        self.edt_user_gift_day.setValidator(QIntValidator(0, 99))
+        init_tool_bar()
         # 初始化所有表格
         init_all_table()
 
@@ -222,10 +226,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         # 按钮相关
         self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)
-
         self.btn_user_query.clicked.connect(self.on_btn_user_query_clicked)
-        self.btn_user_gift_day.clicked.connect(self.on_btn_user_gift_day_clicked)
-
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
 
         # 表格相关
@@ -248,6 +249,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.stack_widget.setCurrentIndex(3)
             self.tbr_log.setText(log_read_content())
             self.tbr_log.moveCursor(QTextCursor.End)
+        elif action_name == "每日流水":
+            self.stack_widget.setCurrentIndex(4)
 
     def on_btn_proj_confirm_clicked(self):
         client_ver = self.edt_proj_client_ver.text()
@@ -279,20 +282,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         num = len(query_user_list)
         self.show_info(f"查询到{num}个符合条件的用户")
         self.refresh_tbe_user(query_user_list)
-
-
-    def on_btn_user_gift_day_clicked(self):
-        gift_day = self.edt_user_gift_day.text()
-        gift_day = 0 if gift_day == "" else int(gift_day)
-        ret = QMessageBox.information(self, "提示", f"所有用户续费{gift_day}天?",
-                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-        if ret != QMessageBox.Yes:
-            return
-        num = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
-                            "now() < 到期时间 and 状态 not in ('', '冻结')")
-        self.show_info(f"{num}个用户续费{gift_day}天成功")
-        self.show_all_tbe_user()
-
 
     def on_btn_card_gen_clicked(self):
         gen_time = cur_time_format

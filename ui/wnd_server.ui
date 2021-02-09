@@ -71,11 +71,6 @@
             <attribute name="verticalHeaderDefaultSectionSize">
              <number>20</number>
             </attribute>
-            <row>
-             <property name="text">
-              <string>1</string>
-             </property>
-            </row>
             <column>
              <property name="text">
               <string>ID</string>
@@ -233,11 +228,6 @@
             <attribute name="verticalHeaderDefaultSectionSize">
              <number>20</number>
             </attribute>
-            <row>
-             <property name="text">
-              <string>1</string>
-             </property>
-            </row>
             <column>
              <property name="text">
               <string>ID</string>
@@ -350,18 +340,18 @@
             <property name="title">
              <string/>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
              <property name="leftMargin">
-              <number>0</number>
+              <number>1</number>
              </property>
              <property name="topMargin">
-              <number>0</number>
+              <number>1</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>1</number>
              </property>
              <property name="bottomMargin">
-              <number>0</number>
+              <number>1</number>
              </property>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -477,79 +467,11 @@
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>40</width>
+                 <width>648</width>
                  <height>20</height>
                 </size>
                </property>
               </spacer>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_5">
-               <item>
-                <widget class="QLineEdit" name="edt_user_gift_day"/>
-               </item>
-               <item>
-                <widget class="QPushButton" name="btn_user_gift_day">
-                 <property name="text">
-                  <string>批量续费</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_6">
-               <item>
-                <widget class="QLineEdit" name="edt_user_frozen_machine"/>
-               </item>
-               <item>
-                <widget class="QPushButton" name="btn_user_frozen_machine">
-                 <property name="text">
-                  <string>批量冻结机器</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_3">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_7">
-               <item>
-                <widget class="QLineEdit" name="edt_user_frozen_ip"/>
-               </item>
-               <item>
-                <widget class="QPushButton" name="btn_user_frozen_ip">
-                 <property name="text">
-                  <string>批量冻结IP</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </item>
             </layout>
            </widget>
@@ -572,7 +494,7 @@
              <bool>false</bool>
             </property>
             <property name="rowCount">
-             <number>1</number>
+             <number>0</number>
             </property>
             <attribute name="horizontalHeaderVisible">
              <bool>false</bool>
@@ -589,11 +511,6 @@
             <attribute name="verticalHeaderDefaultSectionSize">
              <number>20</number>
             </attribute>
-            <row>
-             <property name="text">
-              <string>1</string>
-             </property>
-            </row>
             <column>
              <property name="text">
               <string>ID</string>
@@ -729,7 +646,7 @@
              <bool>false</bool>
             </property>
             <property name="rowCount">
-             <number>1</number>
+             <number>0</number>
             </property>
             <attribute name="horizontalHeaderVisible">
              <bool>false</bool>
@@ -749,11 +666,6 @@
             <attribute name="verticalHeaderDefaultSectionSize">
              <number>20</number>
             </attribute>
-            <row>
-             <property name="text">
-              <string>1</string>
-             </property>
-            </row>
             <column>
              <property name="text">
               <string>ID</string>
@@ -918,6 +830,54 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="page">
+       <layout class="QGridLayout" name="gridLayout_2">
+        <property name="leftMargin">
+         <number>2</number>
+        </property>
+        <property name="topMargin">
+         <number>2</number>
+        </property>
+        <property name="rightMargin">
+         <number>2</number>
+        </property>
+        <property name="bottomMargin">
+         <number>2</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="QTableWidget" name="tbe_everyday">
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>ID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>日期</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>充值用户数</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>活跃用户数</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>当前在线用户数</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -928,7 +888,7 @@
     <string>toolBar</string>
    </property>
    <property name="movable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="orientation">
     <enum>Qt::Vertical</enum>

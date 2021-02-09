@@ -852,7 +852,7 @@ def update_db_user_login_info(client_info_dict: dict, query_user: dict, login_re
     sql_table_update("2用户管理", update_dict, {"账号": account})
 
 
-# 表_插入, 成功返回True, 否则返回False
+# 表_插入, 成功返回插入数, 否则返回0
 def sql_table_insert(table_name: str, val_dict: dict):
     # keys = "account, pwd,qq, machine_code, reg_ip"
     keys = ", ".join(val_dict.keys())
@@ -861,14 +861,14 @@ def sql_table_insert(table_name: str, val_dict: dict):
     occupys = ", ".join(["%s"] * len(val_dict))
     # 准备SQL语句
     sql = f"insert {table_name}({keys}) values({occupys});"
-    ret = False
+    ret = 0
     try:
         ret = cursor.execute(sql, vals)  # 执行SQL语句
         db.commit()  # 提交到数据库
     except Exception as e:
-        log_append_content(f"表插入异常: {e}")
+        print(f"表插入异常: {e}")
         db.rollback()  # 数据库回滚
-    log_append_content(f"表插入结果: {ret}")
+    print(f"表插入结果: {ret}")
     return ret
 
 
@@ -889,9 +889,9 @@ def sql_table_query(table_name: str, condition_dict={}):
         ret = cursor.fetchall()  # 获取查询结果, 没查到返回空列表
         db.commit()  # 提交到数据库
     except Exception as e:
-        log_append_content(f"表查询异常: {e}")
+        print(f"表查询异常: {e}")
         db.rollback()  # 数据库回滚
-    log_append_content(f"表查询结果: {ret}")
+    print(f"表查询结果: {ret}")
     return ret
 
 # 表_查询, 成功返回字典列表, 否则返回空列表
@@ -907,12 +907,12 @@ def sql_table_query_ex(table_name: str, condition=""):
         ret = cursor.fetchall()  # 获取查询结果, 没查到返回空列表
         db.commit()  # 提交到数据库
     except Exception as e:
-        log_append_content(f"表查询异常: {e}")
+        print(f"表查询异常: {e}")
         db.rollback()  # 数据库回滚
-    log_append_content(f"表查询结果: {ret}")
+    print(f"表查询结果: {ret}")
     return ret
 
-# 表_更新, 成功返回True, 否则返回False
+# 表_更新, 成功返回更新数, 否则返回0
 def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
     update_fields = update_dict.keys()
     update_vals = tuple(update_dict.values())
@@ -928,33 +928,33 @@ def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
         sql = f"update {table_name} set {update} where {condition};"
     else:
         sql = f"update {table_name} set {update};"
-    ret = False
+    ret = 0
     try:
         ret = cursor.execute(sql, update_vals + condition_vals)  # 执行SQL语句
         db.commit()  # 提交到数据库
     except Exception as e:
-        log_append_content(f"表更新异常: {e}")
+        print(f"表更新异常: {e}")
         db.rollback()  # 数据库回滚
-    log_append_content(f"表更新结果: {ret}")
+    print(f"表更新结果: {ret}")
     return ret
 
-# 表_更新扩展, 成功返回True, 否则返回False
+# 表_更新扩展, 成功返回更新数, 否则返回0
 def sql_table_update_ex(table_name: str, update: str, condition=""):
     if condition:
         sql = f"update {table_name} set {update} where {condition};"
     else:
         sql = f"update {table_name} set {update};"
-    ret = False
+    ret = 0
     try:
         ret = cursor.execute(sql)  # 执行SQL语句
         db.commit()  # 提交到数据库
     except Exception as e:
-        log_append_content(f"表更新异常: {e}")
+        print(f"表更新异常: {e}")
         db.rollback()  # 数据库回滚
-    log_append_content(f"表更新结果: {ret}")
+    print(f"表更新结果: {ret}")
     return ret
 
-# 表_删除
+# 表_删除, 成功返回删除数, 否则返回0
 def sql_table_del(table_name: str, condition_dict: dict):
     fields = condition_dict.keys()
     vals = tuple(condition_dict.values())
@@ -965,30 +965,30 @@ def sql_table_del(table_name: str, condition_dict: dict):
         sql = f"delete from {table_name} where {condition};"
     else:
         sql = f"delete from {table_name};"  # 全删
-    ret = False
+    ret = 0
     try:
         ret = cursor.execute(sql, vals)  # 执行SQL语句
         db.commit()  # 提交到数据库
     except Exception as e:
-        log_append_content(f"表删除异常: {e}")
+        print(f"表删除异常: {e}")
         db.rollback()  # 数据库回滚
-    log_append_content(f"表删除结果: {ret}")
+    print(f"表删除结果: {ret}")
     return ret
 
-# 表_删除扩展
+# 表_删除扩展, 成功返回删除数, 否则返回0
 def sql_table_del_ex(table_name: str, condition: str):
     if condition:
         sql = f"delete from {table_name} where {condition};"
     else:
         sql = f"delete from {table_name};"  # 全删
-    ret = False
+    ret = 0
     try:
         ret = cursor.execute(sql)  # 执行SQL语句
         db.commit()  # 提交到数据库
     except Exception as e:
-        log_append_content(f"表删除异常: {e}")
+        print(f"表删除异常: {e}")
         db.rollback()  # 数据库回滚
-    log_append_content(f"表删除结果: {ret}")
+    print(f"表删除结果: {ret}")
     return ret
 
 

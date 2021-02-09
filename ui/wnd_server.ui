@@ -57,7 +57,7 @@
           <item>
            <widget class="QTableWidget" name="tbe_proj">
             <attribute name="horizontalHeaderDefaultSectionSize">
-             <number>100</number>
+             <number>90</number>
             </attribute>
             <attribute name="horizontalHeaderStretchLastSection">
              <bool>true</bool>

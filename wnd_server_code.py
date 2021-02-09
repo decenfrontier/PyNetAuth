@@ -108,8 +108,16 @@ class WndServer(QMainWindow, Ui_WndServer):
             # self.tbe_online_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
             # self.tbe_card.setEditTriggers(QAbstractItemView.NoEditTriggers)
             # 项目管理表
-            id, last_modify_time = 0, 8
+            id, ver, notice, url_update, url_card, gift_day, free_unbind, unbind_hour, \
+            login, reg, unbind, last_modify_time = [i for i in range(12)]
             self.tbe_proj.setColumnWidth(id, 40)
+            self.tbe_proj.setColumnWidth(ver, 70)
+            self.tbe_proj.setColumnWidth(notice, 70)
+            self.tbe_proj.setColumnWidth(url_update, 70)
+            self.tbe_proj.setColumnWidth(url_card, 70)
+            self.tbe_proj.setColumnWidth(login, 80)
+            self.tbe_proj.setColumnWidth(reg, 80)
+            self.tbe_proj.setColumnWidth(unbind, 80)
             self.tbe_proj.setColumnWidth(last_modify_time, 130)
             # 用户管理表
             id, account, pwd, qq, state, heart_time, due_time, last_login_time, last_login_ip, \
@@ -200,10 +208,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_card = QMenu()
         self.action_card_show_all = QAction("显示全部卡密信息")
         self.action_card_show_unuse = QAction("显示未使用卡密")
-        self.action_card_show_sale = QAction("显示销售中卡密")
+        self.action_card_show_sale = QAction("显示已导出卡密")
         self.action_card_del_sel = QAction("删除选中卡密")
         self.action_card_del_used = QAction("删除已使用卡密")
-        self.action_card_export_sale = QAction("批量导出销售")
+        self.action_card_export_sale = QAction("导出选中卡号")
         self.menu_tbe_card.addActions([self.action_card_show_all,
                                        self.action_card_show_unuse,
                                        self.action_card_show_sale])
@@ -462,24 +470,18 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_proj.setRowCount(len(query_proj_list))
         for row, query_proj in enumerate(query_proj_list):
             print(query_proj["最后修改时间"], type(query_proj["最后修改时间"]))
-            id = QTableWidgetItem(str(query_proj["ID"]))
-            client_ver = QTableWidgetItem(query_proj["客户端版本"])
-            pub_notice = QTableWidgetItem(query_proj["客户端公告"])
-            url_update = QTableWidgetItem(query_proj["更新网址"])
-            url_card = QTableWidgetItem(query_proj["发卡网址"])
-            reg_gift_day = QTableWidgetItem(str(query_proj["注册赠送天数"]))
-            free_unbind_count = QTableWidgetItem(str(query_proj["免费解绑次数"]))
-            unbind_sub_count = QTableWidgetItem(str(query_proj["解绑扣除小时"]))
-            last_modify_time = QTableWidgetItem(str(query_proj["最后修改时间"]))
-            self.tbe_proj.setItem(row, 0, id)
-            self.tbe_proj.setItem(row, 1, client_ver)
-            self.tbe_proj.setItem(row, 2, pub_notice)
-            self.tbe_proj.setItem(row, 3, url_update)
-            self.tbe_proj.setItem(row, 4, url_card)
-            self.tbe_proj.setItem(row, 5, reg_gift_day)
-            self.tbe_proj.setItem(row, 6, free_unbind_count)
-            self.tbe_proj.setItem(row, 7, unbind_sub_count)
-            self.tbe_proj.setItem(row, 8, last_modify_time)
+            self.tbe_proj.setItem(row, 0, QTableWidgetItem(str(query_proj["ID"])))
+            self.tbe_proj.setItem(row, 1, QTableWidgetItem(query_proj["客户端版本"]))
+            self.tbe_proj.setItem(row, 2, QTableWidgetItem(query_proj["客户端公告"]))
+            self.tbe_proj.setItem(row, 3, QTableWidgetItem(query_proj["更新网址"]))
+            self.tbe_proj.setItem(row, 4, QTableWidgetItem(query_proj["发卡网址"]))
+            self.tbe_proj.setItem(row, 5, QTableWidgetItem(str(query_proj["注册赠送天数"])))
+            self.tbe_proj.setItem(row, 6, QTableWidgetItem(str(query_proj["免费解绑次数"])))
+            self.tbe_proj.setItem(row, 7, QTableWidgetItem(str(query_proj["解绑扣除小时"])))
+            self.tbe_proj.setItem(row, 8, QTableWidgetItem(str(query_proj["允许登录"])))
+            self.tbe_proj.setItem(row, 9, QTableWidgetItem(str(query_proj["允许注册"])))
+            self.tbe_proj.setItem(row, 10, QTableWidgetItem(str(query_proj["允许解绑"])))
+            self.tbe_proj.setItem(row, 11, QTableWidgetItem(str(query_proj["最后修改时间"])))
 
     def refresh_tbe_user(self, query_user_list):
         if not query_user_list:

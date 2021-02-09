@@ -62,7 +62,7 @@ class Ui_WndServer(object):
         __qtablewidgetitem11 = QTableWidgetItem()
         self.tbe_proj.setHorizontalHeaderItem(11, __qtablewidgetitem11)
         self.tbe_proj.setObjectName(u"tbe_proj")
-        self.tbe_proj.horizontalHeader().setDefaultSectionSize(100)
+        self.tbe_proj.horizontalHeader().setDefaultSectionSize(90)
         self.tbe_proj.horizontalHeader().setStretchLastSection(True)
         self.tbe_proj.verticalHeader().setVisible(False)
         self.tbe_proj.verticalHeader().setMinimumSectionSize(20)

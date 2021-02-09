@@ -186,7 +186,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "上次登录时间": login_time,
             "上次登录IP": login_ip,
             "操作系统": login_system,
-            "备注": mf.client_comment,
         }
         self.send_to_server(tcp_socket, client_info_dict)
 

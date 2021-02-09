@@ -674,7 +674,18 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     server_info_dict = {"消息类型": "登录", "结果": login_ret, "详情": detail, "账号": account}
     send_to_client(client_socket, server_info_dict)
     # 把客户端发送过来的数据记录到数据库
-    update_db_user_login_info(client_info_dict, query_user, login_ret)
+    if not query_user:  # 若该账号不存在
+        return
+    account = query_user["账号"]
+    # 无论是否登录成功, 登录次数+1
+    update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
+                   "操作系统": client_info_dict["操作系统"]}
+    # 若登录成功, 才更新
+    if login_ret:
+        update_dict["机器码"] = client_info_dict["机器码"]
+        update_dict["上次登录时间"] = client_info_dict["上次登录时间"]
+        update_dict["上次登录IP"] = client_info_dict["上次登录IP"]
+    sql_table_update("2用户管理", update_dict, {"账号": account})
 
 
 # 处理_充值
@@ -837,23 +848,6 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
         log_append_content(f"向客户端回复成功: {json_str}")
     except Exception as e:
         log_append_content(f"向客户端回复失败: {e}")
-
-
-# 更新数据库_用户登录数据
-def update_db_user_login_info(client_info_dict: dict, query_user: dict, login_ret: bool):
-    if not query_user:  # 若该账号不存在
-        return
-    account = query_user["账号"]
-    # 无论是否登录成功, 登录次数+1
-    update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
-                   "操作系统": client_info_dict["操作系统"],
-                   "备注": client_info_dict["备注"]}
-    # 若登录成功, 才更新
-    if login_ret:
-        update_dict["机器码"] = client_info_dict["机器码"]
-        update_dict["上次登录时间"] = client_info_dict["上次登录时间"]
-        update_dict["上次登录IP"] = client_info_dict["上次登录IP"]
-    sql_table_update("2用户管理", update_dict, {"账号": account})
 
 
 # 表_插入, 成功返回插入数, 否则返回0

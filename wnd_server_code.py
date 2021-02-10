@@ -630,7 +630,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 client_socket, client_addr = tcp_socket.accept()
             except:
                 break
-            log_append_content(f"客户端IP地址及端口: {client_addr}, 已分配客服套接字")
+            log_append_content(f"新接收客户端{client_addr}, 已分配客服套接字")
             Thread(target=self.thd_serve_client, args=(client_socket, client_addr), daemon=True).start()
         log_append_content("服务端已关闭, 停止接受客户端请求...")
 
@@ -646,7 +646,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             # json字符串 转 py字典
             json_str = recv_bytes.decode()
             client_info_dict = json.loads(json_str)
-            log_append_content(f"收到客户端的消息: {json_str}")
+            log_append_content(f"收到客户端{client_socket.getpeername()}的消息: {json_str}")
             # 服务端消息处理
             msg_type = client_info_dict["消息类型"]
             client_info_dict.pop("消息类型")
@@ -714,7 +714,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
         else:
             detail = "登录失败, 密码错误"
     else:
-        detail = "登录失败, 账号不存在"
+        detail = "登录失败, 此账号不存在"
     # 记录到日志
     log_append_content(f"账号{account} {detail}")
     # 把登录结果整理成py字典, 并发送给客户端
@@ -764,9 +764,9 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
             else:
                 detail = "充值失败, 此卡密已被使用"
         else:  # 没查到数据
-            detail = "充值失败, 卡密不存在"
+            detail = "充值失败, 此卡密不存在"
     else:
-        detail = "充值失败, 账号不存在"
+        detail = "充值失败, 此账号不存在"
     # 记录到日志
     log_append_content(f"账号{account} {detail}")
     # 把充值结果整理成py字典, 并发送给客户端
@@ -792,7 +792,7 @@ def deal_modify(client_socket: socket.socket, client_info_dict: dict):
         else:
             detail = "改密失败, QQ错误"
     else:
-        detail = "改密失败, 账号不存在"
+        detail = "改密失败, 此账号不存在"
     # 记录到日志
     log_append_content(f"账号{account} {detail}")
     # 把改密结果整理成py字典, 并发送给客户端
@@ -847,7 +847,7 @@ def deal_offline(client_socket: socket.socket, client_info_dict: dict):
         else:
             detail = "已设置为离线状态"
     else:
-        detail = "此账号不存在"
+        detail = f"此账号不存在, IP={client_socket.getpeername()}"
     # 记录到日志
     log_append_content(f"账号{account} {detail}")
     # 更新用户数据
@@ -877,7 +877,7 @@ def deal_unbind(client_socket: socket.socket, client_info_dict: dict):
         else:
             detail = "解绑失败, 密码错误"
     else:
-        detail = "解绑失败, 账号不存在"
+        detail = f"解绑失败, 此账号不存在"
     # 记录到日志
     log_append_content(f"账号{account} {detail}")
     # 发送消息回客户端
@@ -892,9 +892,9 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
     # 向客户端回复注册结果
     try:
         client_socket.send(json_str.encode())
-        log_append_content(f"向客户端回复成功: {json_str}")
+        log_append_content(f"向客户端{client_socket.getpeername()}回复成功: {json_str}")
     except Exception as e:
-        log_append_content(f"向客户端回复失败: {e}")
+        log_append_content(f"向客户端{client_socket.getpeername()}回复失败: {e}")
 
 
 # 表_插入, 成功返回插入数, 否则返回0

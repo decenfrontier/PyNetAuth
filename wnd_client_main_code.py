@@ -51,7 +51,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
                 }
                 self.send_to_server(tcp_socket, client_info_dict)
                 self.recv_from_server(tcp_socket)
-                sleep_time = 60*10
+                sleep_time = 12# 60*10, todo
             else:
                 self.error_count += 1
                 sleep_time = 10
@@ -104,6 +104,8 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         elif heart_ret == "下线":
             self.error_count = 10
             self.show_info(server_info_dict["详情"])
+        else:
+            self.error_count += 1
 
 
 from PySide2.QtWidgets import QApplication, QStyleFactory

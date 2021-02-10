@@ -29,7 +29,7 @@ qss_style = """
         selection-color: #000000;
 	    selection-background-color: #c4e1d2; 
     }
-    QTableView::item:hover	{	
+    QTableView::item:hover	{
 	    background-color: #a1b1c9;		
     }
 """
@@ -184,13 +184,15 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_user = QMenu()
         self.action_user_show_all = QAction("显示全部用户信息")
+        self.action_user_comment_sel = QAction("备注选中用户")
         self.action_user_state_sel = QAction("设置选中用户状态")  # 二级菜单
         self.action_user_frozen_sel = QAction("冻结选中用户")
         self.action_user_unfrozen_sel = QAction("解冻选中用户")
         self.action_user_charge_sel = QAction("续费选中用户")
         self.action_user_charge_all = QAction("续费全部用户")
-        self.menu_tbe_user.addAction(self.action_user_show_all)
-        self.menu_tbe_user.addAction(self.action_user_state_sel)
+        self.menu_tbe_user.addActions([self.action_user_show_all,
+                                       self.action_user_comment_sel,
+                                       self.action_user_state_sel])
         self.menu_tbe_user.addSeparator()
         self.menu_tbe_user.addActions([self.action_user_frozen_sel,
                                        self.action_user_unfrozen_sel])
@@ -198,6 +200,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_user.addActions([self.action_user_charge_sel,
                                        self.action_user_charge_all])
         self.action_user_show_all.triggered.connect(self.show_all_tbe_user)
+        self.action_user_comment_sel.triggered.connect(self.on_action_user_comment_sel_triggered)
         self.action_user_frozen_sel.triggered.connect(self.on_action_user_frozen_sel_triggered)
         self.action_user_unfrozen_sel.triggered.connect(self.on_action_user_unfrozen_sel_triggered)
         self.action_user_charge_sel.triggered.connect(self.on_action_user_charge_sel_triggered)
@@ -367,6 +370,25 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.show_info(f"删除项目表记录: {client_ver}失败")
         self.show_all_tbe_proj()
 
+    def on_action_user_comment_sel_triggered(self):
+        item_list = self.tbe_user.selectedItems()
+        account_list = []
+        for item in item_list:
+            row = item.row()
+            account = self.tbe_user.item(row, 1).text()
+            account_list.append(account)
+        if not account_list:
+            return
+        comment, ok_pressed = QInputDialog.getText(self, "备注", "备注:", QLineEdit.Normal)
+        if not ok_pressed:
+            return
+        accounts = "','".join(account_list)
+        if sql_table_update_ex("2用户管理", f"备注='{comment}'", f"账号 in ('{accounts}')"):
+            self.show_info("备注选中账号成功")
+        else:
+            self.show_info("备注选中账号失败")
+        self.show_all_tbe_user()
+
     def on_action_user_frozen_sel_triggered(self):
         item_list = self.tbe_user.selectedItems()
         account_list = []
@@ -378,7 +400,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             return
         comment, ok_pressed = QInputDialog.getText(self, "冻结", "备注原因:", QLineEdit.Normal)
         if not ok_pressed:
-            self.show_info("取消冻结账号操作")
             return
         accounts = "','".join(account_list)
         if sql_table_update_ex("2用户管理", f"状态='冻结', 备注='{comment}'", f"账号 in ('{accounts}')"):

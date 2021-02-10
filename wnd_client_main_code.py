@@ -4,6 +4,7 @@ import json
 
 from PySide2.QtGui import QCloseEvent
 from PySide2.QtWidgets import QMainWindow, QLabel
+from PySide2.QtCore import QTimer
 from threading import Thread
 
 from ui.wnd_client_main import Ui_WndClientMain
@@ -13,6 +14,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.init_instance_field()
         self.init_status_bar()
 
     def closeEvent(self, event: QCloseEvent):
@@ -26,9 +28,16 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
             }
             self.send_to_server(tcp_socket, client_info_dict)
 
-    def init_status_bar(self):
-        # info标签
+    # 初始化实例属性
+    def init_instance_field(self):
+        self.error_count = 0  # 网络通信失败次数
+        self.last_heart_time = mf.cur_time_stamp  # 上次心跳时间点
         self.lbe_info = QLabel(self)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.on_timer_timeout)
+        self.timer.start(1000)
+
+    def init_status_bar(self):
         self.status_bar.addWidget(self.lbe_info)
 
     def show_info(self, info):
@@ -51,7 +60,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
                 }
                 self.send_to_server(tcp_socket, client_info_dict)
                 self.recv_from_server(tcp_socket)
-                sleep_time = 12# 60*10, todo
+                sleep_time = 12 # 60*10, todo
             else:
                 self.error_count += 1
                 sleep_time = 10
@@ -65,7 +74,9 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
 
     # 线程_获取服务端自定义数据(防山寨)
     def thd_get_server_custom_data(self):
-        # RSA获取字库密码, 图片密码, 大漠破解地址, 标志位基址
+        # RSA获取 通信密钥,
+        #
+        # 对称加密算法获取 字库密码, 图片密码, 大漠破解地址, 标志位基址
 
         ...
 
@@ -95,17 +106,25 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         json_str = recv_bytes.decode()
         server_info_dict = json.loads(json_str)
         mf.log_info(f"收到服务端的消息: {json_str}")
-        msg_type = server_info_dict["消息类型"]
+        msg_type = server_info_dict.get("消息类型")
         if msg_type != "心跳":
             return
         heart_ret = server_info_dict["结果"]
         if heart_ret == "正常":
             self.error_count = 0
+            self.last_heart_time = mf.cur_time_stamp
         elif heart_ret == "下线":
             self.error_count = 10
             self.show_info(server_info_dict["详情"])
         else:
             self.error_count += 1
+
+    def on_timer_timeout(self):
+        mf.cur_time_str = time.strftime("%H:%M:%S")
+        mf.cur_time_stamp += 1
+        if mf.time_diff(self.last_heart_time, mf.cur_time_stamp) >= 15:
+            self.show_info("与服务器断开连接...")
+            self.close()
 
 
 from PySide2.QtWidgets import QApplication, QStyleFactory

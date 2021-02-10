@@ -29,7 +29,7 @@ qss_style = """
     }
 """
 
-cur_time_stamp = time.time()
+cur_time_stamp = int(time.time())
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
 PATH_WORK = os.getcwd()
@@ -41,7 +41,7 @@ PATH_PLAN_JSON = f"{PATH_SAVE}\\plan.json"
 def rnd(min: int, max: int):
     return random.randint(min, max)
 
-def time_diff(start_sec, end_sec):
+def time_diff(start_sec: int, end_sec: int):
     gap_sec = end_sec - start_sec
     gap_min = gap_sec // 60
     return gap_min
@@ -70,7 +70,7 @@ def log_debug(msg):
     logging.debug(msg)
     print(msg)
 
-# ------------------------- 网络验证-客户端专用 -------------------------
+# ------------------------- 网络验证相关 -------------------------
 server_ip = "127.0.0.1"
 server_port = 47123
 client_account = ""

@@ -2,19 +2,18 @@ import sys
 import socket
 from threading import Thread, Lock
 import json
-import pythoncom
 import time
 
 from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
     QMouseEvent, QPaintEvent, QPainter, QBitmap
 from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayout, \
     QStatusBar, QApplication, QStyleFactory
-from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, QObject, Signal
+from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, Signal
 
-from ui.wnd_client_login import Ui_WndClientLogin
+from client.res import qres
+from client.ui.wnd_client_login import Ui_WndClientLogin
 from wnd_client_main_code import WndClientMain
-from res import qres
-import mf
+from client import mf
 
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 machine_code = ""

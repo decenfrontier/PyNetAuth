@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>card.png</file>
+        <file>log.png</file>
+        <file>proj.png</file>
+        <file>users.png</file>
+        <file>flow.png</file>
+    </qresource>
+</RCC>

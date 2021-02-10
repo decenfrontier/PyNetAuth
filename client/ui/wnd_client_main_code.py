@@ -7,8 +7,8 @@ from PySide2.QtWidgets import QMainWindow, QLabel
 from PySide2.QtCore import QTimer
 from threading import Thread
 
-from ui.wnd_client_main import Ui_WndClientMain
-import mf
+from client.ui.wnd_client_main import Ui_WndClientMain
+from client import mf
 
 class WndClientMain(QMainWindow, Ui_WndClientMain):
     def __init__(self):

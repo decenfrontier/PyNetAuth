@@ -4,15 +4,15 @@ import json
 from threading import Thread, Lock
 from random import randint
 
-from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor, QCursor, QIntValidator
+from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor, QCursor
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
     QMessageBox, QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit
 from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
 
-from ui.wnd_server import Ui_WndServer
-from res import qres
+from server.res import qres
+from server.ui.wnd_server import Ui_WndServer
 
 lock = Lock()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -703,7 +703,7 @@ def deal_reg(client_socket: socket.socket, client_info_dict: dict):
         reg_ret = sql_table_insert("2用户管理", client_info_dict)
         detail = "注册成功" if reg_ret else "注册失败, 数据库异常"
     # 记录到日志
-    log_append_content(f"账号{account} {detail}")
+    log_append_content(f"[注册] 账号{account} {detail}")
     # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "注册", "结果": reg_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
@@ -737,7 +737,7 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     else:
         detail = "登录失败, 此账号不存在"
     # 记录到日志
-    log_append_content(f"账号{account} {detail}")
+    log_append_content(f"[登录] 账号{account} {detail}")
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "登录", "结果": login_ret, "详情": detail, "账号": account}
     send_to_client(client_socket, server_info_dict)
@@ -789,7 +789,7 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     else:
         detail = "充值失败, 此账号不存在"
     # 记录到日志
-    log_append_content(f"账号{account} {detail}")
+    log_append_content(f"[充值] 账号{account} {detail}")
     # 把充值结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "充值", "结果": pay_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
@@ -815,7 +815,7 @@ def deal_modify(client_socket: socket.socket, client_info_dict: dict):
     else:
         detail = "改密失败, 此账号不存在"
     # 记录到日志
-    log_append_content(f"账号{account} {detail}")
+    log_append_content(f"[改密] 账号{account} {detail}")
     # 把改密结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "改密", "结果": modify_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
@@ -843,7 +843,7 @@ def deal_heart(client_socket: socket.socket, client_info_dict: dict):
     else:
         heart_ret, detail = "下线", "此账号不存在"
     # 记录到日志
-    log_append_content(f"账号{account} {detail}")
+    log_append_content(f"[心跳] 账号{account} {heart_ret} {detail}")
     # 发送消息回客户端
     server_info_dict = {"消息类型": "心跳", "结果": heart_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
@@ -870,7 +870,7 @@ def deal_offline(client_socket: socket.socket, client_info_dict: dict):
     else:
         detail = f"此账号不存在, IP={client_socket.getpeername()}"
     # 记录到日志
-    log_append_content(f"账号{account} {detail}")
+    log_append_content(f"[离线] 账号{account} {detail}")
     # 更新用户数据
     sql_table_update("2用户管理", update_dict, {"账号": account})
 
@@ -900,7 +900,7 @@ def deal_unbind(client_socket: socket.socket, client_info_dict: dict):
     else:
         detail = f"解绑失败, 此账号不存在"
     # 记录到日志
-    log_append_content(f"账号{account} {detail}")
+    log_append_content(f"[解绑] 账号{account} {detail}")
     # 发送消息回客户端
     server_info_dict = {"消息类型": "解绑", "结果": unbind_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)

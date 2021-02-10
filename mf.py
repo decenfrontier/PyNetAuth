@@ -37,14 +37,17 @@ PATH_SAVE = "C:\\a_b_c"
 PATH_GNRL_JSON = f"{PATH_SAVE}\\gnrl.json"
 PATH_PLAN_JSON = f"{PATH_SAVE}\\plan.json"
 
+
 # 随机数
 def rnd(min: int, max: int):
     return random.randint(min, max)
+
 
 def time_diff(start_sec: int, end_sec: int):
     gap_sec = end_sec - start_sec
     gap_min = gap_sec // 60
     return gap_min
+
 
 def msleep(min_ms: int, max_ms=None):
     if max_ms is None:
@@ -53,6 +56,7 @@ def msleep(min_ms: int, max_ms=None):
         t_ms = rnd(min_ms, max_ms)
     QThread.msleep(t_ms)
 
+
 def init_logging():
     logging.basicConfig(level=logging.DEBUG,
                         format="%(asctime)s  %(message)s",
@@ -60,6 +64,7 @@ def init_logging():
                         filemode="w",
                         datefmt="%m-%d  %H:%M:%S")
     log_info("初始化日志模块成功")
+
 
 def log_info(msg):
     logging.info(msg)
@@ -70,30 +75,37 @@ def log_debug(msg):
     logging.debug(msg)
     print(msg)
 
+
 # ------------------------- 网络验证相关 -------------------------
 server_ip = "127.0.0.1"
 server_port = 47123
 client_account = ""
 client_comment = ""
+
+
 # 登录时从服务端获取的数据
 
 
 # 获取外网IP
 def get_outer_ip() -> str:
     ip = ""
+
     def method1():
         nonlocal ip
         ip = urllib.request.urlopen("http://ip.42.pl/raw").read().decode()
+
     def method2():
         nonlocal ip
         req = urllib.request.urlopen("http://httpbin.org/ip")
         ip = json.load(req)["origin"]
+
     Thread(target=method1, daemon=True).start()
     Thread(target=method2, daemon=True).start()
     while ip == "":
         time.sleep(0.1)
     print("ip:", ip)
     return ip
+
 
 # 获取IP归属地
 def get_ip_location(ip: str) -> str:
@@ -117,6 +129,7 @@ def get_ip_location(ip: str) -> str:
     print("location:", location)
     return location
 
+
 # 获取机器码(主板序列号+硬盘序列号)
 def get_machine_code():
     pythoncom.CoInitialize()
@@ -126,16 +139,18 @@ def get_machine_code():
         disk_serial = c.Win32_DiskDrive()[0].SerialNumber
         disk_serial = disk_serial.strip(".").replace("_", "")
         machine_code = board_serial + disk_serial
-        machine_code = machine_code[12:]+machine_code[:12]
+        machine_code = machine_code[12:] + machine_code[:12]
         machine_code = machine_code[::-1]
     except:
         machine_code = ""
     print("机器码:", machine_code)
     return machine_code
 
+
 # 获取操作系统
 def get_operation_system() -> str:
     return platform.platform()
+
 
 # 获取加密后字符
 def get_encrypted_str(ori_bytes: bytes) -> str:

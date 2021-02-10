@@ -40,8 +40,8 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         Thread(target=self.thd_heart_beat, daemon=True).start()
 
     def thd_heart_beat(self):
-        tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         while True:
+            tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
             if err_no == 0:
                 client_info_dict = {

@@ -2,6 +2,71 @@ import binascii
 from Crypto.Cipher import PKCS1_v1_5
 from Crypto.PublicKey import RSA
 
+# 生成随机通信密钥
+def gen_rnd_comm_key():
+    char_list = "0123456789qazwsxedcrfvtgbyhnujmikolpQAZWSXEDCRFVTGBYHNUJMIKOLP!@#$%^&*"
+    max_idx = len(char_list) - 1
+    comm_key = ""
+    for _ in range(16):
+        idx = randint(0, max_idx)
+        char = char_list[idx]
+        comm_key += char
+    return comm_key
+
+# ---------------------------------------- 对称加密 ----------------------------------------
+class AesEncryption():
+    def __init__(self, key: str, mode=AES.MODE_GCM):
+        # 密钥key 长度必须为16(AES-128),24(AES-192),或者32(AES-256)
+        if len(key) < 16:
+            key = key.center(16, "*")
+        elif len(key) < 24:
+            key = key.center(24, "*")
+        elif len(key) < 32:
+            key = key.center(32, "*")
+        else:
+            key = key[:32]
+        self.key = key.encode()
+        self.mode = mode
+        self.iv = Random.new().read(AES.block_size)  # 随机生成16字节的字节流
+
+    # 对明文进行加密
+    def encrypt(self, plain_str: str):
+        cipher_obj = AES.new(self.key, self.mode, self.iv)
+        encrypt_str = b2a_hex(cipher_obj.encrypt(plain_str.encode())).decode()
+        return encrypt_str
+
+    # 对密文进行解密
+    def decrypt(self, encrypt_str: str):
+        cipher_obj = AES.new(self.key, self.mode, self.iv)
+        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_str.encode())).decode()
+        return decrypt_str
+
+class Des3Encryption():
+    def __init__(self, key: str, mode=DES3.MODE_CFB):
+        if len(key) < 16:
+            key = key.center(16, "*")
+        elif len(key) < 24:
+            key = key.center(24, "*")
+        elif len(key) < 32:
+            key = key.center(32, "*")
+        else:
+            key = key[:32]
+        self.key = key.encode()
+        self.mode = mode
+        self.iv = Random.new().read(DES3.block_size)  # 随机生成8字节的字节流
+
+    # 对明文进行加密
+    def encrypt(self, plain_str: str):
+        cipher_obj = DES3.new(self.key, self.mode, self.iv)
+        encrypt_str = b2a_base64(cipher_obj.encrypt(plain_str.encode())).decode()
+        return encrypt_str
+
+    # 对密文进行解密
+    def decrypt(self, encrypt_str: str):
+        cipher_obj = DES3.new(self.key, self.mode, self.iv)
+        decrypt_str = cipher_obj.decrypt(a2b_base64(encrypt_str.encode())).decode()
+        return decrypt_str
+
 # ---------------------------------------- RSA非对称加密 ----------------------------------------
 # 生成RSA公私钥对
 def gen_rsa_public_private_pair():

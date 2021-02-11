@@ -23,7 +23,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         if err_no == 0:
             client_info_dict = {
                 "消息类型": "离线",
-                "账号": mf.client_account,
+                "账号": mf.user_account,
                 "备注": mf.client_comment,
             }
             self.send_to_server(tcp_socket, client_info_dict)
@@ -55,7 +55,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
             if err_no == 0:
                 client_info_dict = {
                     "消息类型": "心跳",
-                    "账号": mf.client_account,
+                    "账号": mf.user_account,
                     "备注": mf.client_comment,
                 }
                 self.send_to_server(tcp_socket, client_info_dict)

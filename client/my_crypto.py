@@ -4,17 +4,6 @@ from Crypto.Cipher import PKCS1_v1_5, AES, DES3
 from Crypto.PublicKey import RSA
 from binascii import b2a_hex, a2b_hex, b2a_base64, a2b_base64, hexlify, unhexlify
 
-# 生成随机通信密钥
-def gen_rnd_comm_key():
-    char_list = "0123456789qazwsxedcrfvtgbyhnujmikolpQAZWSXEDCRFVTGBYHNUJMIKOLP!@#$%^&*"
-    max_idx = len(char_list) - 1
-    comm_key = ""
-    for _ in range(16):
-        idx = randint(0, max_idx)
-        char = char_list[idx]
-        comm_key += char
-    return comm_key
-
 # ---------------------------------------- 单向散列加密 ----------------------------------------
 # 获取加密后字符
 def get_encrypted_str(ori_bytes: bytes) -> str:
@@ -25,9 +14,16 @@ def get_encrypted_str(ori_bytes: bytes) -> str:
 # ---------------------------------------- 对称加密 ----------------------------------------
 class AesEncryption():
     def __init__(self, key: str, mode=AES.MODE_GCM):
-        self.key = key.encode()
         # 密钥key 长度必须为16(AES-128),24(AES-192),或者32(AES-256)
-        assert len(self.key) in [16, 24, 32], "密钥key长度必须为16,24,32!"
+        if len(key) < 16:
+            key = key.center(16, "*")
+        elif len(key) < 24:
+            key = key.center(24, "*")
+        elif len(key) < 32:
+            key = key.center(32, "*")
+        else:
+            key = key[:32]
+        self.key = key.encode()
         self.mode = mode
         self.iv = Random.new().read(AES.block_size)  # 随机生成16字节的字节流
 
@@ -45,8 +41,15 @@ class AesEncryption():
 
 class Des3Encryption():
     def __init__(self, key: str, mode=DES3.MODE_CFB):
+        if len(key) < 16:
+            key = key.center(16, "*")
+        elif len(key) < 24:
+            key = key.center(24, "*")
+        elif len(key) < 32:
+            key = key.center(32, "*")
+        else:
+            key = key[:32]
         self.key = key.encode()
-        assert len(self.key) in [16, 24, 32], "密钥key长度必须为16,24,32!"
         self.mode = mode
         self.iv = Random.new().read(DES3.block_size)  # 随机生成8字节的字节流
 
@@ -150,6 +153,3 @@ public_key_server = b"-----BEGIN PUBLIC KEY-----\n" \
                     b"STh/GLGnrs02rquGPzX+b1/vaEyVEwKuvITIclQsxVpvDUjfSgzRnTlNquOlHCz4\n" \
                     b"9wIDAQAB\n" \
                     b"-----END PUBLIC KEY-----"
-
-comm_key = gen_rnd_comm_key()
-en_comm_key = encrypt_rsa(public_key_server, comm_key)

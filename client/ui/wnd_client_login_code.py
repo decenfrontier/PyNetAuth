@@ -59,11 +59,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             self.close()
         Thread(target=self.thd_recv_server, daemon=True).start()
         self.show_info(f"连接服务器成功, 开始接收数据...")
-        # 发送初始化消息
-        client_info_dict = {
-            "消息类型": "初始化",
-            "通信密钥": my_crypto.en_comm_key,
-        }
         self.send_to_server(tcp_socket, client_info_dict)
 
     def init_wnd(self):
@@ -308,8 +303,8 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             elif msg_type == "登录":
                 self.show_info(server_info_dict["详情"])
                 if server_info_dict["结果"]:
-                    mf.client_account = server_info_dict["账号"]
-                    print(mf.client_account)
+                    mf.user_account = server_info_dict["账号"]
+                    print(mf.user_account)
                     tcp_socket.close()  # 先关闭套接字
                     with lock:
                         self.login.emit()

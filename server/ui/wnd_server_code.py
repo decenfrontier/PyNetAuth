@@ -13,6 +13,7 @@ import socket
 
 from server.res import qres
 from server.ui.wnd_server import Ui_WndServer
+from server import my_crypto
 
 lock = Lock()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -88,6 +89,9 @@ class WndServer(QMainWindow, Ui_WndServer):
             log_append_content(f"tcp连接失败: {e}")
             QMessageBox.critical(self, "错误", f"tcp连接失败: {e}")
             self.close()
+        # 准备好要发给客户端的通信密钥
+        self.client_data_comm_key = my_crypto.encrypt_rsa(my_crypto.public_key_client, self.edt_custom_ckey)
+
 
     def init_timer(self):
         self.timer_sec = QTimer()
@@ -131,6 +135,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setColumnWidth(heart_time, 130)
             self.tbe_user.setColumnWidth(due_time, 130)
             self.tbe_user.setColumnWidth(last_login_time, 130)
+            self.tbe_user.setColumnWidth(machine_code, 180)
             self.tbe_user.setColumnWidth(reg_time, 130)
             self.tbe_user.setColumnWidth(opration_system, 130)
             # 卡密管理表
@@ -255,7 +260,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
-
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -687,7 +691,6 @@ class WndServer(QMainWindow, Ui_WndServer):
                 func(client_socket, client_info_dict)
         log_append_content(f"客户端{client_addr}已断开连接, 服务结束")
         client_socket.close()
-
 
 # 处理_注册
 def deal_reg(client_socket: socket.socket, client_info_dict: dict):

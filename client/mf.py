@@ -78,10 +78,11 @@ def log_debug(msg):
 # ------------------------- 网络验证相关 -------------------------
 server_ip = "127.0.0.1"
 server_port = 47123
-client_account = ""
 client_comment = ""
 
-# 登录时从服务端获取的数据
+# 从服务端获取的数据
+comm_key = ""  # 通信密钥, 一打开就获取
+user_account = ""  # 用户账号, 登录成功才获取
 
 
 # 获取外网IP

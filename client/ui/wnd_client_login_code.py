@@ -10,6 +10,7 @@ from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayou
     QStatusBar, QApplication, QStyleFactory
 from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, Signal
 
+import client.my_crypto
 from client.res import qres
 from client.ui.wnd_client_login import Ui_WndClientLogin
 from wnd_client_main_code import WndClientMain
@@ -173,7 +174,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         if False in bool_list:
             self.show_info("登录失败, 账号密码长度不符合要求")
             return
-        login_pwd = mf.get_encrypted_str(login_pwd.encode())
+        login_pwd = client.my_crypto.get_encrypted_str(login_pwd.encode())
         login_time = mf.cur_time_format
         login_system = mf.get_operation_system()
         # 把客户端信息整理成字典, 发送给服务器
@@ -202,7 +203,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             self.show_info("注册失败, 账号密码6-12位, QQ号5-10位")
             return
         # 把客户端信息整理成字典
-        reg_pwd = mf.get_encrypted_str(reg_pwd.encode())
+        reg_pwd = client.my_crypto.get_encrypted_str(reg_pwd.encode())
         client_info_dict = {
             "消息类型": "注册",
             "账号": reg_account,
@@ -240,7 +241,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         if False in bool_list:
             self.show_info("解绑失败, 请先确保账号密码输入正确")
             return
-        pwd = mf.get_encrypted_str(pwd.encode())
+        pwd = client.my_crypto.get_encrypted_str(pwd.encode())
         # 允许异地解绑. 不用发机器码
         client_info_dict = {
             "消息类型": "解绑",
@@ -261,7 +262,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         if False in bool_list:
             self.show_info("改密失败, 请确保数据有效")
             return
-        new_pwd = mf.get_encrypted_str(new_pwd.encode())
+        new_pwd = client.my_crypto.get_encrypted_str(new_pwd.encode())
         client_info_dict = {
             "消息类型": "改密",
             "账号": account,

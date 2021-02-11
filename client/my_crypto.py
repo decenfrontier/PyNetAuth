@@ -15,6 +15,9 @@ def gen_rnd_comm_key():
         comm_key += char
     return comm_key
 
+comm_key = gen_rnd_comm_key()
+
+
 # ---------------------------------------- 单向散列加密 ----------------------------------------
 # 获取加密后字符
 def get_encrypted_str(ori_bytes: bytes) -> str:

@@ -15,12 +15,13 @@ from server.res import qres
 from server.ui.wnd_server import Ui_WndServer
 from server import my_crypto
 
-lock = Lock()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_format[:10]
 path_log = f"C:\\net_auth_{today}.log"
 server_ip = "127.0.0.1"
 server_port = 47123
+comm_key = "csbt34.ydhl12s"  # 通信密钥
+
 qss_style = """
     * {
         font-size: 12px;
@@ -31,9 +32,13 @@ qss_style = """
 	    selection-background-color: #c4e1d2; 
     }
     QTableView::item:hover	{
-	    background-color: #a1b1c9;		
+	    background-color: #a1b1c9;
     }
 """
+
+# 发送给客户端的数据
+enc_comm_key = my_crypto.encrypt_rsa(my_crypto.public_key_client, comm_key)
+
 
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
@@ -89,9 +94,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             log_append_content(f"tcp连接失败: {e}")
             QMessageBox.critical(self, "错误", f"tcp连接失败: {e}")
             self.close()
-        # 准备好要发给客户端的通信密钥
-        self.client_data_comm_key = my_crypto.encrypt_rsa(my_crypto.public_key_client, self.edt_custom_ckey)
-
 
     def init_timer(self):
         self.timer_sec = QTimer()
@@ -676,6 +678,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             msg_type = client_info_dict["消息类型"]
             client_info_dict.pop("消息类型")
             msg_func_dict = {
+                "初始": deal_init,
                 "注册": deal_reg,
                 "登录": deal_login,
                 "充值": deal_pay,
@@ -691,6 +694,22 @@ class WndServer(QMainWindow, Ui_WndServer):
                 func(client_socket, client_info_dict)
         log_append_content(f"客户端{client_addr}已断开连接, 服务结束")
         client_socket.close()
+
+# 处理_初始
+def deal_init(client_socket: socket.socket, client_info_dict: dict):
+    ip = client_socket.getpeername()
+    log_append_content(f"[初始] 正在处理IP: {ip}")
+    init_ret = False
+    detail= "通信密钥错误"
+    # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
+    if client_info_dict["通信密钥"] == "*d#f12j@34rt7%gh.":
+        init_ret = True
+        detail = enc_comm_key
+    else:  # 通信密钥被修改, 记录到日志
+        log_append_content(f"[初始] IP{ip}通信密钥异常, Warning!")
+    # 把注册结果整理成py字典, 并发送给客户端
+    server_info_dict = {"消息类型": "初始", "结果": init_ret, "详情": detail}
+    send_to_client(client_socket, server_info_dict)
 
 # 处理_注册
 def deal_reg(client_socket: socket.socket, client_info_dict: dict):
@@ -1088,10 +1107,9 @@ def log_read_content() -> str:
 
 # 日志添加内容
 def log_append_content(content: str):
-    with lock:
-        with open(path_log, "a", encoding="utf8") as f:
-            text = f"{cur_time_format} {content}\n"
-            f.write(text)
+    with open(path_log, "a", encoding="utf8") as f:
+        text = f"{cur_time_format} {content}\n"
+        f.write(text)
 
 # 剪切板拷贝
 def clip_copy(content: str):

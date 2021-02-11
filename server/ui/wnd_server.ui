@@ -305,61 +305,44 @@
              <string>自定义数据</string>
             </property>
             <layout class="QFormLayout" name="formLayout_2">
-             <item row="2" column="0">
+             <item row="1" column="0">
               <widget class="QLabel" name="label_8">
                <property name="text">
                 <string>KEY</string>
                </property>
               </widget>
              </item>
-             <item row="2" column="1">
+             <item row="1" column="1">
               <widget class="QLineEdit" name="edt_custom_key"/>
              </item>
-             <item row="3" column="0">
+             <item row="2" column="0">
               <widget class="QLabel" name="label_9">
                <property name="text">
                 <string>VAL</string>
                </property>
               </widget>
              </item>
-             <item row="3" column="1">
+             <item row="2" column="1">
               <widget class="QLineEdit" name="edt_custom_val"/>
              </item>
-             <item row="10" column="1">
-              <widget class="QPushButton" name="btn_custom_confirm">
-               <property name="text">
-                <string>确认添加或修改</string>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="0">
+             <item row="5" column="0">
               <widget class="QLabel" name="label_13">
                <property name="text">
                 <string>EVAL</string>
                </property>
               </widget>
              </item>
-             <item row="6" column="1">
+             <item row="5" column="1">
               <widget class="QLineEdit" name="edt_custom_eval">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="edt_custom_ckey">
+             <item row="9" column="1">
+              <widget class="QPushButton" name="btn_custom_confirm">
                <property name="text">
-                <string>csbt34.ydhl12s</string>
-               </property>
-               <property name="readOnly">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_10">
-               <property name="text">
-                <string>CKEY</string>
+                <string>确认添加或修改</string>
                </property>
               </widget>
              </item>

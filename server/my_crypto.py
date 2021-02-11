@@ -2,17 +2,6 @@ import binascii
 from Crypto.Cipher import PKCS1_v1_5
 from Crypto.PublicKey import RSA
 
-# 生成随机通信密钥
-def gen_rnd_comm_key():
-    char_list = "0123456789qazwsxedcrfvtgbyhnujmikolpQAZWSXEDCRFVTGBYHNUJMIKOLP!@#$%^&*"
-    max_idx = len(char_list) - 1
-    comm_key = ""
-    for _ in range(16):
-        idx = randint(0, max_idx)
-        char = char_list[idx]
-        comm_key += char
-    return comm_key
-
 # ---------------------------------------- 对称加密 ----------------------------------------
 class AesEncryption():
     def __init__(self, key: str, mode=AES.MODE_GCM):

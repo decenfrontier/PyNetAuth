@@ -62,7 +62,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         # 发送初始化消息
         client_info_dict = {
             "消息类型": "初始化",
-            "通信密钥": my_crypto.comm_key,
+            "通信密钥": my_crypto.en_comm_key,
         }
         self.send_to_server(tcp_socket, client_info_dict)
 

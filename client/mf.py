@@ -87,7 +87,6 @@ des_key = "dig?F*ckDang5"  # DES密钥
 aes_key = "*d#f12j@34rt7%gh."  # AES密钥, 登录界面初始化时获取, 先随机写一个迷惑破解者
 user_account = ""  # 用户账号, 登录成功才获取
 
-
 # 构造加密类实例化对象
 aes = my_crypto.AesEncryption(aes_key)  # 先构造一个假的
 

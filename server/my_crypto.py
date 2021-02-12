@@ -17,18 +17,24 @@ class AesEncryption():
             key = key[:32]
         self.key = key.encode()
         self.mode = mode
-        self.iv = Random.new().read(AES.block_size)  # 随机生成16字节的字节流
+        self.iv = b"\xa2A\x10U\xda\xa4\xb8??r\xddo<ls\xa6"
+
+    def add_to_16(self, text: str):
+        mod = len(text.encode()) % 16
+        bit_num = 16 - mod if mod > 0 else 0
+        text = text + "\0" * bit_num
+        return text.encode()
 
     # 对明文进行加密
     def encrypt(self, plain_str: str) -> bytes:
         cipher_obj = AES.new(self.key, self.mode, self.iv)
-        encrypt_bytes = b2a_hex(cipher_obj.encrypt(plain_str.encode()))
+        encrypt_bytes = b2a_hex(cipher_obj.encrypt(self.add_to_16(plain_str)))
         return encrypt_bytes
 
     # 对密文进行解密
     def decrypt(self, encrypt_bytes: bytes) -> str:
         cipher_obj = AES.new(self.key, self.mode, self.iv)
-        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_bytes)).decode()
+        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_bytes)).decode().rstrip("\0")
         return decrypt_str
 
 # ---------------------------------------- RSA非对称加密 ----------------------------------------

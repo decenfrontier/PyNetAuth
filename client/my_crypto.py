@@ -25,18 +25,18 @@ class AesEncryption():
             key = key[:32]
         self.key = key.encode()
         self.mode = mode
-        self.iv = Random.new().read(AES.block_size)  # 随机生成16字节的字节流
+        self.iv = b"\xa2A\x10U\xda\xa4\xb8??r\xddo<ls\xa6"
 
     # 对明文进行加密
-    def encrypt(self, plain_str: str) -> bytes:
+    def encrypt(self, plain_str: str) -> str:
         cipher_obj = AES.new(self.key, self.mode, self.iv)
-        encrypt_bytes = b2a_hex(cipher_obj.encrypt(plain_str.encode()))
-        return encrypt_bytes
+        encrypt_str = b2a_hex(cipher_obj.encrypt(plain_str.encode())).decode()
+        return encrypt_str
 
     # 对密文进行解密
-    def decrypt(self, encrypt_bytes: bytes) -> str:
+    def decrypt(self, encrypt_str: str) -> str:
         cipher_obj = AES.new(self.key, self.mode, self.iv)
-        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_bytes)).decode()
+        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_str.encode())).decode()
         return decrypt_str
 
 class DesEncryption():
@@ -54,15 +54,15 @@ class DesEncryption():
         self.iv = b".Vd\x1c\x16H[\x97"
 
     # 对明文进行加密
-    def encrypt(self, plain_str: str) -> bytes:
+    def encrypt(self, plain_str: str):
         cipher_obj = DES3.new(self.key, self.mode, self.iv)
-        encrypt_bytes = b2a_hex(cipher_obj.encrypt(plain_str.encode()))
-        return encrypt_bytes
+        encrypt_str = b2a_base64(cipher_obj.encrypt(plain_str.encode())).decode()
+        return encrypt_str
 
     # 对密文进行解密
-    def decrypt(self, encrypt_bytes: bytes) -> str:
+    def decrypt(self, encrypt_str: str):
         cipher_obj = DES3.new(self.key, self.mode, self.iv)
-        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_bytes)).decode()
+        decrypt_str = cipher_obj.decrypt(a2b_base64(encrypt_str.encode())).decode()
         return decrypt_str
 
 # ---------------------------------------- RSA非对称加密 ----------------------------------------

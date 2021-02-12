@@ -699,7 +699,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             if not recv_bytes:  # 若客户端退出,会收到一个空str
                 break
             # des解密
-            json_str = des.decrypt(recv_bytes)
+            json_str = des.decrypt(recv_bytes.decode())
             # json字符串 转 py字典
             client_info_dict = json.loads(json_str)
             log_append_content(f"收到客户端{client_socket.getpeername()}的消息: {json_str}")
@@ -961,10 +961,10 @@ def deal_unbind(client_socket: socket.socket, client_info_dict: dict):
 def send_to_client(client_socket: socket.socket, server_info_dict: dict):
     # py字典 转 json字符串
     json_str = json.dumps(server_info_dict, ensure_ascii=False)
+    # json字符串 des加密后发送
+    des_json_str = des.encrypt(json_str)
     try:
-        # json字符串 des加密后发送
-        des_json_bytes = des.encrypt(json_str)
-        client_socket.send(des_json_bytes)
+        client_socket.send(des_json_str.encode())
         log_append_content(f"向客户端{client_socket.getpeername()}回复成功: {json_str}")
     except Exception as e:
         log_append_content(f"向客户端{client_socket.getpeername()}回复失败: {e}")

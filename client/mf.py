@@ -90,7 +90,6 @@ user_account = ""  # 用户账号, 登录成功才获取
 
 # 构造加密类实例化对象
 aes = my_crypto.AesEncryption(aes_key)  # 先构造一个假的
-des = my_crypto.DesEncryption(des_key)
 
 # 获取外网IP
 def get_outer_ip() -> str:

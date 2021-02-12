@@ -39,32 +39,6 @@ class AesEncryption():
         decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_bytes)).decode()
         return decrypt_str
 
-class DesEncryption():
-    def __init__(self, key: str, mode=DES3.MODE_CFB):
-        if len(key) < 16:
-            key = key.center(16, "*")
-        elif len(key) < 24:
-            key = key.center(24, "*")
-        elif len(key) < 32:
-            key = key.center(32, "*")
-        else:
-            key = key[:32]
-        self.key = key.encode()
-        self.mode = mode
-        self.iv = b".Vd\x1c\x16H[\x97"
-
-    # 对明文进行加密
-    def encrypt(self, plain_str: str) -> bytes:
-        cipher_obj = DES3.new(self.key, self.mode, self.iv)
-        encrypt_bytes = b2a_hex(cipher_obj.encrypt(plain_str.encode()))
-        return encrypt_bytes
-
-    # 对密文进行解密
-    def decrypt(self, encrypt_bytes: bytes) -> str:
-        cipher_obj = DES3.new(self.key, self.mode, self.iv)
-        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_bytes)).decode()
-        return decrypt_str
-
 # ---------------------------------------- RSA非对称加密 ----------------------------------------
 # 生成RSA公私钥对
 def gen_rsa_public_private_pair():
@@ -153,6 +127,3 @@ public_key_server = b"-----BEGIN PUBLIC KEY-----\n" \
                     b"STh/GLGnrs02rquGPzX+b1/vaEyVEwKuvITIclQsxVpvDUjfSgzRnTlNquOlHCz4\n" \
                     b"9wIDAQAB\n" \
                     b"-----END PUBLIC KEY-----"
-
-a = decrypt_rsa(private_key_client, "0765992b1889f4e0395321cc8ad9285ef41156d14155e7bc593faa9b7b3840e6457fefa1d9acdad12949a59ecaf5a9b9297d88191982c526bbe03fbf7b186a8b163334b2293bacbad2707989b59de3b79c829fc35c494c025e87f6372087906e33897a75c140cc459ac6155ad1a706d73beff8ce85fb7523cab97757e482cf75af97b2f3563300802a138315ac87b285a77a3d9504f561cd5428beeea3d0fd0829e20c805b5bdbf1e78857971d5cfb126a432e3426666a770a6f4074610752eb5ef64cd7841c824f0afeee2689fe0fc63f22e231d01df80542691d1451fe690558e7d41d055f9ae72bc427f3bb435a943f89dbe7f0da70aa45c05944c4c0d4c4")
-print(a)

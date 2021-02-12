@@ -1,6 +1,7 @@
 import time
 import socket
 import json
+import base64
 
 from PySide2.QtGui import QCloseEvent
 from PySide2.QtWidgets import QMainWindow, QLabel
@@ -84,9 +85,10 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
         # py字典 转 json字符串
         json_str = json.dumps(client_info_dict, ensure_ascii=False)
-        # 发送客户端注册信息到服务器
+        # json字符串 base85编码
+        send_bytes = base64.b85encode(json_str.encode())
         try:
-            tcp_socket.send(json_str.encode())
+            tcp_socket.send(send_bytes)
             mf.log_info(f"客户端数据, 发送成功: {json_str}")
         except Exception as e:
             mf.log_info(f"客户端数据, 发送失败: {e}")
@@ -102,8 +104,8 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         if not recv_bytes:  # 若客户端退出, 或者5秒内服务端未响应, 会收到一个空str
             self.error_count += 1
             return
-        # des解密
-        json_str = mf.des.decrypt(recv_bytes.decode())
+        # base85解密
+        json_str = base64.b85decode(recv_bytes).decode()
         print(f"收到服务端的消息: {json_str}")
         # json字符串 转 py字典
         server_info_dict = json.loads(json_str)

@@ -2,6 +2,7 @@ import sys
 import socket
 from threading import Thread, Lock
 import json
+import base64
 import time
 
 from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
@@ -277,25 +278,13 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
         # py字典 转 json字符串
         json_str = json.dumps(client_info_dict, ensure_ascii=False)
+        # json字符串 base85编码
+        send_bytes = base64.b85encode(json_str.encode())
         try:
-            # json字符串 des加密后发送
-            des_json_bytes = mf.des.encrypt(json_str)
-            tcp_socket.send(des_json_bytes)
+            tcp_socket.send(send_bytes)
             print(f"客户端数据, 发送成功: {json_str}")
         except Exception as e:
             mf.log_info(f"客户端数据, 发送失败: {e}")
-
-    # # 发送数据给客户端
-    # def send_to_client(client_socket: socket.socket, server_info_dict: dict):
-    #     # py字典 转 json字符串
-    #     json_str = json.dumps(server_info_dict, ensure_ascii=False)
-    #     try:
-    #         # json字符串 des加密后发送
-    #         des_json_bytes = des.encrypt(json_str)
-    #         client_socket.send(des_json_bytes)
-    #         log_append_content(f"向客户端{client_socket.getpeername()}回复成功: {json_str}")
-    #     except Exception as e:
-    #         log_append_content(f"向客户端{client_socket.getpeername()}回复失败: {e}")
 
     # 线程_接收服务端消息
     def thd_recv_server(self):
@@ -307,8 +296,8 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                 recv_bytes = ""
             if not recv_bytes:  # 若客户端退出,会收到一个空str
                 break
-            # des解密
-            json_str = mf.des.decrypt(recv_bytes)
+            # base85解密
+            json_str = base64.b85decode(recv_bytes).decode()
             print(f"收到服务端的消息: {json_str}")
             # json字符串 转 py字典
             server_info_dict = json.loads(json_str)

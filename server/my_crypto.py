@@ -31,32 +31,6 @@ class AesEncryption():
         decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_bytes)).decode()
         return decrypt_str
 
-class DesEncryption():
-    def __init__(self, key: str, mode=DES3.MODE_CFB):
-        if len(key) < 16:
-            key = key.center(16, "*")
-        elif len(key) < 24:
-            key = key.center(24, "*")
-        elif len(key) < 32:
-            key = key.center(32, "*")
-        else:
-            key = key[:32]
-        self.key = key.encode()
-        self.mode = mode
-        self.iv = b".Vd\x1c\x16H[\x97"
-
-    # 对明文进行加密
-    def encrypt(self, plain_str: str) -> bytes:
-        cipher_obj = DES3.new(self.key, self.mode, self.iv)
-        encrypt_bytes = b2a_hex(cipher_obj.encrypt(plain_str.encode()))
-        return encrypt_bytes
-
-    # 对密文进行解密
-    def decrypt(self, encrypt_bytes: bytes) -> str:
-        cipher_obj = DES3.new(self.key, self.mode, self.iv)
-        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_bytes)).decode()
-        return decrypt_str
-
 # ---------------------------------------- RSA非对称加密 ----------------------------------------
 # 生成RSA公私钥对
 def gen_rsa_public_private_pair():

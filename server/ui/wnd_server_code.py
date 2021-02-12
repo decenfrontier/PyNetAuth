@@ -1,6 +1,7 @@
 import sys
 import time, datetime
 import json
+import base64
 from threading import Thread, Lock
 from random import randint
 
@@ -22,9 +23,7 @@ path_log = f"C:\\net_auth_{today}.log"
 server_ip = "127.0.0.1"
 server_port = 47123
 aes_key = "csbt34.ydhl12s"  # AES密钥
-des_key = "dig?F*ckDang5"  # DES密钥
 aes = my_crypto.AesEncryption(aes_key)
-des = my_crypto.DesEncryption(des_key)
 
 qss_style = """
     * {
@@ -693,13 +692,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         while True:
             log_append_content("等待客户端发出消息中...")
             try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
-                recv_bytes = client_socket.recv(1024)
+                recv_bytes = client_socket.recv(4096)
             except:
                 recv_bytes = ""
             if not recv_bytes:  # 若客户端退出,会收到一个空str
                 break
-            # des解密
-            json_str = des.decrypt(recv_bytes)
+            # base85解码
+            json_str = base64.b85decode(recv_bytes).decode()
             # json字符串 转 py字典
             client_info_dict = json.loads(json_str)
             log_append_content(f"收到客户端{client_socket.getpeername()}的消息: {json_str}")
@@ -961,10 +960,10 @@ def deal_unbind(client_socket: socket.socket, client_info_dict: dict):
 def send_to_client(client_socket: socket.socket, server_info_dict: dict):
     # py字典 转 json字符串
     json_str = json.dumps(server_info_dict, ensure_ascii=False)
+    # json字符串 base85编码
+    send_bytes = base64.b85encode(json_str.encode())
     try:
-        # json字符串 des加密后发送
-        des_json_bytes = des.encrypt(json_str)
-        client_socket.send(des_json_bytes)
+        client_socket.send(send_bytes)
         log_append_content(f"向客户端{client_socket.getpeername()}回复成功: {json_str}")
     except Exception as e:
         log_append_content(f"向客户端{client_socket.getpeername()}回复失败: {e}")

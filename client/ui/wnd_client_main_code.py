@@ -95,16 +95,16 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
     def recv_from_server(self, tcp_socket: socket.socket):
         tcp_socket.settimeout(5)  # 设置为非阻塞接收, 只等5秒
         try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
-            recv_bytes = tcp_socket.recv(1024)
+            recv_bytes = tcp_socket.recv(4096)
         except:
             recv_bytes = ""
         tcp_socket.settimeout(None)  # 重新设置为阻塞模式
         if not recv_bytes:  # 若客户端退出, 或者5秒内服务端未响应, 会收到一个空str
             self.error_count += 1
             return
-        json_str = recv_bytes.decode()
+        # des解密
+        json_str = mf.des.decrypt(recv_bytes.decode())
         # json字符串 转 py字典
-        json_str = recv_bytes.decode()
         server_info_dict = json.loads(json_str)
         mf.log_info(f"收到服务端的消息: {json_str}")
         msg_type = server_info_dict.get("消息类型")

@@ -289,13 +289,15 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         while True:
             mf.log_info("等待服务端发出消息中...")
             try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
-                recv_bytes = tcp_socket.recv(1024)
+                recv_bytes = tcp_socket.recv(4096)
             except:
                 recv_bytes = ""
             if not recv_bytes:  # 若客户端退出,会收到一个空str
                 break
+            print(recv_bytes)
+            # des解密
+            json_str = mf.des.decrypt(recv_bytes)
             # json字符串 转 py字典
-            json_str = recv_bytes.decode()
             server_info_dict = json.loads(json_str)
             mf.log_info(f"收到服务端的消息: {json_str}")
             # 客户端消息处理

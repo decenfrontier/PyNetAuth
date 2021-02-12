@@ -15,6 +15,7 @@ from server.res import qres
 from server.ui.wnd_server import Ui_WndServer
 from server import my_crypto
 
+lock = Lock()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_format[:10]
 path_log = f"C:\\net_auth_{today}.log"
@@ -22,6 +23,8 @@ server_ip = "127.0.0.1"
 server_port = 47123
 aes_key = "csbt34.ydhl12s"  # AES密钥
 des_key = "dig?F*ckDang5"  # DES密钥
+aes = my_crypto.AesEncryption(aes_key)
+des = my_crypto.DesEncryption(des_key)
 
 qss_style = """
     * {
@@ -39,6 +42,7 @@ qss_style = """
 
 # 发送给客户端的数据
 enc_aes_key = my_crypto.encrypt_rsa(my_crypto.public_key_client, aes_key)
+print("enc_aes_key: ", enc_aes_key)
 
 
 class WndServer(QMainWindow, Ui_WndServer):
@@ -553,7 +557,6 @@ class WndServer(QMainWindow, Ui_WndServer):
     def refresh_tbe_proj(self, query_proj_list):
         self.tbe_proj.setRowCount(len(query_proj_list))
         for row, query_proj in enumerate(query_proj_list):
-            print(query_proj["最后修改时间"], type(query_proj["最后修改时间"]))
             self.tbe_proj.setItem(row, 0, QTableWidgetItem(str(query_proj["ID"])))
             self.tbe_proj.setItem(row, 1, QTableWidgetItem(query_proj["客户端版本"]))
             self.tbe_proj.setItem(row, 2, QTableWidgetItem(query_proj["客户端公告"]))
@@ -701,13 +704,13 @@ def deal_init(client_socket: socket.socket, client_info_dict: dict):
     ip = client_socket.getpeername()
     log_append_content(f"[初始] 正在处理IP: {ip}")
     init_ret = False
-    detail= "通信密钥错误"
+    detail = "通信密钥错误"
     # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
     if client_info_dict["通信密钥"] == "*d#f12j@34rt7%gh.":
         init_ret = True
         detail = enc_aes_key
     else:  # 通信密钥被修改, 记录到日志
-        log_append_content(f"[初始] IP{ip}通信密钥异常, Warning!")
+        log_append_content(f"[初始] IP{ip}通信密钥被修改, Warning!")
     # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "初始", "结果": init_ret, "详情": detail}
     send_to_client(client_socket, server_info_dict)
@@ -933,10 +936,12 @@ def deal_unbind(client_socket: socket.socket, client_info_dict: dict):
 def send_to_client(client_socket: socket.socket, server_info_dict: dict):
     # py字典 转 json字符串
     json_str = json.dumps(server_info_dict, ensure_ascii=False)
-    # 向客户端回复注册结果
     try:
-        client_socket.send(json_str.encode())
+        # json字符串 des加密后发送
+        des_json_bytes = des.encrypt(json_str)
+        client_socket.send(des_json_bytes)
         log_append_content(f"向客户端{client_socket.getpeername()}回复成功: {json_str}")
+        log_append_content(f"向客户端{client_socket.getpeername()}回复成功: {des_json_bytes}")
     except Exception as e:
         log_append_content(f"向客户端{client_socket.getpeername()}回复失败: {e}")
 
@@ -1108,9 +1113,10 @@ def log_read_content() -> str:
 
 # 日志添加内容
 def log_append_content(content: str):
-    with open(path_log, "a", encoding="utf8") as f:
-        text = f"{cur_time_format} {content}\n"
-        f.write(text)
+    with lock:
+        with open(path_log, "a", encoding="utf8") as f:
+            text = f"{cur_time_format} {content}\n"
+            f.write(text)
 
 # 剪切板拷贝
 def clip_copy(content: str):

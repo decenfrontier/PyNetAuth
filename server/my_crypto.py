@@ -1,6 +1,7 @@
-import binascii
-from Crypto.Cipher import PKCS1_v1_5
+from Crypto import Random
+from Crypto.Cipher import PKCS1_v1_5, AES, DES3
 from Crypto.PublicKey import RSA
+from binascii import b2a_hex, a2b_hex, b2a_base64, a2b_base64, hexlify, unhexlify
 
 # ---------------------------------------- 对称加密 ----------------------------------------
 class AesEncryption():
@@ -19,18 +20,18 @@ class AesEncryption():
         self.iv = Random.new().read(AES.block_size)  # 随机生成16字节的字节流
 
     # 对明文进行加密
-    def encrypt(self, plain_str: str):
+    def encrypt(self, plain_str: str) -> bytes:
         cipher_obj = AES.new(self.key, self.mode, self.iv)
-        encrypt_str = b2a_hex(cipher_obj.encrypt(plain_str.encode())).decode()
-        return encrypt_str
+        encrypt_bytes = b2a_hex(cipher_obj.encrypt(plain_str.encode()))
+        return encrypt_bytes
 
     # 对密文进行解密
-    def decrypt(self, encrypt_str: str):
+    def decrypt(self, encrypt_bytes: bytes) -> str:
         cipher_obj = AES.new(self.key, self.mode, self.iv)
-        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_str.encode())).decode()
+        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_bytes)).decode()
         return decrypt_str
 
-class Des3Encryption():
+class DesEncryption():
     def __init__(self, key: str, mode=DES3.MODE_CFB):
         if len(key) < 16:
             key = key.center(16, "*")
@@ -42,18 +43,18 @@ class Des3Encryption():
             key = key[:32]
         self.key = key.encode()
         self.mode = mode
-        self.iv = Random.new().read(DES3.block_size)  # 随机生成8字节的字节流
+        self.iv = b".Vd\x1c\x16H[\x97"
 
     # 对明文进行加密
-    def encrypt(self, plain_str: str):
+    def encrypt(self, plain_str: str) -> bytes:
         cipher_obj = DES3.new(self.key, self.mode, self.iv)
-        encrypt_str = b2a_base64(cipher_obj.encrypt(plain_str.encode())).decode()
-        return encrypt_str
+        encrypt_bytes = b2a_hex(cipher_obj.encrypt(plain_str.encode()))
+        return encrypt_bytes
 
     # 对密文进行解密
-    def decrypt(self, encrypt_str: str):
+    def decrypt(self, encrypt_bytes: bytes) -> str:
         cipher_obj = DES3.new(self.key, self.mode, self.iv)
-        decrypt_str = cipher_obj.decrypt(a2b_base64(encrypt_str.encode())).decode()
+        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_bytes)).decode()
         return decrypt_str
 
 # ---------------------------------------- RSA非对称加密 ----------------------------------------
@@ -76,10 +77,10 @@ def encrypt_rsa(public_key: bytes, plain_str: str):
         # 对明文加密, 获得加密的二进制数据
         encrypt_bytes = cipher_obj.encrypt(plain_str.encode())
         # 对加密的二进制数据转16进制字符串
-        hex_encrypt_str = binascii.hexlify(encrypt_bytes).decode()
-        return {"state": 1, "msg": hex_encrypt_str}
+        hex_encrypt_str = hexlify(encrypt_bytes).decode()
     except Exception as e:
-        return {"state": 0, "msg": str(e)}
+        hex_encrypt_str = ""
+    return hex_encrypt_str
 
 # RSA解密
 def decrypt_rsa(private_key: bytes, hex_encrypt_str: str):
@@ -89,13 +90,12 @@ def decrypt_rsa(private_key: bytes, hex_encrypt_str: str):
         # 创建加密对象
         cipher_obj = PKCS1_v1_5.new(rsa_key_obj)
         # 对16进制加密字符串先转字节, 再转二进制
-        encrypt_bytes = binascii.unhexlify(hex_encrypt_str.encode())
+        encrypt_bytes = unhexlify(hex_encrypt_str.encode())
         # 对加密的二进制数据解密, 得到明文
         plain_str = cipher_obj.decrypt(encrypt_bytes, b"").decode()
-        return {"state": 1, "msg": plain_str}
     except Exception as e:
-        return {"state": 0, "msg": str(e)}
-
+        plain_str = ""
+    return plain_str
 
 public_key_server = b"-----BEGIN PUBLIC KEY-----\n" \
                     b"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9CwF74Q6OuxB42BsscZy\n" \

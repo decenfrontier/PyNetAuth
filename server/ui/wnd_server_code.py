@@ -20,7 +20,8 @@ today = cur_time_format[:10]
 path_log = f"C:\\net_auth_{today}.log"
 server_ip = "127.0.0.1"
 server_port = 47123
-comm_key = "csbt34.ydhl12s"  # 通信密钥
+aes_key = "csbt34.ydhl12s"  # AES密钥
+des_key = "dig?F*ckDang5"  # DES密钥
 
 qss_style = """
     * {
@@ -37,7 +38,7 @@ qss_style = """
 """
 
 # 发送给客户端的数据
-enc_comm_key = my_crypto.encrypt_rsa(my_crypto.public_key_client, comm_key)
+enc_aes_key = my_crypto.encrypt_rsa(my_crypto.public_key_client, aes_key)
 
 
 class WndServer(QMainWindow, Ui_WndServer):
@@ -704,7 +705,7 @@ def deal_init(client_socket: socket.socket, client_info_dict: dict):
     # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
     if client_info_dict["通信密钥"] == "*d#f12j@34rt7%gh.":
         init_ret = True
-        detail = enc_comm_key
+        detail = enc_aes_key
     else:  # 通信密钥被修改, 记录到日志
         log_append_content(f"[初始] IP{ip}通信密钥异常, Warning!")
     # 把注册结果整理成py字典, 并发送给客户端

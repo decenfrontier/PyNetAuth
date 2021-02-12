@@ -60,10 +60,8 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         Thread(target=self.thd_recv_server, daemon=True).start()
         self.show_info(f"连接服务器成功, 开始接收数据...")
         # 发送第一波数据
-        client_info_dict = {"消息类型": "初始", "通信密钥": mf.comm_key}
+        client_info_dict = {"消息类型": "初始", "通信密钥": mf.aes_key}
         self.send_to_server(tcp_socket, client_info_dict)
-        # 接收第一波数据
-        #todo
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象

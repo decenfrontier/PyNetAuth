@@ -79,9 +79,10 @@ def log_debug(msg):
 server_ip = "127.0.0.1"
 server_port = 47123
 client_comment = ""
+des_key = "dig?F*ckDang5"  # DES密钥
 
 # 从服务端获取的数据
-comm_key = "*d#f12j@34rt7%gh."  # 通信密钥, 登录界面初始化时获取, 先随机写一个迷惑破解者
+aes_key = "*d#f12j@34rt7%gh."  # AES密钥, 登录界面初始化时获取, 先随机写一个迷惑破解者
 user_account = ""  # 用户账号, 登录成功才获取
 
 

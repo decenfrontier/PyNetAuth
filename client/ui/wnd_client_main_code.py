@@ -99,7 +99,8 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         except:
             recv_bytes = ""
         tcp_socket.settimeout(None)  # 重新设置为阻塞模式
-        if not recv_bytes:  # 若客户端退出,会收到一个空str
+        if not recv_bytes:  # 若客户端退出, 或者5秒内服务端未响应, 会收到一个空str
+            self.error_count += 1
             return
         json_str = recv_bytes.decode()
         # json字符串 转 py字典

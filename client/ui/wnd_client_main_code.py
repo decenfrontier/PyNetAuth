@@ -104,9 +104,9 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
             return
         # des解密
         json_str = mf.des.decrypt(recv_bytes.decode())
+        print(f"收到服务端的消息: {json_str}")
         # json字符串 转 py字典
         server_info_dict = json.loads(json_str)
-        mf.log_info(f"收到服务端的消息: {json_str}")
         msg_type = server_info_dict.get("消息类型")
         if msg_type != "心跳":
             return

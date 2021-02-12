@@ -42,7 +42,6 @@ qss_style = """
 
 # 发送给客户端的数据
 enc_aes_key = my_crypto.encrypt_rsa(my_crypto.public_key_client, aes_key)
-print("enc_aes_key: ", enc_aes_key)
 
 
 class WndServer(QMainWindow, Ui_WndServer):
@@ -674,8 +673,9 @@ class WndServer(QMainWindow, Ui_WndServer):
                 recv_bytes = ""
             if not recv_bytes:  # 若客户端退出,会收到一个空str
                 break
+            # des解密
+            json_str = des.decrypt(recv_bytes)
             # json字符串 转 py字典
-            json_str = recv_bytes.decode()
             client_info_dict = json.loads(json_str)
             log_append_content(f"收到客户端{client_socket.getpeername()}的消息: {json_str}")
             # 服务端消息处理
@@ -941,7 +941,6 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
         des_json_bytes = des.encrypt(json_str)
         client_socket.send(des_json_bytes)
         log_append_content(f"向客户端{client_socket.getpeername()}回复成功: {json_str}")
-        log_append_content(f"向客户端{client_socket.getpeername()}回复成功: {des_json_bytes}")
     except Exception as e:
         log_append_content(f"向客户端{client_socket.getpeername()}回复失败: {e}")
 

@@ -314,7 +314,11 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             server_info_dict = json.loads(json_str)
             # 客户端消息处理
             msg_type = server_info_dict["消息类型"]
-            if msg_type in ("注册", "充值", "解绑", "改密"):
+            if msg_type == "初始":
+                enc_aes_key = server_info_dict["详情"]
+                mf.aes_key = my_crypto.decrypt_rsa(my_crypto.private_key_client, enc_aes_key)
+                mf.aes = my_crypto.AesEncryption(mf.aes_key)  # 重新构造新的aes密钥
+            elif msg_type in ("注册", "充值", "解绑", "改密"):
                 self.show_info(server_info_dict["详情"])
             elif msg_type == "登录":
                 self.show_info(server_info_dict["详情"])

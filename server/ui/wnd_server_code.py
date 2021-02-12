@@ -264,6 +264,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)
         self.btn_user_query.clicked.connect(self.on_btn_user_query_clicked)
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
+        self.btn_custom_confirm.clicked.connect(self.on_btn_custom_confirm_clicked)
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
 
@@ -310,11 +311,11 @@ class WndServer(QMainWindow, Ui_WndServer):
             "允许解绑": allow_unbind,
         }
         if sql_table_query("1项目管理", {"客户端版本": client_ver}):
-            sql_table_update("1项目管理", val_dict, {"客户端版本": client_ver})
-            self.show_info("已更新项目记录")
+            num = sql_table_update("1项目管理", val_dict, {"客户端版本": client_ver})
+            self.show_info(f"{num}个项目更新成功")
         else:
-            sql_table_insert("1项目管理", val_dict)
-            self.show_info("已插入项目新记录")
+            num = sql_table_insert("1项目管理", val_dict)
+            self.show_info(f"{num}个项目添加成功")
         self.show_all_tbe_proj()
 
     def on_btn_user_query_clicked(self):
@@ -343,6 +344,22 @@ class WndServer(QMainWindow, Ui_WndServer):
             else:
                 self.show_info(f"生成{card_type}{card_key}失败")
         self.show_all_tbe_card()
+
+    def on_btn_custom_confirm_clicked(self):
+        key = self.edt_custom_key.text()
+        val = self.edt_custom_val.text()
+        eval = aes.encrypt(val)
+        query_custom_list = sql_table_query("4自定义数据", {"KEY": key})
+        if query_custom_list:  # 查到, 则更新
+            query_custom = query_custom_list[0]
+            update_dict = {"VAL": val, "EVAL": eval}
+            num = sql_table_update("4自定义数据", update_dict, {"KEY": key})
+            self.show_info(f"{num}个自定义数据更新成功")
+        else:  # 没查到, 则插入
+            val_dict = {"KEY": key, "VAL": val, "EVAL": eval}
+            num = sql_table_insert("4自定义数据", val_dict)
+            self.show_info(f"{num}个自定义数据添加成功")
+        self.show_all_tbe_custom()
 
     def on_tbe_proj_cellClicked(self, row: int, col: int):
         client_ver = self.tbe_proj.item(row, 1).text()
@@ -393,10 +410,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not ok_pressed:
             return
         accounts = "','".join(account_list)
-        if sql_table_update_ex("2用户管理", f"备注='{comment}'", f"账号 in ('{accounts}')"):
-            self.show_info("备注选中账号成功")
-        else:
-            self.show_info("备注选中账号失败")
+        num = sql_table_update_ex("2用户管理", f"备注='{comment}'", f"账号 in ('{accounts}')")
+        self.show_info(f"{num}个用户备注成功")
         self.show_all_tbe_user()
 
     def on_action_user_frozen_sel_triggered(self):
@@ -412,10 +427,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not ok_pressed:
             return
         accounts = "','".join(account_list)
-        if sql_table_update_ex("2用户管理", f"状态='冻结', 备注='{comment}'", f"账号 in ('{accounts}')"):
-            self.show_info("冻结选中账号成功")
-        else:
-            self.show_info("冻结选中账号失败")
+        num = sql_table_update_ex("2用户管理", f"状态='冻结', 备注='{comment}'", f"账号 in ('{accounts}')")
+        self.show_info(f"{num}个账号冻结成功")
         self.show_all_tbe_user()
 
     def on_action_user_unfrozen_sel_triggered(self):
@@ -434,10 +447,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             return
         accounts = "','".join(account_list)
         # 解冻时备注应加天数
-        if sql_table_update_ex("2用户管理", f"状态='离线', 备注=datediff(到期时间, 心跳时间)", f"账号 in ('{accounts}')"):
-            self.show_info("解冻选中账号成功")
-        else:
-            self.show_info("解冻选中账号失败")
+        num = sql_table_update_ex("2用户管理", f"状态='离线', 备注=datediff(到期时间, 心跳时间)", f"账号 in ('{accounts}')")
+        self.show_info(f"{num}个账号解冻成功")
         self.show_all_tbe_user()
 
     def on_action_user_charge_sel_triggered(self):
@@ -534,10 +545,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not card_list:
             return
         cards = "','".join(card_list)
-        sql_table_update_ex("3卡密管理", f"导出时间='{cur_time_format}'", f"卡号 in ('{cards}')")
+        num = sql_table_update_ex("3卡密管理", f"导出时间='{cur_time_format}'", f"卡号 in ('{cards}')")
         export_card_key = "\n".join(card_list)
         clip_copy(export_card_key)
-        self.show_info("已复制到剪切板")
+        self.show_info(f"{num}个卡号已复制到剪切板")
         self.show_all_tbe_card()
 
 
@@ -552,6 +563,10 @@ class WndServer(QMainWindow, Ui_WndServer):
     def show_all_tbe_card(self):
         query_card_list = sql_table_query("3卡密管理")
         self.refresh_tbe_card(query_card_list)
+
+    def show_all_tbe_custom(self):
+        query_custom_list = sql_table_query("4自定义数据")
+        self.refresh_tbe_custom(query_custom_list)
 
     def refresh_tbe_proj(self, query_proj_list):
         self.tbe_proj.setRowCount(len(query_proj_list))
@@ -633,6 +648,16 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_card.setItem(row, 4, export_time)
             self.tbe_card.setItem(row, 5, use_time)
         return True
+
+    def refresh_tbe_custom(self, query_custom_list: list):
+        if not query_custom_list:
+            return False
+        self.tbe_custom.setRowCount(len(query_custom_list))
+        for row, query_custom in enumerate(query_custom_list):
+            self.tbe_custom.setItem(row, 0, QTableWidgetItem(str(query_custom["ID"])))
+            self.tbe_custom.setItem(row, 1, QTableWidgetItem(query_custom["KEY"]))
+            self.tbe_custom.setItem(row, 1, QTableWidgetItem(query_custom["VAL"]))
+            self.tbe_custom.setItem(row, 1, QTableWidgetItem(query_custom["EVAL"]))
 
     def on_timer_sec_timeout(self):
         global cur_time_format

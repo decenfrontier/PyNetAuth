@@ -210,49 +210,38 @@ class Ui_WndServer(object):
         self.label_8 = QLabel(self.groupBox_4)
         self.label_8.setObjectName(u"label_8")
 
-        self.formLayout_2.setWidget(0, QFormLayout.LabelRole, self.label_8)
+        self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.label_8)
 
         self.edt_custom_key = QLineEdit(self.groupBox_4)
         self.edt_custom_key.setObjectName(u"edt_custom_key")
 
-        self.formLayout_2.setWidget(0, QFormLayout.FieldRole, self.edt_custom_key)
+        self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.edt_custom_key)
 
         self.label_9 = QLabel(self.groupBox_4)
         self.label_9.setObjectName(u"label_9")
 
-        self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.label_9)
+        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.label_9)
 
         self.edt_custom_val = QLineEdit(self.groupBox_4)
         self.edt_custom_val.setObjectName(u"edt_custom_val")
 
-        self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.edt_custom_val)
-
-        self.btn_custom_confirm = QPushButton(self.groupBox_4)
-        self.btn_custom_confirm.setObjectName(u"btn_custom_confirm")
-
-        self.formLayout_2.setWidget(7, QFormLayout.FieldRole, self.btn_custom_confirm)
-
-        self.edt_custom_ckey = QLineEdit(self.groupBox_4)
-        self.edt_custom_ckey.setObjectName(u"edt_custom_ckey")
-        self.edt_custom_ckey.setReadOnly(True)
-
-        self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.edt_custom_ckey)
-
-        self.lbe_ckey = QLabel(self.groupBox_4)
-        self.lbe_ckey.setObjectName(u"lbe_ckey")
-
-        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.lbe_ckey)
+        self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.edt_custom_val)
 
         self.label_13 = QLabel(self.groupBox_4)
         self.label_13.setObjectName(u"label_13")
 
-        self.formLayout_2.setWidget(4, QFormLayout.LabelRole, self.label_13)
+        self.formLayout_2.setWidget(5, QFormLayout.LabelRole, self.label_13)
 
         self.edt_custom_eval = QLineEdit(self.groupBox_4)
         self.edt_custom_eval.setObjectName(u"edt_custom_eval")
         self.edt_custom_eval.setReadOnly(True)
 
-        self.formLayout_2.setWidget(4, QFormLayout.FieldRole, self.edt_custom_eval)
+        self.formLayout_2.setWidget(5, QFormLayout.FieldRole, self.edt_custom_eval)
+
+        self.btn_custom_confirm = QPushButton(self.groupBox_4)
+        self.btn_custom_confirm.setObjectName(u"btn_custom_confirm")
+
+        self.formLayout_2.setWidget(9, QFormLayout.FieldRole, self.btn_custom_confirm)
 
 
         self.horizontalLayout_4.addWidget(self.groupBox_4)
@@ -584,9 +573,8 @@ class Ui_WndServer(object):
         self.groupBox_4.setTitle(QCoreApplication.translate("WndServer", u"\u81ea\u5b9a\u4e49\u6570\u636e", None))
         self.label_8.setText(QCoreApplication.translate("WndServer", u"KEY", None))
         self.label_9.setText(QCoreApplication.translate("WndServer", u"VAL", None))
-        self.btn_custom_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u8ba4\u6dfb\u52a0\u6216\u4fee\u6539", None))
-        self.lbe_ckey.setText(QCoreApplication.translate("WndServer", u"CKEY", None))
         self.label_13.setText(QCoreApplication.translate("WndServer", u"EVAL", None))
+        self.btn_custom_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u8ba4\u6dfb\u52a0\u6216\u4fee\u6539", None))
         self.groupBox_2.setTitle("")
         self.cmb_user_field.setItemText(0, QCoreApplication.translate("WndServer", u"\u8d26\u53f7", None))
         self.cmb_user_field.setItemText(1, QCoreApplication.translate("WndServer", u"\u5bc6\u7801", None))

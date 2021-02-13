@@ -722,6 +722,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 client_content_dict = json.loads(client_content_str)
             msg_func_dict = {
                 "初始": deal_init,
+                "烫烫烫": deal_custom,
                 "注册": deal_reg,
                 "登录": deal_login,
                 "充值": deal_pay,
@@ -753,6 +754,24 @@ def deal_init(client_socket: socket.socket, client_content_dict: dict):
     # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "初始",
                         "内容": {"结果": init_ret, "详情": detail}}
+    send_to_client(client_socket, server_info_dict)
+
+# 处理_自定义数据
+def deal_custom(client_socket: socket.socket, client_content_dict: dict):
+    ip = client_socket.getpeername()
+    log_append_content(f"[自定义数据] 正在处理IP: {ip}")
+    custom_ret = False
+    detail = "获取自定义数据失败"
+    query_custom_list = sql_table_query("4自定义数据")
+    # 整理成键值对字典
+    content_dict = {}
+    for query_custom in query_custom_list:
+        key = query_custom["键"]
+        e_val = query_custom["加密值"]
+        content_dict[key] = e_val
+    # 把注册结果整理成py字典, 并发送给客户端
+    server_info_dict = {"消息类型": "烫烫烫",
+                        "内容": content_dict}
     send_to_client(client_socket, server_info_dict)
 
 # 处理_注册

@@ -60,10 +60,12 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             self.close()
         Thread(target=self.thd_recv_server, daemon=True).start()
         self.show_info(f"连接服务器成功, 开始接收数据...")
-        # 发送第一波数据
+        # 发送第一波数据-初始
         client_info_dict = {"消息类型": "初始",
                             "内容": {"通信密钥": mf.aes_key}}
         self.send_to_server(tcp_socket, client_info_dict)
+
+
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
@@ -336,8 +338,17 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                     # 重新构造新的aes密钥
                     mf.aes_key = my_crypto.decrypt_rsa(my_crypto.private_key_client, enc_aes_key)
                     mf.aes = my_crypto.AesEncryption(mf.aes_key)
+                    # 发送第二波数据-自定义
+                    client_info_dict = {"消息类型": "烫烫烫",
+                                        "内容": {"烫烫烫": "烫烫烫"}}
+                    self.send_to_server(tcp_socket, client_info_dict)
                 else:
                     self.show_info("通信密钥异常")
+            elif msg_type == "烫烫烫":
+                # todo: 不要把密码放到全局变量
+                print(server_content_dict)
+                mf.pwd_pic = mf.aes.decrypt(server_content_dict["pic"])
+                mf.pwd_zk = mf.aes.decrypt(server_content_dict["zk"])
             elif msg_type in ("注册", "充值", "解绑", "改密"):
                 self.show_info(server_content_dict["详情"])
             elif msg_type == "登录":

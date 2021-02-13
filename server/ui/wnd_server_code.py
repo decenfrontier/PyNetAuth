@@ -228,9 +228,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.sub_menu_user_state.addActions([self.sub_action_offline,
                                              self.sub_action_frozen,
                                              self.sub_action_online])
-        self.sub_action_offline.triggered.connect(self.on_set_user_state)
-        self.sub_action_frozen.triggered.connect(self.on_set_user_state)
-        self.sub_action_online.triggered.connect(self.on_set_user_state)
+        self.sub_action_offline.triggered.connect(self.on_action_user_state_triggered)
+        self.sub_action_frozen.triggered.connect(self.on_action_user_state_triggered)
+        self.sub_action_online.triggered.connect(self.on_action_user_state_triggered)
 
         # 卡密管理表
         self.tbe_card.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -258,6 +258,20 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_card.customContextMenuRequested.connect(
             lambda : self.menu_tbe_card.exec_(QCursor.pos())
         )
+
+        # 自定义数据表
+        self.tbe_custom.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.menu_tbe_custom = QMenu()
+        self.action_custom_show_all = QAction("显示全部自定义数据")
+        self.action_custom_del_sel = QAction("删除选中自定义数据")
+        self.menu_tbe_custom.addActions([self.action_custom_show_all,
+                                         self.action_custom_del_sel])
+        self.action_custom_show_all.triggered.connect(self.show_all_tbe_custom)
+        self.action_custom_del_sel.triggered.connect(self.on_action_custom_del_sel_triggered)
+        self.tbe_custom.customContextMenuRequested.connect(
+            lambda : self.menu_tbe_custom.exec_(QCursor.pos())
+        )
+
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
@@ -472,7 +486,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info(f"{num}个用户续费{gift_day}天成功")
         self.show_all_tbe_user()
 
-    def on_set_user_state(self):
+    def on_action_user_state_triggered(self):
         state = self.sender().text()
         item_list = self.tbe_user.selectedItems()
         account_set = {self.tbe_user.item(it.row(), 1).text() for it in item_list}
@@ -534,6 +548,15 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info(f"{num}个卡号已复制到剪切板")
         self.show_all_tbe_card()
 
+    def on_action_custom_del_sel_triggered(self):
+        item_list = self.tbe_custom.selectedItems()
+        key_set = {self.tbe_custom.item(it.row(), 1).text() for it in item_list}
+        if not key_set:
+            return
+        keys = "','".join(key_set)
+        num = sql_table_del_ex("4自定义数据", f"键 in ('{keys}')")
+        self.show_info(f"{num}个自定义数据删除成功")
+        self.show_all_tbe_custom()
 
     def show_all_tbe_proj(self):
         query_proj_list = sql_table_query("1项目管理")

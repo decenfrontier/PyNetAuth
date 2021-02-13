@@ -77,14 +77,6 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         self.show_info("与服务器断开连接...")
         self.close()
 
-    # 线程_获取服务端自定义数据(防山寨)
-    def thd_get_server_custom_data(self):
-        # RSA获取 通信密钥,
-        #
-        # 对称加密算法获取 字库密码, 图片密码, 大漠破解地址, 标志位基址
-
-        ...
-
     # 发送数据给服务端
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
         # 内容 转 json字符串
@@ -104,10 +96,11 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
     # 接收来自服务端的数据
     def recv_from_server(self, tcp_socket: socket.socket):
         tcp_socket.settimeout(5)  # 设置为非阻塞接收, 只等5秒
+        recv_bytes = ""
         try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
             recv_bytes = tcp_socket.recv(4096)
         except:
-            recv_bytes = ""
+            ...
         tcp_socket.settimeout(None)  # 重新设置为阻塞模式
         if not recv_bytes:  # 若客户端退出, 或者5秒内服务端未响应, 会收到一个空str
             self.error_count += 1

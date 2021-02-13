@@ -16,10 +16,8 @@ from client.ui.wnd_client_login import Ui_WndClientLogin
 from wnd_client_main_code import WndClientMain
 from client import mf, my_crypto
 
-tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 machine_code = ""
 login_ip = ""
-lock = Lock()
 
 # 线程_获取全局变量
 def thd_get_global_var():
@@ -40,12 +38,11 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.init_net_auth()
         self.init_all_controls()
         self.init_all_sig_slot()
-        Thread(target=self.thd_close_login, daemon=True).start()
         thd1.join(1)
         self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):
-        tcp_socket.close()
+        print("登录窗口即将关闭")
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -54,18 +51,11 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
     # 初始化网络验证
     def init_net_auth(self):
         self.show_info("正在连接服务器...")
-        err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
-        if err_no != 0:
-            QMessageBox.critical(self, "错误", f"连接服务器失败, 错误码: {err_no}")
+        # 发送客户端第一波数据-初始
+        if not self.send_recv_init():
             self.close()
-        Thread(target=self.thd_recv_server, daemon=True).start()
-        self.show_info(f"连接服务器成功, 开始接收数据...")
-        # 发送第一波数据-初始
-        client_info_dict = {"消息类型": "初始",
-                            "内容": {"通信密钥": mf.aes_key}}
-        self.send_to_server(tcp_socket, client_info_dict)
-
-
+        print("111")
+        print("222")
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
@@ -81,21 +71,20 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.move(event.globalPos() + self.start_point)
 
     def paintEvent(self, event: QPaintEvent):
-        with lock:
-            # 背景
-            pix_map = QPixmap(":/back1.jpg").scaled(self.size())
-            painter = QPainter(self)
-            painter.setRenderHint(QPainter.Antialiasing)
-            painter.drawPixmap(self.rect(), pix_map)
-            # 圆角
-            bmp = QBitmap(self.size())
-            bmp.fill()
-            painter = QPainter(bmp)
-            painter.setRenderHint(QPainter.Antialiasing)
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(Qt.black)
-            painter.drawRoundedRect(bmp.rect(), 8, 8)
-            self.setMask(bmp)
+        # 背景
+        pix_map = QPixmap(":/back1.jpg").scaled(self.size())
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.drawPixmap(self.rect(), pix_map)
+        # 圆角
+        bmp = QBitmap(self.size())
+        bmp.fill()
+        painter = QPainter(bmp)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(Qt.black)
+        painter.drawRoundedRect(bmp.rect(), 8, 8)
+        self.setMask(bmp)
 
     def init_status_bar(self):
         # 添加一个statusbar
@@ -155,10 +144,29 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.btn_unbind.clicked.connect(self.on_btn_unbind_clicked)
         self.btn_modify.clicked.connect(self.on_btn_modify_clicked)
 
-    def thd_close_login(self):
-        time.sleep(60*3)  # 3分钟
-        self.show_info("长时间未操作, 已自动关闭")
-        self.close()
+    def send_recv_init(self):
+        client_info_dict = {"消息类型": "初始",
+                            "内容": {"通信密钥": mf.aes_key}}
+        tcp_socket = self.connect_server_tcp()
+        self.send_to_server(tcp_socket, client_info_dict)
+        # 处理服务端响应消息
+        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        if not msg_type:
+            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试, 错误码: 1")
+            return False
+        if msg_type == "初始":
+            if server_content_dict["结果"]:
+                enc_aes_key = server_content_dict["详情"]
+                # 重新构造新的aes密钥
+                mf.aes_key = my_crypto.decrypt_rsa(my_crypto.private_key_client, enc_aes_key)
+                mf.aes = my_crypto.AesEncryption(mf.aes_key)
+                return True
+            else:
+                detail = server_content_dict["详情"]
+                QMessageBox.information(self, "错误", detail)
+        return False
+
+
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
@@ -198,7 +206,18 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                 "操作系统": login_system,
             }
         }
+        # 发送客户端消息
+        tcp_socket = self.connect_server_tcp()
         self.send_to_server(tcp_socket, client_info_dict)
+        # 处理服务端响应消息
+        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        if msg_type == "登录":
+            self.show_info(server_content_dict["详情"])
+            if server_content_dict["结果"]:
+                mf.user_account = server_content_dict["账号"]
+                print(mf.user_account)
+                tcp_socket.close()  # 先关闭套接字
+                self.login.emit()  # 登录界面接受
 
     def on_btn_reg_clicked(self):
         # 判断注册信息是否符合要求
@@ -223,7 +242,13 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                 "QQ": reg_qq,
             }
         }
+        # 发送客户端消息
+        tcp_socket = self.connect_server_tcp()
         self.send_to_server(tcp_socket, client_info_dict)
+        # 处理服务端响应消息
+        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        if msg_type == "注册":
+            self.show_info(server_content_dict["详情"])
 
     def on_btn_exit_clicked(self):
         self.close()
@@ -243,8 +268,15 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         }
         ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
                                       QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
-        if ret == QMessageBox.Yes:
-            self.send_to_server(tcp_socket, client_info_dict)
+        if ret != QMessageBox.Yes:
+            return
+        # 发送客户端消息
+        tcp_socket = self.connect_server_tcp()
+        self.send_to_server(tcp_socket, client_info_dict)
+        # 处理服务端响应消息
+        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        if msg_type == "充值":
+            self.show_info(server_content_dict["详情"])
 
     def on_btn_unbind_clicked(self):
         account = self.edt_login_account.text()
@@ -265,7 +297,13 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                 "密码": pwd,
             }
         }
+        # 发送客户端消息
+        tcp_socket = self.connect_server_tcp()
         self.send_to_server(tcp_socket, client_info_dict)
+        # 处理服务端响应消息
+        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        if msg_type == "解绑":
+            self.show_info(server_content_dict["详情"])
 
     def on_btn_modify_clicked(self):
         account = self.edt_modify_account.text()
@@ -288,7 +326,22 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                 "密码": new_pwd,
             }
         }
+        # 发送客户端消息
+        tcp_socket = self.connect_server_tcp()
         self.send_to_server(tcp_socket, client_info_dict)
+        # 处理服务端响应消息
+        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        if msg_type == "改密":
+            self.show_info(server_content_dict["详情"])
+
+    # 连接服务端tcp
+    def connect_server_tcp(self):
+        tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
+        if err_no != 0:
+            self.show_info(self, f"连接服务器失败, 错误码: {err_no}")
+            self.close()
+        return tcp_socket
 
     # 发送数据给服务端
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
@@ -308,82 +361,35 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         except Exception as e:
             mf.log_info(f"客户端数据, 发送失败: {e}")
 
-    # 线程_接收服务端消息
-    def thd_recv_server(self):
-        while True:
-            mf.log_info("等待服务端发出消息中...")
-            try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
-                recv_bytes = tcp_socket.recv(4096)
-            except:
-                recv_bytes = ""
-            if not recv_bytes:  # 若客户端退出,会收到一个空str
-                break
-            # base85解码
-            json_str = base64.b85decode(recv_bytes).decode()
-            print(f"收到服务端的消息: {json_str}")
-            # json字符串 转 py字典
-            server_info_dict = json.loads(json_str)
-            msg_type = server_info_dict["消息类型"]
-            server_content_str = server_info_dict["内容"]
-            # 把内容json字符串 转 py字典
-            if msg_type == "初始":  # 若为初始类型的消息
-                # json字符串 转 py字典
-                server_content_dict = json.loads(server_content_str)
-            else:  # 若不为初始类型的消息
-                # 先aes解密, 获取json字符串
-                server_content_str = mf.aes.decrypt(server_content_str)
-                # json字符串 转 py字典
-                server_content_dict = json.loads(server_content_str)
-            # 处理消息
-            if msg_type == "初始":
-                if server_content_dict["结果"]:
-                    enc_aes_key = server_content_dict["详情"]
-                    # 重新构造新的aes密钥
-                    mf.aes_key = my_crypto.decrypt_rsa(my_crypto.private_key_client, enc_aes_key)
-                    mf.aes = my_crypto.AesEncryption(mf.aes_key)
-                    # 发送第二波数据-自定义
-                    client_info_dict = {"消息类型": "烫烫烫",
-                                        "内容": {"烫烫烫": "烫烫烫"}}
-                    self.send_to_server(tcp_socket, client_info_dict)
-                    # 发送第三波数据-项目
-                    client_info_dict = {"消息类型": "锟斤拷",
-                                        "内容": {"版本号": mf.client_ver}}
-                    self.send_to_server(tcp_socket, client_info_dict)
-                else:
-                    # todo: 获取服务端detail
-                    self.show_info("通信密钥异常")
-            elif msg_type == "烫烫烫":  # 自定义数据
-                # todo: 不要把密码放到全局变量
-                print(server_content_dict)
-                mf.pwd_pic = mf.aes.decrypt(server_content_dict["pic"])
-                mf.pwd_zk = mf.aes.decrypt(server_content_dict["zk"])
-                print(mf.pwd_pic, mf.pwd_zk)
-            elif msg_type == "锟斤拷":  # 项目
-                print(server_content_dict)
-                if server_content_dict["结果"]:
-                    detail_dict = server_content_dict["详情"]
-                    mf.notice = detail_dict["客户端公告"]
-                    mf.url_update = detail_dict["更新网址"]
-                    mf.url_card = detail_dict["发卡网址"]
-                    mf.allow_login = detail_dict["允许登录"]
-                    mf.allow_reg = detail_dict["允许注册"]
-                    mf.allow_unbind = detail_dict["允许解绑"]
-                else:
-                    detail = server_content_dict["详情"]
-                    self.show_info(detail)
-                print(mf.notice, mf.url_update, mf.url_card, mf.allow_login, mf.allow_reg, mf.allow_unbind)
-            elif msg_type in ("注册", "充值", "解绑", "改密"):
-                self.show_info(server_content_dict["详情"])
-            elif msg_type == "登录":
-                self.show_info(server_content_dict["详情"])
-                if server_content_dict["结果"]:
-                    mf.user_account = server_content_dict["账号"]
-                    print(mf.user_account)
-                    tcp_socket.close()  # 先关闭套接字
-                    with lock:
-                        self.login.emit()
-                        return
-        self.show_info("与服务器断开连接...")
+    # 从服务端接收数据
+    def recv_from_server(self, tcp_socket: socket.socket):
+        mf.log_info("等待服务端发出消息中...")
+        tcp_socket.settimeout(5)  # 设置为非阻塞接收, 只等5秒
+        recv_bytes = ""
+        try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
+            recv_bytes = tcp_socket.recv(4096)
+        except:
+            ...
+        tcp_socket.settimeout(None)  # 重新设置为阻塞模式
+        if not recv_bytes:  # 若客户端退出,会收到一个空str
+            self.show_info("服务器繁忙, 请稍后再试")
+            return "", {}
+        # base85解码
+        json_str = base64.b85decode(recv_bytes).decode()
+        print(f"收到服务端的消息: {json_str}")
+        # json字符串 转 py字典
+        server_info_dict = json.loads(json_str)
+        msg_type = server_info_dict["消息类型"]
+        server_content_str = server_info_dict["内容"]
+        # 把内容json字符串 转 py字典
+        if msg_type != "初始":  # 若不为初始类型的消息, 要先aes解密
+            # 先aes解密, 获取json字符串
+            server_content_str = mf.aes.decrypt(server_content_str)
+        # json字符串 转 py字典
+        server_content_dict = json.loads(server_content_str)
+        return msg_type, server_content_dict
+
+
 
 
 if __name__ == '__main__':

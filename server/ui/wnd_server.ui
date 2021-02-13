@@ -284,17 +284,17 @@
             </column>
             <column>
              <property name="text">
-              <string>KEY</string>
+              <string>键</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>VAL</string>
+              <string>值</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>EVAL</string>
+              <string>加密值</string>
              </property>
             </column>
            </widget>
@@ -308,7 +308,7 @@
              <item row="1" column="0">
               <widget class="QLabel" name="label_8">
                <property name="text">
-                <string>KEY</string>
+                <string>键</string>
                </property>
               </widget>
              </item>
@@ -318,7 +318,7 @@
              <item row="2" column="0">
               <widget class="QLabel" name="label_9">
                <property name="text">
-                <string>VAL</string>
+                <string>值</string>
                </property>
               </widget>
              </item>
@@ -328,7 +328,7 @@
              <item row="5" column="0">
               <widget class="QLabel" name="label_13">
                <property name="text">
-                <string>EVAL</string>
+                <string>加密值 </string>
                </property>
               </widget>
              </item>

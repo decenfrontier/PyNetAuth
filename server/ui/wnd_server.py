@@ -565,15 +565,15 @@ class Ui_WndServer(object):
         ___qtablewidgetitem12 = self.tbe_custom.horizontalHeaderItem(0)
         ___qtablewidgetitem12.setText(QCoreApplication.translate("WndServer", u"ID", None));
         ___qtablewidgetitem13 = self.tbe_custom.horizontalHeaderItem(1)
-        ___qtablewidgetitem13.setText(QCoreApplication.translate("WndServer", u"KEY", None));
+        ___qtablewidgetitem13.setText(QCoreApplication.translate("WndServer", u"\u952e", None));
         ___qtablewidgetitem14 = self.tbe_custom.horizontalHeaderItem(2)
-        ___qtablewidgetitem14.setText(QCoreApplication.translate("WndServer", u"VAL", None));
+        ___qtablewidgetitem14.setText(QCoreApplication.translate("WndServer", u"\u503c", None));
         ___qtablewidgetitem15 = self.tbe_custom.horizontalHeaderItem(3)
-        ___qtablewidgetitem15.setText(QCoreApplication.translate("WndServer", u"EVAL", None));
+        ___qtablewidgetitem15.setText(QCoreApplication.translate("WndServer", u"\u52a0\u5bc6\u503c", None));
         self.groupBox_4.setTitle(QCoreApplication.translate("WndServer", u"\u81ea\u5b9a\u4e49\u6570\u636e", None))
-        self.label_8.setText(QCoreApplication.translate("WndServer", u"KEY", None))
-        self.label_9.setText(QCoreApplication.translate("WndServer", u"VAL", None))
-        self.label_13.setText(QCoreApplication.translate("WndServer", u"EVAL", None))
+        self.label_8.setText(QCoreApplication.translate("WndServer", u"\u952e", None))
+        self.label_9.setText(QCoreApplication.translate("WndServer", u"\u503c", None))
+        self.label_13.setText(QCoreApplication.translate("WndServer", u"\u52a0\u5bc6\u503c ", None))
         self.btn_custom_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u8ba4\u6dfb\u52a0\u6216\u4fee\u6539", None))
         self.groupBox_2.setTitle("")
         self.cmb_user_field.setItemText(0, QCoreApplication.translate("WndServer", u"\u8d26\u53f7", None))

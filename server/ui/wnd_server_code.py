@@ -164,6 +164,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.show_all_tbe_proj()
             self.show_all_tbe_user()
             self.show_all_tbe_card()
+            self.show_all_tbe_custom()
         def init_tool_bar():
             self.tool_bar.addAction(QIcon(":/proj.png"), "项目管理")
             self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
@@ -349,14 +350,15 @@ class WndServer(QMainWindow, Ui_WndServer):
         key = self.edt_custom_key.text()
         val = self.edt_custom_val.text()
         eval = aes.encrypt(val)
-        query_custom_list = sql_table_query("4自定义数据", {"KEY": key})
+        self.edt_custom_eval.setText(eval)
+        query_custom_list = sql_table_query("4自定义数据", {"键": key})
         if query_custom_list:  # 查到, 则更新
             query_custom = query_custom_list[0]
-            update_dict = {"VAL": val, "EVAL": eval}
-            num = sql_table_update("4自定义数据", update_dict, {"KEY": key})
+            update_dict = {"值": val, "加密值": eval}
+            num = sql_table_update("4自定义数据", update_dict, {"键": key})
             self.show_info(f"{num}个自定义数据更新成功")
         else:  # 没查到, 则插入
-            val_dict = {"KEY": key, "VAL": val, "EVAL": eval}
+            val_dict = {"键": key, "值": val, "加密值": eval}
             num = sql_table_insert("4自定义数据", val_dict)
             self.show_info(f"{num}个自定义数据添加成功")
         self.show_all_tbe_custom()
@@ -630,9 +632,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_custom.setRowCount(len(query_custom_list))
         for row, query_custom in enumerate(query_custom_list):
             self.tbe_custom.setItem(row, 0, QTableWidgetItem(str(query_custom["ID"])))
-            self.tbe_custom.setItem(row, 1, QTableWidgetItem(query_custom["KEY"]))
-            self.tbe_custom.setItem(row, 1, QTableWidgetItem(query_custom["VAL"]))
-            self.tbe_custom.setItem(row, 1, QTableWidgetItem(query_custom["EVAL"]))
+            self.tbe_custom.setItem(row, 1, QTableWidgetItem(query_custom["键"]))
+            self.tbe_custom.setItem(row, 2, QTableWidgetItem(query_custom["值"]))
+            self.tbe_custom.setItem(row, 3, QTableWidgetItem(query_custom["加密值"]))
 
     def on_timer_sec_timeout(self):
         global cur_time_format

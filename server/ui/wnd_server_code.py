@@ -966,10 +966,14 @@ def deal_unbind(client_socket: socket.socket, client_content_dict: dict):
 
 # 发送数据给客户端
 def send_to_client(client_socket: socket.socket, server_info_dict: dict):
-    # py字典 转 json字符串
+    # 内容 转 json字符串
+    server_info_dict["内容"] = json.dumps(server_info_dict["内容"], ensure_ascii=False)
+    # 根据消息类型决定是否对内容aes加密
+    if server_info_dict["消息类型"] != "初始":  # 若不为初始类型的消息
+        # 对json内容进行aes加密
+        server_info_dict["内容"] = aes.encrypt(server_info_dict["内容"])
+    # 把整个服务端信息字典 转 json字符串
     json_str = json.dumps(server_info_dict, ensure_ascii=False)
-    # todo: 根据消息类型决定是否对内容aes加密
-
     # json字符串 base85编码
     send_bytes = base64.b85encode(json_str.encode())
     try:

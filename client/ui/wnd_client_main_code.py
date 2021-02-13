@@ -114,12 +114,15 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         print(f"收到服务端的消息: {json_str}")
         # json字符串 转 py字典
         server_info_dict = json.loads(json_str)
-        msg_type = server_info_dict.get("消息类型")
-        server_content_dict = server_info_dict["内容"]
-        # todo: 根据消息内容决定是否解密
+        msg_type = server_info_dict["消息类型"]
+        server_content_str = server_info_dict["内容"]
         if msg_type != "心跳":
             self.error_count += 1
             return
+        # 先aes解密, 获取json字符串
+        server_content_str = mf.aes.decrypt(server_content_str)
+        # json字符串 转 py字典
+        server_content_dict = json.loads(server_content_str)
         heart_ret = server_content_dict["结果"]
         if heart_ret == "正常":
             self.error_count = 0

@@ -313,14 +313,25 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             print(f"收到服务端的消息: {json_str}")
             # json字符串 转 py字典
             server_info_dict = json.loads(json_str)
-            # 客户端消息处理
             msg_type = server_info_dict["消息类型"]
-            server_content_dict = server_info_dict["内容"]
-            # todo: 根据消息内容决定是否解密
+            server_content_str = server_info_dict["内容"]
+            # 把内容json字符串 转 py字典
+            if msg_type == "初始":  # json字符串 转 py字典
+                server_content_dict = json.loads(server_content_str)
+            else:  # 若不为初始类型的消息
+                # 先aes解密, 获取json字符串
+                server_content_str = mf.aes.decrypt(server_content_str)
+                # json字符串 转 py字典
+                server_content_dict = json.loads(server_content_str)
+            # 处理消息
             if msg_type == "初始":
-                enc_aes_key = server_content_dict["详情"]
-                mf.aes_key = my_crypto.decrypt_rsa(my_crypto.private_key_client, enc_aes_key)
-                mf.aes = my_crypto.AesEncryption(mf.aes_key)  # 重新构造新的aes密钥
+                if server_content_dict["结果"]:
+                    enc_aes_key = server_content_dict["详情"]
+                    # 重新构造新的aes密钥
+                    mf.aes_key = my_crypto.decrypt_rsa(my_crypto.private_key_client, enc_aes_key)
+                    mf.aes = my_crypto.AesEncryption(mf.aes_key)
+                else:
+                    self.show_info("通信密钥异常")
             elif msg_type in ("注册", "充值", "解绑", "改密"):
                 self.show_info(server_content_dict["详情"])
             elif msg_type == "登录":

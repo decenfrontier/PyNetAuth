@@ -34,15 +34,15 @@ class AesEncryption():
         return text.encode()
 
     # 对明文进行加密
-    def encrypt(self, plain_str: str) -> bytes:
+    def encrypt(self, plain_str: str) -> str:
         cipher_obj = AES.new(self.key, self.mode, self.iv)
-        encrypt_bytes = b2a_hex(cipher_obj.encrypt(self.add_to_16(plain_str)))
-        return encrypt_bytes
+        encrypt_str = b2a_hex(cipher_obj.encrypt(self.add_to_16(plain_str))).decode()
+        return encrypt_str
 
     # 对密文进行解密
-    def decrypt(self, encrypt_bytes: bytes) -> str:
+    def decrypt(self, encrypt_str: str) -> str:
         cipher_obj = AES.new(self.key, self.mode, self.iv)
-        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_bytes)).decode().rstrip("\0")
+        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_str.encode())).decode().rstrip("\0")
         return decrypt_str
 
 # ---------------------------------------- RSA非对称加密 ----------------------------------------

@@ -181,15 +181,16 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 项目管理表
         self.tbe_proj.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_proj = QMenu()
-        self.action_proj_show_all = QAction("显示全部项目信息")
-        self.action_proj_del = QAction("删除此记录")
+        self.action_proj_show_all = QAction("显示全部版本信息")
+        self.action_proj_del_sel = QAction("删除选中版本")
         self.menu_tbe_proj.addAction(self.action_proj_show_all)
-        self.menu_tbe_proj.addAction(self.action_proj_del)
-        self.action_proj_del.triggered.connect(self.on_action_proj_del_record_triggered)
+        self.menu_tbe_proj.addAction(self.action_proj_del_sel)
         self.action_proj_show_all.triggered.connect(self.show_all_tbe_proj)
+        self.action_proj_del_sel.triggered.connect(self.on_action_proj_del_sel_triggered)
         self.tbe_proj.customContextMenuRequested.connect(
             lambda : self.menu_tbe_proj.exec_(QCursor.pos())
         )
+
         # 用户管理表
         self.tbe_user.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_user = QMenu()
@@ -383,17 +384,18 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.chk_proj_reg.setChecked(int(allow_reg))
         self.chk_proj_unbind.setChecked(int(allow_unbind))
 
-    def on_action_proj_del_record_triggered(self):
-        row = self.tbe_proj.currentRow()  # 若不在行内点, 则默认返回0
-        client_ver = self.tbe_proj.item(row, 1).text()
-        ret = QMessageBox.information(self, "提示", f"是否确定删除以下客户端版本: \n{client_ver}",
-                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+    def on_action_proj_del_sel_triggered(self):
+        item_list = self.tbe_proj.selectedItems()
+        ver_set = {self.tbe_proj.item(it.row(), 1).text() for it in item_list}
+        if not ver_set:
+            self.show_info("未选中任何项")
+            return
+        ret = QMessageBox.information(self, "警告", "是否确认删除选中版本?", QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
         if ret != QMessageBox.Yes:
             return
-        if sql_table_del("1项目管理", {"客户端版本": client_ver}):
-            self.show_info(f"删除项目表记录: {client_ver}成功")
-        else:
-            self.show_info(f"删除项目表记录: {client_ver}失败")
+        vers = "','".join(ver_set)
+        num = sql_table_del_ex("1项目管理", f"客户端版本 in ('{vers}')")
+        self.show_info(f"{num}个版本删除成功")
         self.show_all_tbe_proj()
 
     def on_action_user_comment_sel_triggered(self):

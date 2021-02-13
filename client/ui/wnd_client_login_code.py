@@ -61,7 +61,8 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         Thread(target=self.thd_recv_server, daemon=True).start()
         self.show_info(f"连接服务器成功, 开始接收数据...")
         # 发送第一波数据
-        client_info_dict = {"消息类型": "初始", "通信密钥": mf.aes_key}
+        client_info_dict = {"消息类型": "初始",
+                            "内容": {"通信密钥": mf.aes_key}}
         self.send_to_server(tcp_socket, client_info_dict)
 
     def init_wnd(self):
@@ -183,12 +184,14 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         # 把客户端信息整理成字典, 发送给服务器
         client_info_dict = {
             "消息类型": "登录",
-            "账号": login_account,
-            "密码": login_pwd,
-            "机器码": machine_code,
-            "上次登录时间": login_time,
-            "上次登录IP": login_ip,
-            "操作系统": login_system,
+            "内容": {
+                "账号": login_account,
+                "密码": login_pwd,
+                "机器码": machine_code,
+                "上次登录时间": login_time,
+                "上次登录IP": login_ip,
+                "操作系统": login_system,
+            }
         }
         self.send_to_server(tcp_socket, client_info_dict)
 
@@ -209,9 +212,11 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         reg_pwd = my_crypto.get_encrypted_str(reg_pwd.encode())
         client_info_dict = {
             "消息类型": "注册",
-            "账号": reg_account,
-            "密码": reg_pwd,
-            "QQ": reg_qq,
+            "内容": {
+                "账号": reg_account,
+                "密码": reg_pwd,
+                "QQ": reg_qq,
+            }
         }
         self.send_to_server(tcp_socket, client_info_dict)
 
@@ -226,8 +231,10 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             return
         client_info_dict = {
             "消息类型": "充值",
-            "账号": account,
-            "卡号": card_key,
+            "内容": {
+                "账号": account,
+                "卡号": card_key,
+            }
         }
         ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
                                       QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
@@ -248,8 +255,10 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         # 允许异地解绑. 不用发机器码
         client_info_dict = {
             "消息类型": "解绑",
-            "账号": account,
-            "密码": pwd,
+            "内容": {
+                "账号": account,
+                "密码": pwd,
+            }
         }
         self.send_to_server(tcp_socket, client_info_dict)
 
@@ -268,9 +277,11 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         new_pwd = my_crypto.get_encrypted_str(new_pwd.encode())
         client_info_dict = {
             "消息类型": "改密",
-            "账号": account,
-            "QQ": qq,
-            "密码": new_pwd,
+            "内容": {
+                "账号": account,
+                "QQ": qq,
+                "密码": new_pwd,
+            }
         }
         self.send_to_server(tcp_socket, client_info_dict)
 
@@ -278,6 +289,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
         # py字典 转 json字符串
         json_str = json.dumps(client_info_dict, ensure_ascii=False)
+        # todo: 根据消息内容决定是否对内容aes加密
         # json字符串 base85编码
         send_bytes = base64.b85encode(json_str.encode())
         try:
@@ -304,6 +316,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             # 客户端消息处理
             msg_type = server_info_dict["消息类型"]
             server_content_dict = server_info_dict["内容"]
+            # todo: 根据消息内容决定是否解密
             if msg_type == "初始":
                 enc_aes_key = server_content_dict["详情"]
                 mf.aes_key = my_crypto.decrypt_rsa(my_crypto.private_key_client, enc_aes_key)

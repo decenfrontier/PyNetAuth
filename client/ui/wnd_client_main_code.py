@@ -24,8 +24,10 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         if err_no == 0:
             client_info_dict = {
                 "消息类型": "离线",
-                "账号": mf.user_account,
-                "备注": mf.client_comment,
+                "内容": {
+                    "账号": mf.user_account,
+                    "备注": mf.client_comment,
+                }
             }
             self.send_to_server(tcp_socket, client_info_dict)
 
@@ -56,8 +58,10 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
             if err_no == 0:
                 client_info_dict = {
                     "消息类型": "心跳",
-                    "账号": mf.user_account,
-                    "备注": mf.client_comment,
+                    "内容": {
+                        "账号": mf.user_account,
+                        "备注": mf.client_comment,
+                    }
                 }
                 self.send_to_server(tcp_socket, client_info_dict)
                 self.recv_from_server(tcp_socket)
@@ -85,6 +89,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
         # py字典 转 json字符串
         json_str = json.dumps(client_info_dict, ensure_ascii=False)
+        # todo: 根据消息内容决定是否对内容aes加密
         # json字符串 base85编码
         send_bytes = base64.b85encode(json_str.encode())
         try:
@@ -110,9 +115,11 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         # json字符串 转 py字典
         server_info_dict = json.loads(json_str)
         msg_type = server_info_dict.get("消息类型")
-        if msg_type != "心跳":
-            return
         server_content_dict = server_info_dict["内容"]
+        # todo: 根据消息内容决定是否解密
+        if msg_type != "心跳":
+            self.error_count += 1
+            return
         heart_ret = server_content_dict["结果"]
         if heart_ret == "正常":
             self.error_count = 0

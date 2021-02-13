@@ -142,7 +142,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setColumnWidth(last_login_time, 130)
             self.tbe_user.setColumnWidth(machine_code, 180)
             self.tbe_user.setColumnWidth(reg_time, 130)
-            self.tbe_user.setColumnWidth(opration_system, 130)
+            self.tbe_user.setColumnWidth(opration_system, 150)
             # 卡密管理表
             id, card_key, type, gen_time, export_time, use_time = [i for i in range(6)]
             self.tbe_card.setColumnWidth(id, 40)
@@ -704,7 +704,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             log_append_content(f"收到客户端{client_socket.getpeername()}的消息: {json_str}")
             # 服务端消息处理
             msg_type = client_info_dict["消息类型"]
-            client_info_dict.pop("消息类型")
+            client_content_dict = client_info_dict["内容"]
+            # todo: aes解密内容
             msg_func_dict = {
                 "初始": deal_init,
                 "注册": deal_reg,
@@ -719,18 +720,18 @@ class WndServer(QMainWindow, Ui_WndServer):
             if func is None:
                 log_append_content(f"消息类型不存在: {msg_type}")
             else:
-                func(client_socket, client_info_dict)
+                func(client_socket, client_content_dict)
         log_append_content(f"客户端{client_addr}已断开连接, 服务结束")
         client_socket.close()
 
 # 处理_初始
-def deal_init(client_socket: socket.socket, client_info_dict: dict):
+def deal_init(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
     log_append_content(f"[初始] 正在处理IP: {ip}")
     init_ret = False
     detail = "通信密钥错误"
     # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
-    if client_info_dict["通信密钥"] == "*d#f12j@34rt7%gh.":
+    if client_content_dict["通信密钥"] == "*d#f12j@34rt7%gh.":
         init_ret = True
         detail = enc_aes_key
     else:  # 通信密钥被修改, 记录到日志
@@ -741,17 +742,17 @@ def deal_init(client_socket: socket.socket, client_info_dict: dict):
     send_to_client(client_socket, server_info_dict)
 
 # 处理_注册
-def deal_reg(client_socket: socket.socket, client_info_dict: dict):
-    account = client_info_dict["账号"]
+def deal_reg(client_socket: socket.socket, client_content_dict: dict):
+    account = client_content_dict["账号"]
     log_append_content(f"[注册] 正在处理账号: {account}")
     reg_ret = False
 
     if sql_table_query("2用户管理", {"账号": account}):  # 查询账号是否存在
         detail = "注册失败, 此账号已被注册!"
     else:  # 不存在则插入记录
-        client_info_dict["注册时间"] = cur_time_format
-        client_info_dict["到期时间"] = cur_time_format
-        reg_ret = sql_table_insert("2用户管理", client_info_dict)
+        client_content_dict["注册时间"] = cur_time_format
+        client_content_dict["到期时间"] = cur_time_format
+        reg_ret = sql_table_insert("2用户管理", client_content_dict)
         detail = "注册成功" if reg_ret else "注册失败, 数据库异常"
     # 记录到日志
     log_append_content(f"[注册] 账号{account} {detail}")
@@ -762,11 +763,11 @@ def deal_reg(client_socket: socket.socket, client_info_dict: dict):
 
 
 # 处理_登录
-def deal_login(client_socket: socket.socket, client_info_dict: dict):
-    account = client_info_dict["账号"]
+def deal_login(client_socket: socket.socket, client_content_dict: dict):
+    account = client_content_dict["账号"]
     log_append_content(f"[登录] 正在处理账号: {account}")
-    pwd = client_info_dict["密码"]
-    machine_code = client_info_dict["机器码"]
+    pwd = client_content_dict["密码"]
+    machine_code = client_content_dict["机器码"]
     login_ret, query_user = False, {}
 
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 判断账号是否存在
@@ -800,20 +801,20 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     account = query_user["账号"]
     # 无论是否登录成功, 登录次数+1
     update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
-                   "操作系统": client_info_dict["操作系统"]}
+                   "操作系统": client_content_dict["操作系统"]}
     # 若登录成功, 才更新
     if login_ret:
-        update_dict["机器码"] = client_info_dict["机器码"]
-        update_dict["上次登录时间"] = client_info_dict["上次登录时间"]
-        update_dict["上次登录IP"] = client_info_dict["上次登录IP"]
+        update_dict["机器码"] = client_content_dict["机器码"]
+        update_dict["上次登录时间"] = client_content_dict["上次登录时间"]
+        update_dict["上次登录IP"] = client_content_dict["上次登录IP"]
     sql_table_update("2用户管理", update_dict, {"账号": account})
 
 
 # 处理_充值
-def deal_pay(client_socket: socket.socket, client_info_dict: dict):
-    account = client_info_dict["账号"]
+def deal_pay(client_socket: socket.socket, client_content_dict: dict):
+    account = client_content_dict["账号"]
     log_append_content(f"[充值] 正在处理账号: {account}")
-    card_key = client_info_dict["卡号"]
+    card_key = client_content_dict["卡号"]
     pay_ret = False
 
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
@@ -849,11 +850,11 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     send_to_client(client_socket, server_info_dict)
 
 # 处理_改密
-def deal_modify(client_socket: socket.socket, client_info_dict: dict):
-    account = client_info_dict["账号"]
+def deal_modify(client_socket: socket.socket, client_content_dict: dict):
+    account = client_content_dict["账号"]
     log_append_content(f"[改密] 正在处理账号: {account}")
-    qq = client_info_dict["QQ"]
-    new_pwd = client_info_dict["密码"]
+    qq = client_content_dict["QQ"]
+    new_pwd = client_content_dict["密码"]
     modify_ret = False
 
     # 查询数据库, 判断用户是否存在
@@ -877,10 +878,10 @@ def deal_modify(client_socket: socket.socket, client_info_dict: dict):
 
 
 # 处理_心跳
-def deal_heart(client_socket: socket.socket, client_info_dict: dict):
-    account = client_info_dict["账号"]
+def deal_heart(client_socket: socket.socket, client_content_dict: dict):
+    account = client_content_dict["账号"]
     log_append_content(f"[心跳] 正在处理账号: {account}")
-    comment = client_info_dict["备注"]
+    comment = client_content_dict["备注"]
     update_dict = {"心跳时间": cur_time_format, "备注": comment}
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
     if query_user_list:
@@ -908,10 +909,10 @@ def deal_heart(client_socket: socket.socket, client_info_dict: dict):
 
 
 # 处理_离线
-def deal_offline(client_socket: socket.socket, client_info_dict: dict):
-    account = client_info_dict["账号"]
+def deal_offline(client_socket: socket.socket, client_content_dict: dict):
+    account = client_content_dict["账号"]
     log_append_content(f"[离线] 正在处理账号: {account}")
-    comment = client_info_dict["备注"]
+    comment = client_content_dict["备注"]
     update_dict = {"心跳时间": cur_time_format, "备注": comment, "状态": "离线"}
 
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
@@ -932,10 +933,10 @@ def deal_offline(client_socket: socket.socket, client_info_dict: dict):
 
 
 # 处理_解绑
-def deal_unbind(client_socket: socket.socket, client_info_dict: dict):
-    account = client_info_dict["账号"]
+def deal_unbind(client_socket: socket.socket, client_content_dict: dict):
+    account = client_content_dict["账号"]
     log_append_content(f"[解绑] 正在处理账号: {account}")
-    pwd = client_info_dict["密码"]
+    pwd = client_content_dict["密码"]
     unbind_ret = False
     query_user_list = sql_table_query("2用户管理", {"账号": account})
     if query_user_list:  # 判断账号是否存在

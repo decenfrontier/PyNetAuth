@@ -340,21 +340,30 @@ class Ui_WndClientLogin(object):
         self.gridLayout_9 = QGridLayout(self.page_notice)
         self.gridLayout_9.setObjectName(u"gridLayout_9")
         self.gridLayout_9.setVerticalSpacing(0)
-        self.lbe_notice = QLabel(self.page_notice)
-        self.lbe_notice.setObjectName(u"lbe_notice")
-        self.lbe_notice.setFrameShape(QFrame.Box)
-        self.lbe_notice.setFrameShadow(QFrame.Raised)
-        self.lbe_notice.setMidLineWidth(0)
-        self.lbe_notice.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
-        self.lbe_notice.setWordWrap(True)
-
-        self.gridLayout_9.addWidget(self.lbe_notice, 1, 0, 1, 1)
-
         self.label_4 = QLabel(self.page_notice)
         self.label_4.setObjectName(u"label_4")
         self.label_4.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_9.addWidget(self.label_4, 0, 0, 1, 1)
+        self.gridLayout_9.addWidget(self.label_4, 0, 1, 1, 1)
+
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_9.addItem(self.horizontalSpacer_4, 1, 0, 1, 1)
+
+        self.lbe_notice_text = QLabel(self.page_notice)
+        self.lbe_notice_text.setObjectName(u"lbe_notice_text")
+        self.lbe_notice_text.setMinimumSize(QSize(300, 0))
+        self.lbe_notice_text.setFrameShape(QFrame.Box)
+        self.lbe_notice_text.setFrameShadow(QFrame.Raised)
+        self.lbe_notice_text.setMidLineWidth(0)
+        self.lbe_notice_text.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.lbe_notice_text.setWordWrap(True)
+
+        self.gridLayout_9.addWidget(self.lbe_notice_text, 1, 1, 1, 1)
+
+        self.horizontalSpacer_17 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_9.addItem(self.horizontalSpacer_17, 1, 2, 1, 1)
 
         self.gridLayout_9.setRowStretch(0, 1)
         self.gridLayout_9.setRowStretch(1, 8)
@@ -366,7 +375,7 @@ class Ui_WndClientLogin(object):
 
         self.retranslateUi(WndClientLogin)
 
-        self.stack_widget.setCurrentIndex(3)
+        self.stack_widget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(WndClientLogin)
@@ -412,7 +421,7 @@ class Ui_WndClientLogin(object):
         self.label_12.setText(QCoreApplication.translate("WndClientLogin", u"QQ:", None))
         self.label_11.setText(QCoreApplication.translate("WndClientLogin", u"\u65b0\u5bc6\u7801:", None))
         self.btn_modify.setText(QCoreApplication.translate("WndClientLogin", u"\u6539 \u5bc6", None))
-        self.lbe_notice.setText(QCoreApplication.translate("WndClientLogin", u"aabbcc", None))
         self.label_4.setText(QCoreApplication.translate("WndClientLogin", u"\u516c \u544a", None))
+        self.lbe_notice_text.setText("")
     # retranslateUi
 

@@ -137,10 +137,13 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.edt_reg_account.setValidator(QRegExpValidator(reg_exp_acount_pwd))
         self.edt_reg_pwd.setValidator(QRegExpValidator(reg_exp_acount_pwd))
         self.edt_reg_qq.setValidator(QRegExpValidator(reg_exp_qq_number))
+        # ------------------ 设置标签格式 -----------------
         # 充值页
         self.lbe_pay_key.setText("""<a href="https://www.baidu.com">充值卡号: </a>""")
         self.lbe_pay_key.setOpenExternalLinks(True)
         self.lbe_pay_key.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
+        # 公告页
+        self.lbe_notice_text.setText(f"{mf.notice}")
 
     def init_all_sig_slot(self):
         self.login.connect(self.accept)

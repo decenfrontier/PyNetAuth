@@ -342,13 +342,33 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                     client_info_dict = {"消息类型": "烫烫烫",
                                         "内容": {"烫烫烫": "烫烫烫"}}
                     self.send_to_server(tcp_socket, client_info_dict)
+                    # 发送第三波数据-项目
+                    client_info_dict = {"消息类型": "锟斤拷",
+                                        "内容": {"版本号": mf.client_ver}}
+                    self.send_to_server(tcp_socket, client_info_dict)
                 else:
+                    # todo: 获取服务端detail
                     self.show_info("通信密钥异常")
-            elif msg_type == "烫烫烫":
+            elif msg_type == "烫烫烫":  # 自定义数据
                 # todo: 不要把密码放到全局变量
                 print(server_content_dict)
                 mf.pwd_pic = mf.aes.decrypt(server_content_dict["pic"])
                 mf.pwd_zk = mf.aes.decrypt(server_content_dict["zk"])
+                print(mf.pwd_pic, mf.pwd_zk)
+            elif msg_type == "锟斤拷":  # 项目
+                print(server_content_dict)
+                if server_content_dict["结果"]:
+                    detail_dict = server_content_dict["详情"]
+                    mf.notice = detail_dict["客户端公告"]
+                    mf.url_update = detail_dict["更新网址"]
+                    mf.url_card = detail_dict["发卡网址"]
+                    mf.allow_login = detail_dict["允许登录"]
+                    mf.allow_reg = detail_dict["允许注册"]
+                    mf.allow_unbind = detail_dict["允许解绑"]
+                else:
+                    detail = server_content_dict["详情"]
+                    self.show_info(detail)
+                print(mf.notice, mf.url_update, mf.url_card, mf.allow_login, mf.allow_reg, mf.allow_unbind)
             elif msg_type in ("注册", "充值", "解绑", "改密"):
                 self.show_info(server_content_dict["详情"])
             elif msg_type == "登录":

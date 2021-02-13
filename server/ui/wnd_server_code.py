@@ -723,6 +723,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             msg_func_dict = {
                 "初始": deal_init,
                 "烫烫烫": deal_custom,
+                "锟斤拷": deal_proj,
                 "注册": deal_reg,
                 "登录": deal_login,
                 "充值": deal_pay,
@@ -761,7 +762,6 @@ def deal_custom(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
     log_append_content(f"[自定义数据] 正在处理IP: {ip}")
     custom_ret = False
-    detail = "获取自定义数据失败"
     query_custom_list = sql_table_query("4自定义数据")
     # 整理成键值对字典
     content_dict = {}
@@ -769,10 +769,38 @@ def deal_custom(client_socket: socket.socket, client_content_dict: dict):
         key = query_custom["键"]
         e_val = query_custom["加密值"]
         content_dict[key] = e_val
-    # 把注册结果整理成py字典, 并发送给客户端
+
+    # 把处理_自定义数据结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "烫烫烫",
                         "内容": content_dict}
     send_to_client(client_socket, server_info_dict)
+
+# 处理_项目
+def deal_proj(client_socket: socket.socket, client_content_dict: dict):
+    ip = client_socket.getpeername()
+    log_append_content(f"[项目] 正在处理IP: {ip}")
+
+    client_ver = client_content_dict["版本号"]
+    query_proj_list = sql_table_query("1项目管理", {"客户端版本": client_ver})
+    if query_proj_list:
+        proj_ret = True
+        query_proj = query_proj_list[0]
+        detail = {
+            "客户端公告": query_proj["客户端公告"],
+            "更新网址": query_proj["更新网址"],
+            "发卡网址": query_proj["发卡网址"],
+            "允许登录": query_proj["允许登录"],
+            "允许注册": query_proj["允许注册"],
+            "允许解绑": query_proj["允许解绑"],
+        }
+    else:
+        proj_ret = False
+        detail = "客户端版本过低, 请下载最新版本"
+    # 把处理_项目数据结果整理成py字典, 并发送给客户端
+    server_info_dict = {"消息类型": "锟斤拷",
+                        "内容": {"结果": proj_ret, "详情": detail}}
+    send_to_client(client_socket, server_info_dict)
+
 
 # 处理_注册
 def deal_reg(client_socket: socket.socket, client_content_dict: dict):

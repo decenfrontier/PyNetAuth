@@ -78,16 +78,23 @@ def log_debug(msg):
 
 
 # ------------------------- 网络验证相关 -------------------------
+client_ver = "3.6.5"
 server_ip = "127.0.0.1"
 server_port = 47123
 client_comment = ""
-des_key = "dig?F*ckDang5"  # DES密钥
+
 
 # 从服务端获取的数据
 aes_key = "*d#f12j@34rt7%gh."  # AES密钥, 登录界面初始化时获取, 先随机写一个迷惑破解者
 user_account = ""  # 用户账号, 登录成功才获取
 pwd_pic = "1234"  # 图片密码, 先随机写一个迷惑破解者
 pwd_zk = "5678"  # 字库密码, 先随机写一个迷惑破解者
+notice = "加载公告失败..."  # 公告
+url_update = "www.baidu.com"  # 更新网址
+url_card = "www.bilibili.com"  # 发卡网址
+allow_login = False  # 允许登录
+allow_reg = False  # 允许注册
+allow_unbind = False  # 允许解绑
 
 # 构造加密类实例化对象
 aes = my_crypto.AesEncryption(aes_key)  # 先构造一个假的

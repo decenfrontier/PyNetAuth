@@ -303,16 +303,17 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             server_info_dict = json.loads(json_str)
             # 客户端消息处理
             msg_type = server_info_dict["消息类型"]
+            server_content_dict = server_info_dict["内容"]
             if msg_type == "初始":
-                enc_aes_key = server_info_dict["详情"]
+                enc_aes_key = server_content_dict["详情"]
                 mf.aes_key = my_crypto.decrypt_rsa(my_crypto.private_key_client, enc_aes_key)
                 mf.aes = my_crypto.AesEncryption(mf.aes_key)  # 重新构造新的aes密钥
             elif msg_type in ("注册", "充值", "解绑", "改密"):
-                self.show_info(server_info_dict["详情"])
+                self.show_info(server_content_dict["详情"])
             elif msg_type == "登录":
-                self.show_info(server_info_dict["详情"])
-                if server_info_dict["结果"]:
-                    mf.user_account = server_info_dict["账号"]
+                self.show_info(server_content_dict["详情"])
+                if server_content_dict["结果"]:
+                    mf.user_account = server_content_dict["账号"]
                     print(mf.user_account)
                     tcp_socket.close()  # 先关闭套接字
                     with lock:

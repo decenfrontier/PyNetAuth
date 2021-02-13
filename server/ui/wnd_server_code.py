@@ -736,7 +736,8 @@ def deal_init(client_socket: socket.socket, client_info_dict: dict):
     else:  # 通信密钥被修改, 记录到日志
         log_append_content(f"[初始] IP{ip}通信密钥被修改, Warning!")
     # 把注册结果整理成py字典, 并发送给客户端
-    server_info_dict = {"消息类型": "初始", "结果": init_ret, "详情": detail}
+    server_info_dict = {"消息类型": "初始",
+                        "内容": {"结果": init_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 # 处理_注册
@@ -755,7 +756,8 @@ def deal_reg(client_socket: socket.socket, client_info_dict: dict):
     # 记录到日志
     log_append_content(f"[注册] 账号{account} {detail}")
     # 把注册结果整理成py字典, 并发送给客户端
-    server_info_dict = {"消息类型": "注册", "结果": reg_ret, "详情": detail}
+    server_info_dict = {"消息类型": "注册",
+                        "内容": {"结果": reg_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 
@@ -789,7 +791,8 @@ def deal_login(client_socket: socket.socket, client_info_dict: dict):
     # 记录到日志
     log_append_content(f"[登录] 账号{account} {detail}")
     # 把登录结果整理成py字典, 并发送给客户端
-    server_info_dict = {"消息类型": "登录", "结果": login_ret, "详情": detail, "账号": account}
+    server_info_dict = {"消息类型": "登录",
+                        "内容": {"结果": login_ret, "详情": detail, "账号": account}}
     send_to_client(client_socket, server_info_dict)
     # 把客户端发送过来的数据记录到数据库
     if not query_user:  # 若该账号不存在
@@ -841,7 +844,8 @@ def deal_pay(client_socket: socket.socket, client_info_dict: dict):
     # 记录到日志
     log_append_content(f"[充值] 账号{account} {detail}")
     # 把充值结果整理成py字典, 并发送给客户端
-    server_info_dict = {"消息类型": "充值", "结果": pay_ret, "详情": detail}
+    server_info_dict = {"消息类型": "充值",
+                        "内容": {"结果": pay_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 # 处理_改密
@@ -867,7 +871,8 @@ def deal_modify(client_socket: socket.socket, client_info_dict: dict):
     # 记录到日志
     log_append_content(f"[改密] 账号{account} {detail}")
     # 把改密结果整理成py字典, 并发送给客户端
-    server_info_dict = {"消息类型": "改密", "结果": modify_ret, "详情": detail}
+    server_info_dict = {"消息类型": "改密",
+                        "内容": {"结果": modify_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 
@@ -895,7 +900,8 @@ def deal_heart(client_socket: socket.socket, client_info_dict: dict):
     # 记录到日志
     log_append_content(f"[心跳] 账号{account} {heart_ret} {detail}")
     # 发送消息回客户端
-    server_info_dict = {"消息类型": "心跳", "结果": heart_ret, "详情": detail}
+    server_info_dict = {"消息类型": "心跳",
+                        "内容": {"结果": heart_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
     # 更新用户数据
     sql_table_update("2用户管理", update_dict, {"账号": account})
@@ -952,7 +958,8 @@ def deal_unbind(client_socket: socket.socket, client_info_dict: dict):
     # 记录到日志
     log_append_content(f"[解绑] 账号{account} {detail}")
     # 发送消息回客户端
-    server_info_dict = {"消息类型": "解绑", "结果": unbind_ret, "详情": detail}
+    server_info_dict = {"消息类型": "解绑",
+                        "内容": {"结果": unbind_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 
@@ -960,6 +967,8 @@ def deal_unbind(client_socket: socket.socket, client_info_dict: dict):
 def send_to_client(client_socket: socket.socket, server_info_dict: dict):
     # py字典 转 json字符串
     json_str = json.dumps(server_info_dict, ensure_ascii=False)
+    # todo: 根据消息类型决定是否对内容aes加密
+
     # json字符串 base85编码
     send_bytes = base64.b85encode(json_str.encode())
     try:

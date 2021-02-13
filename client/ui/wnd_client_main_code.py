@@ -112,13 +112,14 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         msg_type = server_info_dict.get("消息类型")
         if msg_type != "心跳":
             return
-        heart_ret = server_info_dict["结果"]
+        server_content_dict = server_info_dict["内容"]
+        heart_ret = server_content_dict["结果"]
         if heart_ret == "正常":
             self.error_count = 0
             self.last_heart_time = mf.cur_time_stamp
         elif heart_ret == "下线":
             self.error_count = 10
-            self.show_info(server_info_dict["详情"])
+            self.show_info(server_content_dict["详情"])
         else:
             self.error_count += 1
 

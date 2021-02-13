@@ -268,6 +268,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_custom_confirm.clicked.connect(self.on_btn_custom_confirm_clicked)
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
+        self.tbe_custom.cellClicked.connect(self.on_tbe_custom_cellClicked)
 
     def show_info(self, text):
         self.lbe_info.setText(f"<提示> : {text}")
@@ -385,6 +386,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.chk_proj_login.setChecked(int(allow_login))
         self.chk_proj_reg.setChecked(int(allow_reg))
         self.chk_proj_unbind.setChecked(int(allow_unbind))
+
+    def on_tbe_custom_cellClicked(self, row: int, col: int):
+        self.edt_custom_key.setText(self.tbe_custom.item(row, 1).text())
+        self.edt_custom_val.setText(self.tbe_custom.item(row, 2).text())
+        self.edt_custom_eval.setText(self.tbe_custom.item(row, 3).text())
 
     def on_action_proj_del_sel_triggered(self):
         item_list = self.tbe_proj.selectedItems()

@@ -287,9 +287,14 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
 
     # 发送数据给服务端
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
-        # py字典 转 json字符串
+        # 内容 转 json字符串
+        client_info_dict["内容"] = json.dumps(client_info_dict["内容"], ensure_ascii=False)
+        # 根据消息类型决定是否对内容aes加密
+        if client_info_dict["消息类型"] != "初始":
+            # 对json内容进行aes加密
+            client_info_dict["内容"] = mf.aes.encrypt(client_info_dict["内容"])
+        # 把整个客户端信息字典 转 json字符串
         json_str = json.dumps(client_info_dict, ensure_ascii=False)
-        # todo: 根据消息内容决定是否对内容aes加密
         # json字符串 base85编码
         send_bytes = base64.b85encode(json_str.encode())
         try:
@@ -308,7 +313,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                 recv_bytes = ""
             if not recv_bytes:  # 若客户端退出,会收到一个空str
                 break
-            # base85解密
+            # base85解码
             json_str = base64.b85decode(recv_bytes).decode()
             print(f"收到服务端的消息: {json_str}")
             # json字符串 转 py字典
@@ -316,7 +321,8 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             msg_type = server_info_dict["消息类型"]
             server_content_str = server_info_dict["内容"]
             # 把内容json字符串 转 py字典
-            if msg_type == "初始":  # json字符串 转 py字典
+            if msg_type == "初始":  # 若为初始类型的消息
+                # json字符串 转 py字典
                 server_content_dict = json.loads(server_content_str)
             else:  # 若不为初始类型的消息
                 # 先aes解密, 获取json字符串

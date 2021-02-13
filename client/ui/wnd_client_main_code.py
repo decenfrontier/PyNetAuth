@@ -87,9 +87,12 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
 
     # 发送数据给服务端
     def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
-        # py字典 转 json字符串
+        # 内容 转 json字符串
+        client_info_dict["内容"] = json.dumps(client_info_dict["内容"], ensure_ascii=False)
+        # 对json内容进行aes加密
+        client_info_dict["内容"] = mf.aes.encrypt(client_info_dict["内容"])
+        # 把整个客户端信息字典 转 json字符串
         json_str = json.dumps(client_info_dict, ensure_ascii=False)
-        # todo: 根据消息内容决定是否对内容aes加密
         # json字符串 base85编码
         send_bytes = base64.b85encode(json_str.encode())
         try:
@@ -109,7 +112,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
         if not recv_bytes:  # 若客户端退出, 或者5秒内服务端未响应, 会收到一个空str
             self.error_count += 1
             return
-        # base85解密
+        # base85解码
         json_str = base64.b85decode(recv_bytes).decode()
         print(f"收到服务端的消息: {json_str}")
         # json字符串 转 py字典

@@ -699,13 +699,20 @@ class WndServer(QMainWindow, Ui_WndServer):
                 break
             # base85解码
             json_str = base64.b85decode(recv_bytes).decode()
+            log_append_content(f"收到客户端{client_socket.getpeername()}的消息: {json_str}")
             # json字符串 转 py字典
             client_info_dict = json.loads(json_str)
-            log_append_content(f"收到客户端{client_socket.getpeername()}的消息: {json_str}")
-            # 服务端消息处理
             msg_type = client_info_dict["消息类型"]
-            client_content_dict = client_info_dict["内容"]
-            # todo: aes解密内容
+            client_content_str = client_info_dict["内容"]
+            # 把内容json字符串 转 py字典
+            if msg_type == "初始":  # 若为初始类型的消息
+                # json字符串 转 py字典
+                client_content_dict = json.loads(client_content_str)
+            else:  # 若不为初始类型的消息
+                # 先aes解密, 获取json字符串
+                client_content_str = aes.decrypt(client_content_str)
+                # json字符串 转 py字典
+                client_content_dict = json.loads(client_content_str)
             msg_func_dict = {
                 "初始": deal_init,
                 "注册": deal_reg,

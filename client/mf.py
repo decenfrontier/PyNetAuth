@@ -1,7 +1,7 @@
 # my function, 客户端登录界面, 和 主界面的函数库
 
 import time
-import urllib.request
+
 import wmi
 import platform
 import json
@@ -117,7 +117,7 @@ def get_operation_system() -> str:
     return platform.platform()
 
 # ------------------------- 网络验证相关 -------------------------
-client_ver = "3.6.7"
+client_ver = "3.6.8"
 server_ip = "127.0.0.1"
 server_port = 47123
 machine_code = get_machine_code()

@@ -2,7 +2,9 @@ import sys
 import time, datetime
 import json
 import base64
+import urllib.request, ssl
 from threading import Thread, Lock
+from multiprocessing import Pool
 from random import randint
 
 from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor, QCursor
@@ -585,12 +587,16 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_all_tbe_custom()
 
     def show_all_tbe_proj(self):
+        # 读取表全部内容
         query_proj_list = sql_table_query("1项目管理")
         self.refresh_tbe_proj(query_proj_list)
+        # 刷新最新客户端版本号
         self.latest_ver = sql_table_query_ex("1项目管理", sql="select max(客户端版本) from 1项目管理")[0]["max(客户端版本)"]
         self.lbe_latest_ver.setText(self.latest_ver)
 
     def show_all_tbe_user(self):
+        # 刷新ip归属地
+        self.refresh_ip_location()
         # 读取表全部内容
         query_user_list = sql_table_query("2用户管理")
         self.refresh_tbe_user(query_user_list)
@@ -600,14 +606,14 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.refresh_tbe_card(query_card_list)
 
     def show_all_tbe_custom(self):
+        # 读取表全部内容
         query_custom_list = sql_table_query("4自定义数据")
         self.refresh_tbe_custom(query_custom_list)
-        # 刷新一下 第一批自定义数据 和 第二批自定义数据
+        # 刷新 第一批自定义数据 和 第二批自定义数据
         key_eval_dict = {custom_dict["键"]:custom_dict["加密值"] for custom_dict in query_custom_list}
         self.custom1 = {"pic": key_eval_dict.pop("pic"),
                         "zk": key_eval_dict.pop("zk")}
         self.custom2 = key_eval_dict
-
 
     def refresh_tbe_proj(self, query_proj_list):
         self.tbe_proj.setRowCount(len(query_proj_list))
@@ -700,6 +706,36 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_custom.setItem(row, 2, QTableWidgetItem(query_custom["值"]))
             self.tbe_custom.setItem(row, 3, QTableWidgetItem(query_custom["加密值"]))
 
+    # 刷新ip归属地
+    def refresh_ip_location(self):
+        def append_ip_location(ip: str):
+            location = get_ip_location(ip)
+            with mutex:
+                ip_location_list.append((ip, location))
+        # 获取用户表有但归属表没有的ip列表
+        query_ip_list = sql_table_query_ex(sql="select distinct A.上次登录IP from 2用户管理 A left join ip归属地 B "
+                                               "on A.上次登录IP=B.IP地址 where B.IP地址 is null")
+        query_ip_list = [ip_dict["上次登录IP"] for ip_dict in query_ip_list]
+        if query_ip_list:
+            # 并发获取这些ip的归属地
+            ip_location_list = []
+            thd_pool = []
+            mutex = Lock()
+            for query_ip in query_ip_list:
+                t = Thread(target=append_ip_location, args=(query_ip,))
+                t.start()
+                thd_pool.append(t)
+            # 等待所有执行完
+            [t.join() for t in thd_pool]
+            if ip_location_list:
+                # 把获取到的归属地信息插入到IP归属表
+                ip_locations = str(ip_location_list).strip("[|]")
+                print(ip_locations)
+                sql_table_insert_ex(sql=f"insert ip归属地 values {ip_locations}")
+        # 更新用户表的上次登录地
+        sql_table_update_ex(sql="update 2用户管理 A inner join ip归属地 B on A.上次登录IP=B.IP地址 "
+                                "set A.上次登录地=B.归属地")
+
     def on_timer_sec_timeout(self):
         global cur_time_format
         cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -717,6 +753,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         offset_date_time = datetime.timedelta(minutes=-15)
         due_time = (now_date_time + offset_date_time).strftime("%Y-%m-%d %H:%M:%S")
         sql_table_update_ex("2用户管理", "状态='离线'", f"状态='在线' and 心跳时间<'{due_time}'")
+
 
     def thd_accept_client(self):
         log_append_content("服务端已开启, 准备接受客户请求...")
@@ -1082,6 +1119,8 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
         log_append_content(f"向客户端{client_socket.getpeername()}回复失败: {e}")
 
 
+
+
 # 表_插入, 成功返回插入数, 否则返回0
 def sql_table_insert(table_name: str, val_dict: dict):
     # keys = "account, pwd,qq, machine_code, reg_ip"
@@ -1102,9 +1141,11 @@ def sql_table_insert(table_name: str, val_dict: dict):
     return ret
 
 # 表_插入扩展
-def sql_table_insert_ex(table_name: str, condition: str):
-    # condition = "('摘星子', '男'), ('费彬', '男')"
-    sql = f"insert {table_name} values{condition};"
+def sql_table_insert_ex(table_name="", condition="", sql=""):
+    if not sql:
+        # condition = "('摘星子', '男'), ('费彬', '男')"
+        sql = f"insert {table_name} values{condition};"
+    ret = 0
     try:
         ret = cursor.execute(sql)  # 执行SQL语句
         db.commit()  # 提交到数据库
@@ -1137,7 +1178,7 @@ def sql_table_query(table_name: str, condition_dict={}):
     return ret
 
 # 表_查询, 成功返回字典列表, 否则返回空列表
-def sql_table_query_ex(table_name: str, condition="", sql=""):
+def sql_table_query_ex(table_name="", condition="", sql=""):
     # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
     if not sql:
         if condition:
@@ -1182,11 +1223,12 @@ def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
     return ret
 
 # 表_更新扩展, 成功返回更新数, 否则返回0
-def sql_table_update_ex(table_name: str, update: str, condition=""):
-    if condition:
-        sql = f"update {table_name} set {update} where {condition};"
-    else:
-        sql = f"update {table_name} set {update};"
+def sql_table_update_ex(table_name="", update="", condition="", sql=""):
+    if not sql:
+        if condition:
+            sql = f"update {table_name} set {update} where {condition};"
+        else:
+            sql = f"update {table_name} set {update};"
     ret = 0
     try:
         ret = cursor.execute(sql)  # 执行SQL语句

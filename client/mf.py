@@ -128,6 +128,7 @@ aes_key = "*d#f12j@34rt7%gh."  # AES密钥, 登录界面初始化时获取, 先�
 user_account = ""  # 用户账号, 登录成功才获取
 pwd_pic = "1234"  # 图片密码, 先随机写一个迷惑破解者
 pwd_zk = "5678"  # 字库密码, 先随机写一个迷惑破解者
+addr_crack = "0x8CFF98"  # 大漠破解VIP内存地址
 
 notice = "加载公告失败..."  # 公告
 url_update = "https://www.baidu.com"  # 更新网址

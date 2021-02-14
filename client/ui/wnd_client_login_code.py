@@ -18,7 +18,8 @@ from wnd_client_main_code import WndClientMain
 from client import mf, my_crypto
 
 class WndClientLogin(QDialog, Ui_WndClientLogin):
-    login = Signal()
+    sig_accept = Signal()
+    sig_reject = Signal()
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -41,14 +42,9 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
 
     # 初始化网络验证
     def init_net_auth(self):
-        # 发送客户端第一波数据-初始
         if not self.send_recv_init():
             return False
-        # 发送客户端第二波数据-项目
         if not self.send_recv_proj():
-            return False
-        # 发送客户端第三波数据-自定义数据
-        if not self.send_recv_custom():
             return False
         return True
 
@@ -139,7 +135,8 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.btn_unbind.setEnabled(mf.allow_unbind)
 
     def init_all_sig_slot(self):
-        self.login.connect(self.accept)
+        self.sig_accept.connect(self.accept)
+        self.sig_reject.connect(self.reject)
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         self.btn_login.clicked.connect(self.on_btn_login_clicked)
         self.btn_reg.clicked.connect(self.on_btn_reg_clicked)
@@ -156,7 +153,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         # 处理服务端响应消息
         msg_type, server_content_dict = self.recv_from_server(tcp_socket)
         if not msg_type:
-            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试, 错误码: 1")
+            self.show_info("服务器繁忙, 请稍后再试, 错误码: 1")
             return False
         if msg_type == "初始":
             if server_content_dict["结果"]:
@@ -178,7 +175,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         # 处理服务端响应消息
         msg_type, server_content_dict = self.recv_from_server(tcp_socket)
         if not msg_type:
-            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试, 错误码: 2")
+            self.show_info("服务器繁忙, 请稍后再试, 错误码: 2")
             return False
         if msg_type == "锟斤拷":
             if server_content_dict["结果"]:
@@ -196,7 +193,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                 QMessageBox.information(self, "错误", detail)
         return False
 
-    def send_recv_custom(self):
+    def send_recv_custom1(self):
         client_info_dict = {"消息类型": "烫烫烫",
                             "内容": {"烫烫烫": "烫烫烫"}}
         tcp_socket = self.connect_server_tcp()
@@ -204,17 +201,29 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         # 处理服务端响应消息
         msg_type, server_content_dict = self.recv_from_server(tcp_socket)
         if not msg_type:
-            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试, 错误码: 2")
+            self.show_info("服务器繁忙, 请稍后再试, 错误码: 3")
             return False
         if msg_type == "烫烫烫":
-            if server_content_dict["结果"]:
-                detail_dict = server_content_dict["详情"]
-                mf.pwd_pic = mf.aes.decrypt(detail_dict["pic"])
-                mf.pwd_zk = mf.aes.decrypt(detail_dict["zk"])
-                return True
-            else:
-                detail = server_content_dict["详情"]
-                QMessageBox.information(self, "错误", detail)
+            detail_dict = server_content_dict["详情"]
+            mf.pwd_pic = mf.aes.decrypt(detail_dict["pic"])
+            mf.pwd_zk = mf.aes.decrypt(detail_dict["zk"])
+            return True
+        return False
+
+    def send_recv_custom2(self):
+        client_info_dict = {"消息类型": "屯屯屯",
+                            "内容": {"屯屯屯": "屯屯屯"}}
+        tcp_socket = self.connect_server_tcp()
+        self.send_to_server(tcp_socket, client_info_dict)
+        # 处理服务端响应消息
+        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        if not msg_type:
+            self.show_info("服务器繁忙, 请稍后再试, 错误码: 4")
+            return False
+        if msg_type == "屯屯屯":
+            detail_dict = server_content_dict["详情"]
+            mf.addr_crack = mf.aes.decrypt(detail_dict["crk"])
+            return True
         return False
 
     def on_tool_bar_actionTriggered(self, action):
@@ -241,7 +250,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             self.show_info("登录失败, 账号密码长度不符合要求")
             return
         login_pwd = my_crypto.get_encrypted_str(login_pwd.encode())
-        login_time = mf.cur_time_format
         login_system = mf.get_operation_system()
         # 把客户端信息整理成字典, 发送给服务器
         client_info_dict = {
@@ -262,9 +270,10 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             self.show_info(server_content_dict["详情"])
             if server_content_dict["结果"]:
                 mf.user_account = server_content_dict["账号"]
-                print(mf.user_account)
-                tcp_socket.close()  # 先关闭套接字
-                self.login.emit()  # 登录界面接受
+                if self.send_recv_custom1() and self.send_recv_custom2():
+                    self.sig_accept.emit()  # 登录界面接受
+                else:
+                    self.sig_reject.emit()  # 登录界面拒绝
 
     def on_btn_reg_clicked(self):
         # 判断注册信息是否符合要求

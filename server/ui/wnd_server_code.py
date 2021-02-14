@@ -205,28 +205,30 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_user_show_all = QAction("显示全部用户信息")
         self.action_user_comment_sel = QAction("备注选中用户")
         self.action_user_state_sel = QAction("设置选中用户状态")  # 二级菜单
+        self.action_user_del_sel = QAction("删除选中用户")
+        # --------------------------------------------------------
         self.action_user_frozen_sel = QAction("冻结选中用户")
         self.action_user_unfrozen_sel = QAction("解冻选中用户")
+        # --------------------------------------------------------
         self.action_user_charge_sel = QAction("续费选中用户")
         self.action_user_charge_all = QAction("续费全部用户")
-        self.action_user_del_sel = QAction("删除选中用户")
         self.menu_tbe_user.addActions([self.action_user_show_all,
                                        self.action_user_comment_sel,
-                                       self.action_user_state_sel])
+                                       self.action_user_state_sel,
+                                       self.action_user_del_sel])
         self.menu_tbe_user.addSeparator()
         self.menu_tbe_user.addActions([self.action_user_frozen_sel,
                                        self.action_user_unfrozen_sel])
         self.menu_tbe_user.addSeparator()
         self.menu_tbe_user.addActions([self.action_user_charge_sel,
-                                       self.action_user_charge_all,
-                                       self.action_user_del_sel])
+                                       self.action_user_charge_all])
         self.action_user_show_all.triggered.connect(self.show_all_tbe_user)
         self.action_user_comment_sel.triggered.connect(self.on_action_user_comment_sel_triggered)
+        self.action_user_del_sel.triggered.connect(self.on_action_user_del_sel_triggered)
         self.action_user_frozen_sel.triggered.connect(self.on_action_user_frozen_sel_triggered)
         self.action_user_unfrozen_sel.triggered.connect(self.on_action_user_unfrozen_sel_triggered)
         self.action_user_charge_sel.triggered.connect(self.on_action_user_charge_sel_triggered)
         self.action_user_charge_all.triggered.connect(self.on_action_user_charge_all_triggered)
-        self.action_user_del_sel.triggered.connect(self.on_action_user_del_sel_triggered)
         self.tbe_user.customContextMenuRequested.connect(
             lambda : self.menu_tbe_user.exec_(QCursor.pos())
         )
@@ -589,6 +591,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.lbe_latest_ver.setText(self.latest_ver)
 
     def show_all_tbe_user(self):
+        # 读取表全部内容
         query_user_list = sql_table_query("2用户管理")
         self.refresh_tbe_user(query_user_list)
 
@@ -599,6 +602,12 @@ class WndServer(QMainWindow, Ui_WndServer):
     def show_all_tbe_custom(self):
         query_custom_list = sql_table_query("4自定义数据")
         self.refresh_tbe_custom(query_custom_list)
+        # 刷新一下 第一批自定义数据 和 第二批自定义数据
+        key_eval_dict = {custom_dict["键"]:custom_dict["加密值"] for custom_dict in query_custom_list}
+        self.custom1 = {"pic": key_eval_dict.pop("pic"),
+                        "zk": key_eval_dict.pop("zk")}
+        self.custom2 = key_eval_dict
+
 
     def refresh_tbe_proj(self, query_proj_list):
         self.tbe_proj.setRowCount(len(query_proj_list))
@@ -749,7 +758,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             msg_func_dict = {
                 "初始": deal_init,
                 "锟斤拷": deal_proj,
-                "烫烫烫": deal_custom,
+                "烫烫烫": deal_custom1,
+                "屯屯屯": deal_custom2,
                 "注册": deal_reg,
                 "登录": deal_login,
                 "充值": deal_pay,
@@ -811,26 +821,22 @@ def deal_proj(client_socket: socket.socket, client_content_dict: dict):
     send_to_client(client_socket, server_info_dict)
 
 # 处理_自定义数据
-def deal_custom(client_socket: socket.socket, client_content_dict: dict):
+def deal_custom1(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
     log_append_content(f"[自定义数据] 正在处理IP: {ip}")
-    custom_ret = False
-    query_custom_list = sql_table_query("4自定义数据")
-    if query_custom_list:
-        custom_ret = True
-        detail = {}  # 整理成键值对字典
-        for query_custom in query_custom_list:
-            key = query_custom["键"]
-            e_val = query_custom["加密值"]
-            detail[key] = e_val
-    else:
-        detail = "未知的消息类型-烫烫烫"
-    # 把处理_自定义数据结果整理成py字典, 并发送给客户端
+    # 把第一批自定义数据整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "烫烫烫",
-                        "内容": {"结果": custom_ret, "详情": detail}}
+                        "内容": {"结果": True, "详情": wnd_server.custom1}}
     send_to_client(client_socket, server_info_dict)
 
-
+# 处理_自定义数据
+def deal_custom2(client_socket: socket.socket, client_content_dict: dict):
+    ip = client_socket.getpeername()
+    log_append_content(f"[自定义数据] 正在处理IP: {ip}")
+    # 把第二批自定义数据整理成py字典, 并发送给客户端
+    server_info_dict = {"消息类型": "屯屯屯",
+                        "内容": {"结果": True, "详情": wnd_server.custom2}}
+    send_to_client(client_socket, server_info_dict)
 
 
 # 处理_注册
@@ -1095,6 +1101,18 @@ def sql_table_insert(table_name: str, val_dict: dict):
     print(f"表插入结果: {ret}")
     return ret
 
+# 表_插入扩展
+def sql_table_insert_ex(table_name: str, condition: str):
+    # condition = "('摘星子', '男'), ('费彬', '男')"
+    sql = f"insert {table_name} values{condition};"
+    try:
+        ret = cursor.execute(sql)  # 执行SQL语句
+        db.commit()  # 提交到数据库
+    except Exception as e:
+        print(f"表插入异常: {e}")
+        db.rollback()  # 数据库回滚
+    print(f"表插入结果: {ret}")
+    return ret
 
 # 表_查询, 成功返回字典列表, 否则返回空列表
 def sql_table_query(table_name: str, condition_dict={}):

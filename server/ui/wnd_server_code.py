@@ -733,7 +733,6 @@ class WndServer(QMainWindow, Ui_WndServer):
                 "初始": deal_init,
                 "锟斤拷": deal_proj,
                 "烫烫烫": deal_custom,
-
                 "注册": deal_reg,
                 "登录": deal_login,
                 "充值": deal_pay,
@@ -840,6 +839,7 @@ def deal_reg(client_socket: socket.socket, client_content_dict: dict):
 
 # 处理_登录
 def deal_login(client_socket: socket.socket, client_content_dict: dict):
+    ip = client_socket.getpeername()[0]
     account = client_content_dict["账号"]
     log_append_content(f"[登录] 正在处理账号: {account}")
     pwd = client_content_dict["密码"]
@@ -881,8 +881,8 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
     # 若登录成功, 才更新
     if login_ret:
         update_dict["机器码"] = client_content_dict["机器码"]
-        update_dict["上次登录时间"] = client_content_dict["上次登录时间"]
-        update_dict["上次登录IP"] = client_content_dict["上次登录IP"]
+        update_dict["上次登录时间"] = cur_time_format
+        update_dict["上次登录IP"] = ip
     sql_table_update("2用户管理", update_dict, {"账号": account})
 
 
@@ -1236,6 +1236,28 @@ def log_append_content(content: str):
 def clip_copy(content: str):
     clip_bd = QApplication.clipboard()
     clip_bd.setText(content)
+
+# 获取IP归属地
+def get_ip_location(ip: str) -> str:
+    appcode = "3799d32779864269b80bd92e70619498"
+    url = f"https://hcapi20.market.alicloudapi.com/ip?ip={ip}"
+    request = urllib.request.Request(url)
+    request.add_header("Authorization", "APPCODE " + appcode)
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    response = urllib.request.urlopen(request, context=ctx)
+    content = response.read().decode()  # 返回json字符串
+    if not content:
+        return ""
+    ret_dict = json.loads(content)  # json字符串 转 py字典
+    if ret_dict["msg"] != "success":
+        return ""
+    data = ret_dict["data"]
+    country, region, city, isp = data["country"], data["region"], data["city"], data["isp"]
+    location = f"{country}-{region}-{city}-{isp}"
+    print("location:", location)
+    return location
 
 
 if __name__ == '__main__':

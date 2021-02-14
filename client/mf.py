@@ -76,32 +76,6 @@ def log_debug(msg):
     logging.debug(msg)
     print(msg)
 
-
-# ------------------------- 网络验证相关 -------------------------
-client_ver = "3.6.7"
-server_ip = "127.0.0.1"
-server_port = 47123
-client_comment = ""
-
-
-# 从服务端获取的数据
-aes_key = "*d#f12j@34rt7%gh."  # AES密钥, 登录界面初始化时获取, 先随机写一个迷惑破解者
-user_account = ""  # 用户账号, 登录成功才获取
-pwd_pic = "1234"  # 图片密码, 先随机写一个迷惑破解者
-pwd_zk = "5678"  # 字库密码, 先随机写一个迷惑破解者
-
-notice = "加载公告失败..."  # 公告
-url_update = "https://www.baidu.com"  # 更新网址
-url_card = "https://www.bilibili.com"  # 发卡网址
-allow_login = False  # 允许登录
-allow_reg = False  # 允许注册
-allow_unbind = False  # 允许解绑
-latest_ver = "x.x.x"  # 最新版本
-
-
-# 构造加密类实例化对象
-aes = my_crypto.AesEncryption(aes_key)  # 先构造一个假的
-
 # 获取外网IP
 def get_outer_ip() -> str:
     ip = ""
@@ -122,30 +96,6 @@ def get_outer_ip() -> str:
     print("ip:", ip)
     return ip
 
-
-# 获取IP归属地
-def get_ip_location(ip: str) -> str:
-    appcode = "3799d32779864269b80bd92e70619498"
-    url = f"https://hcapi20.market.alicloudapi.com/ip?ip={ip}"
-    request = urllib.request.Request(url)
-    request.add_header("Authorization", "APPCODE " + appcode)
-    ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
-    response = urllib.request.urlopen(request, context=ctx)
-    content = response.read().decode()  # 返回json字符串
-    if not content:
-        return ""
-    ret_dict = json.loads(content)  # json字符串 转 py字典
-    if ret_dict["msg"] != "success":
-        return ""
-    data = ret_dict["data"]
-    country, region, city, isp = data["country"], data["region"], data["city"], data["isp"]
-    location = f"{country}-{region}-{city}-{isp}"
-    print("location:", location)
-    return location
-
-
 # 获取机器码(主板序列号+硬盘序列号)
 def get_machine_code():
     pythoncom.CoInitialize()
@@ -162,7 +112,33 @@ def get_machine_code():
     print("机器码:", machine_code)
     return machine_code
 
-
 # 获取操作系统
 def get_operation_system() -> str:
     return platform.platform()
+
+# ------------------------- 网络验证相关 -------------------------
+client_ver = "3.6.7"
+server_ip = "127.0.0.1"
+server_port = 47123
+machine_code = get_machine_code()
+client_comment = ""
+
+# 从服务端获取的数据
+aes_key = "*d#f12j@34rt7%gh."  # AES密钥, 登录界面初始化时获取, 先随机写一个迷惑破解者
+user_account = ""  # 用户账号, 登录成功才获取
+pwd_pic = "1234"  # 图片密码, 先随机写一个迷惑破解者
+pwd_zk = "5678"  # 字库密码, 先随机写一个迷惑破解者
+
+notice = "加载公告失败..."  # 公告
+url_update = "https://www.baidu.com"  # 更新网址
+url_card = "https://www.bilibili.com"  # 发卡网址
+allow_login = False  # 允许登录
+allow_reg = False  # 允许注册
+allow_unbind = False  # 允许解绑
+latest_ver = "x.x.x"  # 最新版本
+
+
+# 构造加密类实例化对象
+aes = my_crypto.AesEncryption(aes_key)  # 先构造一个假的
+
+

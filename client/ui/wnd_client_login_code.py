@@ -17,23 +17,11 @@ from client.ui.wnd_client_login import Ui_WndClientLogin
 from wnd_client_main_code import WndClientMain
 from client import mf, my_crypto
 
-machine_code = ""
-login_ip = ""
-
-# 线程_获取全局变量
-def thd_get_global_var():
-    global login_ip, machine_code
-    machine_code = mf.get_machine_code()
-    login_ip = mf.get_outer_ip()
-    print("线程_获取全局变量 执行完成")
-
 class WndClientLogin(QDialog, Ui_WndClientLogin):
     login = Signal()
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        thd1 = Thread(target=thd_get_global_var, daemon=True)
-        thd1.start()
         self.init_wnd()
         self.init_status_bar()
         if self.init_net_auth():
@@ -261,9 +249,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
             "内容": {
                 "账号": login_account,
                 "密码": login_pwd,
-                "机器码": machine_code,
-                "上次登录时间": login_time,
-                "上次登录IP": login_ip,
+                "机器码": mf.machine_code,
                 "操作系统": login_system,
             }
         }

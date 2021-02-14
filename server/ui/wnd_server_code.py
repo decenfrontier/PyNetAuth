@@ -50,7 +50,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_status_bar()
         self.init_mysql()
         self.init_net_auth()
-        self.init_timer()
+        self.init_instance_field()
         self.init_all_controls()
         self.init_all_menu()
         self.init_all_sig_slot()
@@ -63,8 +63,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         db.close()
 
     def init_status_bar(self):
-        self.lbe_info = QLabel()
+        self.lbe_info = QLabel("提示")
         self.status_bar.addWidget(self.lbe_info)
+        self.lbe_1 = QLabel("| 最新客户端版本:")
+        self.status_bar.addPermanentWidget(self.lbe_1)
+        self.lbe_latest_ver = QLabel("x.x.x")
+        self.status_bar.addPermanentWidget(self.lbe_latest_ver)
 
     def init_mysql(self):
         try:
@@ -83,7 +87,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         except Exception as e:
             log_append_content(f"mysql连接失败: {e}")
             QMessageBox.critical(self, "错误", f"mysql连接失败: {e}")
-            self.close()
+            raise e
 
     def init_net_auth(self):
         # 初始化tcp连接
@@ -96,15 +100,18 @@ class WndServer(QMainWindow, Ui_WndServer):
         except Exception as e:
             log_append_content(f"tcp连接失败: {e}")
             QMessageBox.critical(self, "错误", f"tcp连接失败: {e}")
-            self.close()
+            raise e
 
-    def init_timer(self):
+    def init_instance_field(self):
+        self.latest_ver = sql_table_query_ex("1项目管理", sql="select max(客户端版本) from 1项目管理")[0]["max(客户端版本)"]
+        self.lbe_latest_ver.setText(self.latest_ver)
+        # ---------------------- 定时器 ----------------------
         self.timer_sec = QTimer()
         self.timer_sec.timeout.connect(self.on_timer_sec_timeout)
         self.timer_sec.start(1000)
         self.timer_min = QTimer()
         self.timer_min.timeout.connect(self.on_timer_min_timeout)
-        self.timer_min.start(1000*60*15)
+        self.timer_min.start(1000 * 60 * 15)
 
     def init_all_controls(self):
         def init_all_table():
@@ -561,6 +568,8 @@ class WndServer(QMainWindow, Ui_WndServer):
     def show_all_tbe_proj(self):
         query_proj_list = sql_table_query("1项目管理")
         self.refresh_tbe_proj(query_proj_list)
+        self.latest_ver = sql_table_query_ex("1项目管理", sql="select max(客户端版本) from 1项目管理")[0]["max(客户端版本)"]
+        self.lbe_latest_ver.setText(self.latest_ver)
 
     def show_all_tbe_user(self):
         query_user_list = sql_table_query("2用户管理")
@@ -1089,12 +1098,13 @@ def sql_table_query(table_name: str, condition_dict={}):
     return ret
 
 # 表_查询, 成功返回字典列表, 否则返回空列表
-def sql_table_query_ex(table_name: str, condition=""):
+def sql_table_query_ex(table_name: str, condition="", sql=""):
     # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
-    if condition:
-        sql = f"select * from {table_name} where {condition};"
-    else:
-        sql = f"select * from {table_name};"
+    if not sql:
+        if condition:
+            sql = f"select * from {table_name} where {condition};"
+        else:
+            sql = f"select * from {table_name};"
     ret = []
     try:
         cursor.execute(sql)  # 执行SQL语句

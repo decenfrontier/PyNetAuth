@@ -283,6 +283,7 @@ class Ui_WndServer(object):
         self.cmb_user_field.addItem("")
         self.cmb_user_field.addItem("")
         self.cmb_user_field.addItem("")
+        self.cmb_user_field.addItem("")
         self.cmb_user_field.setObjectName(u"cmb_user_field")
 
         self.horizontalLayout_2.addWidget(self.cmb_user_field)
@@ -518,7 +519,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -580,13 +581,14 @@ class Ui_WndServer(object):
         self.cmb_user_field.setItemText(1, QCoreApplication.translate("WndServer", u"\u5bc6\u7801", None))
         self.cmb_user_field.setItemText(2, QCoreApplication.translate("WndServer", u"QQ", None))
         self.cmb_user_field.setItemText(3, QCoreApplication.translate("WndServer", u"\u72b6\u6001", None))
-        self.cmb_user_field.setItemText(4, QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55\u65f6\u95f4", None))
-        self.cmb_user_field.setItemText(5, QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55IP", None))
-        self.cmb_user_field.setItemText(6, QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u767b\u5f55\u6b21\u6570", None))
-        self.cmb_user_field.setItemText(7, QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u89e3\u7ed1\u6b21\u6570", None))
-        self.cmb_user_field.setItemText(8, QCoreApplication.translate("WndServer", u"\u673a\u5668\u7801", None))
-        self.cmb_user_field.setItemText(9, QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u65f6\u95f4", None))
-        self.cmb_user_field.setItemText(10, QCoreApplication.translate("WndServer", u"\u5907\u6ce8", None))
+        self.cmb_user_field.setItemText(4, QCoreApplication.translate("WndServer", u"\u5230\u671f\u65f6\u95f4", None))
+        self.cmb_user_field.setItemText(5, QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55\u65f6\u95f4", None))
+        self.cmb_user_field.setItemText(6, QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55IP", None))
+        self.cmb_user_field.setItemText(7, QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u767b\u5f55\u6b21\u6570", None))
+        self.cmb_user_field.setItemText(8, QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u89e3\u7ed1\u6b21\u6570", None))
+        self.cmb_user_field.setItemText(9, QCoreApplication.translate("WndServer", u"\u673a\u5668\u7801", None))
+        self.cmb_user_field.setItemText(10, QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u65f6\u95f4", None))
+        self.cmb_user_field.setItemText(11, QCoreApplication.translate("WndServer", u"\u5907\u6ce8", None))
 
         self.cmb_user_operator.setItemText(0, QCoreApplication.translate("WndServer", u"=", None))
         self.cmb_user_operator.setItemText(1, QCoreApplication.translate("WndServer", u"!=", None))

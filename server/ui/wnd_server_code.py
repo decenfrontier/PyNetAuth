@@ -209,6 +209,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_user_unfrozen_sel = QAction("解冻选中用户")
         self.action_user_charge_sel = QAction("续费选中用户")
         self.action_user_charge_all = QAction("续费全部用户")
+        self.action_user_del_sel = QAction("删除选中用户")
         self.menu_tbe_user.addActions([self.action_user_show_all,
                                        self.action_user_comment_sel,
                                        self.action_user_state_sel])
@@ -217,13 +218,15 @@ class WndServer(QMainWindow, Ui_WndServer):
                                        self.action_user_unfrozen_sel])
         self.menu_tbe_user.addSeparator()
         self.menu_tbe_user.addActions([self.action_user_charge_sel,
-                                       self.action_user_charge_all])
+                                       self.action_user_charge_all,
+                                       self.action_user_del_sel])
         self.action_user_show_all.triggered.connect(self.show_all_tbe_user)
         self.action_user_comment_sel.triggered.connect(self.on_action_user_comment_sel_triggered)
         self.action_user_frozen_sel.triggered.connect(self.on_action_user_frozen_sel_triggered)
         self.action_user_unfrozen_sel.triggered.connect(self.on_action_user_unfrozen_sel_triggered)
         self.action_user_charge_sel.triggered.connect(self.on_action_user_charge_sel_triggered)
         self.action_user_charge_all.triggered.connect(self.on_action_user_charge_all_triggered)
+        self.action_user_del_sel.triggered.connect(self.on_action_user_del_sel_triggered)
         self.tbe_user.customContextMenuRequested.connect(
             lambda : self.menu_tbe_user.exec_(QCursor.pos())
         )
@@ -488,9 +491,23 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not ok_pressed:
             self.show_info("取消续费全部账号操作")
             return
+        # todo: 若用户已到期, 从now()开始加, 否则从到期时间开始加
         num = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
                                   f"now() < 到期时间 and 状态 not in ('', '冻结')")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
+        self.show_all_tbe_user()
+
+    def on_action_user_del_sel_triggered(self):
+        item_list = self.tbe_user.selectedItems()
+        account_set = {self.tbe_user.item(it.row(), 1).text() for it in item_list}
+        if not account_set:
+            return
+        ret = QMessageBox.information(self, "提示", "确定删除选中账号?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if ret != QMessageBox.Yes:
+            return
+        accounts = "','".join(account_set)
+        num = sql_table_del_ex("2用户管理", f"账号 in ('{accounts}')")
+        self.show_info(f"{num}个用户删除成功")
         self.show_all_tbe_user()
 
     def on_action_user_state_triggered(self):

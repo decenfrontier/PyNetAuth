@@ -166,7 +166,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_custom.setColumnWidth(val, 120)
             self.tbe_custom.setColumnWidth(en_val, 200)
             # 每日流水表
-            id, date= 0, 1
+            id, date = 0, 1
             self.tbe_everyday.setColumnWidth(id, 40)
             self.tbe_everyday.setColumnWidth(date, 130)
             # 显示全部
@@ -174,12 +174,14 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.show_all_tbe_user()
             self.show_all_tbe_card()
             self.show_all_tbe_custom()
+
         def init_tool_bar():
             self.tool_bar.addAction(QIcon(":/proj.png"), "项目管理")
             self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
             self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
             self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
             self.tool_bar.addAction(QIcon(":/flow.png"), "每日流水")
+
         # 显示第一页
         self.stack_widget.setCurrentIndex(0)
         # 工具栏设置图标
@@ -198,7 +200,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_proj_show_all.triggered.connect(self.show_all_tbe_proj)
         self.action_proj_del_sel.triggered.connect(self.on_action_proj_del_sel_triggered)
         self.tbe_proj.customContextMenuRequested.connect(
-            lambda : self.menu_tbe_proj.exec_(QCursor.pos())
+            lambda: self.menu_tbe_proj.exec_(QCursor.pos())
         )
 
         # 用户管理表
@@ -232,7 +234,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_user_charge_sel.triggered.connect(self.on_action_user_charge_sel_triggered)
         self.action_user_charge_all.triggered.connect(self.on_action_user_charge_all_triggered)
         self.tbe_user.customContextMenuRequested.connect(
-            lambda : self.menu_tbe_user.exec_(QCursor.pos())
+            lambda: self.menu_tbe_user.exec_(QCursor.pos())
         )
         self.sub_menu_user_state = QMenu()
         self.sub_action_offline = QAction("离线")
@@ -270,7 +272,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_card_del_used.triggered.connect(self.on_action_card_del_used_triggered)
         self.action_card_export_sel.triggered.connect(self.on_action_card_export_sel_triggered)
         self.tbe_card.customContextMenuRequested.connect(
-            lambda : self.menu_tbe_card.exec_(QCursor.pos())
+            lambda: self.menu_tbe_card.exec_(QCursor.pos())
         )
 
         # 自定义数据表
@@ -283,9 +285,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_custom_show_all.triggered.connect(self.show_all_tbe_custom)
         self.action_custom_del_sel.triggered.connect(self.on_action_custom_del_sel_triggered)
         self.tbe_custom.customContextMenuRequested.connect(
-            lambda : self.menu_tbe_custom.exec_(QCursor.pos())
+            lambda: self.menu_tbe_custom.exec_(QCursor.pos())
         )
-
 
     def init_all_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
@@ -426,7 +427,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not ver_set:
             self.show_info("未选中任何项")
             return
-        ret = QMessageBox.information(self, "警告", "是否确认删除选中版本?", QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+        ret = QMessageBox.information(self, "警告", "是否确认删除选中版本?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if ret != QMessageBox.Yes:
             return
         vers = "','".join(ver_set)
@@ -466,7 +467,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                        if self.tbe_user.item(it.row(), 4).text() == "冻结"}
         if not account_set:
             return
-        ret = QMessageBox.information(self, "提示", "确定解冻选中账号?", QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+        ret = QMessageBox.information(self, "提示", "确定解冻选中账号?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if ret != QMessageBox.Yes:
             return
         accounts = "','".join(account_set)
@@ -480,24 +481,25 @@ class WndServer(QMainWindow, Ui_WndServer):
         account_set = {self.tbe_user.item(it.row(), 1).text() for it in item_list}
         if not account_set:
             return
-        gift_day, ok_pressed = QInputDialog.getInt(self, "续费选中", "续费天数:", QLineEdit.Normal)
+        gift_day, ok_pressed = QInputDialog.getInt(self, "续费选中(选中行, 且状态不为'', 冻结)",
+                                                   "续费天数:", QLineEdit.Normal)
         if not ok_pressed:
             return
         accounts = "','".join(account_set)
-        # todo: 若用户已到期, 从now()开始加, 否则从到期时间开始加
-        num = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
-                                  f"账号 in ('{accounts}') and now() < 到期时间 and 状态 not in ('', '冻结')")
+        # 若用户已到期, 从now()开始加, 否则从到期时间开始加
+        num = sql_table_update_ex("2用户管理", f"到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), date_add(到期时间, interval {gift_day} day))",
+                                  f"账号 in ('{accounts}') and 状态 not in ('', '冻结')")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
         self.show_all_tbe_user()
 
     def on_action_user_charge_all_triggered(self):
-        gift_day, ok_pressed = QInputDialog.getInt(self, "续费全部", "续费天数:", QLineEdit.Normal)
+        gift_day, ok_pressed = QInputDialog.getInt(self, "续费全部(没到期, 且状态不为'', 冻结)",
+                                                   "续费天数:", QLineEdit.Normal)
         if not ok_pressed:
-            self.show_info("取消续费全部账号操作")
             return
-        # todo: 若用户已到期, 从now()开始加, 否则从到期时间开始加
-        num = sql_table_update_ex("2用户管理", f"到期时间 = date_add(到期时间, interval {gift_day} day)",
-                                  f"now() < 到期时间 and 状态 not in ('', '冻结')")
+        # 若用户已到期, 从now()开始加, 否则从到期时间开始加
+        num = sql_table_update_ex("2用户管理", f"到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), date_add(到期时间, interval {gift_day} day))",
+                                  "now() < 到期时间 and 状态 not in ('', '冻结')")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
         self.show_all_tbe_user()
 
@@ -610,7 +612,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         query_custom_list = sql_table_query("4自定义数据")
         self.refresh_tbe_custom(query_custom_list)
         # 刷新 第一批自定义数据 和 第二批自定义数据
-        key_eval_dict = {custom_dict["键"]:custom_dict["加密值"] for custom_dict in query_custom_list}
+        key_eval_dict = {custom_dict["键"]: custom_dict["加密值"] for custom_dict in query_custom_list}
         self.custom1 = {"pic": key_eval_dict.pop("pic"),
                         "zk": key_eval_dict.pop("zk")}
         self.custom2 = key_eval_dict
@@ -712,6 +714,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             location = get_ip_location(ip)
             with mutex:
                 ip_location_list.append((ip, location))
+
         # 获取用户表有但归属表没有的ip列表
         query_ip_list = sql_table_query_ex(sql="select distinct A.上次登录IP from 2用户管理 A left join ip归属地 B "
                                                "on A.上次登录IP=B.IP地址 where B.IP地址 is null")
@@ -753,7 +756,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         offset_date_time = datetime.timedelta(minutes=-15)
         due_time = (now_date_time + offset_date_time).strftime("%Y-%m-%d %H:%M:%S")
         sql_table_update_ex("2用户管理", "状态='离线'", f"状态='在线' and 心跳时间<'{due_time}'")
-
 
     def thd_accept_client(self):
         log_append_content("服务端已开启, 准备接受客户请求...")
@@ -813,6 +815,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         log_append_content(f"客户端{client_addr}已断开连接, 服务结束")
         client_socket.close()
 
+
 # 处理_初始
 def deal_init(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
@@ -829,6 +832,7 @@ def deal_init(client_socket: socket.socket, client_content_dict: dict):
     server_info_dict = {"消息类型": "初始",
                         "内容": {"结果": init_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
+
 
 # 处理_项目
 def deal_proj(client_socket: socket.socket, client_content_dict: dict):
@@ -857,6 +861,7 @@ def deal_proj(client_socket: socket.socket, client_content_dict: dict):
                         "内容": {"结果": proj_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
+
 # 处理_自定义数据
 def deal_custom1(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
@@ -865,6 +870,7 @@ def deal_custom1(client_socket: socket.socket, client_content_dict: dict):
     server_info_dict = {"消息类型": "烫烫烫",
                         "内容": {"结果": True, "详情": wnd_server.custom1}}
     send_to_client(client_socket, server_info_dict)
+
 
 # 处理_自定义数据
 def deal_custom2(client_socket: socket.socket, client_content_dict: dict):
@@ -984,6 +990,7 @@ def deal_pay(client_socket: socket.socket, client_content_dict: dict):
     server_info_dict = {"消息类型": "充值",
                         "内容": {"结果": pay_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
+
 
 # 处理_改密
 def deal_modify(client_socket: socket.socket, client_content_dict: dict):
@@ -1119,8 +1126,6 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
         log_append_content(f"向客户端{client_socket.getpeername()}回复失败: {e}")
 
 
-
-
 # 表_插入, 成功返回插入数, 否则返回0
 def sql_table_insert(table_name: str, val_dict: dict):
     # keys = "account, pwd,qq, machine_code, reg_ip"
@@ -1140,6 +1145,7 @@ def sql_table_insert(table_name: str, val_dict: dict):
     print(f"表插入结果: {ret}")
     return ret
 
+
 # 表_插入扩展
 def sql_table_insert_ex(table_name="", condition="", sql=""):
     if not sql:
@@ -1154,6 +1160,7 @@ def sql_table_insert_ex(table_name="", condition="", sql=""):
         db.rollback()  # 数据库回滚
     print(f"表插入结果: {ret}")
     return ret
+
 
 # 表_查询, 成功返回字典列表, 否则返回空列表
 def sql_table_query(table_name: str, condition_dict={}):
@@ -1177,6 +1184,7 @@ def sql_table_query(table_name: str, condition_dict={}):
     print(f"表查询结果: {ret}")
     return ret
 
+
 # 表_查询, 成功返回字典列表, 否则返回空列表
 def sql_table_query_ex(table_name="", condition="", sql=""):
     # 准备SQL语句, %s是SQL语句的参数占位符, 防止注入
@@ -1195,6 +1203,7 @@ def sql_table_query_ex(table_name="", condition="", sql=""):
         db.rollback()  # 数据库回滚
     print(f"表查询结果: {ret}")
     return ret
+
 
 # 表_更新, 成功返回更新数, 否则返回0
 def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
@@ -1222,6 +1231,7 @@ def sql_table_update(table_name: str, update_dict: dict, condition_dict={}):
     print(f"表更新结果: {ret}")
     return ret
 
+
 # 表_更新扩展, 成功返回更新数, 否则返回0
 def sql_table_update_ex(table_name="", update="", condition="", sql=""):
     if not sql:
@@ -1238,6 +1248,7 @@ def sql_table_update_ex(table_name="", update="", condition="", sql=""):
         db.rollback()  # 数据库回滚
     print(f"表更新结果: {ret}")
     return ret
+
 
 # 表_删除, 成功返回删除数, 否则返回0
 def sql_table_del(table_name: str, condition_dict: dict):
@@ -1259,6 +1270,7 @@ def sql_table_del(table_name: str, condition_dict: dict):
         db.rollback()  # 数据库回滚
     print(f"表删除结果: {ret}")
     return ret
+
 
 # 表_删除扩展, 成功返回删除数, 否则返回0
 def sql_table_del_ex(table_name: str, condition: str):
@@ -1309,10 +1321,12 @@ def log_append_content(content: str):
             text = f"{cur_time_format} {content}\n"
             f.write(text)
 
+
 # 剪切板拷贝
 def clip_copy(content: str):
     clip_bd = QApplication.clipboard()
     clip_bd.setText(content)
+
 
 # 获取IP归属地
 def get_ip_location(ip: str) -> str:

@@ -1025,6 +1025,7 @@ def deal_heart(client_socket: socket.socket, client_content_dict: dict):
     account = client_content_dict["账号"]
     log_append_content(f"[心跳] 正在处理账号: {account}")
     comment = client_content_dict["备注"]
+    machine_code = client_content_dict["机器码"]
     update_dict = {"心跳时间": cur_time_format, "备注": comment}
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
     if query_user_list:
@@ -1036,6 +1037,8 @@ def deal_heart(client_socket: socket.socket, client_content_dict: dict):
         elif "发现" in comment:  # 发现客户危险行为
             heart_ret, detail = "下线", "检测到非法程序"
             update_dict["状态"] = "冻结"
+        elif query_user["机器码"] != machine_code:
+            heart_ret, detail = "下线", "异机登录此账号"
         else:
             heart_ret, detail = "正常", ""
             update_dict["状态"] = "在线"

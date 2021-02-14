@@ -60,6 +60,7 @@ class WndClientMain(QMainWindow, Ui_WndClientMain):
                     "消息类型": "心跳",
                     "内容": {
                         "账号": mf.user_account,
+                        "机器码": mf.machine_code,
                         "备注": mf.client_comment,
                     }
                 }

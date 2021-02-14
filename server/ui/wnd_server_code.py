@@ -763,16 +763,18 @@ def deal_custom(client_socket: socket.socket, client_content_dict: dict):
     log_append_content(f"[自定义数据] 正在处理IP: {ip}")
     custom_ret = False
     query_custom_list = sql_table_query("4自定义数据")
-    # 整理成键值对字典
-    content_dict = {}
-    for query_custom in query_custom_list:
-        key = query_custom["键"]
-        e_val = query_custom["加密值"]
-        content_dict[key] = e_val
-
+    if query_custom_list:
+        custom_ret = True
+        detail = {}  # 整理成键值对字典
+        for query_custom in query_custom_list:
+            key = query_custom["键"]
+            e_val = query_custom["加密值"]
+            detail[key] = e_val
+    else:
+        detail = "未知的消息类型-烫烫烫"
     # 把处理_自定义数据结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "烫烫烫",
-                        "内容": content_dict}
+                        "内容": {"结果": custom_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 # 处理_项目

@@ -35,11 +35,13 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         thd1.start()
         self.init_wnd()
         self.init_status_bar()
-        self.init_net_auth()
-        self.init_all_controls()
-        self.init_all_sig_slot()
-        thd1.join(1)
-        self.show_info("窗口初始化成功")
+        if self.init_net_auth():
+            self.init_all_controls()
+            self.init_all_sig_slot()
+            self.show_info("窗口初始化成功")
+        else:
+            self.show_info("窗口初始化失败")
+            self.close()
 
     def closeEvent(self, event: QCloseEvent):
         print("登录窗口即将关闭")
@@ -53,9 +55,14 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.show_info("正在连接服务器...")
         # 发送客户端第一波数据-初始
         if not self.send_recv_init():
-            self.close()
-        print("111")
-        print("222")
+            return False
+        # 发送客户端第二波数据-项目
+        if not self.send_recv_proj():
+            return False
+        # 发送客户端第三波数据-自定义数据
+        if not self.send_recv_custom():
+            return False
+        return True
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
@@ -166,7 +173,51 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                 QMessageBox.information(self, "错误", detail)
         return False
 
+    def send_recv_proj(self):
+        client_info_dict = {"消息类型": "锟斤拷",
+                            "内容": {"版本号": mf.client_ver}}
+        tcp_socket = self.connect_server_tcp()
+        self.send_to_server(tcp_socket, client_info_dict)
+        # 处理服务端响应消息
+        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        if not msg_type:
+            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试, 错误码: 2")
+            return False
+        if msg_type == "锟斤拷":
+            if server_content_dict["结果"]:
+                detail_dict = server_content_dict["详情"]
+                mf.notice = detail_dict["客户端公告"]
+                mf.url_update = detail_dict["更新网址"]
+                mf.url_card = detail_dict["发卡网址"]
+                mf.allow_login = detail_dict["允许登录"]
+                mf.allow_reg = detail_dict["允许注册"]
+                mf.allow_unbind = detail_dict["允许解绑"]
+                return True
+            else:
+                detail = server_content_dict["详情"]
+                QMessageBox.information(self, "错误", detail)
+        return False
 
+    def send_recv_custom(self):
+        client_info_dict = {"消息类型": "烫烫烫",
+                            "内容": {"烫烫烫": "烫烫烫"}}
+        tcp_socket = self.connect_server_tcp()
+        self.send_to_server(tcp_socket, client_info_dict)
+        # 处理服务端响应消息
+        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        if not msg_type:
+            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试, 错误码: 2")
+            return False
+        if msg_type == "烫烫烫":
+            if server_content_dict["结果"]:
+                detail_dict = server_content_dict["详情"]
+                mf.pwd_pic = mf.aes.decrypt(detail_dict["pic"])
+                mf.pwd_zk = mf.aes.decrypt(detail_dict["zk"])
+                return True
+            else:
+                detail = server_content_dict["详情"]
+                QMessageBox.information(self, "错误", detail)
+        return False
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
@@ -339,8 +390,8 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
         if err_no != 0:
-            self.show_info(self, f"连接服务器失败, 错误码: {err_no}")
-            self.close()
+            QMessageBox.critical(self, "错误", f"连接服务器失败, 错误码: {err_no}")
+            raise Exception(f"连接服务器失败, 错误码: {err_no}")
         return tcp_socket
 
     # 发送数据给服务端

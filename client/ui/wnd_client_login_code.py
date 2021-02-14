@@ -4,6 +4,7 @@ from threading import Thread, Lock
 import json
 import base64
 import time
+import webbrowser
 
 from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
     QMouseEvent, QPaintEvent, QPainter, QBitmap
@@ -52,7 +53,6 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
 
     # 初始化网络验证
     def init_net_auth(self):
-        self.show_info("正在连接服务器...")
         # 发送客户端第一波数据-初始
         if not self.send_recv_init():
             return False
@@ -135,11 +135,20 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
         self.edt_reg_qq.setValidator(QRegExpValidator(reg_exp_qq_number))
         # ------------------ 设置标签格式 -----------------
         # 充值页
-        self.lbe_pay_key.setText("""<a href="https://www.baidu.com">充值卡号: </a>""")
+        self.lbe_pay_key.setText(f"<a href={mf.url_card}>充值卡号: </a>")
         self.lbe_pay_key.setOpenExternalLinks(True)
         self.lbe_pay_key.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
         # 公告页
         self.lbe_notice_text.setText(f"{mf.notice}")
+        # 弹出更新网址
+        if mf.client_ver != mf.latest_ver:
+            ret = QMessageBox.information(self, "提示", "发现新版本, 是否前往下载?", QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+            if ret == QMessageBox.Yes:
+                webbrowser.open(mf.url_update)
+        # ------------------ 设置按钮状态 -----------------
+        self.btn_login.setEnabled(mf.allow_login)
+        self.btn_reg.setEnabled(mf.allow_reg)
+        self.btn_unbind.setEnabled(mf.allow_unbind)
 
     def init_all_sig_slot(self):
         self.login.connect(self.accept)
@@ -192,6 +201,7 @@ class WndClientLogin(QDialog, Ui_WndClientLogin):
                 mf.allow_login = detail_dict["允许登录"]
                 mf.allow_reg = detail_dict["允许注册"]
                 mf.allow_unbind = detail_dict["允许解绑"]
+                mf.latest_ver = detail_dict["最新版本"]
                 return True
             else:
                 detail = server_content_dict["详情"]

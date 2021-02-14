@@ -65,7 +65,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_status_bar(self):
         self.lbe_info = QLabel("提示")
         self.status_bar.addWidget(self.lbe_info)
-        self.lbe_1 = QLabel("| 最新客户端版本:")
+        self.lbe_1 = QLabel("最新客户端版本:")
         self.status_bar.addPermanentWidget(self.lbe_1)
         self.lbe_latest_ver = QLabel("x.x.x")
         self.status_bar.addPermanentWidget(self.lbe_latest_ver)
@@ -335,10 +335,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         }
         if sql_table_query("1项目管理", {"客户端版本": client_ver}):
             num = sql_table_update("1项目管理", val_dict, {"客户端版本": client_ver})
-            self.show_info(f"{num}个项目更新成功")
+            self.show_info(f"{num}个版本更新成功")
         else:
             num = sql_table_insert("1项目管理", val_dict)
-            self.show_info(f"{num}个项目添加成功")
+            self.show_info(f"{num}个版本添加成功")
         self.show_all_tbe_proj()
 
     def on_btn_user_query_clicked(self):
@@ -731,8 +731,9 @@ class WndServer(QMainWindow, Ui_WndServer):
                 client_content_dict = json.loads(client_content_str)
             msg_func_dict = {
                 "初始": deal_init,
-                "烫烫烫": deal_custom,
                 "锟斤拷": deal_proj,
+                "烫烫烫": deal_custom,
+
                 "注册": deal_reg,
                 "登录": deal_login,
                 "充值": deal_pay,
@@ -766,6 +767,33 @@ def deal_init(client_socket: socket.socket, client_content_dict: dict):
                         "内容": {"结果": init_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
+# 处理_项目
+def deal_proj(client_socket: socket.socket, client_content_dict: dict):
+    ip = client_socket.getpeername()
+    log_append_content(f"[项目] 正在处理IP: {ip}")
+
+    client_ver = client_content_dict["版本号"]
+    query_proj_list = sql_table_query("1项目管理", {"客户端版本": client_ver})
+    if query_proj_list:
+        proj_ret = True
+        query_proj = query_proj_list[0]
+        detail = {
+            "客户端公告": query_proj["客户端公告"],
+            "更新网址": query_proj["更新网址"],
+            "发卡网址": query_proj["发卡网址"],
+            "允许登录": query_proj["允许登录"],
+            "允许注册": query_proj["允许注册"],
+            "允许解绑": query_proj["允许解绑"],
+            "最新版本": wnd_server.latest_ver,
+        }
+    else:
+        proj_ret = False
+        detail = "客户端版本过低, 请下载最新版本"
+    # 把处理_项目数据结果整理成py字典, 并发送给客户端
+    server_info_dict = {"消息类型": "锟斤拷",
+                        "内容": {"结果": proj_ret, "详情": detail}}
+    send_to_client(client_socket, server_info_dict)
+
 # 处理_自定义数据
 def deal_custom(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
@@ -786,31 +814,7 @@ def deal_custom(client_socket: socket.socket, client_content_dict: dict):
                         "内容": {"结果": custom_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
-# 处理_项目
-def deal_proj(client_socket: socket.socket, client_content_dict: dict):
-    ip = client_socket.getpeername()
-    log_append_content(f"[项目] 正在处理IP: {ip}")
 
-    client_ver = client_content_dict["版本号"]
-    query_proj_list = sql_table_query("1项目管理", {"客户端版本": client_ver})
-    if query_proj_list:
-        proj_ret = True
-        query_proj = query_proj_list[0]
-        detail = {
-            "客户端公告": query_proj["客户端公告"],
-            "更新网址": query_proj["更新网址"],
-            "发卡网址": query_proj["发卡网址"],
-            "允许登录": query_proj["允许登录"],
-            "允许注册": query_proj["允许注册"],
-            "允许解绑": query_proj["允许解绑"],
-        }
-    else:
-        proj_ret = False
-        detail = "客户端版本过低, 请下载最新版本"
-    # 把处理_项目数据结果整理成py字典, 并发送给客户端
-    server_info_dict = {"消息类型": "锟斤拷",
-                        "内容": {"结果": proj_ret, "详情": detail}}
-    send_to_client(client_socket, server_info_dict)
 
 
 # 处理_注册

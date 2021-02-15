@@ -65,7 +65,6 @@ def init_logging():
                         filename=f"{PATH_SAVE}\\run.log",
                         filemode="w",
                         datefmt="%m-%d  %H:%M:%S")
-    log_info("初始化日志模块成功")
 
 
 def log_info(msg):

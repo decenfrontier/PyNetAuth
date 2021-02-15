@@ -241,8 +241,11 @@ class WndLogin(QDialog, Ui_WndLogin):
             self.stack_widget.setCurrentIndex(4)
 
     def on_btn_login_clicked(self):
-        login_account = self.edt_login_account.text()
-        login_pwd = self.edt_login_pwd.text()
+        # 把控件信息保存到配置文件
+        cfg.cfg_login.controls_to_file()
+        # 读取登录账号密码
+        login_account = cfg.cfg_login.edt_login_account
+        login_pwd = cfg.cfg_login.edt_login_pwd
         bool_list = [
             len(login_account) in range(6, 13),
             len(login_pwd) in range(6, 13),
@@ -452,6 +455,7 @@ class WndLogin(QDialog, Ui_WndLogin):
 if __name__ == '__main__':
     # 初始化日志模块
     mf.init_logging()
+    mf.log_info("初始化日志模块成功")
 
     # 界面随DPI自动缩放
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -460,23 +464,23 @@ if __name__ == '__main__':
     app.setStyleSheet(mf.qss_style)
     mf.log_info("初始化界面样式完成")
 
-    # 初始化登录窗口
-    wnd_client_login = WndLogin()
-    wnd_client_login.show()
-    mf.log_info("初始化登录窗口完成")
-
     # 初始化json文件
-    if not os.path.exists(mf.PATH_GNRL_JSON):
+    if not os.path.exists(mf.PATH_LOGIN_JSON):
         mf.log_info("自动创建登录界面配置文件")
-        mf.py_to_json({"登录界面": cfg.default_login_dict}, mf.PATH_LOGIN_JSON)
+        mf.py_to_json(cfg.default_login_dict, mf.PATH_LOGIN_JSON)
     mf.log_info("初始化配置文件完成")
 
-    # 读取配置文件
+    # 初始化登录窗口
+    mf.wnd_login = WndLogin()
+    mf.wnd_login.show()
+    mf.log_info("初始化登录窗口完成")
 
+    # 读取登录窗口配置
+    cfg.cfg_login.file_to_controls()
 
-    if wnd_client_login.exec_() == QDialog.Accepted:
-        wnd_client_main = WndMain()
-        wnd_client_main.show()
-        wnd_client_main.start_heart_beat()
+    if mf.wnd_login.exec_() == QDialog.Accepted:
+        mf.wnd_main = WndMain()
+        mf.wnd_main.show()
+        mf.wnd_main.start_heart_beat()
         sys.exit(app.exec_())
     sys.exit(0)

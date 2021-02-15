@@ -820,13 +820,13 @@ class WndServer(QMainWindow, Ui_WndServer):
 def deal_init(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
     log_append_content(f"[初始] 正在处理IP: {ip}")
-    init_ret = False
-    detail = "通信密钥错误"
     # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
     if client_content_dict["通信密钥"] == "*d#f12j@34rt7%gh.":
         init_ret = True
         detail = enc_aes_key
     else:  # 通信密钥被修改, 记录到日志
+        init_ret = False
+        detail = "通信密钥错误"
         log_append_content(f"[初始] IP{ip}通信密钥被修改, Warning!")
     # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "初始",

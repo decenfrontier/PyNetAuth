@@ -51,11 +51,10 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     # 初始化网络验证
     def init_net_auth(self):
-        if not self.send_recv_init():
-            return False
-        if not self.send_recv_proj():
-            return False
-        return True
+        tcp_socket = self.connect_server_tcp()
+        if self.send_recv_init(tcp_socket) and self.send_recv_proj(tcp_socket):
+            return True
+        return False
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
@@ -92,7 +91,6 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 添加标签
         self.lbe_info = QLabel()
         self.status_bar.addWidget(self.lbe_info)
-
 
     def init_controls(self):
         # 显示第一页
@@ -152,12 +150,12 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.btn_unbind.clicked.connect(self.on_btn_unbind_clicked)
         self.btn_modify.clicked.connect(self.on_btn_modify_clicked)
 
-    def send_recv_init(self):
+    # 发送接收初始消息
+    def send_recv_init(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "初始",
                             "内容": {"通信密钥": mf.aes_key}}
-        tcp_socket = self.connect_server_tcp()
         self.send_to_server(tcp_socket, client_info_dict)
-        # 处理服务端响应消息
+        # 等待服务端响应初始消息
         msg_type, server_content_dict = self.recv_from_server(tcp_socket)
         if not msg_type:
             self.show_info("服务器繁忙, 请稍后再试, 错误码: 1")
@@ -174,12 +172,12 @@ class WndLogin(QDialog, Ui_WndLogin):
                 QMessageBox.information(self, "错误", detail)
         return False
 
-    def send_recv_proj(self):
+    # 发送接收项目消息
+    def send_recv_proj(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "锟斤拷",
                             "内容": {"版本号": mf.client_ver}}
-        tcp_socket = self.connect_server_tcp()
         self.send_to_server(tcp_socket, client_info_dict)
-        # 处理服务端响应消息
+        # 等待服务端响应项目消息
         msg_type, server_content_dict = self.recv_from_server(tcp_socket)
         if not msg_type:
             self.show_info("服务器繁忙, 请稍后再试, 错误码: 2")
@@ -200,10 +198,9 @@ class WndLogin(QDialog, Ui_WndLogin):
                 QMessageBox.information(self, "错误", detail)
         return False
 
-    def send_recv_custom1(self):
+    def send_recv_custom1(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "烫烫烫",
                             "内容": {"烫烫烫": "烫烫烫"}}
-        tcp_socket = self.connect_server_tcp()
         self.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
         msg_type, server_content_dict = self.recv_from_server(tcp_socket)
@@ -217,10 +214,9 @@ class WndLogin(QDialog, Ui_WndLogin):
             return True
         return False
 
-    def send_recv_custom2(self):
+    def send_recv_custom2(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "屯屯屯",
                             "内容": {"屯屯屯": "屯屯屯"}}
-        tcp_socket = self.connect_server_tcp()
         self.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
         msg_type, server_content_dict = self.recv_from_server(tcp_socket)
@@ -280,7 +276,7 @@ class WndLogin(QDialog, Ui_WndLogin):
             self.show_info(server_content_dict["详情"])
             if server_content_dict["结果"]:
                 mf.user_account = server_content_dict["账号"]
-                if self.send_recv_custom1() and self.send_recv_custom2():
+                if self.send_recv_custom1(tcp_socket) and self.send_recv_custom2(tcp_socket):
                     self.sig_accept.emit()  # 登录界面接受
                 else:
                     self.sig_reject.emit()  # 登录界面拒绝

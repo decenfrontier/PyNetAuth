@@ -502,6 +502,9 @@ class Ui_WndServer(object):
         self.tbe_everyday.setHorizontalHeaderItem(5, __qtablewidgetitem43)
         self.tbe_everyday.setObjectName(u"tbe_everyday")
         self.tbe_everyday.horizontalHeader().setStretchLastSection(True)
+        self.tbe_everyday.verticalHeader().setVisible(False)
+        self.tbe_everyday.verticalHeader().setMinimumSectionSize(20)
+        self.tbe_everyday.verticalHeader().setDefaultSectionSize(20)
 
         self.gridLayout_2.addWidget(self.tbe_everyday, 0, 0, 1, 1)
 

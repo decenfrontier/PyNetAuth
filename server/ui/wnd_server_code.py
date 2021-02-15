@@ -166,12 +166,13 @@ class WndServer(QMainWindow, Ui_WndServer):
             # 每日流水表
             id, date = 0, 1
             self.tbe_everyday.setColumnWidth(id, 40)
-            self.tbe_everyday.setColumnWidth(date, 130)
+            self.tbe_everyday.setColumnWidth(date, 80)
             # 显示全部
             self.show_all_tbe_proj()
             self.show_all_tbe_user()
             self.show_all_tbe_card()
             self.show_all_tbe_custom()
+            self.show_all_tbe_everyday()
 
         def init_tool_bar():
             self.tool_bar.addAction(QIcon(":/proj.png"), "项目管理")
@@ -629,7 +630,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def show_all_tbe_everyday(self):
         # 读取表全部内容
         query_everyday_list = sql_table_query("5每日流水")
-        self.refresh_tbe_custom(query_everyday_list)
+        self.refresh_tbe_everyday(query_everyday_list)
 
     def refresh_tbe_proj(self, query_proj_list):
         self.tbe_proj.setRowCount(len(query_proj_list))
@@ -727,12 +728,14 @@ class WndServer(QMainWindow, Ui_WndServer):
             return False
         self.tbe_everyday.setRowCount(len(query_everyday_list))
         for row, query_everyday in enumerate(query_everyday_list):
+            query_everyday["日期"] = "" if query_everyday["日期"] is None else str(query_everyday["日期"])
+            query_everyday["最后更新时间"] = "" if query_everyday["最后更新时间"] is None else str(query_everyday["最后更新时间"])
             self.tbe_everyday.setItem(row, 0, QTableWidgetItem(str(query_everyday["ID"])))
             self.tbe_everyday.setItem(row, 1, QTableWidgetItem(query_everyday["日期"]))
-            self.tbe_everyday.setItem(row, 2, QTableWidgetItem(query_everyday["充值用户数"]))
-            self.tbe_everyday.setItem(row, 3, QTableWidgetItem(query_everyday["活跃用户数"]))
-            self.tbe_everyday.setItem(row, 4, QTableWidgetItem(query_everyday["当前在线用户数"]))
-            self.tbe_everyday.setItem(row, 5, QTableWidgetItem(query_everyday["最近更新时间"]))
+            self.tbe_everyday.setItem(row, 2, QTableWidgetItem(str(query_everyday["充值用户数"])))
+            self.tbe_everyday.setItem(row, 3, QTableWidgetItem(str(query_everyday["活跃用户数"])))
+            self.tbe_everyday.setItem(row, 4, QTableWidgetItem(str(query_everyday["当前在线用户数"])))
+            self.tbe_everyday.setItem(row, 5, QTableWidgetItem(query_everyday["最后更新时间"]))
 
     # 刷新ip归属地
     def refresh_ip_location(self):
@@ -775,13 +778,15 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 1 检测日期改变
         if cur_day != today:
             today = cur_day
+            # 1.1 更新日志
             path_log = f"C:\\net_auth_{today}.log"
+            # 1.2 更新每日次数
             sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})
+            # 1.3 插入每日流水
+            sql_table_insert("5每日流水", {"日期": today})
         # 2 刷新所有用户状态(状态为在线, 且心跳时间在15分钟前, 置为离线)
-        now_date_time = datetime.datetime.strptime(cur_time_format, "%Y-%m-%d %H:%M:%S")
-        offset_date_time = datetime.timedelta(minutes=-15)
-        due_time = (now_date_time + offset_date_time).strftime("%Y-%m-%d %H:%M:%S")
-        sql_table_update_ex("2用户管理", "状态='离线'", f"状态='在线' and 心跳时间<'{due_time}'")
+        sql_table_update_ex("2用户管理", "状态='离线'",
+                            f"状态='在线' and 心跳时间<date_sub(now(), interval -15 minute)")
 
     def thd_accept_client(self):
         log_append_content("服务端已开启, 准备接受客户请求...")

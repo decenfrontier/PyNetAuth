@@ -21,24 +21,32 @@ from client import cfg
 class WndLogin(QDialog, Ui_WndLogin):
     sig_accept = Signal()
     sig_reject = Signal()
+    sig_info = Signal(str)
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.init_wnd()
         self.init_status_bar()
+        self.init_custom_sig_slot()
         if self.init_net_auth():
-            self.init_all_controls()
-            self.init_all_sig_slot()
-            self.show_info("初始化登录窗口成功")
+            self.init_controls()
+            self.init_sig_slot()
+            self.show_info("登录窗口初始化成功")
         else:
-            self.show_info("初始化登录窗口失败")
+            self.show_info("登录窗口初始化失败")
             self.close()
 
     def closeEvent(self, event: QCloseEvent):
-        print("登录窗口即将关闭")
+        self.show_info("登录窗口正在退出...")
+
+    def init_custom_sig_slot(self):
+        self.sig_accept.connect(self.accept)
+        self.sig_reject.connect(self.reject)
+        self.sig_info.connect(lambda text: self.lbe_info.setText(text))
 
     def show_info(self, text):
-        self.lbe_info.setText(f"<提示> : {text}")
+        self.sig_info.emit(f"<提示> : {text}")
         mf.log_info(text)
 
     # 初始化网络验证
@@ -86,7 +94,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.status_bar.addWidget(self.lbe_info)
 
 
-    def init_all_controls(self):
+    def init_controls(self):
         # 显示第一页
         self.stack_widget.setCurrentIndex(0)
         # ----------------- 工具栏 -------------------
@@ -135,9 +143,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.btn_reg.setEnabled(mf.allow_reg)
         self.btn_unbind.setEnabled(mf.allow_unbind)
 
-    def init_all_sig_slot(self):
-        self.sig_accept.connect(self.accept)
-        self.sig_reject.connect(self.reject)
+    def init_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         self.btn_login.clicked.connect(self.on_btn_login_clicked)
         self.btn_reg.clicked.connect(self.on_btn_reg_clicked)
@@ -423,7 +429,6 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     # 从服务端接收数据
     def recv_from_server(self, tcp_socket: socket.socket):
-        mf.log_info("等待服务端发出消息中...")
         tcp_socket.settimeout(5)  # 设置为非阻塞接收, 只等5秒
         recv_bytes = ""
         try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常

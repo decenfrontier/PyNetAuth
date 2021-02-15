@@ -8,10 +8,10 @@ from PySide2.QtWidgets import QMainWindow, QLabel
 from PySide2.QtCore import QTimer
 from threading import Thread
 
-from client.ui.wnd_client_main import Ui_WndClientMain
+from client.ui.wnd_main import Ui_WndMain
 from client import mf
 
-class WndClientMain(QMainWindow, Ui_WndClientMain):
+class WndMain(QMainWindow, Ui_WndMain):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -150,7 +150,7 @@ if __name__ == '__main__':
     app.setStyle(QStyleFactory.create("fusion"))
     app.setStyleSheet(mf.qss_style)
 
-    wnd_client_main = WndClientMain()
+    wnd_client_main = WndMain()
     wnd_client_main.show()
 
     sys.exit(app.exec_())

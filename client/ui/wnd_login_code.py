@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import socket
 from threading import Thread, Lock
 import json
@@ -12,13 +12,13 @@ from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayou
     QStatusBar, QApplication, QStyleFactory
 from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, Signal
 
-from client.qtres import qres
-from client.ui.wnd_client_login import Ui_WndClientLogin
-from wnd_client_main_code import WndClientMain
+from client.qtres import qrc_wnd_login
+from client.ui.wnd_login import Ui_WndLogin
+from client.ui.wnd_main_code import WndMain
 from client import mf, my_crypto
 from client import cfg
 
-class WndClientLogin(QDialog, Ui_WndClientLogin):
+class WndLogin(QDialog, Ui_WndLogin):
     sig_accept = Signal()
     sig_reject = Signal()
     def __init__(self):
@@ -458,24 +458,24 @@ if __name__ == '__main__':
     app = QApplication()
     app.setStyle(QStyleFactory.create("fusion"))
     app.setStyleSheet(mf.qss_style)
-    log_info("初始化界面样式完成")
+    mf.log_info("初始化界面样式完成")
 
     # 初始化登录窗口
-    wnd_client_login = WndClientLogin()
+    wnd_client_login = WndLogin()
     wnd_client_login.show()
-    log_info("初始化登录窗口完成")
+    mf.log_info("初始化登录窗口完成")
 
     # 初始化json文件
     if not os.path.exists(mf.PATH_GNRL_JSON):
         mf.log_info("自动创建登录界面配置文件")
         mf.py_to_json({"登录界面": cfg.default_login_dict}, mf.PATH_LOGIN_JSON)
-    log_info("初始化配置文件完成")
+    mf.log_info("初始化配置文件完成")
 
     # 读取配置文件
 
 
     if wnd_client_login.exec_() == QDialog.Accepted:
-        wnd_client_main = WndClientMain()
+        wnd_client_main = WndMain()
         wnd_client_main.show()
         wnd_client_main.start_heart_beat()
         sys.exit(app.exec_())

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'wnd_client_login.ui'
+## Form generated from reading UI file 'wnd_login.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -13,14 +13,14 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 
-class Ui_WndClientLogin(object):
-    def setupUi(self, WndClientLogin):
-        if not WndClientLogin.objectName():
-            WndClientLogin.setObjectName(u"WndClientLogin")
-        WndClientLogin.resize(464, 272)
-        WndClientLogin.setSizeGripEnabled(False)
-        WndClientLogin.setModal(False)
-        self.stack_widget = QStackedWidget(WndClientLogin)
+class Ui_WndLogin(object):
+    def setupUi(self, WndLogin):
+        if not WndLogin.objectName():
+            WndLogin.setObjectName(u"WndLogin")
+        WndLogin.resize(464, 272)
+        WndLogin.setSizeGripEnabled(False)
+        WndLogin.setModal(False)
+        self.stack_widget = QStackedWidget(WndLogin)
         self.stack_widget.setObjectName(u"stack_widget")
         self.stack_widget.setGeometry(QRect(0, 0, 461, 271))
         self.page_login = QWidget()
@@ -380,56 +380,56 @@ class Ui_WndClientLogin(object):
         self.label.setBuddy(self.edt_login_account)
 #endif // QT_CONFIG(shortcut)
 
-        self.retranslateUi(WndClientLogin)
+        self.retranslateUi(WndLogin)
 
         self.stack_widget.setCurrentIndex(0)
 
 
-        QMetaObject.connectSlotsByName(WndClientLogin)
+        QMetaObject.connectSlotsByName(WndLogin)
     # setupUi
 
-    def retranslateUi(self, WndClientLogin):
-        WndClientLogin.setWindowTitle(QCoreApplication.translate("WndClientLogin", u"Login", None))
+    def retranslateUi(self, WndLogin):
+        WndLogin.setWindowTitle(QCoreApplication.translate("WndLogin", u"Login", None))
 #if QT_CONFIG(tooltip)
         self.stack_widget.setToolTip("")
 #endif // QT_CONFIG(tooltip)
-        self.btn_exit.setText(QCoreApplication.translate("WndClientLogin", u"\u9000 \u51fa", None))
+        self.btn_exit.setText(QCoreApplication.translate("WndLogin", u"\u9000 \u51fa", None))
         self.edt_login_account.setText("")
-        self.label_2.setText(QCoreApplication.translate("WndClientLogin", u"\u5bc6\u7801:", None))
+        self.label_2.setText(QCoreApplication.translate("WndLogin", u"\u5bc6\u7801:", None))
         self.edt_login_pwd.setText("")
-        self.label.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
-        self.btn_login.setText(QCoreApplication.translate("WndClientLogin", u"\u767b \u5f55", None))
-        self.btn_unbind.setText(QCoreApplication.translate("WndClientLogin", u"\u89e3 \u7ed1", None))
-        self.chk_login_remember.setText(QCoreApplication.translate("WndClientLogin", u"\u8bb0\u4f4f\u8d26\u53f7\u5bc6\u7801", None))
-        self.label_3.setText(QCoreApplication.translate("WndClientLogin", u"QQ:", None))
-        self.label_6.setText(QCoreApplication.translate("WndClientLogin", u"\u5bc6\u7801:", None))
-        self.label_5.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
+        self.label.setText(QCoreApplication.translate("WndLogin", u"\u8d26\u53f7:", None))
+        self.btn_login.setText(QCoreApplication.translate("WndLogin", u"\u767b \u5f55", None))
+        self.btn_unbind.setText(QCoreApplication.translate("WndLogin", u"\u89e3 \u7ed1", None))
+        self.chk_login_remember.setText(QCoreApplication.translate("WndLogin", u"\u8bb0\u4f4f\u8d26\u53f7\u5bc6\u7801", None))
+        self.label_3.setText(QCoreApplication.translate("WndLogin", u"QQ:", None))
+        self.label_6.setText(QCoreApplication.translate("WndLogin", u"\u5bc6\u7801:", None))
+        self.label_5.setText(QCoreApplication.translate("WndLogin", u"\u8d26\u53f7:", None))
 #if QT_CONFIG(tooltip)
-        self.edt_reg_account.setToolTip(QCoreApplication.translate("WndClientLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
+        self.edt_reg_account.setToolTip(QCoreApplication.translate("WndLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
 #endif // QT_CONFIG(tooltip)
         self.edt_reg_account.setText("")
 #if QT_CONFIG(tooltip)
-        self.edt_reg_qq.setToolTip(QCoreApplication.translate("WndClientLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 5-10\u4f4d", None))
+        self.edt_reg_qq.setToolTip(QCoreApplication.translate("WndLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 5-10\u4f4d", None))
 #endif // QT_CONFIG(tooltip)
         self.edt_reg_qq.setText("")
 #if QT_CONFIG(tooltip)
-        self.edt_reg_pwd.setToolTip(QCoreApplication.translate("WndClientLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
+        self.edt_reg_pwd.setToolTip(QCoreApplication.translate("WndLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
 #endif // QT_CONFIG(tooltip)
         self.edt_reg_pwd.setText("")
-        self.btn_reg.setText(QCoreApplication.translate("WndClientLogin", u"\u6ce8 \u518c", None))
-        self.label_13.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
+        self.btn_reg.setText(QCoreApplication.translate("WndLogin", u"\u6ce8 \u518c", None))
+        self.label_13.setText(QCoreApplication.translate("WndLogin", u"\u8d26\u53f7:", None))
         self.edt_pay_account.setText("")
 #if QT_CONFIG(tooltip)
-        self.lbe_pay_key.setToolTip(QCoreApplication.translate("WndClientLogin", u">> \u70b9\u6211\u8d2d\u5361 <<", None))
+        self.lbe_pay_key.setToolTip(QCoreApplication.translate("WndLogin", u">> \u70b9\u6211\u8d2d\u5361 <<", None))
 #endif // QT_CONFIG(tooltip)
-        self.lbe_pay_key.setText(QCoreApplication.translate("WndClientLogin", u"\u5145\u503c\u5361\u53f7:", None))
+        self.lbe_pay_key.setText(QCoreApplication.translate("WndLogin", u"\u5145\u503c\u5361\u53f7:", None))
         self.edt_pay_key.setText("")
-        self.btn_pay.setText(QCoreApplication.translate("WndClientLogin", u"\u5145 \u503c", None))
-        self.label_10.setText(QCoreApplication.translate("WndClientLogin", u"\u8d26\u53f7:", None))
-        self.label_12.setText(QCoreApplication.translate("WndClientLogin", u"QQ:", None))
-        self.label_11.setText(QCoreApplication.translate("WndClientLogin", u"\u65b0\u5bc6\u7801:", None))
-        self.btn_modify.setText(QCoreApplication.translate("WndClientLogin", u"\u6539 \u5bc6", None))
-        self.label_4.setText(QCoreApplication.translate("WndClientLogin", u"\u516c \u544a", None))
+        self.btn_pay.setText(QCoreApplication.translate("WndLogin", u"\u5145 \u503c", None))
+        self.label_10.setText(QCoreApplication.translate("WndLogin", u"\u8d26\u53f7:", None))
+        self.label_12.setText(QCoreApplication.translate("WndLogin", u"QQ:", None))
+        self.label_11.setText(QCoreApplication.translate("WndLogin", u"\u65b0\u5bc6\u7801:", None))
+        self.btn_modify.setText(QCoreApplication.translate("WndLogin", u"\u6539 \u5bc6", None))
+        self.label_4.setText(QCoreApplication.translate("WndLogin", u"\u516c \u544a", None))
         self.lbe_notice_text.setText("")
     # retranslateUi
 

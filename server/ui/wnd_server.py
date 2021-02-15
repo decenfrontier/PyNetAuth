@@ -486,8 +486,8 @@ class Ui_WndServer(object):
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(2, 2, 2, 2)
         self.tbe_everyday = QTableWidget(self.page)
-        if (self.tbe_everyday.columnCount() < 5):
-            self.tbe_everyday.setColumnCount(5)
+        if (self.tbe_everyday.columnCount() < 6):
+            self.tbe_everyday.setColumnCount(6)
         __qtablewidgetitem38 = QTableWidgetItem()
         self.tbe_everyday.setHorizontalHeaderItem(0, __qtablewidgetitem38)
         __qtablewidgetitem39 = QTableWidgetItem()
@@ -498,6 +498,8 @@ class Ui_WndServer(object):
         self.tbe_everyday.setHorizontalHeaderItem(3, __qtablewidgetitem41)
         __qtablewidgetitem42 = QTableWidgetItem()
         self.tbe_everyday.setHorizontalHeaderItem(4, __qtablewidgetitem42)
+        __qtablewidgetitem43 = QTableWidgetItem()
+        self.tbe_everyday.setHorizontalHeaderItem(5, __qtablewidgetitem43)
         self.tbe_everyday.setObjectName(u"tbe_everyday")
         self.tbe_everyday.horizontalHeader().setStretchLastSection(True)
 
@@ -519,7 +521,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(1)
+        self.stack_widget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -666,6 +668,8 @@ class Ui_WndServer(object):
         ___qtablewidgetitem41.setText(QCoreApplication.translate("WndServer", u"\u6d3b\u8dc3\u7528\u6237\u6570", None));
         ___qtablewidgetitem42 = self.tbe_everyday.horizontalHeaderItem(4)
         ___qtablewidgetitem42.setText(QCoreApplication.translate("WndServer", u"\u5f53\u524d\u5728\u7ebf\u7528\u6237\u6570", None));
+        ___qtablewidgetitem43 = self.tbe_everyday.horizontalHeaderItem(5)
+        ___qtablewidgetitem43.setText(QCoreApplication.translate("WndServer", u"\u6700\u8fd1\u66f4\u65b0\u65f6\u95f4", None));
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))
     # retranslateUi
 

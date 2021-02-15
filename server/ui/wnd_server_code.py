@@ -14,7 +14,7 @@ from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
 
-from server.qtres import qres
+from server.qtres import qrc_wnd_server
 from server.ui.wnd_server import Ui_WndServer
 from server import my_crypto
 
@@ -53,9 +53,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_mysql()
         self.init_net_auth()
         self.init_instance_field()
-        self.init_all_controls()
-        self.init_all_menu()
-        self.init_all_sig_slot()
+        self.init_controls()
+        self.init_menus()
+        self.init_sig_slot()
         self.move(0, 160)
         self.show_info("窗口初始化成功")
 
@@ -65,10 +65,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         db.close()
 
     def init_status_bar(self):
-        self.lbe_info = QLabel("提示")
+        self.lbe_1 = QLabel("<提示> : ")
+        self.status_bar.addWidget(self.lbe_1)
+        self.lbe_info = QLabel("提示信息内容")
         self.status_bar.addWidget(self.lbe_info)
-        self.lbe_1 = QLabel("最新客户端版本:")
-        self.status_bar.addPermanentWidget(self.lbe_1)
+        self.lbe_2 = QLabel("最新客户端版本:")
+        self.status_bar.addPermanentWidget(self.lbe_2)
         self.lbe_latest_ver = QLabel("x.x.x")
         self.status_bar.addPermanentWidget(self.lbe_latest_ver)
 
@@ -115,16 +117,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer_min.timeout.connect(self.on_timer_min_timeout)
         self.timer_min.start(1000 * 60 * 15)
 
-    def init_all_controls(self):
+    def init_controls(self):
         def init_all_table():
             # 所有表头可视化
             self.tbe_proj.horizontalHeader().setVisible(True)
             self.tbe_user.horizontalHeader().setVisible(True)
             self.tbe_card.horizontalHeader().setVisible(True)
-            # 所有表格设置不可编辑
-            # self.tbe_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
-            # self.tbe_online_user.setEditTriggers(QAbstractItemView.NoEditTriggers)
-            # self.tbe_card.setEditTriggers(QAbstractItemView.NoEditTriggers)
             # 项目管理表
             id, ver, notice, url_update, url_card, gift_day, free_unbind, unbind_hour, \
             login, reg, unbind, last_modify_time = [i for i in range(12)]
@@ -189,7 +187,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 初始化所有表格
         init_all_table()
 
-    def init_all_menu(self):
+    def init_menus(self):
         # 项目管理表
         self.tbe_proj.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_proj = QMenu()
@@ -288,7 +286,18 @@ class WndServer(QMainWindow, Ui_WndServer):
             lambda: self.menu_tbe_custom.exec_(QCursor.pos())
         )
 
-    def init_all_sig_slot(self):
+        # 每日流水表
+        self.tbe_everyday.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.menu_tbe_everyday = QMenu()
+        self.action_everyday_show_all = QAction("显示全部流水信息")
+        self.menu_tbe_everyday.addAction(self.action_everyday_show_all)
+        self.action_everyday_show_all.triggered.connect(self.show_all_tbe_everyday)
+        self.tbe_everyday.customContextMenuRequested.connect(
+            lambda: self.menu_tbe_everyday.exec_(QCursor.pos())
+        )
+
+
+    def init_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         # 按钮相关
         self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)
@@ -300,7 +309,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_custom.cellClicked.connect(self.on_tbe_custom_cellClicked)
 
     def show_info(self, text):
-        self.lbe_info.setText(f"<提示> : {text}")
+        self.lbe_info.setText(text)
         log_append_content(text)
 
     def on_tool_bar_actionTriggered(self, action):
@@ -617,6 +626,11 @@ class WndServer(QMainWindow, Ui_WndServer):
                         "zk": key_eval_dict.pop("zk")}
         self.custom2 = key_eval_dict
 
+    def show_all_tbe_everyday(self):
+        # 读取表全部内容
+        query_everyday_list = sql_table_query("5每日流水")
+        self.refresh_tbe_custom(query_everyday_list)
+
     def refresh_tbe_proj(self, query_proj_list):
         self.tbe_proj.setRowCount(len(query_proj_list))
         for row, query_proj in enumerate(query_proj_list):
@@ -707,6 +721,18 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_custom.setItem(row, 1, QTableWidgetItem(query_custom["键"]))
             self.tbe_custom.setItem(row, 2, QTableWidgetItem(query_custom["值"]))
             self.tbe_custom.setItem(row, 3, QTableWidgetItem(query_custom["加密值"]))
+
+    def refresh_tbe_everyday(self, query_everyday_list: list):
+        if not query_everyday_list:
+            return False
+        self.tbe_everyday.setRowCount(len(query_everyday_list))
+        for row, query_everyday in enumerate(query_everyday_list):
+            self.tbe_everyday.setItem(row, 0, QTableWidgetItem(str(query_everyday["ID"])))
+            self.tbe_everyday.setItem(row, 1, QTableWidgetItem(query_everyday["日期"]))
+            self.tbe_everyday.setItem(row, 2, QTableWidgetItem(query_everyday["充值用户数"]))
+            self.tbe_everyday.setItem(row, 3, QTableWidgetItem(query_everyday["活跃用户数"]))
+            self.tbe_everyday.setItem(row, 4, QTableWidgetItem(query_everyday["当前在线用户数"]))
+            self.tbe_everyday.setItem(row, 5, QTableWidgetItem(query_everyday["最近更新时间"]))
 
     # 刷新ip归属地
     def refresh_ip_location(self):

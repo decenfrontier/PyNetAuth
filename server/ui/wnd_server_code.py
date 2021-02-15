@@ -797,7 +797,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             sql_table_insert("5每日流水", {"日期": today})
         # 2 刷新所有用户状态(状态为在线, 且心跳时间在15分钟前, 置为离线)
         sql_table_update_ex("2用户管理", "状态='离线'",
-                            f"状态='在线' and 心跳时间<date_sub(now(), interval -15 minute)")
+                            f"状态='在线' and 心跳时间 < date_sub(now(), interval -15 minute)")
 
     def thd_accept_client(self):
         log_append_content("服务端已开启, 准备接受客户请求...")
@@ -1032,6 +1032,9 @@ def deal_pay(client_socket: socket.socket, client_content_dict: dict):
     server_info_dict = {"消息类型": "充值",
                         "内容": {"结果": pay_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
+    # 若充值成功, 则流水表充值用户加1
+    if pay_ret: # todo: 多线程访问的安全性?
+        sql_table_update_ex(sql=f"update 5每日流水 set 充值用户数=充值用户数+1 where 日期='{today}';")
 
 
 # 处理_改密

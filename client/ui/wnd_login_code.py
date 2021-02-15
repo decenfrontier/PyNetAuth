@@ -64,10 +64,12 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
-            self.start_point = self.frameGeometry().topLeft() - event.globalPos()
+            self.start_point = event.globalPos() - self.frameGeometry().topLeft()
+
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        self.move(event.globalPos() + self.start_point)
+        if self.start_point != QPoint(0, 0):
+            self.move(event.globalPos() - self.start_point)
 
     def paintEvent(self, event: QPaintEvent):
         # 背景

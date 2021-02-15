@@ -638,7 +638,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.custom2 = key_eval_dict
 
     def show_all_tbe_everyday(self):
-        # 读取表全部内容
+        # 读取用户表内容, 获取今日活跃用户数
+        num = sql_table_query_ex(sql="select count(*) from 2用户管理 where date_format(最后更新时间,'%Y-%m-%d')="
+                                     "date_format(now(),'%Y-%m-%d');")[0]["count(*)"]
+        # 更新每日流水表活跃用户数
+        sql_table_update("5每日流水", {"活跃用户数": num}, {"日期": today})
+        # 读取每日流水表全部内容
         query_everyday_list = sql_table_query("5每日流水")
         self.refresh_tbe_everyday(query_everyday_list)
 
@@ -783,8 +788,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
     def on_timer_min_timeout(self):
+        self.show_info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 每15分钟一轮的检测开始 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         global today, path_log
         cur_day = cur_time_format[:10]
+
         # 1 检测日期改变
         if cur_day != today:
             today = cur_day
@@ -798,6 +805,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 2 刷新所有用户状态(状态为在线, 且心跳时间在15分钟前, 置为离线)
         sql_table_update_ex("2用户管理", "状态='离线'",
                             f"状态='在线' and 心跳时间 < date_sub(now(), interval -15 minute)")
+        # 3 刷新显示所有表
+        self.show_all_tbe_proj()
+        self.show_all_tbe_user()
+        self.show_all_tbe_card()
+        self.show_all_tbe_custom()
+        self.show_all_tbe_everyday()
+        self.show_info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 每15分钟一轮的检测结束 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
 
     def thd_accept_client(self):
         log_append_content("服务端已开启, 准备接受客户请求...")

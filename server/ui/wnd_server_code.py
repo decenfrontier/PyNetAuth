@@ -92,6 +92,11 @@ class WndServer(QMainWindow, Ui_WndServer):
             log_append_content(f"mysql连接失败: {e}")
             QMessageBox.critical(self, "错误", f"mysql连接失败: {e}")
             raise e
+        # 清零用户管理表今日次数
+        sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})
+        # 插入今日数据库记录
+        if not sql_table_query("5每日流水", {"日期": today}):
+            sql_table_insert("5每日流水", {"日期": today})
 
     def init_net_auth(self):
         # 初始化tcp连接
@@ -646,7 +651,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_proj.setItem(row, 8, QTableWidgetItem(str(query_proj["允许登录"])))
             self.tbe_proj.setItem(row, 9, QTableWidgetItem(str(query_proj["允许注册"])))
             self.tbe_proj.setItem(row, 10, QTableWidgetItem(str(query_proj["允许解绑"])))
-            self.tbe_proj.setItem(row, 11, QTableWidgetItem(str(query_proj["最后修改时间"])))
+            self.tbe_proj.setItem(row, 11, QTableWidgetItem(str(query_proj["最后更新时间"])))
 
     def refresh_tbe_user(self, query_user_list):
         if not query_user_list:

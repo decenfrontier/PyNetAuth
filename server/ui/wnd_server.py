@@ -524,7 +524,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(4)
+        self.stack_widget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -555,7 +555,7 @@ class Ui_WndServer(object):
         ___qtablewidgetitem10 = self.tbe_proj.horizontalHeaderItem(10)
         ___qtablewidgetitem10.setText(QCoreApplication.translate("WndServer", u"\u5141\u8bb8\u89e3\u7ed1", None));
         ___qtablewidgetitem11 = self.tbe_proj.horizontalHeaderItem(11)
-        ___qtablewidgetitem11.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u4fee\u6539\u65f6\u95f4", None));
+        ___qtablewidgetitem11.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
         self.groupBox.setTitle(QCoreApplication.translate("WndServer", u"\u9879\u76ee\u7ba1\u7406", None))
         self.label.setText(QCoreApplication.translate("WndServer", u"\u5ba2\u6237\u7aef\u7248\u672c", None))
         self.label_3.setText(QCoreApplication.translate("WndServer", u"\u5ba2\u6237\u7aef\u516c\u544a", None))

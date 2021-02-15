@@ -14,7 +14,7 @@ from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
 
-from server.res import qres
+from server.qtres import qres
 from server.ui.wnd_server import Ui_WndServer
 from server import my_crypto
 
@@ -862,7 +862,7 @@ def deal_proj(client_socket: socket.socket, client_content_dict: dict):
     send_to_client(client_socket, server_info_dict)
 
 
-# 处理_自定义数据
+# 处理_自定义数据1
 def deal_custom1(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
     log_append_content(f"[自定义数据] 正在处理IP: {ip}")
@@ -872,7 +872,7 @@ def deal_custom1(client_socket: socket.socket, client_content_dict: dict):
     send_to_client(client_socket, server_info_dict)
 
 
-# 处理_自定义数据
+# 处理_自定义数据2
 def deal_custom2(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
     log_append_content(f"[自定义数据] 正在处理IP: {ip}")

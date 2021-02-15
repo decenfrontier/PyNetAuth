@@ -1,16 +1,13 @@
 # my function, 客户端登录界面, 和 主界面的函数库
 
 import time
-
 import wmi
 import platform
 import json
 import random
-import ssl
 import logging
 import os
 import pythoncom
-from threading import Thread
 
 from PySide2.QtCore import QThread
 
@@ -30,11 +27,15 @@ qss_style = """
     }
 """
 
+wnd_login = None
+wnd_main = None
+
 cur_time_stamp = int(time.time())
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
 PATH_WORK = os.getcwd()
 PATH_SAVE = "C:\\a_b_c"
+PATH_LOGIN_JSON = f"{PATH_SAVE}\\login.json"
 PATH_GNRL_JSON = f"{PATH_SAVE}\\gnrl.json"
 PATH_PLAN_JSON = f"{PATH_SAVE}\\plan.json"
 
@@ -76,25 +77,25 @@ def log_debug(msg):
     logging.debug(msg)
     print(msg)
 
-# 获取外网IP
-def get_outer_ip() -> str:
-    ip = ""
+def json_to_py(path: str):
+    # json文件 -> py对象
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            d = json.load(f)
+    except:
+        print("json decode error!")
+        d = {}
+    return d
 
-    def method1():
-        nonlocal ip
-        ip = urllib.request.urlopen("http://ip.42.pl/raw").read().decode()
+def py_to_json(pyobj: object, path: str):
+    # py对象 -> json文件
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(pyobj, f, ensure_ascii=False, sort_keys=True)
+    except:
+        print("json encode error!")
 
-    def method2():
-        nonlocal ip
-        req = urllib.request.urlopen("http://httpbin.org/ip")
-        ip = json.load(req)["origin"]
 
-    Thread(target=method1, daemon=True).start()
-    Thread(target=method2, daemon=True).start()
-    while ip == "":
-        time.sleep(0.1)
-    print("ip:", ip)
-    return ip
 
 # 获取机器码(主板序列号+硬盘序列号)
 def get_machine_code():
@@ -137,7 +138,6 @@ allow_login = False  # 允许登录
 allow_reg = False  # 允许注册
 allow_unbind = False  # 允许解绑
 latest_ver = "x.x.x"  # 最新版本
-
 
 # 构造加密类实例化对象
 aes = my_crypto.AesEncryption(aes_key)  # 先构造一个假的

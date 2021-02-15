@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page_0">
        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="5,2">
@@ -551,7 +551,7 @@
              <number>0</number>
             </property>
             <attribute name="horizontalHeaderVisible">
-             <bool>false</bool>
+             <bool>true</bool>
             </attribute>
             <attribute name="horizontalHeaderStretchLastSection">
              <bool>true</bool>
@@ -643,6 +643,11 @@
             <column>
              <property name="text">
               <string>备注</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>最后更新时间</string>
              </property>
             </column>
            </widget>

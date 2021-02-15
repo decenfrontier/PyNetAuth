@@ -93,9 +93,14 @@ class WndServer(QMainWindow, Ui_WndServer):
             QMessageBox.critical(self, "错误", f"mysql连接失败: {e}")
             raise e
         # 清零用户管理表今日次数
-        sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})
+        lastest_time = sql_table_query_ex(sql="select max(最后更新时间) from 2用户管理")[0]["max(最后更新时间)"]
+        lastest_day = str(lastest_time)[:10]
+        if lastest_day != today:
+            self.show_info("新的一天到了, 清零用户管理表今日次数")
+            sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})
         # 插入今日数据库记录
         if not sql_table_query("5每日流水", {"日期": today}):
+            self.show_info("新的一天到了, 清零用户管理表今日次数")
             sql_table_insert("5每日流水", {"日期": today})
 
     def init_net_auth(self):
@@ -785,6 +790,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             today = cur_day
             # 1.1 更新日志
             path_log = f"C:\\net_auth_{today}.log"
+            self.show_info("新的一天到了, 清零用户管理表今日次数, 新增每日流水表今日记录")
             # 1.2 更新每日次数
             sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})
             # 1.3 插入每日流水

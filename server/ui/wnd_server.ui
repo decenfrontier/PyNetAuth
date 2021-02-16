@@ -56,6 +56,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,1">
           <item>
            <widget class="QTableWidget" name="tbe_proj">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
             <attribute name="horizontalHeaderDefaultSectionSize">
              <number>90</number>
             </attribute>
@@ -262,6 +265,9 @@
           </property>
           <item>
            <widget class="QTableWidget" name="tbe_custom">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
             <attribute name="horizontalHeaderStretchLastSection">
              <bool>true</bool>
             </attribute>
@@ -860,6 +866,9 @@
         </property>
         <item row="0" column="0">
          <widget class="QTableWidget" name="tbe_everyday">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
           </attribute>
@@ -919,7 +928,7 @@
           </column>
           <column>
            <property name="text">
-            <string>最近更新时间</string>
+            <string>最后更新时间</string>
            </property>
           </column>
          </widget>

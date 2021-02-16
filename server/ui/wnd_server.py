@@ -62,6 +62,7 @@ class Ui_WndServer(object):
         __qtablewidgetitem11 = QTableWidgetItem()
         self.tbe_proj.setHorizontalHeaderItem(11, __qtablewidgetitem11)
         self.tbe_proj.setObjectName(u"tbe_proj")
+        self.tbe_proj.setAlternatingRowColors(True)
         self.tbe_proj.horizontalHeader().setDefaultSectionSize(90)
         self.tbe_proj.horizontalHeader().setStretchLastSection(True)
         self.tbe_proj.verticalHeader().setVisible(False)
@@ -195,6 +196,7 @@ class Ui_WndServer(object):
         __qtablewidgetitem15 = QTableWidgetItem()
         self.tbe_custom.setHorizontalHeaderItem(3, __qtablewidgetitem15)
         self.tbe_custom.setObjectName(u"tbe_custom")
+        self.tbe_custom.setAlternatingRowColors(True)
         self.tbe_custom.horizontalHeader().setStretchLastSection(True)
         self.tbe_custom.verticalHeader().setVisible(False)
         self.tbe_custom.verticalHeader().setCascadingSectionResizes(False)
@@ -492,6 +494,7 @@ class Ui_WndServer(object):
         __qtablewidgetitem48 = QTableWidgetItem()
         self.tbe_everyday.setHorizontalHeaderItem(9, __qtablewidgetitem48)
         self.tbe_everyday.setObjectName(u"tbe_everyday")
+        self.tbe_everyday.setAlternatingRowColors(True)
         self.tbe_everyday.horizontalHeader().setStretchLastSection(True)
         self.tbe_everyday.verticalHeader().setVisible(False)
         self.tbe_everyday.verticalHeader().setMinimumSectionSize(20)
@@ -687,7 +690,7 @@ class Ui_WndServer(object):
         ___qtablewidgetitem47 = self.tbe_everyday.horizontalHeaderItem(8)
         ___qtablewidgetitem47.setText(QCoreApplication.translate("WndServer", u"\u5728\u7ebf\u7528\u6237\u6570", None));
         ___qtablewidgetitem48 = self.tbe_everyday.horizontalHeaderItem(9)
-        ___qtablewidgetitem48.setText(QCoreApplication.translate("WndServer", u"\u6700\u8fd1\u66f4\u65b0\u65f6\u95f4", None));
+        ___qtablewidgetitem48.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
         self.tbr_log.setDocumentTitle(QCoreApplication.translate("WndServer", u"\u6267\u884c\u65e5\u5fd7", None))
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))
     # retranslateUi

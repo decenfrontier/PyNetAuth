@@ -404,7 +404,6 @@ class WndLogin(QDialog, Ui_WndLogin):
         err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
         if err_no != 0:
             self.show_info(f"连接服务器失败, 错误码: {err_no}")
-            QMessageBox.critical(self, "错误", f"连接服务器失败, 错误码: {err_no}")
             raise Exception(f"连接服务器失败, 错误码: {err_no}")
         return tcp_socket
 

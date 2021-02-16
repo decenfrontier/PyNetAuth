@@ -33,8 +33,11 @@ qss_style = """
         font-family: "Microsoft YaHei";
     }
     QTableView {
+        background: white;
         selection-color: #000000;
-	    selection-background-color: #c4e1d2; 
+	    selection-background-color: #c4e1d2;  
+        gridline-color: rgb(213, 213, 213); 
+        alternate-background-color: rgb(243, 246, 249);
     }
     QTableView::item:hover	{
 	    background-color: #a1b1c9;
@@ -308,7 +311,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             lambda: self.menu_tbe_everyday.exec_(QCursor.pos())
         )
 
-
     def init_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         # 按钮相关
@@ -338,7 +340,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.stack_widget.setCurrentIndex(4)
             self.tbr_log.setText(log_read_content())
             self.tbr_log.moveCursor(QTextCursor.End)
-
 
     def on_btn_proj_confirm_clicked(self):
         client_ver = self.edt_proj_client_ver.text()
@@ -509,7 +510,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             return
         accounts = "','".join(account_set)
         # 若用户已到期, 从now()开始加, 否则从到期时间开始加
-        num = sql_table_update_ex("2用户管理", f"到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), date_add(到期时间, interval {gift_day} day))",
+        num = sql_table_update_ex("2用户管理",
+                                  f"到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), date_add(到期时间, interval {gift_day} day))",
                                   f"账号 in ('{accounts}') and 状态 not in ('', '冻结')")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
         self.show_all_tbe_user()
@@ -520,7 +522,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not ok_pressed:
             return
         # 若用户已到期, 从now()开始加, 否则从到期时间开始加
-        num = sql_table_update_ex("2用户管理", f"到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), date_add(到期时间, interval {gift_day} day))",
+        num = sql_table_update_ex("2用户管理",
+                                  f"到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), date_add(到期时间, interval {gift_day} day))",
                                   "now() < 到期时间 and 状态 not in ('', '冻结')")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
         self.show_all_tbe_user()
@@ -638,7 +641,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def show_all_tbe_everyday(self):
         # 读取用户表内容, 获取今日活跃用户数, 在线用户数
         active_user_num = sql_table_query_ex(sql="select count(*) from 2用户管理 where date_format(最后更新时间,'%Y-%m-%d')="
-                                     "date_format(now(),'%Y-%m-%d');")[0]["count(*)"]
+                                                 "date_format(now(),'%Y-%m-%d');")[0]["count(*)"]
         online_user_num = sql_table_query_ex(sql="select count(*) from 2用户管理 where 状态='在线'")[0]["count(*)"]
         # 更新每日流水表
         sql_table_update("5每日流水", {"活跃用户数": active_user_num, "在线用户数": online_user_num}, {"日期": today})

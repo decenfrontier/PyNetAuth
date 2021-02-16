@@ -973,13 +973,20 @@ def deal_reg(client_socket: socket.socket, client_content_dict: dict):
     log_append_content(f"[注册] 正在处理账号: {account}")
     reg_ret = False
 
-    if sql_table_query("2用户管理", {"账号": account}):  # 查询账号是否存在
+    if not sql_table_query("2用户管理", {"账号": account}):  # 不存在则插入记录
+        machine_code = client_content_dict["机器码"]
+        query_user_list = sql_table_query("2用户管理", {"机器码": machine_code})
+        if not query_user_list:  # 没有找到此机器码
+            client_content_dict["注册时间"] = cur_time_format
+            client_content_dict["到期时间"] = datetime.datetime.now()+datetime.timedelta(days=cfg_wnd_server["注册赠送天数"])
+            reg_ret = sql_table_insert("2用户管理", client_content_dict)
+            detail = "注册成功" if reg_ret else "注册失败, 数据库异常"
+        else:
+            query_user = query_user_list[0]
+            reged_account = query_user["账号"]
+            detail = f"注册失败, 此机器已注册过账号{reged_account}"
+    else:
         detail = "注册失败, 此账号已被注册!"
-    else:  # 不存在则插入记录
-        client_content_dict["注册时间"] = cur_time_format
-        client_content_dict["到期时间"] = datetime.datetime.now()+datetime.timedelta(days=cfg_wnd_server["注册赠送天数"])
-        reg_ret = sql_table_insert("2用户管理", client_content_dict)
-        detail = "注册成功" if reg_ret else "注册失败, 数据库异常"
     # 记录到日志
     log_append_content(f"[注册] 账号{account} {detail}")
     # 把注册结果整理成py字典, 并发送给客户端
@@ -1011,7 +1018,7 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
                 login_ret = True
                 detail = "登录成功"
                 if query_user["状态"] == "":  # 新到期时间 = 到期时间 + (现在时间 - 注册时间)
-                    detail += ", 首次登录重新计算到期时间"
+                    detail = "登录成功, 首次登录重新计算到期时间"
                     sql_table_update_ex(sql="update 2用户管理 set 到期时间=date_add(到期时间, interval "
                                             "timestampdiff(minute, 注册时间, now()) minute)")
             else:

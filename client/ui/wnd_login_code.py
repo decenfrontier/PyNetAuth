@@ -304,6 +304,7 @@ class WndLogin(QDialog, Ui_WndLogin):
                 "账号": reg_account,
                 "密码": reg_pwd,
                 "QQ": reg_qq,
+                "机器码": mf.machine_code,
             }
         }
         # 发送客户端消息

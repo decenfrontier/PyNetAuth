@@ -169,8 +169,9 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_card.setColumnWidth(id, 40)
             self.tbe_card.setColumnWidth(card_key, 250)
             self.tbe_card.setColumnWidth(type, 60)
-            self.tbe_card.setColumnWidth(gen_time, 145)
-            self.tbe_card.setColumnWidth(export_time, 145)
+            self.tbe_card.setColumnWidth(gen_time, 130)
+            self.tbe_card.setColumnWidth(export_time, 130)
+            self.tbe_card.setColumnWidth(use_time, 130)
             # 自定义数据表
             id, key, val, en_val = [i for i in range(4)]
             self.tbe_custom.setColumnWidth(id, 40)
@@ -593,8 +594,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not card_set:
             return
         cards = "','".join(card_set)
-        num = sql_table_update_ex("3卡密管理", f"导出时间='{cur_time_format}'", f"卡号 in ('{cards}')")
+        # 导出未使用的选中卡号
+        num = sql_table_update_ex("3卡密管理", f"导出时间='{cur_time_format}'", f"卡号 in ('{cards}') and 使用时间 is null")
         export_card_key = "\n".join(card_set)
+        self.pedt_card_export.setPlainText(export_card_key)
+        # 复制到剪切板
         clip_copy(export_card_key)
         self.show_info(f"{num}个卡号已复制到剪切板")
         self.show_all_tbe_card()

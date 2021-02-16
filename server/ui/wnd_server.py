@@ -26,15 +26,15 @@ class Ui_WndServer(object):
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.stack_widget = QStackedWidget(self.centralwidget)
         self.stack_widget.setObjectName(u"stack_widget")
-        self.page_0 = QWidget()
-        self.page_0.setObjectName(u"page_0")
-        self.verticalLayout_2 = QVBoxLayout(self.page_0)
+        self.page_proj = QWidget()
+        self.page_proj.setObjectName(u"page_proj")
+        self.verticalLayout_2 = QVBoxLayout(self.page_proj)
         self.verticalLayout_2.setSpacing(6)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(2, 2, 2, 2)
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.tbe_proj = QTableWidget(self.page_0)
+        self.tbe_proj = QTableWidget(self.page_proj)
         if (self.tbe_proj.columnCount() < 12):
             self.tbe_proj.setColumnCount(12)
         __qtablewidgetitem = QTableWidgetItem()
@@ -70,7 +70,7 @@ class Ui_WndServer(object):
 
         self.horizontalLayout.addWidget(self.tbe_proj)
 
-        self.groupBox = QGroupBox(self.page_0)
+        self.groupBox = QGroupBox(self.page_proj)
         self.groupBox.setObjectName(u"groupBox")
         self.formLayout = QFormLayout(self.groupBox)
         self.formLayout.setObjectName(u"formLayout")
@@ -183,7 +183,7 @@ class Ui_WndServer(object):
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setSpacing(6)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.tbe_custom = QTableWidget(self.page_0)
+        self.tbe_custom = QTableWidget(self.page_proj)
         if (self.tbe_custom.columnCount() < 4):
             self.tbe_custom.setColumnCount(4)
         __qtablewidgetitem12 = QTableWidgetItem()
@@ -203,7 +203,7 @@ class Ui_WndServer(object):
 
         self.horizontalLayout_4.addWidget(self.tbe_custom)
 
-        self.groupBox_4 = QGroupBox(self.page_0)
+        self.groupBox_4 = QGroupBox(self.page_proj)
         self.groupBox_4.setObjectName(u"groupBox_4")
         self.formLayout_2 = QFormLayout(self.groupBox_4)
         self.formLayout_2.setObjectName(u"formLayout_2")
@@ -253,16 +253,16 @@ class Ui_WndServer(object):
 
         self.verticalLayout_2.setStretch(0, 5)
         self.verticalLayout_2.setStretch(1, 2)
-        self.stack_widget.addWidget(self.page_0)
-        self.page_1 = QWidget()
-        self.page_1.setObjectName(u"page_1")
-        self.gridLayout_3 = QGridLayout(self.page_1)
+        self.stack_widget.addWidget(self.page_proj)
+        self.page_user = QWidget()
+        self.page_user.setObjectName(u"page_user")
+        self.gridLayout_3 = QGridLayout(self.page_user)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.gridLayout_3.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setSpacing(2)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.groupBox_2 = QGroupBox(self.page_1)
+        self.groupBox_2 = QGroupBox(self.page_user)
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.groupBox_2.setMinimumSize(QSize(220, 0))
         self.groupBox_2.setMaximumSize(QSize(16777215, 32))
@@ -319,7 +319,7 @@ class Ui_WndServer(object):
 
         self.verticalLayout_3.addWidget(self.groupBox_2)
 
-        self.tbe_user = QTableWidget(self.page_1)
+        self.tbe_user = QTableWidget(self.page_user)
         if (self.tbe_user.columnCount() < 17):
             self.tbe_user.setColumnCount(17)
         __qtablewidgetitem16 = QTableWidgetItem()
@@ -363,7 +363,7 @@ class Ui_WndServer(object):
         self.tbe_user.setWordWrap(False)
         self.tbe_user.setCornerButtonEnabled(False)
         self.tbe_user.setRowCount(0)
-        self.tbe_user.horizontalHeader().setVisible(True)
+        self.tbe_user.horizontalHeader().setVisible(False)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_user.verticalHeader().setVisible(False)
         self.tbe_user.verticalHeader().setMinimumSectionSize(20)
@@ -376,17 +376,17 @@ class Ui_WndServer(object):
 
         self.gridLayout_3.addLayout(self.verticalLayout_3, 0, 0, 1, 1)
 
-        self.stack_widget.addWidget(self.page_1)
-        self.page_2 = QWidget()
-        self.page_2.setObjectName(u"page_2")
-        self.gridLayout_4 = QGridLayout(self.page_2)
+        self.stack_widget.addWidget(self.page_user)
+        self.page_card = QWidget()
+        self.page_card.setObjectName(u"page_card")
+        self.gridLayout_4 = QGridLayout(self.page_card)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.gridLayout_4.setContentsMargins(2, 2, 2, 2)
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setSpacing(2)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.tbe_card = QTableWidget(self.page_2)
+        self.tbe_card = QTableWidget(self.page_card)
         if (self.tbe_card.columnCount() < 6):
             self.tbe_card.setColumnCount(6)
         __qtablewidgetitem33 = QTableWidgetItem()
@@ -417,7 +417,7 @@ class Ui_WndServer(object):
 
         self.horizontalLayout_3.addWidget(self.tbe_card)
 
-        self.groupBox_3 = QGroupBox(self.page_2)
+        self.groupBox_3 = QGroupBox(self.page_card)
         self.groupBox_3.setObjectName(u"groupBox_3")
         self.groupBox_3.setMinimumSize(QSize(220, 0))
         self.layoutWidget = QWidget(self.groupBox_3)
@@ -464,30 +464,13 @@ class Ui_WndServer(object):
 
         self.gridLayout_4.addLayout(self.horizontalLayout_3, 0, 0, 1, 1)
 
-        self.stack_widget.addWidget(self.page_2)
-        self.page_3 = QWidget()
-        self.page_3.setObjectName(u"page_3")
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.page_3.sizePolicy().hasHeightForWidth())
-        self.page_3.setSizePolicy(sizePolicy)
-        self.page_3.setMaximumSize(QSize(16777215, 16777215))
-        self.verticalLayout = QVBoxLayout(self.page_3)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(2, 2, 2, 2)
-        self.tbr_log = QTextBrowser(self.page_3)
-        self.tbr_log.setObjectName(u"tbr_log")
-
-        self.verticalLayout.addWidget(self.tbr_log)
-
-        self.stack_widget.addWidget(self.page_3)
-        self.page = QWidget()
-        self.page.setObjectName(u"page")
-        self.gridLayout_2 = QGridLayout(self.page)
+        self.stack_widget.addWidget(self.page_card)
+        self.page_everyday = QWidget()
+        self.page_everyday.setObjectName(u"page_everyday")
+        self.gridLayout_2 = QGridLayout(self.page_everyday)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(2, 2, 2, 2)
-        self.tbe_everyday = QTableWidget(self.page)
+        self.tbe_everyday = QTableWidget(self.page_everyday)
         if (self.tbe_everyday.columnCount() < 6):
             self.tbe_everyday.setColumnCount(6)
         __qtablewidgetitem39 = QTableWidgetItem()
@@ -510,7 +493,24 @@ class Ui_WndServer(object):
 
         self.gridLayout_2.addWidget(self.tbe_everyday, 0, 0, 1, 1)
 
-        self.stack_widget.addWidget(self.page)
+        self.stack_widget.addWidget(self.page_everyday)
+        self.page_log = QWidget()
+        self.page_log.setObjectName(u"page_log")
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.page_log.sizePolicy().hasHeightForWidth())
+        self.page_log.setSizePolicy(sizePolicy)
+        self.page_log.setMaximumSize(QSize(16777215, 16777215))
+        self.verticalLayout = QVBoxLayout(self.page_log)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(2, 2, 2, 2)
+        self.tbr_log = QTextBrowser(self.page_log)
+        self.tbr_log.setObjectName(u"tbr_log")
+
+        self.verticalLayout.addWidget(self.tbr_log)
+
+        self.stack_widget.addWidget(self.page_log)
 
         self.gridLayout.addWidget(self.stack_widget, 0, 0, 1, 1)
 
@@ -526,7 +526,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(1)
+        self.stack_widget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -664,7 +664,6 @@ class Ui_WndServer(object):
         self.edt_card_num.setPlaceholderText("")
         self.label_4.setText(QCoreApplication.translate("WndServer", u"\u5361\u5bc6\u7c7b\u578b:", None))
         self.btn_card_gen.setText(QCoreApplication.translate("WndServer", u"\u786e\u5b9a\u751f\u6210", None))
-        self.tbr_log.setDocumentTitle(QCoreApplication.translate("WndServer", u"\u6267\u884c\u65e5\u5fd7", None))
         ___qtablewidgetitem39 = self.tbe_everyday.horizontalHeaderItem(0)
         ___qtablewidgetitem39.setText(QCoreApplication.translate("WndServer", u"ID", None));
         ___qtablewidgetitem40 = self.tbe_everyday.horizontalHeaderItem(1)
@@ -674,9 +673,10 @@ class Ui_WndServer(object):
         ___qtablewidgetitem42 = self.tbe_everyday.horizontalHeaderItem(3)
         ___qtablewidgetitem42.setText(QCoreApplication.translate("WndServer", u"\u6d3b\u8dc3\u7528\u6237\u6570", None));
         ___qtablewidgetitem43 = self.tbe_everyday.horizontalHeaderItem(4)
-        ___qtablewidgetitem43.setText(QCoreApplication.translate("WndServer", u"\u5f53\u524d\u5728\u7ebf\u7528\u6237\u6570", None));
+        ___qtablewidgetitem43.setText(QCoreApplication.translate("WndServer", u"\u5728\u7ebf\u7528\u6237\u6570", None));
         ___qtablewidgetitem44 = self.tbe_everyday.horizontalHeaderItem(5)
         ___qtablewidgetitem44.setText(QCoreApplication.translate("WndServer", u"\u6700\u8fd1\u66f4\u65b0\u65f6\u95f4", None));
+        self.tbr_log.setDocumentTitle(QCoreApplication.translate("WndServer", u"\u6267\u884c\u65e5\u5fd7", None))
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))
     # retranslateUi
 

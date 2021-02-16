@@ -188,8 +188,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tool_bar.addAction(QIcon(":/proj.png"), "项目管理")
             self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
             self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
-            self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
             self.tool_bar.addAction(QIcon(":/flow.png"), "每日流水")
+            self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
 
         # 显示第一页
         self.stack_widget.setCurrentIndex(0)
@@ -331,12 +331,13 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.stack_widget.setCurrentIndex(1)
         elif action_name == "卡密管理":
             self.stack_widget.setCurrentIndex(2)
-        elif action_name == "执行日志":
+        elif action_name == "每日流水":
             self.stack_widget.setCurrentIndex(3)
+        elif action_name == "执行日志":
+            self.stack_widget.setCurrentIndex(4)
             self.tbr_log.setText(log_read_content())
             self.tbr_log.moveCursor(QTextCursor.End)
-        elif action_name == "每日流水":
-            self.stack_widget.setCurrentIndex(4)
+
 
     def on_btn_proj_confirm_clicked(self):
         client_ver = self.edt_proj_client_ver.text()
@@ -638,11 +639,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.custom2 = key_eval_dict
 
     def show_all_tbe_everyday(self):
-        # 读取用户表内容, 获取今日活跃用户数
-        num = sql_table_query_ex(sql="select count(*) from 2用户管理 where date_format(最后更新时间,'%Y-%m-%d')="
+        # 读取用户表内容, 获取今日活跃用户数, 在线用户数
+        active_user_num = sql_table_query_ex(sql="select count(*) from 2用户管理 where date_format(最后更新时间,'%Y-%m-%d')="
                                      "date_format(now(),'%Y-%m-%d');")[0]["count(*)"]
-        # 更新每日流水表活跃用户数
-        sql_table_update("5每日流水", {"活跃用户数": num}, {"日期": today})
+        online_user_num = sql_table_query_ex(sql="select count(*) from 2用户管理 where 状态='在线'")[0]["count(*)"]
+        # 更新每日流水表
+        sql_table_update("5每日流水", {"活跃用户数": active_user_num, "在线用户数": online_user_num}, {"日期": today})
         # 读取每日流水表全部内容
         query_everyday_list = sql_table_query("5每日流水")
         self.refresh_tbe_everyday(query_everyday_list)
@@ -749,7 +751,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_everyday.setItem(row, 1, QTableWidgetItem(query_everyday["日期"]))
             self.tbe_everyday.setItem(row, 2, QTableWidgetItem(str(query_everyday["充值用户数"])))
             self.tbe_everyday.setItem(row, 3, QTableWidgetItem(str(query_everyday["活跃用户数"])))
-            self.tbe_everyday.setItem(row, 4, QTableWidgetItem(str(query_everyday["当前在线用户数"])))
+            self.tbe_everyday.setItem(row, 4, QTableWidgetItem(str(query_everyday["在线用户数"])))
             self.tbe_everyday.setItem(row, 5, QTableWidgetItem(query_everyday["最后更新时间"]))
 
     # 刷新ip归属地

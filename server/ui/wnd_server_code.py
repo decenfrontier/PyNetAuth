@@ -32,9 +32,9 @@ aes = my_crypto.AesEncryption(aes_key)
 cfg_wnd_server = {
     "更新网址": "",
     "发卡网址": "",
-    "注册赠送天数": "",
-    "免费解绑次数": "",
-    "解绑扣除小时": "",
+    "注册赠送天数": 0,
+    "免费解绑次数": 0,
+    "解绑扣除小时": 0,
 }
 
 qss_style = """
@@ -88,18 +88,18 @@ class WndServer(QMainWindow, Ui_WndServer):
         with open(path_cfg_wnd_server, "r", encoding="utf-8") as f:
             cfg_wnd_server = json.load(f)
         self.edt_proj_url_update.setText(cfg_wnd_server["更新网址"])
-        self.edt_proj_unbind_sub_hour.setText(cfg_wnd_server["解绑扣除小时"])
         self.edt_proj_url_card.setText(cfg_wnd_server["发卡网址"])
-        self.edt_proj_reg_gift_day.setText(cfg_wnd_server["注册赠送天数"])
-        self.edt_proj_free_unbind_count.setText(cfg_wnd_server["免费解绑次数"])
+        self.edt_proj_unbind_sub_hour.setText(str(cfg_wnd_server["解绑扣除小时"]))
+        self.edt_proj_reg_gift_day.setText(str(cfg_wnd_server["注册赠送天数"]))
+        self.edt_proj_free_unbind_count.setText(str(cfg_wnd_server["免费解绑次数"]))
 
     # 写入配置
     def cfg_write(self):
-        cfg_wnd_server["免费解绑次数"] = self.edt_proj_free_unbind_count.text()
         cfg_wnd_server["发卡网址"] = self.edt_proj_url_card.text()
-        cfg_wnd_server["注册赠送天数"] = self.edt_proj_reg_gift_day.text()
-        cfg_wnd_server["解绑扣除小时"] = self.edt_proj_unbind_sub_hour.text()
         cfg_wnd_server["更新网址"] = self.edt_proj_url_update.text()
+        cfg_wnd_server["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
+        cfg_wnd_server["注册赠送天数"] = int(self.edt_proj_reg_gift_day.text())
+        cfg_wnd_server["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
         with open(path_cfg_wnd_server, "w", encoding="utf-8") as f:
             json.dump(cfg_wnd_server, f, ensure_ascii=False)
 
@@ -977,8 +977,7 @@ def deal_reg(client_socket: socket.socket, client_content_dict: dict):
         detail = "注册失败, 此账号已被注册!"
     else:  # 不存在则插入记录
         client_content_dict["注册时间"] = cur_time_format
-        client_content_dict["到期时间"] = cur_time_format
-
+        client_content_dict["到期时间"] = datetime.datetime.now()+datetime.timedelta(days=cfg_wnd_server["注册赠送天数"])
         reg_ret = sql_table_insert("2用户管理", client_content_dict)
         detail = "注册成功" if reg_ret else "注册失败, 数据库异常"
     # 记录到日志

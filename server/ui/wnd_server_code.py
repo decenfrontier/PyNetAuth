@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import time, datetime
 import json
 import base64
@@ -26,6 +26,15 @@ server_ip = "127.0.0.1"
 server_port = 47123
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = my_crypto.AesEncryption(aes_key)
+# 界面配置
+path_cfg_wnd_server = "C:\\cfg_wnd_server.json"
+cfg_wnd_server = {
+    "edt_proj_url_update": "",
+    "edt_proj_url_card": "",
+    "edt_proj_reg_gift_day": "",
+    "edt_proj_free_unbind_count": "",
+    "edt_proj_unbind_sub_hour": "",
+}
 
 qss_style = """
     * {
@@ -47,7 +56,6 @@ qss_style = """
 # 发送给客户端的数据
 enc_aes_key = my_crypto.encrypt_rsa(my_crypto.public_key_client, aes_key)
 
-
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
         super().__init__()
@@ -58,14 +66,41 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_instance_field()
         self.init_controls()
         self.init_menus()
+        self.cfg_read()
         self.init_sig_slot()
         self.move(0, 160)
         self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):
+        self.cfg_write()
+        # 关闭套接字和数据库
         tcp_socket.close()
         cursor.close()
         db.close()
+
+    # 读取配置
+    def cfg_read(self):
+        global cfg_wnd_server
+        if not os.path.exists(path_cfg_wnd_server):  # 若文件不存在, 则用默认的配置字典先创建json文件
+            with open(path_cfg_wnd_server, "w", encoding="utf-8") as f:
+                json.dump(cfg_wnd_server, f, ensure_ascii=False)
+        with open(path_cfg_wnd_server, "r", encoding="utf-8") as f:
+            cfg_wnd_server = json.load(f)
+        self.edt_proj_url_update.setText(cfg_wnd_server["edt_proj_url_update"])
+        self.edt_proj_unbind_sub_hour.setText(cfg_wnd_server["edt_proj_unbind_sub_hour"])
+        self.edt_proj_url_card.setText(cfg_wnd_server["edt_proj_url_card"])
+        self.edt_proj_reg_gift_day.setText(cfg_wnd_server["edt_proj_reg_gift_day"])
+        self.edt_proj_free_unbind_count.setText(cfg_wnd_server["edt_proj_free_unbind_count"])
+
+    # 写入配置
+    def cfg_write(self):
+        cfg_wnd_server["edt_proj_free_unbind_count"] = self.edt_proj_free_unbind_count.text()
+        cfg_wnd_server["edt_proj_url_card"] = self.edt_proj_url_card.text()
+        cfg_wnd_server["edt_proj_reg_gift_day"] = self.edt_proj_reg_gift_day.text()
+        cfg_wnd_server["edt_proj_unbind_sub_hour"] = self.edt_proj_unbind_sub_hour.text()
+        cfg_wnd_server["edt_proj_url_update"] = self.edt_proj_url_update.text()
+        with open(path_cfg_wnd_server, "w", encoding="utf-8") as f:
+            json.dump(cfg_wnd_server, f, ensure_ascii=False)
 
     def init_status_bar(self):
         self.lbe_1 = QLabel("<提示> : ")
@@ -319,6 +354,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_user_query.clicked.connect(self.on_btn_user_query_clicked)
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
         self.btn_custom_confirm.clicked.connect(self.on_btn_custom_confirm_clicked)
+        self.btn_cfg_save.clicked.connect(self.on_btn_cfg_save_clicked)
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
         self.tbe_custom.cellClicked.connect(self.on_tbe_custom_cellClicked)
@@ -416,6 +452,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             num = sql_table_insert("4自定义数据", val_dict)
             self.show_info(f"{num}个自定义数据添加成功")
         self.show_all_tbe_custom()
+
+    def on_btn_cfg_save_clicked(self):
+        self.cfg_write()
+        self.show_info("保存项目配置成功")
 
     def on_tbe_proj_cellClicked(self, row: int, col: int):
         self.edt_proj_client_ver.setText(self.tbe_proj.item(row, 1).text())

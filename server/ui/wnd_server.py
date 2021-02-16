@@ -172,6 +172,11 @@ class Ui_WndServer(object):
 
         self.formLayout.setWidget(4, QFormLayout.FieldRole, self.edt_proj_unbind_sub_hour)
 
+        self.btn_cfg_save = QPushButton(self.groupBox)
+        self.btn_cfg_save.setObjectName(u"btn_cfg_save")
+
+        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.btn_cfg_save)
+
 
         self.verticalLayout_2.addWidget(self.groupBox)
 
@@ -590,6 +595,7 @@ class Ui_WndServer(object):
         self.label_7.setText(QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u8d60\u9001\u5929\u6570", None))
         self.label_11.setText(QCoreApplication.translate("WndServer", u"\u514d\u8d39\u89e3\u7ed1\u6b21\u6570", None))
         self.label_12.setText(QCoreApplication.translate("WndServer", u"\u89e3\u7ed1\u6263\u9664\u5c0f\u65f6", None))
+        self.btn_cfg_save.setText(QCoreApplication.translate("WndServer", u"\u4fdd\u5b58\u914d\u7f6e", None))
         ___qtablewidgetitem7 = self.tbe_custom.horizontalHeaderItem(0)
         ___qtablewidgetitem7.setText(QCoreApplication.translate("WndServer", u"ID", None));
         ___qtablewidgetitem8 = self.tbe_custom.horizontalHeaderItem(1)

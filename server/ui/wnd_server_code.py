@@ -245,10 +245,17 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_proj = QMenu()
         self.action_proj_show_all = QAction("显示全部版本信息")
         self.action_proj_del_sel = QAction("删除选中版本")
+        self.action_proj_all_allow_sel = QAction("选中版本全部允许")
+        self.action_proj_all_forbid_sel = QAction("选中版本全部禁止")
         self.menu_tbe_proj.addAction(self.action_proj_show_all)
         self.menu_tbe_proj.addAction(self.action_proj_del_sel)
+        self.menu_tbe_proj.addSeparator()
+        self.menu_tbe_proj.addActions([self.action_proj_all_allow_sel,
+                                       self.action_proj_all_forbid_sel])
         self.action_proj_show_all.triggered.connect(self.show_all_tbe_proj)
         self.action_proj_del_sel.triggered.connect(self.on_action_proj_del_sel_triggered)
+        self.action_proj_all_allow_sel.triggered.connect(self.on_action_proj_all_allow_sel_triggered)
+        self.action_proj_all_forbid_sel.triggered.connect(self.on_action_proj_all_forbid_sel_triggered)
         self.tbe_proj.customContextMenuRequested.connect(
             lambda: self.menu_tbe_proj.exec_(QCursor.pos())
         )
@@ -474,7 +481,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         item_list = self.tbe_proj.selectedItems()
         ver_set = {self.tbe_proj.item(it.row(), 1).text() for it in item_list}
         if not ver_set:
-            self.show_info("未选中任何项")
             return
         ret = QMessageBox.information(self, "警告", "是否确认删除选中版本?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if ret != QMessageBox.Yes:
@@ -482,6 +488,26 @@ class WndServer(QMainWindow, Ui_WndServer):
         vers = "','".join(ver_set)
         num = sql_table_del_ex("1项目管理", f"客户端版本 in ('{vers}')")
         self.show_info(f"{num}个版本删除成功")
+        self.show_all_tbe_proj()
+
+    def on_action_proj_all_allow_sel_triggered(self):
+        item_list = self.tbe_proj.selectedItems()
+        ver_set = {self.tbe_proj.item(it.row(), 1).text() for it in item_list}
+        if not ver_set:
+            return
+        vers = "','".join(ver_set)
+        num = sql_table_update_ex(sql=f"update 1项目管理 set 允许登录=1,允许注册=1,允许解绑=1 where 客户端版本 in ('{vers}')")
+        self.show_info(f"{num}个版本全部允许成功")
+        self.show_all_tbe_proj()
+
+    def on_action_proj_all_forbid_sel_triggered(self):
+        item_list = self.tbe_proj.selectedItems()
+        ver_set = {self.tbe_proj.item(it.row(), 1).text() for it in item_list}
+        if not ver_set:
+            return
+        vers = "','".join(ver_set)
+        num = sql_table_update_ex(sql=f"update 1项目管理 set 允许登录=0,允许注册=0,允许解绑=0 where 客户端版本 in ('{vers}')")
+        self.show_info(f"{num}个版本全部禁止成功")
         self.show_all_tbe_proj()
 
     def on_action_user_comment_sel_triggered(self):
@@ -903,7 +929,6 @@ def deal_proj(client_socket: socket.socket, client_content_dict: dict):
     if query_proj_list:
         proj_ret = True
         query_proj = query_proj_list[0]
-        # todo
         detail = {
             "最新版本": wnd_server.latest_ver,
             "客户端公告": query_proj["客户端公告"],

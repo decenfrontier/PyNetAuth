@@ -119,9 +119,12 @@ class WndServer(QMainWindow, Ui_WndServer):
             QMessageBox.critical(self, "错误", f"tcp连接失败: {e}")
             raise e
 
+    # 初始化实例属性
     def init_instance_field(self):
         self.latest_ver = sql_table_query_ex("1项目管理", sql="select max(客户端版本) from 1项目管理")[0]["max(客户端版本)"]
         self.lbe_latest_ver.setText(self.latest_ver)
+        # ---------------------- 项目相关 --------------------
+
         # ---------------------- 定时器 ----------------------
         self.timer_sec = QTimer()
         self.timer_sec.timeout.connect(self.on_timer_sec_timeout)
@@ -137,13 +140,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.horizontalHeader().setVisible(True)
             self.tbe_card.horizontalHeader().setVisible(True)
             # 项目管理表
-            id, ver, notice, url_update, url_card, gift_day, free_unbind, unbind_hour, \
-            login, reg, unbind, last_update_time = [i for i in range(12)]
+            id, ver, notice, login, reg, unbind, last_update_time = [i for i in range(7)]
             self.tbe_proj.setColumnWidth(id, 40)
             self.tbe_proj.setColumnWidth(ver, 70)
-            self.tbe_proj.setColumnWidth(notice, 70)
-            self.tbe_proj.setColumnWidth(url_update, 70)
-            self.tbe_proj.setColumnWidth(url_card, 70)
+            self.tbe_proj.setColumnWidth(notice, 260)
             self.tbe_proj.setColumnWidth(login, 80)
             self.tbe_proj.setColumnWidth(reg, 80)
             self.tbe_proj.setColumnWidth(unbind, 80)
@@ -418,27 +418,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_all_tbe_custom()
 
     def on_tbe_proj_cellClicked(self, row: int, col: int):
-        client_ver = self.tbe_proj.item(row, 1).text()
-        pub_notice = self.tbe_proj.item(row, 2).text()
-        url_update = self.tbe_proj.item(row, 3).text()
-        url_card = self.tbe_proj.item(row, 4).text()
-        reg_gift_day = self.tbe_proj.item(row, 5).text()
-        free_unbind_count = self.tbe_proj.item(row, 6).text()
-        unbind_sub_hour = self.tbe_proj.item(row, 7).text()
-        allow_login = self.tbe_proj.item(row, 8).text()
-        allow_reg = self.tbe_proj.item(row, 9).text()
-        allow_unbind = self.tbe_proj.item(row, 10).text()
-
-        self.edt_proj_client_ver.setText(client_ver)
-        self.pedt_proj_public_notice.setPlainText(pub_notice)
-        self.edt_proj_url_update.setText(url_update)
-        self.edt_proj_url_card.setText(url_card)
-        self.edt_proj_reg_gift_day.setText(reg_gift_day)
-        self.edt_proj_free_unbind_count.setText(free_unbind_count)
-        self.edt_proj_unbind_sub_hour.setText(unbind_sub_hour)
-        self.chk_proj_login.setChecked(int(allow_login))
-        self.chk_proj_reg.setChecked(int(allow_reg))
-        self.chk_proj_unbind.setChecked(int(allow_unbind))
+        self.edt_proj_client_ver.setText(self.tbe_proj.item(row, 1).text())
+        self.pedt_proj_public_notice.setPlainText(self.tbe_proj.item(row, 2).text())
+        self.chk_proj_login.setChecked(int(self.tbe_proj.item(row, 3).text()))
+        self.chk_proj_reg.setChecked(int(self.tbe_proj.item(row, 4).text()))
+        self.chk_proj_unbind.setChecked(int(self.tbe_proj.item(row, 5).text()))
 
     def on_tbe_custom_cellClicked(self, row: int, col: int):
         self.edt_custom_key.setText(self.tbe_custom.item(row, 1).text())
@@ -656,15 +640,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_proj.setItem(row, 0, QTableWidgetItem(str(query_proj["ID"])))
             self.tbe_proj.setItem(row, 1, QTableWidgetItem(query_proj["客户端版本"]))
             self.tbe_proj.setItem(row, 2, QTableWidgetItem(query_proj["客户端公告"]))
-            self.tbe_proj.setItem(row, 3, QTableWidgetItem(query_proj["更新网址"]))
-            self.tbe_proj.setItem(row, 4, QTableWidgetItem(query_proj["发卡网址"]))
-            self.tbe_proj.setItem(row, 5, QTableWidgetItem(str(query_proj["注册赠送天数"])))
-            self.tbe_proj.setItem(row, 6, QTableWidgetItem(str(query_proj["免费解绑次数"])))
-            self.tbe_proj.setItem(row, 7, QTableWidgetItem(str(query_proj["解绑扣除小时"])))
-            self.tbe_proj.setItem(row, 8, QTableWidgetItem(str(query_proj["允许登录"])))
-            self.tbe_proj.setItem(row, 9, QTableWidgetItem(str(query_proj["允许注册"])))
-            self.tbe_proj.setItem(row, 10, QTableWidgetItem(str(query_proj["允许解绑"])))
-            self.tbe_proj.setItem(row, 11, QTableWidgetItem(str(query_proj["最后更新时间"])))
+            self.tbe_proj.setItem(row, 3, QTableWidgetItem(str(query_proj["允许登录"])))
+            self.tbe_proj.setItem(row, 4, QTableWidgetItem(str(query_proj["允许注册"])))
+            self.tbe_proj.setItem(row, 5, QTableWidgetItem(str(query_proj["允许解绑"])))
+            self.tbe_proj.setItem(row, 6, QTableWidgetItem(str(query_proj["最后更新时间"])))
 
     def refresh_tbe_user(self, query_user_list):
         self.tbe_user.setRowCount(len(query_user_list))
@@ -932,6 +911,7 @@ def deal_reg(client_socket: socket.socket, client_content_dict: dict):
     else:  # 不存在则插入记录
         client_content_dict["注册时间"] = cur_time_format
         client_content_dict["到期时间"] = cur_time_format
+
         reg_ret = sql_table_insert("2用户管理", client_content_dict)
         detail = "注册成功" if reg_ret else "注册失败, 数据库异常"
     # 记录到日志

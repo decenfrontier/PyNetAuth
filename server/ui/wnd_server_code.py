@@ -964,6 +964,10 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
             if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
                 login_ret = True
                 detail = "登录成功"
+                if query_user["状态"] == "":  # 新到期时间 = 到期时间 + (现在时间 - 注册时间)
+                    detail += ", 首次登录重新计算到期时间"
+                    sql_table_update_ex(sql="update 2用户管理 set 到期时间=date_add(到期时间, interval "
+                                            "timestampdiff(minute, 注册时间, now()) minute)")
             else:
                 detail = "登录失败, 异机登录请先解绑"
         else:

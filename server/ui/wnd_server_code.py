@@ -22,18 +22,19 @@ lock = Lock()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_format[:10]
 path_log = f"C:\\net_auth_{today}.log"
+path_cfg_wnd_server = "C:\\cfg_wnd_server.json"
 server_ip = "127.0.0.1"
 server_port = 47123
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = my_crypto.AesEncryption(aes_key)
+
 # 界面配置
-path_cfg_wnd_server = "C:\\cfg_wnd_server.json"
 cfg_wnd_server = {
-    "edt_proj_url_update": "",
-    "edt_proj_url_card": "",
-    "edt_proj_reg_gift_day": "",
-    "edt_proj_free_unbind_count": "",
-    "edt_proj_unbind_sub_hour": "",
+    "更新网址": "",
+    "发卡网址": "",
+    "注册赠送天数": "",
+    "免费解绑次数": "",
+    "解绑扣除小时": "",
 }
 
 qss_style = """
@@ -86,19 +87,19 @@ class WndServer(QMainWindow, Ui_WndServer):
                 json.dump(cfg_wnd_server, f, ensure_ascii=False)
         with open(path_cfg_wnd_server, "r", encoding="utf-8") as f:
             cfg_wnd_server = json.load(f)
-        self.edt_proj_url_update.setText(cfg_wnd_server["edt_proj_url_update"])
-        self.edt_proj_unbind_sub_hour.setText(cfg_wnd_server["edt_proj_unbind_sub_hour"])
-        self.edt_proj_url_card.setText(cfg_wnd_server["edt_proj_url_card"])
-        self.edt_proj_reg_gift_day.setText(cfg_wnd_server["edt_proj_reg_gift_day"])
-        self.edt_proj_free_unbind_count.setText(cfg_wnd_server["edt_proj_free_unbind_count"])
+        self.edt_proj_url_update.setText(cfg_wnd_server["更新网址"])
+        self.edt_proj_unbind_sub_hour.setText(cfg_wnd_server["解绑扣除小时"])
+        self.edt_proj_url_card.setText(cfg_wnd_server["发卡网址"])
+        self.edt_proj_reg_gift_day.setText(cfg_wnd_server["注册赠送天数"])
+        self.edt_proj_free_unbind_count.setText(cfg_wnd_server["免费解绑次数"])
 
     # 写入配置
     def cfg_write(self):
-        cfg_wnd_server["edt_proj_free_unbind_count"] = self.edt_proj_free_unbind_count.text()
-        cfg_wnd_server["edt_proj_url_card"] = self.edt_proj_url_card.text()
-        cfg_wnd_server["edt_proj_reg_gift_day"] = self.edt_proj_reg_gift_day.text()
-        cfg_wnd_server["edt_proj_unbind_sub_hour"] = self.edt_proj_unbind_sub_hour.text()
-        cfg_wnd_server["edt_proj_url_update"] = self.edt_proj_url_update.text()
+        cfg_wnd_server["免费解绑次数"] = self.edt_proj_free_unbind_count.text()
+        cfg_wnd_server["发卡网址"] = self.edt_proj_url_card.text()
+        cfg_wnd_server["注册赠送天数"] = self.edt_proj_reg_gift_day.text()
+        cfg_wnd_server["解绑扣除小时"] = self.edt_proj_unbind_sub_hour.text()
+        cfg_wnd_server["更新网址"] = self.edt_proj_url_update.text()
         with open(path_cfg_wnd_server, "w", encoding="utf-8") as f:
             json.dump(cfg_wnd_server, f, ensure_ascii=False)
 
@@ -902,14 +903,15 @@ def deal_proj(client_socket: socket.socket, client_content_dict: dict):
     if query_proj_list:
         proj_ret = True
         query_proj = query_proj_list[0]
+        # todo
         detail = {
+            "最新版本": wnd_server.latest_ver,
             "客户端公告": query_proj["客户端公告"],
-            "更新网址": query_proj["更新网址"],
-            "发卡网址": query_proj["发卡网址"],
             "允许登录": query_proj["允许登录"],
             "允许注册": query_proj["允许注册"],
             "允许解绑": query_proj["允许解绑"],
-            "最新版本": wnd_server.latest_ver,
+            "更新网址": cfg_wnd_server["更新网址"],
+            "发卡网址": cfg_wnd_server["发卡网址"],
         }
     else:
         proj_ret = False

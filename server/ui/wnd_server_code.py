@@ -582,10 +582,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                                       QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if ret != QMessageBox.Yes:
             return
-        if sql_table_del_ex("3卡密管理", "使用时间 is not null"):
-            self.show_info("删除已使用的卡号成功")
-        else:
-            self.show_info("删除已使用的卡号失败")
+        sql_table_del_ex("3卡密管理", "使用时间 is not null")
         self.show_all_tbe_card()
 
     def on_action_card_export_sel_triggered(self):

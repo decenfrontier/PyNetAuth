@@ -135,6 +135,9 @@
             <property name="cursor">
              <cursorShape>PointingHandCursor</cursorShape>
             </property>
+            <property name="toolTip">
+             <string>首次登录成功后开始计时</string>
+            </property>
             <property name="text">
              <string>登 录</string>
             </property>
@@ -157,6 +160,9 @@
            <widget class="QPushButton" name="btn_unbind">
             <property name="cursor">
              <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>软件是绑定机器的, 可以异机解绑</string>
             </property>
             <property name="text">
              <string>解 绑</string>
@@ -272,7 +278,7 @@
           <item row="2" column="1">
            <widget class="QLineEdit" name="edt_reg_qq">
             <property name="toolTip">
-             <string>字母数字组合, 5-10位</string>
+             <string>请填写真实QQ, 注册后不可更改, 是您账号改密的重要凭证</string>
             </property>
             <property name="text">
              <string/>
@@ -412,6 +418,9 @@
           </item>
           <item>
            <widget class="QLineEdit" name="edt_pay_account">
+            <property name="toolTip">
+             <string>字母数字组合, 6-12位</string>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -579,7 +588,11 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="edt_modify_account"/>
+           <widget class="QLineEdit" name="edt_modify_account">
+            <property name="toolTip">
+             <string>字母数字组合, 6-12位</string>
+            </property>
+           </widget>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_12">
@@ -589,7 +602,11 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLineEdit" name="edt_modify_qq"/>
+           <widget class="QLineEdit" name="edt_modify_qq">
+            <property name="toolTip">
+             <string>请输入注册账号时预留的QQ号</string>
+            </property>
+           </widget>
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_11">
@@ -599,7 +616,11 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLineEdit" name="edt_modify_new_pwd"/>
+           <widget class="QLineEdit" name="edt_modify_new_pwd">
+            <property name="toolTip">
+             <string>字母数字组合, 6-12位</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>

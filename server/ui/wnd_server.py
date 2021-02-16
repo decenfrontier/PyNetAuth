@@ -431,8 +431,6 @@ class Ui_WndServer(object):
         self.cmb_card_type.addItem("")
         self.cmb_card_type.addItem("")
         self.cmb_card_type.addItem("")
-        self.cmb_card_type.addItem("")
-        self.cmb_card_type.addItem("")
         self.cmb_card_type.setObjectName(u"cmb_card_type")
 
         self.gridLayout_6.addWidget(self.cmb_card_type, 0, 1, 1, 1)
@@ -471,8 +469,8 @@ class Ui_WndServer(object):
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(2, 2, 2, 2)
         self.tbe_everyday = QTableWidget(self.page_everyday)
-        if (self.tbe_everyday.columnCount() < 6):
-            self.tbe_everyday.setColumnCount(6)
+        if (self.tbe_everyday.columnCount() < 10):
+            self.tbe_everyday.setColumnCount(10)
         __qtablewidgetitem39 = QTableWidgetItem()
         self.tbe_everyday.setHorizontalHeaderItem(0, __qtablewidgetitem39)
         __qtablewidgetitem40 = QTableWidgetItem()
@@ -485,6 +483,14 @@ class Ui_WndServer(object):
         self.tbe_everyday.setHorizontalHeaderItem(4, __qtablewidgetitem43)
         __qtablewidgetitem44 = QTableWidgetItem()
         self.tbe_everyday.setHorizontalHeaderItem(5, __qtablewidgetitem44)
+        __qtablewidgetitem45 = QTableWidgetItem()
+        self.tbe_everyday.setHorizontalHeaderItem(6, __qtablewidgetitem45)
+        __qtablewidgetitem46 = QTableWidgetItem()
+        self.tbe_everyday.setHorizontalHeaderItem(7, __qtablewidgetitem46)
+        __qtablewidgetitem47 = QTableWidgetItem()
+        self.tbe_everyday.setHorizontalHeaderItem(8, __qtablewidgetitem47)
+        __qtablewidgetitem48 = QTableWidgetItem()
+        self.tbe_everyday.setHorizontalHeaderItem(9, __qtablewidgetitem48)
         self.tbe_everyday.setObjectName(u"tbe_everyday")
         self.tbe_everyday.horizontalHeader().setStretchLastSection(True)
         self.tbe_everyday.verticalHeader().setVisible(False)
@@ -656,8 +662,6 @@ class Ui_WndServer(object):
         self.cmb_card_type.setItemText(1, QCoreApplication.translate("WndServer", u"\u5468\u5361", None))
         self.cmb_card_type.setItemText(2, QCoreApplication.translate("WndServer", u"\u6708\u5361", None))
         self.cmb_card_type.setItemText(3, QCoreApplication.translate("WndServer", u"\u5b63\u5361", None))
-        self.cmb_card_type.setItemText(4, QCoreApplication.translate("WndServer", u"\u5e74\u5361", None))
-        self.cmb_card_type.setItemText(5, QCoreApplication.translate("WndServer", u"\u6c38\u4e45\u5361", None))
 
         self.label_2.setText(QCoreApplication.translate("WndServer", u"\u751f\u6210\u5f20\u6570:", None))
         self.edt_card_num.setInputMask("")
@@ -669,13 +673,21 @@ class Ui_WndServer(object):
         ___qtablewidgetitem40 = self.tbe_everyday.horizontalHeaderItem(1)
         ___qtablewidgetitem40.setText(QCoreApplication.translate("WndServer", u"\u65e5\u671f", None));
         ___qtablewidgetitem41 = self.tbe_everyday.horizontalHeaderItem(2)
-        ___qtablewidgetitem41.setText(QCoreApplication.translate("WndServer", u"\u5145\u503c\u7528\u6237\u6570", None));
+        ___qtablewidgetitem41.setText(QCoreApplication.translate("WndServer", u"\u5929\u5361\u5145\u503c\u6570", None));
         ___qtablewidgetitem42 = self.tbe_everyday.horizontalHeaderItem(3)
-        ___qtablewidgetitem42.setText(QCoreApplication.translate("WndServer", u"\u6d3b\u8dc3\u7528\u6237\u6570", None));
+        ___qtablewidgetitem42.setText(QCoreApplication.translate("WndServer", u"\u5468\u5361\u5145\u503c\u6570", None));
         ___qtablewidgetitem43 = self.tbe_everyday.horizontalHeaderItem(4)
-        ___qtablewidgetitem43.setText(QCoreApplication.translate("WndServer", u"\u5728\u7ebf\u7528\u6237\u6570", None));
+        ___qtablewidgetitem43.setText(QCoreApplication.translate("WndServer", u"\u6708\u5361\u5145\u503c\u6570", None));
         ___qtablewidgetitem44 = self.tbe_everyday.horizontalHeaderItem(5)
-        ___qtablewidgetitem44.setText(QCoreApplication.translate("WndServer", u"\u6700\u8fd1\u66f4\u65b0\u65f6\u95f4", None));
+        ___qtablewidgetitem44.setText(QCoreApplication.translate("WndServer", u"\u5b63\u5361\u5145\u503c\u6570", None));
+        ___qtablewidgetitem45 = self.tbe_everyday.horizontalHeaderItem(6)
+        ___qtablewidgetitem45.setText(QCoreApplication.translate("WndServer", u"\u5145\u503c\u7528\u6237\u6570", None));
+        ___qtablewidgetitem46 = self.tbe_everyday.horizontalHeaderItem(7)
+        ___qtablewidgetitem46.setText(QCoreApplication.translate("WndServer", u"\u6d3b\u8dc3\u7528\u6237\u6570", None));
+        ___qtablewidgetitem47 = self.tbe_everyday.horizontalHeaderItem(8)
+        ___qtablewidgetitem47.setText(QCoreApplication.translate("WndServer", u"\u5728\u7ebf\u7528\u6237\u6570", None));
+        ___qtablewidgetitem48 = self.tbe_everyday.horizontalHeaderItem(9)
+        ___qtablewidgetitem48.setText(QCoreApplication.translate("WndServer", u"\u6700\u8fd1\u66f4\u65b0\u65f6\u95f4", None));
         self.tbr_log.setDocumentTitle(QCoreApplication.translate("WndServer", u"\u6267\u884c\u65e5\u5fd7", None))
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))
     # retranslateUi

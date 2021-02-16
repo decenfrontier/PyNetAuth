@@ -550,17 +550,13 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def on_action_card_show_unuse_triggered(self):
         query_card_list = sql_table_query_ex("3卡密管理", "使用时间 is null")
-        if self.refresh_tbe_card(query_card_list):
-            self.show_info("显示未使用卡密成功")
-        else:
-            self.show_info("显示未使用卡密失败")
+        self.refresh_tbe_card(query_card_list)
+        self.show_info("已显示未使用卡密")
 
     def on_action_card_show_export_triggered(self):
         query_card_list = sql_table_query_ex("3卡密管理", "导出时间 is not null")
-        if self.refresh_tbe_card(query_card_list):
-            self.show_info("显示导出中卡密成功")
-        else:
-            self.show_info("显示导出中卡密失败")
+        self.refresh_tbe_card(query_card_list)
+        self.show_info("已显示已导出卡密")
 
     def on_action_card_del_sel_triggered(self):
         ret = QMessageBox.information(self, "提示", "是否确定删除选中的卡号?",
@@ -666,8 +662,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_proj.setItem(row, 11, QTableWidgetItem(str(query_proj["最后更新时间"])))
 
     def refresh_tbe_user(self, query_user_list):
-        if not query_user_list:
-            return False
         self.tbe_user.setRowCount(len(query_user_list))
         for row, query_user in enumerate(query_user_list):
             query_user["心跳时间"] = "" if query_user["心跳时间"] is None else str(query_user["心跳时间"])
@@ -706,11 +700,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setItem(row, 13, reg_time)
             self.tbe_user.setItem(row, 14, opration_system)
             self.tbe_user.setItem(row, 15, comment)
-        return True
 
     def refresh_tbe_card(self, query_card_list):
-        if not query_card_list:
-            return False
         self.tbe_card.setRowCount(len(query_card_list))
         for row, query_card in enumerate(query_card_list):
             query_card["制卡时间"] = "" if query_card["制卡时间"] is None else str(query_card["制卡时间"])
@@ -728,11 +719,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_card.setItem(row, 3, gen_time)
             self.tbe_card.setItem(row, 4, export_time)
             self.tbe_card.setItem(row, 5, use_time)
-        return True
 
     def refresh_tbe_custom(self, query_custom_list: list):
-        if not query_custom_list:
-            return False
         self.tbe_custom.setRowCount(len(query_custom_list))
         for row, query_custom in enumerate(query_custom_list):
             self.tbe_custom.setItem(row, 0, QTableWidgetItem(str(query_custom["ID"])))
@@ -741,18 +729,20 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_custom.setItem(row, 3, QTableWidgetItem(query_custom["加密值"]))
 
     def refresh_tbe_everyday(self, query_everyday_list: list):
-        if not query_everyday_list:
-            return False
         self.tbe_everyday.setRowCount(len(query_everyday_list))
         for row, query_everyday in enumerate(query_everyday_list):
             query_everyday["日期"] = "" if query_everyday["日期"] is None else str(query_everyday["日期"])
             query_everyday["最后更新时间"] = "" if query_everyday["最后更新时间"] is None else str(query_everyday["最后更新时间"])
             self.tbe_everyday.setItem(row, 0, QTableWidgetItem(str(query_everyday["ID"])))
             self.tbe_everyday.setItem(row, 1, QTableWidgetItem(query_everyday["日期"]))
-            self.tbe_everyday.setItem(row, 2, QTableWidgetItem(str(query_everyday["充值用户数"])))
-            self.tbe_everyday.setItem(row, 3, QTableWidgetItem(str(query_everyday["活跃用户数"])))
-            self.tbe_everyday.setItem(row, 4, QTableWidgetItem(str(query_everyday["在线用户数"])))
-            self.tbe_everyday.setItem(row, 5, QTableWidgetItem(query_everyday["最后更新时间"]))
+            self.tbe_everyday.setItem(row, 2, QTableWidgetItem(str(query_everyday["天卡充值数"])))
+            self.tbe_everyday.setItem(row, 3, QTableWidgetItem(str(query_everyday["周卡充值数"])))
+            self.tbe_everyday.setItem(row, 4, QTableWidgetItem(str(query_everyday["月卡充值数"])))
+            self.tbe_everyday.setItem(row, 5, QTableWidgetItem(str(query_everyday["季卡充值数"])))
+            self.tbe_everyday.setItem(row, 6, QTableWidgetItem(str(query_everyday["充值用户数"])))
+            self.tbe_everyday.setItem(row, 7, QTableWidgetItem(str(query_everyday["活跃用户数"])))
+            self.tbe_everyday.setItem(row, 8, QTableWidgetItem(str(query_everyday["在线用户数"])))
+            self.tbe_everyday.setItem(row, 9, QTableWidgetItem(query_everyday["最后更新时间"]))
 
     # 刷新ip归属地
     def refresh_ip_location(self):
@@ -1024,18 +1014,25 @@ def deal_pay(client_socket: socket.socket, client_content_dict: dict):
         if query_card_list:
             query_card = query_card_list[0]
             if not query_card["使用时间"]:  # 卡密未被使用
-                # 更新卡密的使用时间
-                sql_table_update("3卡密管理", {"使用时间": cur_time_format}, {"卡号": card_key})
                 # 更新账号到期时间
                 type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 120, "年卡": 365, "永久卡": 3650}
                 card_type = query_card["卡类型"]
                 delta_day = type_time_dict[card_type]
                 account = query_user["账号"]
                 # 若到期时间大于当前时间, 则从到期时间开始加, 否则从当前时间开始加
-                start_day = "到期时间" if str(query_user["到期时间"]) > cur_time_format else "now()"
-                pay_ret = sql_table_update_ex("2用户管理", f"到期时间 = date_add({start_day}, interval {delta_day} day)",
-                                              f"账号='{account}'")
-                detail = "充值成功" if pay_ret else "充值失败, 数据库异常"
+                pay_ret = sql_table_update_ex(sql="update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), "
+                                                  f"interval {delta_day} day), date_add(到期时间, interval {delta_day} day)) "
+                                                  f"where 账号='{account}';")
+                if pay_ret:  # todo: 多线程访问的安全性?是否要上锁
+                    detail = "充值成功"
+                    # 更新卡密的使用时间
+                    sql_table_update("3卡密管理", {"使用时间": cur_time_format}, {"卡号": card_key})
+                    # 更新流水充值用户数
+                    card_pay_num = card_type + "充值数"
+                    sql_table_update_ex(sql=f"update 5每日流水 set 充值用户数=充值用户数+1, {card_pay_num}={card_pay_num}+1 "
+                                            f"where 日期='{today}';")
+                else:
+                    detail = "充值失败, 数据库异常"
             else:
                 detail = "充值失败, 此卡密已被使用"
         else:  # 没查到数据
@@ -1048,9 +1045,6 @@ def deal_pay(client_socket: socket.socket, client_content_dict: dict):
     server_info_dict = {"消息类型": "充值",
                         "内容": {"结果": pay_ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
-    # 若充值成功, 则流水表充值用户加1
-    if pay_ret: # todo: 多线程访问的安全性?
-        sql_table_update_ex(sql=f"update 5每日流水 set 充值用户数=充值用户数+1 where 日期='{today}';")
 
 
 # 处理_改密

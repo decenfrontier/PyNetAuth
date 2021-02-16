@@ -800,16 +800,6 @@
                   <string>季卡</string>
                  </property>
                 </item>
-                <item>
-                 <property name="text">
-                  <string>年卡</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>永久卡</string>
-                 </property>
-                </item>
                </widget>
               </item>
               <item row="1" column="0">
@@ -890,6 +880,26 @@
           <column>
            <property name="text">
             <string>日期</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>天卡充值数</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>周卡充值数</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>月卡充值数</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>季卡充值数</string>
            </property>
           </column>
           <column>

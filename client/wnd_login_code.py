@@ -18,6 +18,7 @@ class WndLogin(QDialog, Ui_WndLogin):
     sig_accept = Signal()
     sig_reject = Signal()
     sig_info = Signal(str)
+    sig_pass = Signal(bool)
 
     def __init__(self):
         super().__init__()
@@ -69,6 +70,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.lbe_captcha_pic = QLabel("图片验证码", self.wnd_captcha)
         self.edt_captcha_answer = QLineEdit(self.wnd_captcha)
         self.btn_captcha_commit = QPushButton("提交", self.wnd_captcha)
+        self.captcha_ret = 999
+        self.captcha_btn_text = ""  # 记录弹出验证窗口时点的是哪一个按钮
         # ---------------------- 界面配置 --------------------
         self.cfg = {
             "账号": "",
@@ -87,10 +90,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.status_bar.addWidget(self.lbe_1)
         self.status_bar.addWidget(self.lbe_info)
 
-    def init_custom_sig_slot(self):
-        self.sig_accept.connect(self.accept)
-        self.sig_reject.connect(self.reject)
-        self.sig_info.connect(lambda text: self.lbe_info.setText(text))
+
 
     def show_info(self, text):
         self.sig_info.emit(text)  # 信号槽, 防逆向跟踪
@@ -194,28 +194,32 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.btn_reg.setEnabled(mf.allow_reg)
         self.btn_unbind.setEnabled(mf.allow_unbind)
 
+    def init_custom_sig_slot(self):
+        self.sig_accept.connect(self.accept)
+        self.sig_reject.connect(self.reject)
+        self.sig_info.connect(lambda text: self.lbe_info.setText(text))
+        self.sig_pass.connect(self.on_sig_pass)
+
     def init_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         self.btn_login.clicked.connect(self.on_btn_login_clicked)
         self.btn_reg.clicked.connect(self.on_btn_reg_clicked)
-        self.btn_exit.clicked.connect(self.on_btn_exit_clicked)
+        self.btn_exit.clicked.connect(lambda : self.close())
         self.btn_pay.clicked.connect(self.on_btn_pay_clicked)
         self.btn_unbind.clicked.connect(self.on_btn_unbind_clicked)
         self.btn_modify.clicked.connect(self.on_btn_modify_clicked)
+        self.btn_captcha_commit.clicked.connect(self.on_btn_captcha_commit_clicked)
 
-    def popup_captcha_wnd(self) -> bool:
+    def popup_captcha_wnd(self):
+        # 显示验证窗口
         self.wnd_captcha.show()
-        true_ret = self.refresh_captcha_pic()
-        print(true_ret)
-        ...
-
-    def refresh_captcha_pic(self):
+        # 刷新验证码
         tr = mf.create_com_obj(mf.COM_NAME_TR)
-        ret = tr.Draw_CAPTCHA()
+        self.captcha_ret = tr.Draw_CAPTCHA()
+        print(self.captcha_ret, type(self.captcha_ret))
         path_captcha = "C:\\a_b_c\\temp\\1.bmp"
         tr.SaveImageData(path_captcha)
         self.lbe_captcha_pic.setPixmap(QPixmap(path_captcha))
-        return ret
 
     # 发送接收初始消息
     def send_recv_init(self, tcp_socket: socket.socket):
@@ -296,36 +300,10 @@ class WndLogin(QDialog, Ui_WndLogin):
             return True
         return False
 
-    def on_tool_bar_actionTriggered(self, action):
-        action_name = action.text()
-        if action_name == "登录":
-            self.stack_widget.setCurrentIndex(0)
-        elif action_name == "注册":
-            self.stack_widget.setCurrentIndex(1)
-        elif action_name == "充值":
-            self.stack_widget.setCurrentIndex(2)
-        elif action_name == "改密":
-            self.stack_widget.setCurrentIndex(3)
-        elif action_name == "公告":
-            self.stack_widget.setCurrentIndex(4)
-
-    def on_btn_login_clicked(self):
-        # 把控件信息保存到配置文件
-        self.cfg_write()
-        # 读取登录账号密码, 判断是否符合要求
+    def send_recv_login(self):
+        # ----------------- 发送数据给服务器 -----------------
         login_account = self.cfg["账号"]
         login_pwd = self.cfg["密码"]
-        bool_list = [
-            len(login_account) in range(6, 13),
-            len(login_pwd) in range(6, 13),
-        ]
-        if False in bool_list:
-            self.show_info("登录失败, 账号密码长度不符合要求")
-            return
-        # 弹出验证窗口, 输对验证码才发送给服务端
-        self.popup_captcha_wnd()
-        return
-        # ----------------- 发送数据给服务器 -----------------
         login_pwd = my_crypto.get_encrypted_str(login_pwd.encode())
         login_system = mf.get_operation_system()
         # 把客户端信息整理成字典
@@ -344,7 +322,7 @@ class WndLogin(QDialog, Ui_WndLogin):
             self.show_info("服务器繁忙, 请稍后再试")
             return
         mf.send_to_server(tcp_socket, client_info_dict)
-        # 处理服务端响应消息
+        # ----------------- 接收并处理服务端响应消息 ------------
         msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if msg_type == "登录":
             self.show_info(server_content_dict["详情"])
@@ -355,19 +333,11 @@ class WndLogin(QDialog, Ui_WndLogin):
                 else:
                     self.sig_reject.emit()  # 登录界面拒绝
 
-    def on_btn_reg_clicked(self):
-        # 判断注册信息是否符合要求
+    def send_recv_reg(self):
+        # ----------------- 发送数据给服务器 -----------------
         reg_account = self.edt_reg_account.text()
         reg_pwd = self.edt_reg_pwd.text()
         reg_qq = self.edt_reg_qq.text()
-        bool_list = [
-            len(reg_account) in range(6, 13),
-            len(reg_pwd) in range(6, 13),
-            len(reg_qq) in range(5, 11)
-        ]
-        if False in bool_list:
-            self.show_info("注册失败, 账号密码6-12位, QQ号5-10位")
-            return
         # 把客户端信息整理成字典
         reg_pwd = my_crypto.get_encrypted_str(reg_pwd.encode())
         client_info_dict = {
@@ -385,31 +355,20 @@ class WndLogin(QDialog, Ui_WndLogin):
             self.show_info("服务器繁忙, 请稍后再试")
             return
         mf.send_to_server(tcp_socket, client_info_dict)
-        # 处理服务端响应消息
+        # ----------------- 接收并处理服务端响应消息 ------------
         msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if msg_type == "注册":
             self.show_info(server_content_dict["详情"])
 
-    def on_btn_exit_clicked(self):
-        self.close()
-
-    def on_btn_pay_clicked(self):
+    def send_recv_pay(self):
+        # ----------------- 发送数据给服务器 -----------------
         account = self.edt_pay_account.text()
         card_key = self.edt_pay_key.text()
-        if len(card_key) != 30 or len(account) not in range(6, 13):
-            self.show_info("账号或卡密错误, 请检查无误后再试")
-            return
+        # 把客户端信息整理成字典
         client_info_dict = {
             "消息类型": "充值",
-            "内容": {
-                "账号": account,
-                "卡号": card_key,
-            }
+            "内容": {"账号": account, "卡号": card_key},
         }
-        ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
-                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-        if ret != QMessageBox.Yes:
-            return
         # 连接服务端
         tcp_socket = mf.connect_server_tcp()
         if not tcp_socket:
@@ -417,12 +376,121 @@ class WndLogin(QDialog, Ui_WndLogin):
             return
         # 发送客户端消息
         mf.send_to_server(tcp_socket, client_info_dict)
-        # 处理服务端响应消息
+        # ----------------- 接收并处理服务端响应消息 ------------
         msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if msg_type == "充值":
             self.show_info(server_content_dict["详情"])
 
+    def send_recv_unbind(self):
+        # ----------------- 发送数据给服务器 -----------------
+        account = self.edt_login_account.text()
+        pwd = self.edt_login_pwd.text()
+        pwd = my_crypto.get_encrypted_str(pwd.encode())
+        # 允许异地解绑. 不用发机器码
+        client_info_dict = {
+            "消息类型": "解绑",
+            "内容": {"账号": account, "密码": pwd},
+        }
+        # 连接服务端
+        tcp_socket = mf.connect_server_tcp()
+        if not tcp_socket:
+            self.show_info("服务器繁忙, 请稍后再试")
+            return
+        # 发送客户端消息
+        mf.send_to_server(tcp_socket, client_info_dict)
+        # ----------------- 接收并处理服务端响应消息 ------------
+        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+        if msg_type == "解绑":
+            self.show_info(server_content_dict["详情"])
+
+    def send_recv_modify(self):
+        # ----------------- 发送数据给服务器 -----------------
+        account = self.edt_modify_account.text()
+        qq = self.edt_modify_qq.text()
+        new_pwd = self.edt_modify_new_pwd.text()
+        new_pwd = my_crypto.get_encrypted_str(new_pwd.encode())
+        client_info_dict = {
+            "消息类型": "改密",
+            "内容": {
+                "账号": account,
+                "QQ": qq,
+                "密码": new_pwd,
+            }
+        }
+        tcp_socket = mf.connect_server_tcp()  # 连接服务端
+        if not tcp_socket:
+            self.show_info("服务器繁忙, 请稍后再试")
+            return
+        # 发送客户端消息
+        mf.send_to_server(tcp_socket, client_info_dict)
+        # ----------------- 接收并处理服务端响应消息 ------------
+        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+        if msg_type == "改密":
+            self.show_info(server_content_dict["详情"])
+
+    def on_tool_bar_actionTriggered(self, action):
+        action_name = action.text()
+        if action_name == "登录":
+            self.stack_widget.setCurrentIndex(0)
+        elif action_name == "注册":
+            self.stack_widget.setCurrentIndex(1)
+        elif action_name == "充值":
+            self.stack_widget.setCurrentIndex(2)
+        elif action_name == "改密":
+            self.stack_widget.setCurrentIndex(3)
+        elif action_name == "公告":
+            self.stack_widget.setCurrentIndex(4)
+
+    def on_btn_login_clicked(self):
+        self.captcha_btn_text = "登录"
+        # 把控件信息保存到配置文件
+        self.cfg_write()
+        # 读取登录账号密码, 判断是否符合要求
+        login_account = self.cfg["账号"]
+        login_pwd = self.cfg["密码"]
+        bool_list = [
+            len(login_account) in range(6, 13),
+            len(login_pwd) in range(6, 13),
+        ]
+        if False in bool_list:
+            self.show_info("登录失败, 账号密码长度不符合要求")
+            return
+        # 弹出验证窗口, 输对验证码才发送给服务端
+        self.popup_captcha_wnd()
+
+
+    def on_btn_reg_clicked(self):
+        self.captcha_btn_text = "注册"
+        # 判断注册信息是否符合要求
+        reg_account = self.edt_reg_account.text()
+        reg_pwd = self.edt_reg_pwd.text()
+        reg_qq = self.edt_reg_qq.text()
+        bool_list = [
+            len(reg_account) in range(6, 13),
+            len(reg_pwd) in range(6, 13),
+            len(reg_qq) in range(5, 11)
+        ]
+        if False in bool_list:
+            self.show_info("注册失败, 账号密码6-12位, QQ号5-10位")
+            return
+        self.popup_captcha_wnd()
+
+    def on_btn_pay_clicked(self):
+        self.captcha_btn_text = "充值"
+        account = self.edt_pay_account.text()
+        card_key = self.edt_pay_key.text()
+        if len(card_key) != 30 or len(account) not in range(6, 13):
+            self.show_info("账号或卡密错误, 请检查无误后再试")
+            return
+        ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
+                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        if ret != QMessageBox.Yes:
+            return
+        self.popup_captcha_wnd()
+
+
     def on_btn_unbind_clicked(self):
+        self.captcha_btn_text = "解绑"
         account = self.edt_login_account.text()
         pwd = self.edt_login_pwd.text()
         bool_list = [
@@ -432,28 +500,10 @@ class WndLogin(QDialog, Ui_WndLogin):
         if False in bool_list:
             self.show_info("解绑失败, 请先确保账号密码输入正确")
             return
-        pwd = my_crypto.get_encrypted_str(pwd.encode())
-        # 允许异地解绑. 不用发机器码
-        client_info_dict = {
-            "消息类型": "解绑",
-            "内容": {
-                "账号": account,
-                "密码": pwd,
-            }
-        }
-        # 连接服务端
-        tcp_socket = mf.connect_server_tcp()
-        if not tcp_socket:
-            self.show_info("服务器繁忙, 请稍后再试")
-            return
-        # 发送客户端消息
-        mf.send_to_server(tcp_socket, client_info_dict)
-        # 处理服务端响应消息
-        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
-        if msg_type == "解绑":
-            self.show_info(server_content_dict["详情"])
+        self.popup_captcha_wnd()
 
     def on_btn_modify_clicked(self):
+        self.captcha_btn_text = "改密"
         account = self.edt_modify_account.text()
         qq = self.edt_modify_qq.text()
         new_pwd = self.edt_modify_new_pwd.text()
@@ -465,26 +515,30 @@ class WndLogin(QDialog, Ui_WndLogin):
         if False in bool_list:
             self.show_info("改密失败, 请确保数据有效")
             return
-        new_pwd = my_crypto.get_encrypted_str(new_pwd.encode())
-        client_info_dict = {
-            "消息类型": "改密",
-            "内容": {
-                "账号": account,
-                "QQ": qq,
-                "密码": new_pwd,
-            }
-        }
-        # 连接服务端
-        tcp_socket = mf.connect_server_tcp()
-        if not tcp_socket:
-            self.show_info("服务器繁忙, 请稍后再试")
-            return
-        # 发送客户端消息
-        mf.send_to_server(tcp_socket, client_info_dict)
-        # 处理服务端响应消息
-        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
-        if msg_type == "改密":
-            self.show_info(server_content_dict["详情"])
+        self.popup_captcha_wnd()
+
+    def on_btn_captcha_commit_clicked(self):
+        if self.edt_captcha_answer.text() == str(self.captcha_ret):
+            self.sig_pass.emit(True)
+        else:
+            self.sig_pass.emit(False)
+        self.edt_captcha_answer.setText("")
+        self.wnd_captcha.close()
+
+    def on_sig_pass(self, is_pass: bool):
+        if is_pass:
+            if self.captcha_btn_text == "登录":
+                self.send_recv_login()
+            elif self.captcha_btn_text == "注册":
+                self.send_recv_reg()
+            elif self.captcha_btn_text == "充值":
+                self.send_recv_pay()
+            elif self.captcha_btn_text == "解绑":
+                self.send_recv_unbind()
+            elif self.captcha_btn_text == "改密":
+                self.send_recv_modify()
+        else:
+            self.show_info("失败")
 
 
 if __name__ == '__main__':

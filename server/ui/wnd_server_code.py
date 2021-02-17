@@ -27,8 +27,11 @@ server_ip = "127.0.0.1"
 server_port = 47123
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = my_crypto.AesEncryption(aes_key)
-normal_user = "*d#fl1I@34rt7%gh."  # 正常用户备注
-danger_user = "*d#flI1@34rt7%gh."  # 危险用户备注
+
+user_comment = {
+    "正常": "*d#fl1I@34rt7%gh.",
+    "危险": "*d#flI1@34rt7%gh.",
+}
 
 qss_style = """
     * {
@@ -904,7 +907,7 @@ def deal_init(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
     log_append_content(f"[初始] 正在处理IP: {ip}")
 
-    if client_content_dict["备注"] == danger_user:  # 客户端数据被修改, 记录到日志
+    if client_content_dict["备注"] == user_comment["危险"]:  # 客户端数据被修改, 记录到日志
         ret = False
         detail = "???"
         machine_code = client_content_dict["机器码"]
@@ -1136,7 +1139,7 @@ def deal_heart(client_socket: socket.socket, client_content_dict: dict):
             ret, detail = "下线", "此账号已被冻结"
         elif cur_time_format > str(query_user["到期时间"]):
             ret, detail = "下线", "此账号已到期"
-        elif comment == danger_user:  # 发现客户危险行为
+        elif comment == user_comment["危险"]:  # 发现客户危险行为
             ret, detail = "下线", "客户端数据被破解或修改"
             update_dict["状态"] = "冻结"
             update_dict["备注"] = detail
@@ -1162,6 +1165,7 @@ def deal_offline(client_socket: socket.socket, client_content_dict: dict):
     account = client_content_dict["账号"]
     log_append_content(f"[离线] 正在处理账号: {account}")
     comment = client_content_dict["备注"]
+    comment = "危险" if comment == user_comment["危险"] else "正常"
     update_dict = {"心跳时间": cur_time_format, "备注": comment, "状态": "离线"}
 
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在

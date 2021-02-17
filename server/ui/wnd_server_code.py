@@ -22,22 +22,13 @@ lock = Lock()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_format[:10]
 path_log = f"C:\\net_auth_{today}.log"
-path_cfg_wnd_server = "C:\\cfg_wnd_server.json"
+
 server_ip = "127.0.0.1"
 server_port = 47123
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = my_crypto.AesEncryption(aes_key)
 normal_user = "*d#fl1I@34rt7%gh."  # 正常用户备注
 danger_user = "*d#flI1@34rt7%gh."  # 危险用户备注
-
-# 界面配置
-cfg_wnd_server = {
-    "更新网址": "",
-    "发卡网址": "",
-    "注册赠送天数": 0,
-    "免费解绑次数": 0,
-    "解绑扣除小时": 0,
-}
 
 qss_style = """
     * {
@@ -82,27 +73,26 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 读取配置
     def cfg_read(self):
-        global cfg_wnd_server
-        if not os.path.exists(path_cfg_wnd_server):  # 若文件不存在, 则用默认的配置字典先创建json文件
-            with open(path_cfg_wnd_server, "w", encoding="utf-8") as f:
-                json.dump(cfg_wnd_server, f, ensure_ascii=False)
-        with open(path_cfg_wnd_server, "r", encoding="utf-8") as f:
-            cfg_wnd_server = json.load(f)
-        self.edt_proj_url_update.setText(cfg_wnd_server["更新网址"])
-        self.edt_proj_url_card.setText(cfg_wnd_server["发卡网址"])
-        self.edt_proj_unbind_sub_hour.setText(str(cfg_wnd_server["解绑扣除小时"]))
-        self.edt_proj_reg_gift_day.setText(str(cfg_wnd_server["注册赠送天数"]))
-        self.edt_proj_free_unbind_count.setText(str(cfg_wnd_server["免费解绑次数"]))
+        if not os.path.exists(self.path_cfg):  # 若文件不存在, 则用默认的配置字典先创建json文件
+            with open(self.path_cfg, "w", encoding="utf-8") as f:
+                json.dump(self.cfg, f, ensure_ascii=False)
+        with open(self.path_cfg, "r", encoding="utf-8") as f:
+            self.cfg = json.load(f)
+        self.edt_proj_url_update.setText(self.cfg["更新网址"])
+        self.edt_proj_url_card.setText(self.cfg["发卡网址"])
+        self.edt_proj_unbind_sub_hour.setText(str(self.cfg["解绑扣除小时"]))
+        self.edt_proj_reg_gift_day.setText(str(self.cfg["注册赠送天数"]))
+        self.edt_proj_free_unbind_count.setText(str(self.cfg["免费解绑次数"]))
 
     # 写入配置
     def cfg_write(self):
-        cfg_wnd_server["发卡网址"] = self.edt_proj_url_card.text()
-        cfg_wnd_server["更新网址"] = self.edt_proj_url_update.text()
-        cfg_wnd_server["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
-        cfg_wnd_server["注册赠送天数"] = int(self.edt_proj_reg_gift_day.text())
-        cfg_wnd_server["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
-        with open(path_cfg_wnd_server, "w", encoding="utf-8") as f:
-            json.dump(cfg_wnd_server, f, ensure_ascii=False)
+        self.cfg["发卡网址"] = self.edt_proj_url_card.text()
+        self.cfg["更新网址"] = self.edt_proj_url_update.text()
+        self.cfg["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
+        self.cfg["注册赠送天数"] = int(self.edt_proj_reg_gift_day.text())
+        self.cfg["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
+        with open(self.path_cfg, "w", encoding="utf-8") as f:
+            json.dump(self.cfg, f, ensure_ascii=False)
 
     def init_status_bar(self):
         self.lbe_1 = QLabel("<提示> : ")
@@ -160,8 +150,15 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_instance_field(self):
         self.latest_ver = sql_table_query_ex("1项目管理", sql="select max(客户端版本) from 1项目管理")[0]["max(客户端版本)"]
         self.lbe_latest_ver.setText(self.latest_ver)
-        # ---------------------- 项目相关 --------------------
-
+        # ---------------------- 界面属性 --------------------
+        self.cfg = {
+            "更新网址": "",
+            "发卡网址": "",
+            "注册赠送天数": 0,
+            "免费解绑次数": 0,
+            "解绑扣除小时": 0,
+        }
+        self.path_cfg = "C:\\cfg_wnd_server.json"
         # ---------------------- 定时器 ----------------------
         self.timer_sec = QTimer()
         self.timer_sec.timeout.connect(self.on_timer_sec_timeout)
@@ -937,8 +934,8 @@ def deal_proj(client_socket: socket.socket, client_content_dict: dict):
             "允许登录": query_proj["允许登录"],
             "允许注册": query_proj["允许注册"],
             "允许解绑": query_proj["允许解绑"],
-            "更新网址": cfg_wnd_server["更新网址"],
-            "发卡网址": cfg_wnd_server["发卡网址"],
+            "更新网址": wnd_server.cfg["更新网址"],
+            "发卡网址": wnd_server.cfg["发卡网址"],
         }
     else:
         ret = False
@@ -980,7 +977,7 @@ def deal_reg(client_socket: socket.socket, client_content_dict: dict):
         query_user_list = sql_table_query("2用户管理", {"机器码": machine_code})
         if not query_user_list:  # 没有找到此机器码
             client_content_dict["注册时间"] = cur_time_format
-            client_content_dict["到期时间"] = datetime.datetime.now()+datetime.timedelta(days=cfg_wnd_server["注册赠送天数"])
+            client_content_dict["到期时间"] = datetime.datetime.now()+datetime.timedelta(days=wnd_server.cfg["注册赠送天数"])
             ret = sql_table_insert("2用户管理", client_content_dict)
             detail = "注册成功" if ret else "注册失败, 数据库异常"
         else:

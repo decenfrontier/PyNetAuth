@@ -37,8 +37,7 @@ class WndLogin(QDialog, Ui_WndLogin):
             self.close()
 
     def closeEvent(self, event: QCloseEvent):
-        self.cfg_write()
-        self.show_info("登录窗口正在退出...")
+        self.show_info("登录窗口关闭")
 
     # 读取配置
     def cfg_read(self):
@@ -70,7 +69,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.lbe_captcha_pic = QLabel("图片验证码", self.wnd_captcha)
         self.edt_captcha_answer = QLineEdit(self.wnd_captcha)
         self.btn_captcha_commit = QPushButton("提交", self.wnd_captcha)
-        self.captcha_ret = 999
+        self.path_captcha = "\\".join([mf.PATH_TEMP, "captcha.bmp"])  # 验证码图片保存路径
+        self.captcha_ret = 999  # 验证码图片答案
         self.captcha_btn_text = ""  # 记录弹出验证窗口时点的是哪一个按钮
         # ---------------------- 界面配置 --------------------
         self.cfg = {
@@ -78,7 +78,7 @@ class WndLogin(QDialog, Ui_WndLogin):
             "密码": "",
             "记住账号密码": False,
         }
-        self.path_cfg = mf.PATH_LOGIN_JSON
+        self.path_cfg = mf.PATH_JSON_LOGIN
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
@@ -178,11 +178,11 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.edt_reg_qq.setValidator(QRegExpValidator(reg_exp_qq_number))
         # ------------------ 设置标签格式 -----------------
         # 充值页
-        self.lbe_pay_key.setText(f"<a href={mf.url_card}>充值卡号: </a>")
+        self.lbe_pay_key.setText("<a href={}>充值卡号: </a>".format(mf.url_card))
         self.lbe_pay_key.setOpenExternalLinks(True)
         self.lbe_pay_key.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
         # 公告页
-        self.lbe_notice_text.setText(f"{mf.notice}")
+        self.lbe_notice_text.setText(mf.notice)
         # 弹出更新网址
         if mf.client_ver != mf.latest_ver:
             ret = QMessageBox.information(self, "提示", "发现新版本, 是否前往下载?", QMessageBox.Yes | QMessageBox.No,
@@ -216,10 +216,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 刷新验证码
         tr = mf.create_com_obj(mf.COM_NAME_TR)
         self.captcha_ret = tr.Draw_CAPTCHA()
-        print(self.captcha_ret, type(self.captcha_ret))
-        path_captcha = "C:\\a_b_c\\temp\\1.bmp"
-        tr.SaveImageData(path_captcha)
-        self.lbe_captcha_pic.setPixmap(QPixmap(path_captcha))
+        tr.SaveImageData(self.path_captcha)
+        self.lbe_captcha_pic.setPixmap(QPixmap(self.path_captcha))
 
     # 发送接收初始消息
     def send_recv_init(self, tcp_socket: socket.socket):
@@ -482,10 +480,6 @@ class WndLogin(QDialog, Ui_WndLogin):
         if len(card_key) != 30 or len(account) not in range(6, 13):
             self.show_info("账号或卡密错误, 请检查无误后再试")
             return
-        ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
-                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-        if ret != QMessageBox.Yes:
-            return
         self.popup_captcha_wnd()
 
 
@@ -538,7 +532,7 @@ class WndLogin(QDialog, Ui_WndLogin):
             elif self.captcha_btn_text == "改密":
                 self.send_recv_modify()
         else:
-            self.show_info("失败")
+            self.show_info("验证码输入错误")
 
 
 if __name__ == '__main__':
@@ -559,9 +553,9 @@ if __name__ == '__main__':
     mf.log_info("初始化登录窗口完成")
 
     # 初始化json文件
-    if not os.path.exists(mf.PATH_LOGIN_JSON):
+    if not os.path.exists(mf.PATH_JSON_LOGIN):
         mf.log_info("自动创建登录界面配置文件")
-        mf.py_to_json(cfg.default_login_dict, mf.PATH_LOGIN_JSON)
+        mf.py_to_json(cfg.default_login_dict, mf.PATH_JSON_LOGIN)
     mf.log_info("初始化配置文件完成")
 
     # 注册组件到系统

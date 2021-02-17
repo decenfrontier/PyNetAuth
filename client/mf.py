@@ -38,9 +38,10 @@ cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
 PATH_WORK = os.getcwd()
 PATH_SAVE = "C:\\a_b_c"
-PATH_LOGIN_JSON = f"{PATH_SAVE}\\login.json"
-PATH_GNRL_JSON = f"{PATH_SAVE}\\gnrl.json"
-PATH_PLAN_JSON = f"{PATH_SAVE}\\plan.json"
+PATH_TEMP = f"{PATH_SAVE}\\temp"
+PATH_JSON_LOGIN = f"{PATH_SAVE}\\login.json"
+PATH_JSON_MAIN = f"{PATH_SAVE}\\main.json"
+PATH_JSON_PLAN = f"{PATH_SAVE}\\plan.json"
 
 DLL_DM_NAME = "Qt5Sqd.dll"  # dm.dll
 DLL_REGDM_NAME = "Qt5Xmr.dll"  # DmReg.dll

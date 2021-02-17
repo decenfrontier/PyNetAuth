@@ -1,6 +1,7 @@
 import sys, os
 import socket
 import webbrowser
+import json
 
 from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
     QMouseEvent, QPaintEvent, QPainter, QBitmap
@@ -12,8 +13,6 @@ from client.qtres import qrc_wnd_login
 from client.ui.wnd_login import Ui_WndLogin
 from client.wnd_main_code import WndMain
 from client import mf, my_crypto
-from client import cfg
-
 
 class WndLogin(QDialog, Ui_WndLogin):
     sig_accept = Signal()
@@ -29,6 +28,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.init_custom_sig_slot()
         if self.init_net_auth():
             self.init_widgets()
+            self.cfg_read()
             self.init_sig_slot()
             mf.log_info("登录窗口初始化成功")
         else:
@@ -36,19 +36,46 @@ class WndLogin(QDialog, Ui_WndLogin):
             self.close()
 
     def closeEvent(self, event: QCloseEvent):
+        self.cfg_write()
         self.show_info("登录窗口正在退出...")
+
+    # 读取配置
+    def cfg_read(self):
+        if not os.path.exists(self.path_cfg):  # 若文件不存在, 则用默认的配置字典先创建json文件
+            with open(self.path_cfg, "w", encoding="utf-8") as f:
+                json.dump(self.cfg, f, ensure_ascii=False)
+        with open(self.path_cfg, "r", encoding="utf-8") as f:
+            self.cfg = json.load(f)
+        self.edt_login_account.setText(self.cfg["账号"])
+        self.edt_login_pwd.setText(self.cfg["密码"])
+        self.chk_login_remember.setChecked(self.cfg["记住账号密码"])
+
+    # 写入配置
+    def cfg_write(self):
+        self.cfg["账号"] = self.edt_login_account.text()
+        self.cfg["密码"] = self.edt_login_pwd.text()
+        self.cfg["记住账号密码"] = self.chk_login_remember.isChecked()
+        with open(self.path_cfg, "w", encoding="utf-8") as f:
+            json.dump(self.cfg, f, ensure_ascii=False)
 
     # 初始化实例属性
     def init_instance_field(self):
-        # 状态栏
+        # ---------------------- 状态栏 ----------------------
         self.status_bar = QStatusBar()
         self.lbe_1 = QLabel("<提示> : ")
         self.lbe_info = QLabel("登录窗口初始化成功")
-        # 验证窗口
+        # ---------------------- 验证窗口 ----------------------
         self.wnd_captcha = QDialog(self)
         self.lbe_captcha_pic = QLabel("图片验证码", self.wnd_captcha)
         self.edt_captcha_answer = QLineEdit(self.wnd_captcha)
         self.btn_captcha_commit = QPushButton("提交", self.wnd_captcha)
+        # ---------------------- 界面配置 --------------------
+        self.cfg = {
+            "账号": "",
+            "密码": "",
+            "记住账号密码": False,
+        }
+        self.path_cfg = mf.PATH_LOGIN_JSON
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
@@ -284,10 +311,10 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     def on_btn_login_clicked(self):
         # 把控件信息保存到配置文件
-        cfg.cfg_login.controls_to_file()
+        self.cfg_write()
         # 读取登录账号密码, 判断是否符合要求
-        login_account = cfg.cfg_login.edt_login_account
-        login_pwd = cfg.cfg_login.edt_login_pwd
+        login_account = self.cfg["账号"]
+        login_pwd = self.cfg["密码"]
         bool_list = [
             len(login_account) in range(6, 13),
             len(login_pwd) in range(6, 13),
@@ -482,9 +509,6 @@ if __name__ == '__main__':
         mf.log_info("自动创建登录界面配置文件")
         mf.py_to_json(cfg.default_login_dict, mf.PATH_LOGIN_JSON)
     mf.log_info("初始化配置文件完成")
-
-    # 读取登录窗口配置
-    cfg.cfg_login.file_to_controls()
 
     # 注册组件到系统
     ret = mf.reg_com_to_system(mf.COM_NAME_TR)

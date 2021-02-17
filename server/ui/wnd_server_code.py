@@ -1136,9 +1136,10 @@ def deal_heart(client_socket: socket.socket, client_content_dict: dict):
             ret, detail = "下线", "此账号已被冻结"
         elif cur_time_format > str(query_user["到期时间"]):
             ret, detail = "下线", "此账号已到期"
-        elif "发现" in comment:  # 发现客户危险行为
-            ret, detail = "下线", "检测到非法程序"
+        elif comment == danger_user:  # 发现客户危险行为
+            ret, detail = "下线", "客户端数据被破解或修改"
             update_dict["状态"] = "冻结"
+            update_dict["备注"] = detail
         elif query_user["机器码"] != machine_code:
             ret, detail = "下线", "异机登录此账号"
         else:

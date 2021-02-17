@@ -817,7 +817,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
     def on_timer_min_timeout(self):
-        self.show_info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 每15分钟一轮的检测开始 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        self.show_info("----------------------------- 每15分钟一轮的检测开始 -----------------------------")
         global today, path_log
         cur_day = cur_time_format[:10]
 
@@ -840,7 +840,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_all_tbe_card()
         self.show_all_tbe_custom()
         self.show_all_tbe_everyday()
-        self.show_info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 每15分钟一轮的检测结束 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        self.show_info("----------------------------- 每15分钟一轮的检测结束 -----------------------------")
 
     def thd_accept_client(self):
         log_append_content("服务端已开启, 准备接受客户请求...")

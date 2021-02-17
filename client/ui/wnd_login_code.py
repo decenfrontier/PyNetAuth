@@ -1,9 +1,5 @@
 import sys, os
 import socket
-from threading import Thread, Lock
-import json
-import base64
-import time
 import webbrowser
 
 from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
@@ -66,16 +62,15 @@ class WndLogin(QDialog, Ui_WndLogin):
         if event.button() == Qt.LeftButton:
             self.start_point = event.globalPos() - self.frameGeometry().topLeft()
 
-
     def mouseMoveEvent(self, event: QMouseEvent):
         if self.start_point != QPoint(0, 0):
             self.move(event.globalPos() - self.start_point)
 
     def paintEvent(self, event: QPaintEvent):
         # 背景
-        pix_map = QPixmap(":/back1.jpg").scaled(self.size())
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
+        pix_map = QPixmap(":/back1.jpg").scaled(self.size())
         painter.drawPixmap(self.rect(), pix_map)
         # 圆角
         bmp = QBitmap(self.size())
@@ -156,9 +151,9 @@ class WndLogin(QDialog, Ui_WndLogin):
     def send_recv_init(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "初始",
                             "内容": {"通信密钥": mf.aes_key}}
-        self.send_to_server(tcp_socket, client_info_dict)
+        mf.send_to_server(tcp_socket, client_info_dict)
         # 等待服务端响应初始消息
-        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if not msg_type:
             self.show_info("服务器繁忙, 请稍后再试, 错误码: 1")
             return False
@@ -178,9 +173,9 @@ class WndLogin(QDialog, Ui_WndLogin):
     def send_recv_proj(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "锟斤拷",
                             "内容": {"版本号": mf.client_ver}}
-        self.send_to_server(tcp_socket, client_info_dict)
+        mf.send_to_server(tcp_socket, client_info_dict)
         # 等待服务端响应项目消息
-        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if not msg_type:
             self.show_info("服务器繁忙, 请稍后再试, 错误码: 2")
             return False
@@ -203,9 +198,9 @@ class WndLogin(QDialog, Ui_WndLogin):
     def send_recv_custom1(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "烫烫烫",
                             "内容": {"烫烫烫": "烫烫烫"}}
-        self.send_to_server(tcp_socket, client_info_dict)
+        mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
-        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if not msg_type:
             self.show_info("服务器繁忙, 请稍后再试, 错误码: 3")
             return False
@@ -219,9 +214,9 @@ class WndLogin(QDialog, Ui_WndLogin):
     def send_recv_custom2(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "屯屯屯",
                             "内容": {"屯屯屯": "屯屯屯"}}
-        self.send_to_server(tcp_socket, client_info_dict)
+        mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
-        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if not msg_type:
             self.show_info("服务器繁忙, 请稍后再试, 错误码: 4")
             return False
@@ -271,9 +266,9 @@ class WndLogin(QDialog, Ui_WndLogin):
         }
         # 发送客户端消息
         tcp_socket = self.connect_server_tcp()
-        self.send_to_server(tcp_socket, client_info_dict)
+        mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
-        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if msg_type == "登录":
             self.show_info(server_content_dict["详情"])
             if server_content_dict["结果"]:
@@ -309,9 +304,9 @@ class WndLogin(QDialog, Ui_WndLogin):
         }
         # 发送客户端消息
         tcp_socket = self.connect_server_tcp()
-        self.send_to_server(tcp_socket, client_info_dict)
+        mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
-        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if msg_type == "注册":
             self.show_info(server_content_dict["详情"])
 
@@ -337,9 +332,9 @@ class WndLogin(QDialog, Ui_WndLogin):
             return
         # 发送客户端消息
         tcp_socket = self.connect_server_tcp()
-        self.send_to_server(tcp_socket, client_info_dict)
+        mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
-        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if msg_type == "充值":
             self.show_info(server_content_dict["详情"])
 
@@ -364,9 +359,9 @@ class WndLogin(QDialog, Ui_WndLogin):
         }
         # 发送客户端消息
         tcp_socket = self.connect_server_tcp()
-        self.send_to_server(tcp_socket, client_info_dict)
+        mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
-        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if msg_type == "解绑":
             self.show_info(server_content_dict["详情"])
 
@@ -393,9 +388,9 @@ class WndLogin(QDialog, Ui_WndLogin):
         }
         # 发送客户端消息
         tcp_socket = self.connect_server_tcp()
-        self.send_to_server(tcp_socket, client_info_dict)
+        mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
-        msg_type, server_content_dict = self.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if msg_type == "改密":
             self.show_info(server_content_dict["详情"])
 
@@ -404,54 +399,9 @@ class WndLogin(QDialog, Ui_WndLogin):
         tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
         if err_no != 0:
-            self.show_info(f"连接服务器失败, 错误码: {err_no}")
+
             raise Exception(f"连接服务器失败, 错误码: {err_no}")
         return tcp_socket
-
-    # 发送数据给服务端
-    def send_to_server(self, tcp_socket: socket.socket, client_info_dict: dict):
-        # 内容 转 json字符串
-        client_info_dict["内容"] = json.dumps(client_info_dict["内容"], ensure_ascii=False)
-        # 根据消息类型决定是否对内容aes加密
-        if client_info_dict["消息类型"] != "初始":
-            # 对json内容进行aes加密
-            client_info_dict["内容"] = mf.aes.encrypt(client_info_dict["内容"])
-        # 把整个客户端信息字典 转 json字符串
-        json_str = json.dumps(client_info_dict, ensure_ascii=False)
-        # json字符串 base85编码
-        send_bytes = base64.b85encode(json_str.encode())
-        try:
-            tcp_socket.send(send_bytes)
-            print(f"客户端数据, 发送成功: {json_str}")
-        except Exception as e:
-            mf.log_info(f"客户端数据, 发送失败: {e}")
-
-    # 从服务端接收数据
-    def recv_from_server(self, tcp_socket: socket.socket):
-        tcp_socket.settimeout(5)  # 设置为非阻塞接收, 只等5秒
-        recv_bytes = ""
-        try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
-            recv_bytes = tcp_socket.recv(4096)
-        except:
-            ...
-        tcp_socket.settimeout(None)  # 重新设置为阻塞模式
-        if not recv_bytes:  # 若客户端退出,会收到一个空str
-            self.show_info("服务器繁忙, 请稍后再试")
-            return "", {}
-        # base85解码
-        json_str = base64.b85decode(recv_bytes).decode()
-        print(f"收到服务端的消息: {json_str}")
-        # json字符串 转 py字典
-        server_info_dict = json.loads(json_str)
-        msg_type = server_info_dict["消息类型"]
-        server_content_str = server_info_dict["内容"]
-        # 把内容json字符串 转 py字典
-        if msg_type != "初始":  # 若不为初始类型的消息, 要先aes解密
-            # 先aes解密, 获取json字符串
-            server_content_str = mf.aes.decrypt(server_content_str)
-        # json字符串 转 py字典
-        server_content_dict = json.loads(server_content_str)
-        return msg_type, server_content_dict
 
 
 if __name__ == '__main__':

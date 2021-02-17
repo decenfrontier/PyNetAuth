@@ -28,9 +28,9 @@ class WndLogin(QDialog, Ui_WndLogin):
         if self.init_net_auth():
             self.init_controls()
             self.init_sig_slot()
-            self.show_info("登录窗口初始化成功")
+            mf.log_info("登录窗口初始化成功")
         else:
-            self.show_info("登录窗口初始化失败")
+            mf.log_info("登录窗口初始化失败")
             self.close()
 
     def closeEvent(self, event: QCloseEvent):
@@ -47,7 +47,11 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     # 初始化网络验证
     def init_net_auth(self):
-        tcp_socket = self.connect_server_tcp()
+        tcp_socket = mf.connect_server_tcp()
+        if not tcp_socket:
+            mf.log_info("服务器繁忙, 请稍后再试")
+            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试")
+            return False
         if self.send_recv_init(tcp_socket) and self.send_recv_proj(tcp_socket):
             return True
         return False
@@ -265,7 +269,10 @@ class WndLogin(QDialog, Ui_WndLogin):
             }
         }
         # 发送客户端消息
-        tcp_socket = self.connect_server_tcp()
+        tcp_socket = mf.connect_server_tcp()
+        if not tcp_socket:
+            self.show_info("服务器繁忙, 请稍后再试")
+            return
         mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
         msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
@@ -303,7 +310,10 @@ class WndLogin(QDialog, Ui_WndLogin):
             }
         }
         # 发送客户端消息
-        tcp_socket = self.connect_server_tcp()
+        tcp_socket = mf.connect_server_tcp()
+        if not tcp_socket:
+            self.show_info("服务器繁忙, 请稍后再试")
+            return
         mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
         msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
@@ -330,8 +340,12 @@ class WndLogin(QDialog, Ui_WndLogin):
                                       QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
         if ret != QMessageBox.Yes:
             return
+        # 连接服务端
+        tcp_socket = mf.connect_server_tcp()
+        if not tcp_socket:
+            self.show_info("服务器繁忙, 请稍后再试")
+            return
         # 发送客户端消息
-        tcp_socket = self.connect_server_tcp()
         mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
         msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
@@ -357,8 +371,12 @@ class WndLogin(QDialog, Ui_WndLogin):
                 "密码": pwd,
             }
         }
+        # 连接服务端
+        tcp_socket = mf.connect_server_tcp()
+        if not tcp_socket:
+            self.show_info("服务器繁忙, 请稍后再试")
+            return
         # 发送客户端消息
-        tcp_socket = self.connect_server_tcp()
         mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
         msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
@@ -386,22 +404,19 @@ class WndLogin(QDialog, Ui_WndLogin):
                 "密码": new_pwd,
             }
         }
+        # 连接服务端
+        tcp_socket = mf.connect_server_tcp()
+        if not tcp_socket:
+            self.show_info("服务器繁忙, 请稍后再试")
+            return
         # 发送客户端消息
-        tcp_socket = self.connect_server_tcp()
         mf.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
         msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if msg_type == "改密":
             self.show_info(server_content_dict["详情"])
 
-    # 连接服务端tcp
-    def connect_server_tcp(self):
-        tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
-        if err_no != 0:
 
-            raise Exception(f"连接服务器失败, 错误码: {err_no}")
-        return tcp_socket
 
 
 if __name__ == '__main__':

@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="page_proj">
        <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -978,6 +978,9 @@
          <widget class="QTextBrowser" name="tbr_log">
           <property name="documentTitle">
            <string>执行日志</string>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QTextEdit::NoWrap</enum>
           </property>
          </widget>
         </item>

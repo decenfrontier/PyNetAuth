@@ -765,15 +765,15 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>btn_login</tabstop>
-  <tabstop>btn_unbind</tabstop>
-  <tabstop>btn_exit</tabstop>
   <tabstop>edt_login_account</tabstop>
   <tabstop>edt_login_pwd</tabstop>
   <tabstop>chk_login_remember</tabstop>
+  <tabstop>btn_login</tabstop>
+  <tabstop>btn_unbind</tabstop>
+  <tabstop>btn_exit</tabstop>
   <tabstop>edt_reg_account</tabstop>
-  <tabstop>edt_reg_qq</tabstop>
   <tabstop>edt_reg_pwd</tabstop>
+  <tabstop>edt_reg_qq</tabstop>
   <tabstop>btn_reg</tabstop>
   <tabstop>edt_pay_account</tabstop>
   <tabstop>edt_pay_key</tabstop>

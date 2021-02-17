@@ -120,6 +120,14 @@ def get_machine_code():
 def get_operation_system() -> str:
     return platform.platform()
 
+# 连接服务端tcp
+def connect_server_tcp():
+    tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    err_no = tcp_socket.connect_ex((server_ip, server_port))
+    if err_no != 0:
+        return None
+    return tcp_socket
+
 # 发送数据给服务端
 def send_to_server(tcp_socket: socket.socket, client_info_dict: dict):
     # 内容 转 json字符串

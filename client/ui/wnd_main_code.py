@@ -19,6 +19,10 @@ class WndMain(QMainWindow, Ui_WndMain):
         self.init_status_bar()
 
     def closeEvent(self, event: QCloseEvent):
+        tcp_socket = mf.connect_server_tcp()
+        if not tcp_socket:
+            mf.log_info("服务器繁忙, 请稍后再试")
+            return False
         tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
         if err_no == 0:
@@ -53,45 +57,41 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def thd_heart_beat(self):
         while True:
-            # 每一轮循环错误次数+1, 初始化等待时间
+            # 每一轮循环错误次数+1, 失败则每隔20秒连接一次
             self.error_count += 1
-            sleep_time = 10  # todo
-
-            tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            err_no = tcp_socket.connect_ex((mf.server_ip, mf.server_port))
-            if err_no == 0:
-                client_info_dict = {
-                    "消息类型": "心跳",
-                    "内容": {
-                        "账号": mf.user_account,
-                        "机器码": mf.machine_code,
-                        "备注": mf.client_comment,
-                    }
-                }
-                mf.send_to_server(tcp_socket, client_info_dict)
-                msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
-                if msg_type == "心跳":
-                    heart_ret = server_content_dict["结果"]
-                    if heart_ret == "正常":
-                        self.error_count = 0
-                        self.last_heart_stamp = mf.cur_time_stamp
-                        sleep_time = 12  # 60*10, todo
-                    elif heart_ret == "下线":
-                        self.error_count = 10
-                        self.show_info(server_content_dict["详情"])
+            sleep_time = 20
+            tcp_socket = mf.connect_server_tcp()
+            if not tcp_socket:
+                mf.log_info("与服务器连接异常...")
+                time.sleep(sleep_time)
+                continue
+            client_info_dict = {"消息类型": "心跳",
+                "内容": {"账号": mf.user_account, "机器码": mf.machine_code, "备注": mf.client_comment}}
+            mf.send_to_server(tcp_socket, client_info_dict)
+            msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+            if msg_type == "心跳":
+                heart_ret = server_content_dict["结果"]
+                if heart_ret == "正常":
+                    self.error_count = 0
+                    self.last_heart_stamp = mf.cur_time_stamp
+                    sleep_time = 12  # 60*10, todo
+                elif heart_ret == "下线":
+                    self.error_count = 10
+                    self.show_info(server_content_dict["详情"])
             tcp_socket.close()  # 发送接收完立刻断开
-            if self.error_count >= 5:
+            # 超过5次没连上
+            if self.error_count > 5:
                 break
             print("等待时间:", sleep_time)
             time.sleep(sleep_time)
-        self.show_info("与服务器断开连接...")
+        self.show_info("与服务器断开连接1...")
         self.close()
 
     def on_timer_timeout(self):
         mf.cur_time_str = time.strftime("%H:%M:%S")
         mf.cur_time_stamp += 1
-        if mf.time_diff(self.last_heart_stamp, mf.cur_time_stamp) >= 15:
-            self.show_info("与服务器断开连接...")
+        if mf.time_diff(self.last_heart_stamp, mf.cur_time_stamp) >= 15:  # 防止心跳线程被干掉
+            self.show_info("与服务器断开连接2...")
             self.close()
 
 

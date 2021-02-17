@@ -541,6 +541,7 @@ class Ui_WndServer(object):
         self.verticalLayout.setContentsMargins(2, 2, 2, 2)
         self.tbr_log = QTextBrowser(self.page_log)
         self.tbr_log.setObjectName(u"tbr_log")
+        self.tbr_log.setLineWrapMode(QTextEdit.NoWrap)
 
         self.verticalLayout.addWidget(self.tbr_log)
 
@@ -560,7 +561,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(WndServer)

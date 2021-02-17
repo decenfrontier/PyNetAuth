@@ -45,16 +45,19 @@ class WndLogin(QDialog, Ui_WndLogin):
             with open(self.path_cfg, "w", encoding="utf-8") as f:
                 json.dump(self.cfg, f, ensure_ascii=False)
         with open(self.path_cfg, "r", encoding="utf-8") as f:
-            self.cfg = json.load(f)
+            cfg_load = json.load(f)
+            self.cfg.update(cfg_load)
         self.edt_login_account.setText(self.cfg["账号"])
         self.edt_login_pwd.setText(self.cfg["密码"])
         self.chk_login_remember.setChecked(self.cfg["记住账号密码"])
+        self.chk_login_update.setChecked(self.cfg["提示更新版本"])
 
     # 写入配置
     def cfg_write(self):
         self.cfg["账号"] = self.edt_login_account.text()
         self.cfg["密码"] = self.edt_login_pwd.text()
         self.cfg["记住账号密码"] = self.chk_login_remember.isChecked()
+        self.cfg["提示更新版本"] = self.chk_login_update.isChecked()
         with open(self.path_cfg, "w", encoding="utf-8") as f:
             json.dump(self.cfg, f, ensure_ascii=False)
 
@@ -76,7 +79,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.cfg = {
             "账号": "",
             "密码": "",
-            "记住账号密码": False,
+            "记住账号密码": True,
+            "提示更新版本": True,
         }
         self.path_cfg = mf.PATH_JSON_LOGIN
 
@@ -89,8 +93,6 @@ class WndLogin(QDialog, Ui_WndLogin):
     def init_status_bar(self):
         self.status_bar.addWidget(self.lbe_1)
         self.status_bar.addWidget(self.lbe_info)
-
-
 
     def show_info(self, text):
         self.sig_info.emit(text)  # 信号槽, 防逆向跟踪
@@ -183,12 +185,6 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.lbe_pay_key.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
         # 公告页
         self.lbe_notice_text.setText(mf.notice)
-        # 弹出更新网址
-        if mf.client_ver != mf.latest_ver:
-            ret = QMessageBox.information(self, "提示", "发现新版本, 是否前往下载?", QMessageBox.Yes | QMessageBox.No,
-                                          QMessageBox.Yes)
-            if ret == QMessageBox.Yes:
-                webbrowser.open(mf.url_update)
         # ------------------ 设置按钮状态 -----------------
         self.btn_login.setEnabled(mf.allow_login)
         self.btn_reg.setEnabled(mf.allow_reg)
@@ -218,6 +214,16 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.captcha_ret = tr.Draw_CAPTCHA()
         tr.SaveImageData(self.path_captcha)
         self.lbe_captcha_pic.setPixmap(QPixmap(self.path_captcha))
+
+    def popup_update_msg(self):
+        if not self.cfg["提示更新版本"]:
+            return
+        # 弹出更新网址
+        if mf.client_ver != mf.latest_ver:
+            ret = QMessageBox.information(self, "提示", "发现新版本, 是否前往下载?", QMessageBox.Yes | QMessageBox.No,
+                                          QMessageBox.Yes)
+            if ret == QMessageBox.Yes:
+                webbrowser.open(mf.url_update)
 
     # 发送接收初始消息
     def send_recv_init(self, tcp_socket: socket.socket):
@@ -550,6 +556,7 @@ if __name__ == '__main__':
     # 初始化登录窗口
     mf.wnd_login = WndLogin()
     mf.wnd_login.show()
+    mf.wnd_login.popup_update_msg()
     mf.log_info("初始化登录窗口完成")
 
     # 初始化json文件

@@ -210,7 +210,7 @@ def recv_from_server(tcp_socket: socket.socket):
     server_content_dict = json.loads(server_content_str)
     return msg_type, server_content_dict
 
-client_ver = "3.6.8"
+client_ver = "3.6.7"
 server_ip = "127.0.0.1"
 server_port = 47123
 machine_code = get_machine_code()

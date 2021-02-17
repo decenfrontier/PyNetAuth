@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>464</width>
-    <height>272</height>
+    <width>456</width>
+    <height>293</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,8 +24,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>461</width>
-     <height>271</height>
+     <width>456</width>
+     <height>294</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -78,18 +78,8 @@
          </spacer>
         </item>
         <item row="1" column="1">
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="3" column="3">
-           <widget class="QPushButton" name="btn_exit">
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="text">
-             <string>退 出</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0" colspan="4">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="1">
              <widget class="QLineEdit" name="edt_login_account">
@@ -130,54 +120,78 @@
             </item>
            </layout>
           </item>
-          <item row="3" column="1">
-           <widget class="QPushButton" name="btn_login">
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="toolTip">
-             <string>首次登录成功后开始计时</string>
-            </property>
-            <property name="text">
-             <string>登 录</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="3" column="2">
-           <widget class="QPushButton" name="btn_unbind">
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="toolTip">
-             <string>软件是绑定机器的, 可以异机解绑</string>
-            </property>
-            <property name="text">
-             <string>解 绑</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1" colspan="3">
-           <widget class="QCheckBox" name="chk_login_remember">
-            <property name="text">
-             <string>记住账号密码</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
+          <item>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0" rowspan="2">
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>30</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="1" colspan="2">
+             <widget class="QCheckBox" name="chk_login_update">
+              <property name="text">
+               <string>提示更新版本</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3" colspan="2">
+             <widget class="QCheckBox" name="chk_login_remember">
+              <property name="text">
+               <string>记住账号密码</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="btn_login">
+              <property name="cursor">
+               <cursorShape>PointingHandCursor</cursorShape>
+              </property>
+              <property name="toolTip">
+               <string>首次登录成功后开始计时</string>
+              </property>
+              <property name="text">
+               <string>登 录</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2" colspan="2">
+             <widget class="QPushButton" name="btn_unbind">
+              <property name="cursor">
+               <cursorShape>PointingHandCursor</cursorShape>
+              </property>
+              <property name="toolTip">
+               <string>软件是绑定机器的, 可以异机解绑</string>
+              </property>
+              <property name="text">
+               <string>解 绑</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="4">
+             <widget class="QPushButton" name="btn_exit">
+              <property name="cursor">
+               <cursorShape>PointingHandCursor</cursorShape>
+              </property>
+              <property name="text">
+               <string>退 出</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>
@@ -767,7 +781,6 @@
  <tabstops>
   <tabstop>edt_login_account</tabstop>
   <tabstop>edt_login_pwd</tabstop>
-  <tabstop>chk_login_remember</tabstop>
   <tabstop>btn_login</tabstop>
   <tabstop>btn_unbind</tabstop>
   <tabstop>btn_exit</tabstop>

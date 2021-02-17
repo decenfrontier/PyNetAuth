@@ -27,6 +27,8 @@ server_ip = "127.0.0.1"
 server_port = 47123
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = my_crypto.AesEncryption(aes_key)
+normal_user = "*d#fl1I@34rt7%gh."  # 正常用户备注
+danger_user = "*d#flI1@34rt7%gh."  # 危险用户备注
 
 # 界面配置
 cfg_wnd_server = {
@@ -904,17 +906,18 @@ class WndServer(QMainWindow, Ui_WndServer):
 def deal_init(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
     log_append_content(f"[初始] 正在处理IP: {ip}")
-    # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
-    if client_content_dict["通信密钥"] == "*d#f12j@34rt7%gh.":
-        init_ret = True
+
+    if client_content_dict["备注"] == danger_user:  # 客户端数据被修改, 记录到日志
+        ret = False
+        detail = "???"
+        machine_code = client_content_dict["机器码"]
+        log_append_content(f"[初始Warn] IP:{ip}, MC:{machine_code}, 全局变量被修改")
+    else:  # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
+        ret = True
         detail = enc_aes_key
-    else:  # 通信密钥被修改, 记录到日志
-        init_ret = False
-        detail = "通信密钥错误"
-        log_append_content(f"[初始] IP{ip}通信密钥被修改, Warning!")
     # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "初始",
-                        "内容": {"结果": init_ret, "详情": detail}}
+                        "内容": {"结果": ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 
@@ -926,7 +929,7 @@ def deal_proj(client_socket: socket.socket, client_content_dict: dict):
     client_ver = client_content_dict["版本号"]
     query_proj_list = sql_table_query("1项目管理", {"客户端版本": client_ver})
     if query_proj_list:
-        proj_ret = True
+        ret = True
         query_proj = query_proj_list[0]
         detail = {
             "最新版本": wnd_server.latest_ver,
@@ -938,11 +941,11 @@ def deal_proj(client_socket: socket.socket, client_content_dict: dict):
             "发卡网址": cfg_wnd_server["发卡网址"],
         }
     else:
-        proj_ret = False
+        ret = False
         detail = "客户端版本过低, 请下载最新版本"
     # 把处理_项目数据结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "锟斤拷",
-                        "内容": {"结果": proj_ret, "详情": detail}}
+                        "内容": {"结果": ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 
@@ -970,7 +973,7 @@ def deal_custom2(client_socket: socket.socket, client_content_dict: dict):
 def deal_reg(client_socket: socket.socket, client_content_dict: dict):
     account = client_content_dict["账号"]
     log_append_content(f"[注册] 正在处理账号: {account}")
-    reg_ret = False
+    ret = False
 
     if not sql_table_query("2用户管理", {"账号": account}):  # 不存在则插入记录
         machine_code = client_content_dict["机器码"]
@@ -978,8 +981,8 @@ def deal_reg(client_socket: socket.socket, client_content_dict: dict):
         if not query_user_list:  # 没有找到此机器码
             client_content_dict["注册时间"] = cur_time_format
             client_content_dict["到期时间"] = datetime.datetime.now()+datetime.timedelta(days=cfg_wnd_server["注册赠送天数"])
-            reg_ret = sql_table_insert("2用户管理", client_content_dict)
-            detail = "注册成功" if reg_ret else "注册失败, 数据库异常"
+            ret = sql_table_insert("2用户管理", client_content_dict)
+            detail = "注册成功" if ret else "注册失败, 数据库异常"
         else:
             query_user = query_user_list[0]
             reged_account = query_user["账号"]
@@ -990,7 +993,7 @@ def deal_reg(client_socket: socket.socket, client_content_dict: dict):
     log_append_content(f"[注册] 账号{account} {detail}")
     # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "注册",
-                        "内容": {"结果": reg_ret, "详情": detail}}
+                        "内容": {"结果": ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 
@@ -1001,7 +1004,7 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
     log_append_content(f"[登录] 正在处理账号: {account}")
     pwd = client_content_dict["密码"]
     machine_code = client_content_dict["机器码"]
-    login_ret, query_user = False, {}
+    ret, query_user = False, {}
 
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 判断账号是否存在
     if query_user_list:
@@ -1014,7 +1017,7 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
             detail = "登录失败, 此账号已到期"
         elif pwd == query_user["密码"]:  # 判断密码是否符合
             if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
-                login_ret = True
+                ret = True
                 detail = "登录成功"
                 if query_user["状态"] == "":  # 新到期时间 = 到期时间 + (现在时间 - 注册时间)
                     detail = "登录成功, 首次登录重新计算到期时间"
@@ -1030,7 +1033,7 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
     log_append_content(f"[登录] 账号{account} {detail}")
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "登录",
-                        "内容": {"结果": login_ret, "详情": detail, "账号": account}}
+                        "内容": {"结果": ret, "详情": detail, "账号": account}}
     send_to_client(client_socket, server_info_dict)
     # 把客户端发送过来的数据记录到数据库
     if not query_user:  # 若该账号不存在
@@ -1040,7 +1043,7 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
     update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
                    "操作系统": client_content_dict["操作系统"]}
     # 若登录成功, 才更新
-    if login_ret:
+    if ret:
         update_dict["机器码"] = client_content_dict["机器码"]
         update_dict["上次登录时间"] = cur_time_format
         update_dict["上次登录IP"] = ip
@@ -1052,7 +1055,7 @@ def deal_pay(client_socket: socket.socket, client_content_dict: dict):
     account = client_content_dict["账号"]
     log_append_content(f"[充值] 正在处理账号: {account}")
     card_key = client_content_dict["卡号"]
-    pay_ret = False
+    ret = False
 
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
     if query_user_list:  # 账号存在
@@ -1067,10 +1070,10 @@ def deal_pay(client_socket: socket.socket, client_content_dict: dict):
                 delta_day = type_time_dict[card_type]
                 account = query_user["账号"]
                 # 若到期时间大于当前时间, 则从到期时间开始加, 否则从当前时间开始加
-                pay_ret = sql_table_update_ex(sql="update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), "
+                ret = sql_table_update_ex(sql="update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), "
                                                   f"interval {delta_day} day), date_add(到期时间, interval {delta_day} day)) "
                                                   f"where 账号='{account}';")
-                if pay_ret:  # todo: 多线程访问的安全性?是否要上锁
+                if ret:  # todo: 多线程访问的安全性?是否要上锁
                     detail = "充值成功"
                     # 更新卡密的使用时间
                     sql_table_update("3卡密管理", {"使用时间": cur_time_format}, {"卡号": card_key})
@@ -1090,7 +1093,7 @@ def deal_pay(client_socket: socket.socket, client_content_dict: dict):
     log_append_content(f"[充值] 账号{account} {detail}")
     # 把充值结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "充值",
-                        "内容": {"结果": pay_ret, "详情": detail}}
+                        "内容": {"结果": ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 
@@ -1100,7 +1103,7 @@ def deal_modify(client_socket: socket.socket, client_content_dict: dict):
     log_append_content(f"[改密] 正在处理账号: {account}")
     qq = client_content_dict["QQ"]
     new_pwd = client_content_dict["密码"]
-    modify_ret = False
+    ret = False
 
     # 查询数据库, 判断用户是否存在
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
@@ -1108,8 +1111,8 @@ def deal_modify(client_socket: socket.socket, client_content_dict: dict):
         query_user = query_user_list[0]
         query_qq = query_user["QQ"]
         if qq == query_qq:
-            modify_ret = sql_table_update("2用户管理", {"密码": new_pwd}, {"账号": account})
-            detail = "改密成功" if modify_ret else "改密失败, 数据库异常"
+            ret = sql_table_update("2用户管理", {"密码": new_pwd}, {"账号": account})
+            detail = "改密成功" if ret else "改密失败, 数据库异常"
         else:
             detail = "改密失败, QQ错误"
     else:
@@ -1118,7 +1121,7 @@ def deal_modify(client_socket: socket.socket, client_content_dict: dict):
     log_append_content(f"[改密] 账号{account} {detail}")
     # 把改密结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "改密",
-                        "内容": {"结果": modify_ret, "详情": detail}}
+                        "内容": {"结果": ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 
@@ -1133,24 +1136,24 @@ def deal_heart(client_socket: socket.socket, client_content_dict: dict):
     if query_user_list:
         query_user = query_user_list[0]
         if query_user["状态"] == "冻结":  # 服务端已冻结此账号, 则令其下线
-            heart_ret, detail = "下线", "此账号已被冻结"
+            ret, detail = "下线", "此账号已被冻结"
         elif cur_time_format > str(query_user["到期时间"]):
-            heart_ret, detail = "下线", "此账号已到期"
+            ret, detail = "下线", "此账号已到期"
         elif "发现" in comment:  # 发现客户危险行为
-            heart_ret, detail = "下线", "检测到非法程序"
+            ret, detail = "下线", "检测到非法程序"
             update_dict["状态"] = "冻结"
         elif query_user["机器码"] != machine_code:
-            heart_ret, detail = "下线", "异机登录此账号"
+            ret, detail = "下线", "异机登录此账号"
         else:
-            heart_ret, detail = "正常", ""
+            ret, detail = "正常", ""
             update_dict["状态"] = "在线"
     else:
-        heart_ret, detail = "下线", "此账号不存在"
+        ret, detail = "下线", "此账号不存在"
     # 记录到日志
-    log_append_content(f"[心跳] 账号{account} {heart_ret} {detail}")
+    log_append_content(f"[心跳] 账号{account} {ret} {detail}")
     # 发送消息回客户端
     server_info_dict = {"消息类型": "心跳",
-                        "内容": {"结果": heart_ret, "详情": detail}}
+                        "内容": {"结果": ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
     # 更新用户数据
     sql_table_update("2用户管理", update_dict, {"账号": account})
@@ -1185,7 +1188,7 @@ def deal_unbind(client_socket: socket.socket, client_content_dict: dict):
     account = client_content_dict["账号"]
     log_append_content(f"[解绑] 正在处理账号: {account}")
     pwd = client_content_dict["密码"]
-    unbind_ret = False
+    ret = False
     query_user_list = sql_table_query("2用户管理", {"账号": account})
     if query_user_list:  # 判断账号是否存在
         query_user = query_user_list[0]
@@ -1196,9 +1199,9 @@ def deal_unbind(client_socket: socket.socket, client_content_dict: dict):
         elif query_user["状态"] == "冻结":
             detail = "解绑失败, 此账号已冻结, 无法解绑"
         elif pwd == query_user["密码"]:  # 密码正确, 把机器码置为空
-            unbind_ret = sql_table_update_ex(sql="update 2用户管理 set 机器码='', 今日解绑次数=今日解绑次数+1 "
+            ret = sql_table_update_ex(sql="update 2用户管理 set 机器码='', 今日解绑次数=今日解绑次数+1 "
                                                  f"where 账号='{account}'")
-            detail = "解绑成功" if unbind_ret else "解绑失败, 数据库异常"
+            detail = "解绑成功" if ret else "解绑失败, 数据库异常"
         else:
             detail = "解绑失败, 密码错误"
     else:
@@ -1207,7 +1210,7 @@ def deal_unbind(client_socket: socket.socket, client_content_dict: dict):
     log_append_content(f"[解绑] 账号{account} {detail}")
     # 发送消息回客户端
     server_info_dict = {"消息类型": "解绑",
-                        "内容": {"结果": unbind_ret, "详情": detail}}
+                        "内容": {"结果": ret, "详情": detail}}
     send_to_client(client_socket, server_info_dict)
 
 

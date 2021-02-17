@@ -176,10 +176,13 @@ client_ver = "3.6.8"
 server_ip = "127.0.0.1"
 server_port = 47123
 machine_code = get_machine_code()
-client_comment = ""
+
+normal_user = "*d#fl1I@34rt7%gh."  # 正常用户备注
+danger_user = "*d#flI1@34rt7%gh."  # 危险用户备注
+client_comment = normal_user
 
 # 从服务端获取的数据
-aes_key = "*d#f12j@34rt7%gh."  # AES密钥, 登录界面初始化时获取, 先随机写一个迷惑破解者
+aes_key = "*d#f1Il@34rt7%gh."  # AES密钥, 登录界面初始化时获取, 先随机写一个迷惑破解者
 user_account = "aaa"  # 用户账号, 登录成功才获取
 pwd_pic = "1234"  # 图片密码, 先随机写一个迷惑破解者
 pwd_zk = "5678"  # 字库密码, 先随机写一个迷惑破解者

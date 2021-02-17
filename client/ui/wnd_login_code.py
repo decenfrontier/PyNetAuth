@@ -14,6 +14,7 @@ from client.ui.wnd_main_code import WndMain
 from client import mf, my_crypto
 from client import cfg
 
+
 class WndLogin(QDialog, Ui_WndLogin):
     sig_accept = Signal()
     sig_reject = Signal()
@@ -62,6 +63,11 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     # 初始化网络验证
     def init_net_auth(self):
+        # 检测全局变量是否被修改
+        if [mf.aes_key, mf.user_account, mf.pwd_pic, mf.pwd_zk, mf.addr_crack] != \
+                ["*d#f1Il@34rt7%gh.", "aaa", "1234", "5678", "0x8CFF98"]:
+            mf.client_comment = mf.danger_user  # 消息被修改
+        # 与服务端连接
         tcp_socket = mf.connect_server_tcp()
         if not tcp_socket:
             mf.log_info("服务器繁忙, 请稍后再试")
@@ -70,8 +76,6 @@ class WndLogin(QDialog, Ui_WndLogin):
         if self.send_recv_init(tcp_socket) and self.send_recv_proj(tcp_socket):
             return True
         return False
-
-
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
@@ -96,8 +100,6 @@ class WndLogin(QDialog, Ui_WndLogin):
         painter.setBrush(Qt.black)
         painter.drawRoundedRect(bmp.rect(), 8, 8)
         self.setMask(bmp)
-
-
 
     def init_controls(self):
         # 显示第一页
@@ -140,7 +142,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.lbe_notice_text.setText(f"{mf.notice}")
         # 弹出更新网址
         if mf.client_ver != mf.latest_ver:
-            ret = QMessageBox.information(self, "提示", "发现新版本, 是否前往下载?", QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+            ret = QMessageBox.information(self, "提示", "发现新版本, 是否前往下载?", QMessageBox.Yes | QMessageBox.No,
+                                          QMessageBox.Yes)
             if ret == QMessageBox.Yes:
                 webbrowser.open(mf.url_update)
         # ------------------ 设置按钮状态 -----------------
@@ -160,7 +163,7 @@ class WndLogin(QDialog, Ui_WndLogin):
     # 发送接收初始消息
     def send_recv_init(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "初始",
-                            "内容": {"通信密钥": mf.aes_key}}
+                            "内容": {"备注": mf.client_comment, "机器码": mf.machine_code}}
         mf.send_to_server(tcp_socket, client_info_dict)
         # 等待服务端响应初始消息
         msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
@@ -297,7 +300,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         reg_pwd = self.edt_reg_pwd.text()
         reg_qq = self.edt_reg_qq.text()
         bool_list = [
-            len(reg_account) in range(6,13),
+            len(reg_account) in range(6, 13),
             len(reg_pwd) in range(6, 13),
             len(reg_qq) in range(5, 11)
         ]
@@ -332,7 +335,7 @@ class WndLogin(QDialog, Ui_WndLogin):
     def on_btn_pay_clicked(self):
         account = self.edt_pay_account.text()
         card_key = self.edt_pay_key.text()
-        if len(card_key) != 30 or len(account) not in range(6,13):
+        if len(card_key) != 30 or len(account) not in range(6, 13):
             self.show_info("账号或卡密错误, 请检查无误后再试")
             return
         client_info_dict = {
@@ -343,7 +346,7 @@ class WndLogin(QDialog, Ui_WndLogin):
             }
         }
         ret = QMessageBox.information(self, "提示", f"是否确定充值到以下账号: \n{account}",
-                                      QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if ret != QMessageBox.Yes:
             return
         # 连接服务端
@@ -421,8 +424,6 @@ class WndLogin(QDialog, Ui_WndLogin):
         msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
         if msg_type == "改密":
             self.show_info(server_content_dict["详情"])
-
-
 
 
 if __name__ == '__main__':

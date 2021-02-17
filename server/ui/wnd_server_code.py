@@ -70,7 +70,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.cfg_read()
         self.init_sig_slot()
         self.move(0, 160)
-        self.show_info("窗口初始化成功")
 
     def closeEvent(self, event: QCloseEvent):
         self.cfg_write()
@@ -106,7 +105,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_status_bar(self):
         self.lbe_1 = QLabel("<提示> : ")
         self.status_bar.addWidget(self.lbe_1)
-        self.lbe_info = QLabel("提示信息内容")
+        self.lbe_info = QLabel("窗口初始化成功")
         self.status_bar.addWidget(self.lbe_info)
         self.lbe_2 = QLabel("最新客户端版本:")
         self.status_bar.addPermanentWidget(self.lbe_2)

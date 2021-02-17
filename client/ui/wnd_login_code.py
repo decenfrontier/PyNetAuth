@@ -36,13 +36,28 @@ class WndLogin(QDialog, Ui_WndLogin):
     def closeEvent(self, event: QCloseEvent):
         self.show_info("登录窗口正在退出...")
 
+    def init_wnd(self):
+        self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
+        self.setAttribute(Qt.WA_TranslucentBackground)  # 透明背景
+        self.setWindowFlags(Qt.FramelessWindowHint)  # 设置为无边框, 但任务栏有图标
+        self.start_point = QPoint(0, 0)  # 使窗口支持拖动移动
+
+    def init_status_bar(self):
+        # 添加一个statusbar
+        self.status_bar = QStatusBar()
+        # 添加标签
+        self.lbe_1 = QLabel("<提示> : ")
+        self.status_bar.addWidget(self.lbe_1)
+        self.lbe_info = QLabel("登录窗口初始化成功")
+        self.status_bar.addWidget(self.lbe_info)
+
     def init_custom_sig_slot(self):
         self.sig_accept.connect(self.accept)
         self.sig_reject.connect(self.reject)
         self.sig_info.connect(lambda text: self.lbe_info.setText(text))
 
     def show_info(self, text):
-        self.sig_info.emit(f"<提示> : {text}")
+        self.sig_info.emit(text)  # 信号槽, 防逆向跟踪
         mf.log_info(text)
 
     # 初始化网络验证
@@ -56,11 +71,7 @@ class WndLogin(QDialog, Ui_WndLogin):
             return True
         return False
 
-    def init_wnd(self):
-        self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
-        self.setAttribute(Qt.WA_TranslucentBackground)  # 透明背景
-        self.setWindowFlags(Qt.FramelessWindowHint)  # 设置为无边框, 但任务栏有图标
-        self.start_point = QPoint(0, 0)  # 使窗口支持拖动移动
+
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
@@ -86,12 +97,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         painter.drawRoundedRect(bmp.rect(), 8, 8)
         self.setMask(bmp)
 
-    def init_status_bar(self):
-        # 添加一个statusbar
-        self.status_bar = QStatusBar()
-        # 添加标签
-        self.lbe_info = QLabel()
-        self.status_bar.addWidget(self.lbe_info)
+
 
     def init_controls(self):
         # 显示第一页

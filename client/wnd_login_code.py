@@ -5,12 +5,12 @@ import webbrowser
 from PySide2.QtGui import QIcon, QCloseEvent, QRegExpValidator, QPixmap, \
     QMouseEvent, QPaintEvent, QPainter, QBitmap
 from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayout, \
-    QStatusBar, QApplication, QStyleFactory
+    QStatusBar, QApplication, QStyleFactory, QLineEdit, QPushButton
 from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, Signal
 
 from client.qtres import qrc_wnd_login
 from client.ui.wnd_login import Ui_WndLogin
-from client.ui.wnd_main_code import WndMain
+from client.wnd_main_code import WndMain
 from client import mf, my_crypto
 from client import cfg
 
@@ -23,11 +23,12 @@ class WndLogin(QDialog, Ui_WndLogin):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.init_instance_field()
         self.init_wnd()
         self.init_status_bar()
         self.init_custom_sig_slot()
         if self.init_net_auth():
-            self.init_controls()
+            self.init_widgets()
             self.init_sig_slot()
             mf.log_info("登录窗口初始化成功")
         else:
@@ -37,6 +38,18 @@ class WndLogin(QDialog, Ui_WndLogin):
     def closeEvent(self, event: QCloseEvent):
         self.show_info("登录窗口正在退出...")
 
+    # 初始化实例属性
+    def init_instance_field(self):
+        # 状态栏
+        self.status_bar = QStatusBar()
+        self.lbe_1 = QLabel("<提示> : ")
+        self.lbe_info = QLabel("登录窗口初始化成功")
+        # 验证窗口
+        self.wnd_captcha = QDialog(self)
+        self.lbe_captcha_pic = QLabel("图片验证码", self.wnd_captcha)
+        self.edt_captcha_answer = QLineEdit(self.wnd_captcha)
+        self.btn_captcha_commit = QPushButton("提交", self.wnd_captcha)
+
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
         self.setAttribute(Qt.WA_TranslucentBackground)  # 透明背景
@@ -44,12 +57,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.start_point = QPoint(0, 0)  # 使窗口支持拖动移动
 
     def init_status_bar(self):
-        # 添加一个statusbar
-        self.status_bar = QStatusBar()
-        # 添加标签
-        self.lbe_1 = QLabel("<提示> : ")
         self.status_bar.addWidget(self.lbe_1)
-        self.lbe_info = QLabel("登录窗口初始化成功")
         self.status_bar.addWidget(self.lbe_info)
 
     def init_custom_sig_slot(self):
@@ -101,9 +109,17 @@ class WndLogin(QDialog, Ui_WndLogin):
         painter.drawRoundedRect(bmp.rect(), 8, 8)
         self.setMask(bmp)
 
-    def init_controls(self):
+    def init_widgets(self):
         # 显示第一页
         self.stack_widget.setCurrentIndex(0)
+        # ------------------ 验证窗口 -----------------
+        self.wnd_captcha.setWindowTitle("请输入运算结果")
+        # self.wnd_captcha.setFixedSize(245, 115)
+        self.captcha_vlayout = QVBoxLayout(self.wnd_captcha)
+        self.captcha_vlayout.addWidget(self.lbe_captcha_pic)
+        self.captcha_vlayout.addWidget(self.edt_captcha_answer)
+        self.captcha_vlayout.addWidget(self.btn_captcha_commit)
+        self.wnd_captcha.setLayout(self.captcha_vlayout)
         # ----------------- 工具栏 -------------------
         # 添加工具栏
         self.tool_bar = QToolBar()
@@ -159,6 +175,20 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.btn_pay.clicked.connect(self.on_btn_pay_clicked)
         self.btn_unbind.clicked.connect(self.on_btn_unbind_clicked)
         self.btn_modify.clicked.connect(self.on_btn_modify_clicked)
+
+    def popup_captcha_wnd(self) -> bool:
+        self.wnd_captcha.show()
+        true_ret = self.refresh_captcha_pic()
+        print(true_ret)
+        ...
+
+    def refresh_captcha_pic(self):
+        tr = mf.create_com_obj(mf.COM_NAME_TR)
+        ret = tr.Draw_CAPTCHA()
+        path_captcha = "C:\\a_b_c\\temp\\1.bmp"
+        tr.SaveImageData(path_captcha)
+        self.lbe_captcha_pic.setPixmap(QPixmap(path_captcha))
+        return ret
 
     # 发送接收初始消息
     def send_recv_init(self, tcp_socket: socket.socket):
@@ -255,7 +285,7 @@ class WndLogin(QDialog, Ui_WndLogin):
     def on_btn_login_clicked(self):
         # 把控件信息保存到配置文件
         cfg.cfg_login.controls_to_file()
-        # 读取登录账号密码
+        # 读取登录账号密码, 判断是否符合要求
         login_account = cfg.cfg_login.edt_login_account
         login_pwd = cfg.cfg_login.edt_login_pwd
         bool_list = [
@@ -265,9 +295,13 @@ class WndLogin(QDialog, Ui_WndLogin):
         if False in bool_list:
             self.show_info("登录失败, 账号密码长度不符合要求")
             return
+        # 弹出验证窗口, 输对验证码才发送给服务端
+        self.popup_captcha_wnd()
+        return
+        # ----------------- 发送数据给服务器 -----------------
         login_pwd = my_crypto.get_encrypted_str(login_pwd.encode())
         login_system = mf.get_operation_system()
-        # 把客户端信息整理成字典, 发送给服务器
+        # 把客户端信息整理成字典
         client_info_dict = {
             "消息类型": "登录",
             "内容": {
@@ -438,19 +472,23 @@ if __name__ == '__main__':
     app.setStyleSheet(mf.qss_style)
     mf.log_info("初始化界面样式完成")
 
+    # 初始化登录窗口
+    mf.wnd_login = WndLogin()
+    mf.wnd_login.show()
+    mf.log_info("初始化登录窗口完成")
+
     # 初始化json文件
     if not os.path.exists(mf.PATH_LOGIN_JSON):
         mf.log_info("自动创建登录界面配置文件")
         mf.py_to_json(cfg.default_login_dict, mf.PATH_LOGIN_JSON)
     mf.log_info("初始化配置文件完成")
 
-    # 初始化登录窗口
-    mf.wnd_login = WndLogin()
-    mf.wnd_login.show()
-    mf.log_info("初始化登录窗口完成")
-
     # 读取登录窗口配置
     cfg.cfg_login.file_to_controls()
+
+    # 注册组件到系统
+    ret = mf.reg_com_to_system(mf.COM_NAME_TR)
+    print("注册组件到系统:", ret)
 
     if mf.wnd_login.exec_() == QDialog.Accepted:
         mf.wnd_main = WndMain()

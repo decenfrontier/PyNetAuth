@@ -9,7 +9,9 @@ import logging
 import os
 import pythoncom
 import socket
+import ctypes
 
+from win32com.client import Dispatch
 from PySide2.QtCore import QThread
 
 from client import my_crypto
@@ -40,6 +42,14 @@ PATH_LOGIN_JSON = f"{PATH_SAVE}\\login.json"
 PATH_GNRL_JSON = f"{PATH_SAVE}\\gnrl.json"
 PATH_PLAN_JSON = f"{PATH_SAVE}\\plan.json"
 
+DLL_DM_NAME = "Qt5Sqd.dll"  # dm.dll
+DLL_REGDM_NAME = "Qt5Xmr.dll"  # DmReg.dll
+DLL_LW_NAME = "lw.dll"
+DLL_TR_NAME = "TURING.dll"
+
+COM_NAME_LW = "lw.lwsoft3"
+COM_NAME_DM = "dm.dmsoft"
+COM_NAME_TR = "TURING.FISR"
 
 # 随机数
 def rnd(min: int, max: int):
@@ -95,9 +105,36 @@ def py_to_json(pyobj: object, path: str):
     except:
         print("json encode error!")
 
+# 注册组件到系统
+def reg_com_to_system(obj_name):
+    # type: (str) -> bool
+    obj_dll_dict = {COM_NAME_LW: DLL_LW_NAME, COM_NAME_DM: DLL_DM_NAME, COM_NAME_TR: DLL_TR_NAME}
+    dll_name = obj_dll_dict[obj_name]
 
+    cwd_path = os.getcwd()  # 获取工作目录
+    path_dll = f"{cwd_path}\\dll\\{dll_name}"
+    print(path_dll)
+    if obj_name == COM_NAME_DM:
+        DmReg = ctypes.WinDLL(f"dll\\{DLL_REGDM_NAME}")
+        ret = DmReg.SetDllPathW(path_dll, 1)
+    else:  # 此种注册方式需要以管理员运行
+        ret = os.system(f"regsvr32 {path_dll} /s")
+        ret = True if ret == 0 else False
+    if ret:
+        return True
+    return False
 
-
+# 创建com组件对象
+def create_com_obj(com_name: str):
+    obj = None
+    try:
+        if com_name == COM_NAME_LW:
+            obj = CreateObject(com_name)  # op, lw
+        else:
+            obj = Dispatch(com_name)  # dm, tr
+    except:
+        log_info(f"创建com对象{com_name}失败")
+    return obj
 
 # ------------------------- 网络验证相关 -------------------------
 # 获取机器码(主板序列号+硬盘序列号)

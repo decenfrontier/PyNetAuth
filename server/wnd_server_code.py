@@ -693,7 +693,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def show_all_tbe_everyday(self):
         # 读取用户表内容, 获取今日活跃用户数, 在线用户数
-        active_user_num = sql_table_query_ex(sql="select count(*) from 2用户管理 where date_format(最后更新时间,'%Y-%m-%d')="
+        active_user_num = sql_table_query_ex(sql="select count(*) from 2用户管理 where date_format(心跳时间,'%Y-%m-%d')="
                                                  "date_format(now(),'%Y-%m-%d');")[0]["count(*)"]
         online_user_num = sql_table_query_ex(sql="select count(*) from 2用户管理 where 状态='在线'")[0]["count(*)"]
         # 更新每日流水表

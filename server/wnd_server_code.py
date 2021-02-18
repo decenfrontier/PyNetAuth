@@ -267,6 +267,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_user_state_sel = QAction("设置选中用户状态")  # 二级菜单
         self.action_user_del_sel = QAction("删除选中用户")
         # --------------------------------------------------------
+        self.action_user_frozen_ip = QAction("冻结指定IP下的所有用户")
         self.action_user_frozen_sel = QAction("冻结选中用户")
         self.action_user_unfrozen_sel = QAction("解冻选中用户")
         # --------------------------------------------------------
@@ -277,7 +278,8 @@ class WndServer(QMainWindow, Ui_WndServer):
                                        self.action_user_state_sel,
                                        self.action_user_del_sel])
         self.menu_tbe_user.addSeparator()
-        self.menu_tbe_user.addActions([self.action_user_frozen_sel,
+        self.menu_tbe_user.addActions([self.action_user_frozen_ip,
+                                       self.action_user_frozen_sel,
                                        self.action_user_unfrozen_sel])
         self.menu_tbe_user.addSeparator()
         self.menu_tbe_user.addActions([self.action_user_charge_sel,
@@ -285,6 +287,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_user_show_all.triggered.connect(self.show_all_tbe_user)
         self.action_user_comment_sel.triggered.connect(self.on_action_user_comment_sel_triggered)
         self.action_user_del_sel.triggered.connect(self.on_action_user_del_sel_triggered)
+        self.action_user_frozen_ip.triggered.connect(self.on_action_user_frozen_ip_triggered)
         self.action_user_frozen_sel.triggered.connect(self.on_action_user_frozen_sel_triggered)
         self.action_user_unfrozen_sel.triggered.connect(self.on_action_user_unfrozen_sel_triggered)
         self.action_user_charge_sel.triggered.connect(self.on_action_user_charge_sel_triggered)
@@ -417,10 +420,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_all_tbe_proj()
 
     def on_btn_user_query_clicked(self):
+        # todo
         field = self.cmb_user_field.currentText()
         operator = self.cmb_user_operator.currentText()
         value = self.edt_user_value.text()
         condition = f"{field} {operator} {value}"
+        print(condition)
         query_user_list = sql_table_query_ex("2用户管理", condition)
         num = len(query_user_list)
         self.show_info(f"查询到{num}个符合条件的用户")
@@ -520,6 +525,15 @@ class WndServer(QMainWindow, Ui_WndServer):
         accounts = "','".join(account_set)
         num = sql_table_update_ex("2用户管理", f"备注='{comment}'", f"账号 in ('{accounts}')")
         self.show_info(f"{num}个用户备注成功")
+        self.show_all_tbe_user()
+
+    def on_action_user_frozen_ip_triggered(self):
+        frozen_ip, ok_pressed = QInputDialog.getText(self, "冻结IP下的所有账号", "IP:", QLineEdit.Normal)
+        if not ok_pressed:
+            return
+        num = sql_table_update_ex(sql="update 2用户管理 set 状态='冻结', 备注='冻结IP下的所有账号' "
+                                      f"where 上次登录IP='{frozen_ip}'")
+        self.show_info(f"{num}个用户冻结IP成功")
         self.show_all_tbe_user()
 
     def on_action_user_frozen_sel_triggered(self):

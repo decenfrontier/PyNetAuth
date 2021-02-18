@@ -16,7 +16,7 @@ import socket
 
 from server.qtres import qrc_wnd_server
 from server.ui.wnd_server import Ui_WndServer
-from server import my_crypto
+from server import crypto_, lib_
 
 lock = Lock()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -26,7 +26,7 @@ path_log = f"C:\\net_auth_{today}.log"
 server_ip = "127.0.0.1"
 server_port = 47123
 aes_key = "csbt34.ydhl12s"  # AES密钥
-aes = my_crypto.AesEncryption(aes_key)
+aes = crypto_.AesEncryption(aes_key)
 
 user_comment = {
     "正常": "*d#fl1I@34rt7%gh.",
@@ -51,7 +51,7 @@ qss_style = """
 """
 
 # 发送给客户端的数据
-enc_aes_key = my_crypto.encrypt_rsa(my_crypto.public_key_client, aes_key)
+enc_aes_key = crypto_.encrypt_rsa(crypto_.public_key_client, aes_key)
 
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
@@ -68,7 +68,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.move(0, 160)
 
     def closeEvent(self, event: QCloseEvent):
-        self.cfg_write()
         # 关闭套接字和数据库
         tcp_socket.close()
         cursor.close()
@@ -76,11 +75,9 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 读取配置
     def cfg_read(self):
-        if not os.path.exists(self.path_cfg):  # 若文件不存在, 则用默认的配置字典先创建json文件
-            with open(self.path_cfg, "w", encoding="utf-8") as f:
-                json.dump(self.cfg, f, ensure_ascii=False)
-        with open(self.path_cfg, "r", encoding="utf-8") as f:
-            self.cfg = json.load(f)
+        cfg_load = lib_.json_file_to_dict(self.path_cfg, self.cfg)
+        self.cfg.update(cfg_load)
+
         self.edt_proj_url_update.setText(self.cfg["更新网址"])
         self.edt_proj_url_card.setText(self.cfg["发卡网址"])
         self.edt_proj_unbind_sub_hour.setText(str(self.cfg["解绑扣除小时"]))
@@ -94,8 +91,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.cfg["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
         self.cfg["注册赠送天数"] = int(self.edt_proj_reg_gift_day.text())
         self.cfg["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
-        with open(self.path_cfg, "w", encoding="utf-8") as f:
-            json.dump(self.cfg, f, ensure_ascii=False)
+
+        lib_.dict_to_json_file(self.cfg, self.path_cfg)
+
 
     def init_status_bar(self):
         self.lbe_1 = QLabel("<提示> : ")

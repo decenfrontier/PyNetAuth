@@ -41,12 +41,9 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     # 读取配置
     def cfg_read(self):
-        if not os.path.exists(self.path_cfg):  # 若文件不存在, 则用默认的配置字典先创建json文件
-            with open(self.path_cfg, "w", encoding="utf-8") as f:
-                json.dump(self.cfg, f, ensure_ascii=False)
-        with open(self.path_cfg, "r", encoding="utf-8") as f:
-            cfg_load = json.load(f)
-            self.cfg.update(cfg_load)
+        cfg_load = lib_.json_file_to_dict(self.path_cfg, self.cfg)
+        self.cfg.update(cfg_load)
+
         self.edt_login_account.setText(self.cfg["账号"])
         self.edt_login_pwd.setText(self.cfg["密码"])
         self.chk_login_remember.setChecked(self.cfg["记住账号密码"])
@@ -58,8 +55,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.cfg["密码"] = self.edt_login_pwd.text()
         self.cfg["记住账号密码"] = self.chk_login_remember.isChecked()
         self.cfg["提示更新版本"] = self.chk_login_update.isChecked()
-        with open(self.path_cfg, "w", encoding="utf-8") as f:
-            json.dump(self.cfg, f, ensure_ascii=False)
+
+        lib_.dict_to_json_file(self.cfg, self.path_cfg)
 
     # 初始化实例属性
     def init_instance_field(self):

@@ -420,13 +420,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_all_tbe_proj()
 
     def on_btn_user_query_clicked(self):
-        # todo
         field = self.cmb_user_field.currentText()
         operator = self.cmb_user_operator.currentText()
         value = self.edt_user_value.text()
-        condition = f"{field} {operator} {value}"
-        print(condition)
-        query_user_list = sql_table_query_ex("2用户管理", condition)
+        query_user_list = sql_table_query_ex(sql=f"select * from 2用户管理 where {field} {operator} '{value}';")
         num = len(query_user_list)
         self.show_info(f"查询到{num}个符合条件的用户")
         self.refresh_tbe_user(query_user_list)

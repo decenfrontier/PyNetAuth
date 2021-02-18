@@ -323,21 +323,6 @@ class Ui_WndServer(object):
 
         self.horizontalLayout_7.addItem(self.horizontalSpacer)
 
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.edt_user_frozen_ip = QLineEdit(self.groupBox_2)
-        self.edt_user_frozen_ip.setObjectName(u"edt_user_frozen_ip")
-
-        self.horizontalLayout_5.addWidget(self.edt_user_frozen_ip)
-
-        self.btn_user_frozen_ip = QPushButton(self.groupBox_2)
-        self.btn_user_frozen_ip.setObjectName(u"btn_user_frozen_ip")
-
-        self.horizontalLayout_5.addWidget(self.btn_user_frozen_ip)
-
-
-        self.horizontalLayout_7.addLayout(self.horizontalLayout_5)
-
         self.horizontalSpacer_2 = QSpacerItem(199, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_7.addItem(self.horizontalSpacer_2)
@@ -650,8 +635,7 @@ class Ui_WndServer(object):
         self.cmb_user_operator.setItemText(4, QCoreApplication.translate("WndServer", u"like", None))
         self.cmb_user_operator.setItemText(5, QCoreApplication.translate("WndServer", u"rlike", None))
 
-        self.btn_user_query.setText(QCoreApplication.translate("WndServer", u"\u67e5\u8be2", None))
-        self.btn_user_frozen_ip.setText(QCoreApplication.translate("WndServer", u"\u51bb\u7ed3\u8be5IP\u4e0b\u7684\u6240\u6709\u8d26\u53f7", None))
+        self.btn_user_query.setText(QCoreApplication.translate("WndServer", u"\u67e5 \u8be2", None))
         ___qtablewidgetitem11 = self.tbe_user.horizontalHeaderItem(0)
         ___qtablewidgetitem11.setText(QCoreApplication.translate("WndServer", u"ID", None));
         ___qtablewidgetitem12 = self.tbe_user.horizontalHeaderItem(1)

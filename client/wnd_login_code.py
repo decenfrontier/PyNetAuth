@@ -178,9 +178,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         # ------------------ 设置标签格式 -----------------
         # 充值页
         self.lbe_pay_key.setText("<a href={}>充值卡号: </a>".format(lib_.url_card))
-        self.lbe_pay_key.setOpenExternalLinks(True)
-        self.lbe_pay_key.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
         # 公告页
+        self.lbe_notice.setText("<a href={}>公 告</a>".format(lib_.url_update))
         self.lbe_notice_text.setText(lib_.notice)
         # ------------------ 设置按钮状态 -----------------
         self.btn_login.setEnabled(lib_.allow_login)

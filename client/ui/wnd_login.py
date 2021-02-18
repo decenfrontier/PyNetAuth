@@ -236,8 +236,8 @@ class Ui_WndLogin(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.lbe_pay_key = QLabel(self.widget_3)
         self.lbe_pay_key.setObjectName(u"lbe_pay_key")
-        self.lbe_pay_key.setOpenExternalLinks(False)
-        self.lbe_pay_key.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.lbe_pay_key.setOpenExternalLinks(True)
+        self.lbe_pay_key.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
 
         self.verticalLayout.addWidget(self.lbe_pay_key)
 
@@ -358,11 +358,14 @@ class Ui_WndLogin(object):
         self.gridLayout_9 = QGridLayout(self.page_notice)
         self.gridLayout_9.setObjectName(u"gridLayout_9")
         self.gridLayout_9.setVerticalSpacing(0)
-        self.label_4 = QLabel(self.page_notice)
-        self.label_4.setObjectName(u"label_4")
-        self.label_4.setAlignment(Qt.AlignCenter)
+        self.lbe_notice = QLabel(self.page_notice)
+        self.lbe_notice.setObjectName(u"lbe_notice")
+        self.lbe_notice.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.lbe_notice.setAlignment(Qt.AlignCenter)
+        self.lbe_notice.setOpenExternalLinks(True)
+        self.lbe_notice.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
 
-        self.gridLayout_9.addWidget(self.label_4, 0, 1, 1, 1)
+        self.gridLayout_9.addWidget(self.lbe_notice, 0, 1, 1, 1)
 
         self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -408,7 +411,7 @@ class Ui_WndLogin(object):
 
         self.retranslateUi(WndLogin)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(WndLogin)
@@ -474,7 +477,10 @@ class Ui_WndLogin(object):
         self.edt_modify_new_pwd.setToolTip(QCoreApplication.translate("WndLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
 #endif // QT_CONFIG(tooltip)
         self.btn_modify.setText(QCoreApplication.translate("WndLogin", u"\u6539 \u5bc6", None))
-        self.label_4.setText(QCoreApplication.translate("WndLogin", u"\u516c \u544a", None))
+#if QT_CONFIG(tooltip)
+        self.lbe_notice.setToolTip(QCoreApplication.translate("WndLogin", u">> \u70b9\u6211\u66f4\u65b0 <<", None))
+#endif // QT_CONFIG(tooltip)
+        self.lbe_notice.setText(QCoreApplication.translate("WndLogin", u"\u516c \u544a", None))
         self.lbe_notice_text.setText("")
     # retranslateUi
 

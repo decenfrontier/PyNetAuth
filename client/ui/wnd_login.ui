@@ -32,7 +32,7 @@
     <string/>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>4</number>
    </property>
    <widget class="QWidget" name="page_login">
     <layout class="QGridLayout" name="gridLayout_13">
@@ -466,10 +466,10 @@
              <string>充值卡号:</string>
             </property>
             <property name="openExternalLinks">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="textInteractionFlags">
-             <set>Qt::TextSelectableByMouse</set>
+             <set>Qt::LinksAccessibleByMouse</set>
             </property>
            </widget>
           </item>
@@ -711,12 +711,24 @@
       <number>0</number>
      </property>
      <item row="0" column="1">
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="lbe_notice">
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
+       <property name="toolTip">
+        <string>&gt;&gt; 点我更新 &lt;&lt;</string>
+       </property>
        <property name="text">
         <string>公 告</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByMouse</set>
        </property>
       </widget>
      </item>

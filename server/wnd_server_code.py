@@ -716,8 +716,8 @@ class WndServer(QMainWindow, Ui_WndServer):
     def refresh_tbe_user(self, query_user_list):
         self.tbe_user.setRowCount(len(query_user_list))
         for row, query_user in enumerate(query_user_list):
-            query_user["心跳时间"] = "" if query_user["心跳时间"] is None else str(query_user["心跳时间"])
             query_user["到期时间"] = "" if query_user["到期时间"] is None else str(query_user["到期时间"])
+            query_user["心跳时间"] = "" if query_user["心跳时间"] is None else str(query_user["心跳时间"])
             query_user["上次登录时间"] = "" if query_user["上次登录时间"] is None else str(query_user["上次登录时间"])
             query_user["注册时间"] = "" if query_user["注册时间"] is None else str(query_user["注册时间"])
             query_user["最后更新时间"] = "" if query_user["最后更新时间"] is None else str(query_user["最后更新时间"])
@@ -726,8 +726,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setItem(row, 2, QTableWidgetItem("***"))
             self.tbe_user.setItem(row, 3, QTableWidgetItem(query_user["QQ"]))
             self.tbe_user.setItem(row, 4, QTableWidgetItem(query_user["状态"]))
-            self.tbe_user.setItem(row, 5, QTableWidgetItem(query_user["心跳时间"]))
-            self.tbe_user.setItem(row, 6, QTableWidgetItem(query_user["到期时间"]))
+            self.tbe_user.setItem(row, 5, QTableWidgetItem(query_user["到期时间"]))
+            self.tbe_user.setItem(row, 6, QTableWidgetItem(query_user["心跳时间"]))
             self.tbe_user.setItem(row, 7, QTableWidgetItem(query_user["上次登录时间"]))
             self.tbe_user.setItem(row, 8, QTableWidgetItem(query_user["上次登录IP"]))
             self.tbe_user.setItem(row, 9, QTableWidgetItem(query_user["上次登录地"]))

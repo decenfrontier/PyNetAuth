@@ -14,7 +14,7 @@ import ctypes
 from win32com.client import Dispatch
 from PySide2.QtCore import QThread
 
-from client import my_crypto
+from client import crypto_
 
 qss_style = """
     * {
@@ -235,5 +235,5 @@ allow_unbind = False  # 允许解绑
 latest_ver = "x.x.x"  # 最新版本
 
 # 构造加密类实例化对象
-aes = my_crypto.AesEncryption(aes_key)  # 先构造一个假的
+aes = crypto_.AesEncryption(aes_key)  # 先构造一个假的
 

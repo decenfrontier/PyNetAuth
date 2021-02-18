@@ -12,7 +12,7 @@ from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, Signal
 from client.qtres import qrc_wnd_login
 from client.ui.wnd_login import Ui_WndLogin
 from client.wnd_main_code import WndMain
-from client import mf, my_crypto
+from client import lib_, crypto_
 
 class WndLogin(QDialog, Ui_WndLogin):
     sig_accept = Signal()
@@ -31,9 +31,9 @@ class WndLogin(QDialog, Ui_WndLogin):
             self.init_widgets()
             self.cfg_read()
             self.init_sig_slot()
-            mf.log_info("登录窗口初始化成功")
+            lib_.log_info("登录窗口初始化成功")
         else:
-            mf.log_info("登录窗口初始化失败")
+            lib_.log_info("登录窗口初始化失败")
             self.close()
 
     def closeEvent(self, event: QCloseEvent):
@@ -72,7 +72,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.lbe_captcha_pic = QLabel("图片验证码", self.wnd_captcha)
         self.edt_captcha_answer = QLineEdit(self.wnd_captcha)
         self.btn_captcha_commit = QPushButton("提交", self.wnd_captcha)
-        self.path_captcha = "\\".join([mf.PATH_TEMP, "captcha.bmp"])  # 验证码图片保存路径
+        self.path_captcha = "\\".join([lib_.PATH_TEMP, "captcha.bmp"])  # 验证码图片保存路径
         self.captcha_ret = 999  # 验证码图片答案
         self.captcha_btn_text = ""  # 记录弹出验证窗口时点的是哪一个按钮
         # ---------------------- 界面配置 --------------------
@@ -82,7 +82,7 @@ class WndLogin(QDialog, Ui_WndLogin):
             "记住账号密码": True,
             "提示更新版本": True,
         }
-        self.path_cfg = mf.PATH_JSON_LOGIN
+        self.path_cfg = lib_.PATH_JSON_LOGIN
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
@@ -96,18 +96,18 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     def show_info(self, text):
         self.sig_info.emit(text)  # 信号槽, 防逆向跟踪
-        mf.log_info(text)
+        lib_.log_info(text)
 
     # 初始化网络验证
     def init_net_auth(self):
         # 检测全局变量是否被修改
-        if [mf.aes_key, mf.user_account, mf.pwd_pic, mf.pwd_zk, mf.addr_crack] != \
+        if [lib_.aes_key, lib_.user_account, lib_.pwd_pic, lib_.pwd_zk, lib_.addr_crack] != \
                 ["*d#f1Il@34rt7%gh.", "aaa", "1234", "5678", "0x8CFF98"]:
-            mf.client_comment = mf.danger_user  # 消息被修改
+            lib_.client_comment = lib_.danger_user  # 消息被修改
         # 与服务端连接
-        tcp_socket = mf.connect_server_tcp()
+        tcp_socket = lib_.connect_server_tcp()
         if not tcp_socket:
-            mf.log_info("服务器繁忙, 请稍后再试")
+            lib_.log_info("服务器繁忙, 请稍后再试")
             QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试")
             return False
         if self.send_recv_init(tcp_socket) and self.send_recv_proj(tcp_socket):
@@ -180,15 +180,15 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.edt_reg_qq.setValidator(QRegExpValidator(reg_exp_qq_number))
         # ------------------ 设置标签格式 -----------------
         # 充值页
-        self.lbe_pay_key.setText("<a href={}>充值卡号: </a>".format(mf.url_card))
+        self.lbe_pay_key.setText("<a href={}>充值卡号: </a>".format(lib_.url_card))
         self.lbe_pay_key.setOpenExternalLinks(True)
         self.lbe_pay_key.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
         # 公告页
-        self.lbe_notice_text.setText(mf.notice)
+        self.lbe_notice_text.setText(lib_.notice)
         # ------------------ 设置按钮状态 -----------------
-        self.btn_login.setEnabled(mf.allow_login)
-        self.btn_reg.setEnabled(mf.allow_reg)
-        self.btn_unbind.setEnabled(mf.allow_unbind)
+        self.btn_login.setEnabled(lib_.allow_login)
+        self.btn_reg.setEnabled(lib_.allow_reg)
+        self.btn_unbind.setEnabled(lib_.allow_unbind)
 
     def init_custom_sig_slot(self):
         self.sig_accept.connect(self.accept)
@@ -210,7 +210,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 显示验证窗口
         self.wnd_captcha.show()
         # 刷新验证码
-        tr = mf.create_com_obj(mf.COM_NAME_TR)
+        tr = lib_.create_com_obj(lib_.COM_NAME_TR)
         self.captcha_ret = tr.Draw_CAPTCHA()
         tr.SaveImageData(self.path_captcha)
         self.lbe_captcha_pic.setPixmap(QPixmap(self.path_captcha))
@@ -219,19 +219,19 @@ class WndLogin(QDialog, Ui_WndLogin):
         if not self.cfg["提示更新版本"]:
             return
         # 弹出更新网址
-        if mf.client_ver != mf.latest_ver:
+        if lib_.client_ver != lib_.latest_ver:
             ret = QMessageBox.information(self, "提示", "发现新版本, 是否前往下载?", QMessageBox.Yes | QMessageBox.No,
                                           QMessageBox.Yes)
             if ret == QMessageBox.Yes:
-                webbrowser.open(mf.url_update)
+                webbrowser.open(lib_.url_update)
 
     # 发送接收初始消息
     def send_recv_init(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "初始",
-                            "内容": {"备注": mf.client_comment, "机器码": mf.machine_code}}
-        mf.send_to_server(tcp_socket, client_info_dict)
+                            "内容": {"备注": lib_.client_comment, "机器码": lib_.machine_code}}
+        lib_.send_to_server(tcp_socket, client_info_dict)
         # 等待服务端响应初始消息
-        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if not msg_type:
             self.show_info("服务器繁忙, 请稍后再试, 错误码: 1")
             return False
@@ -239,8 +239,8 @@ class WndLogin(QDialog, Ui_WndLogin):
             if server_content_dict["结果"]:
                 enc_aes_key = server_content_dict["详情"]
                 # 重新构造新的aes密钥
-                mf.aes_key = my_crypto.decrypt_rsa(my_crypto.private_key_client, enc_aes_key)
-                mf.aes = my_crypto.AesEncryption(mf.aes_key)
+                lib_.aes_key = crypto_.decrypt_rsa(crypto_.private_key_client, enc_aes_key)
+                lib_.aes = crypto_.AesEncryption(lib_.aes_key)
                 return True
             else:
                 detail = server_content_dict["详情"]
@@ -250,23 +250,23 @@ class WndLogin(QDialog, Ui_WndLogin):
     # 发送接收项目消息
     def send_recv_proj(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "锟斤拷",
-                            "内容": {"版本号": mf.client_ver}}
-        mf.send_to_server(tcp_socket, client_info_dict)
+                            "内容": {"版本号": lib_.client_ver}}
+        lib_.send_to_server(tcp_socket, client_info_dict)
         # 等待服务端响应项目消息
-        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if not msg_type:
             self.show_info("服务器繁忙, 请稍后再试, 错误码: 2")
             return False
         if msg_type == "锟斤拷":
             if server_content_dict["结果"]:
                 detail_dict = server_content_dict["详情"]
-                mf.notice = detail_dict["客户端公告"]
-                mf.url_update = detail_dict["更新网址"]
-                mf.url_card = detail_dict["发卡网址"]
-                mf.allow_login = detail_dict["允许登录"]
-                mf.allow_reg = detail_dict["允许注册"]
-                mf.allow_unbind = detail_dict["允许解绑"]
-                mf.latest_ver = detail_dict["最新版本"]
+                lib_.notice = detail_dict["客户端公告"]
+                lib_.url_update = detail_dict["更新网址"]
+                lib_.url_card = detail_dict["发卡网址"]
+                lib_.allow_login = detail_dict["允许登录"]
+                lib_.allow_reg = detail_dict["允许注册"]
+                lib_.allow_unbind = detail_dict["允许解绑"]
+                lib_.latest_ver = detail_dict["最新版本"]
                 return True
             else:
                 detail = server_content_dict["详情"]
@@ -276,31 +276,31 @@ class WndLogin(QDialog, Ui_WndLogin):
     def send_recv_custom1(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "烫烫烫",
                             "内容": {"烫烫烫": "烫烫烫"}}
-        mf.send_to_server(tcp_socket, client_info_dict)
+        lib_.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
-        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if not msg_type:
             self.show_info("服务器繁忙, 请稍后再试, 错误码: 3")
             return False
         if msg_type == "烫烫烫":
             detail_dict = server_content_dict["详情"]
-            mf.pwd_pic = mf.aes.decrypt(detail_dict["pic"])
-            mf.pwd_zk = mf.aes.decrypt(detail_dict["zk"])
+            lib_.pwd_pic = lib_.aes.decrypt(detail_dict["pic"])
+            lib_.pwd_zk = lib_.aes.decrypt(detail_dict["zk"])
             return True
         return False
 
     def send_recv_custom2(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "屯屯屯",
                             "内容": {"屯屯屯": "屯屯屯"}}
-        mf.send_to_server(tcp_socket, client_info_dict)
+        lib_.send_to_server(tcp_socket, client_info_dict)
         # 处理服务端响应消息
-        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if not msg_type:
             self.show_info("服务器繁忙, 请稍后再试, 错误码: 4")
             return False
         if msg_type == "屯屯屯":
             detail_dict = server_content_dict["详情"]
-            mf.addr_crack = mf.aes.decrypt(detail_dict["crk"])
+            lib_.addr_crack = lib_.aes.decrypt(detail_dict["crk"])
             return True
         return False
 
@@ -308,30 +308,30 @@ class WndLogin(QDialog, Ui_WndLogin):
         # ----------------- 发送数据给服务器 -----------------
         login_account = self.cfg["账号"]
         login_pwd = self.cfg["密码"]
-        login_pwd = my_crypto.get_encrypted_str(login_pwd.encode())
-        login_system = mf.get_operation_system()
+        login_pwd = crypto_.get_encrypted_str(login_pwd.encode())
+        login_system = lib_.get_operation_system()
         # 把客户端信息整理成字典
         client_info_dict = {
             "消息类型": "登录",
             "内容": {
                 "账号": login_account,
                 "密码": login_pwd,
-                "机器码": mf.machine_code,
+                "机器码": lib_.machine_code,
                 "操作系统": login_system,
             }
         }
         # 发送客户端消息
-        tcp_socket = mf.connect_server_tcp()
+        tcp_socket = lib_.connect_server_tcp()
         if not tcp_socket:
             self.show_info("服务器繁忙, 请稍后再试")
             return
-        mf.send_to_server(tcp_socket, client_info_dict)
+        lib_.send_to_server(tcp_socket, client_info_dict)
         # ----------------- 接收并处理服务端响应消息 ------------
-        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if msg_type == "登录":
             self.show_info(server_content_dict["详情"])
             if server_content_dict["结果"]:
-                mf.user_account = server_content_dict["账号"]
+                lib_.user_account = server_content_dict["账号"]
                 if self.send_recv_custom1(tcp_socket) and self.send_recv_custom2(tcp_socket):
                     self.sig_accept.emit()  # 登录界面接受
                 else:
@@ -343,24 +343,24 @@ class WndLogin(QDialog, Ui_WndLogin):
         reg_pwd = self.edt_reg_pwd.text()
         reg_qq = self.edt_reg_qq.text()
         # 把客户端信息整理成字典
-        reg_pwd = my_crypto.get_encrypted_str(reg_pwd.encode())
+        reg_pwd = crypto_.get_encrypted_str(reg_pwd.encode())
         client_info_dict = {
             "消息类型": "注册",
             "内容": {
                 "账号": reg_account,
                 "密码": reg_pwd,
                 "QQ": reg_qq,
-                "机器码": mf.machine_code,
+                "机器码": lib_.machine_code,
             }
         }
         # 发送客户端消息
-        tcp_socket = mf.connect_server_tcp()
+        tcp_socket = lib_.connect_server_tcp()
         if not tcp_socket:
             self.show_info("服务器繁忙, 请稍后再试")
             return
-        mf.send_to_server(tcp_socket, client_info_dict)
+        lib_.send_to_server(tcp_socket, client_info_dict)
         # ----------------- 接收并处理服务端响应消息 ------------
-        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if msg_type == "注册":
             self.show_info(server_content_dict["详情"])
 
@@ -374,14 +374,14 @@ class WndLogin(QDialog, Ui_WndLogin):
             "内容": {"账号": account, "卡号": card_key},
         }
         # 连接服务端
-        tcp_socket = mf.connect_server_tcp()
+        tcp_socket = lib_.connect_server_tcp()
         if not tcp_socket:
             self.show_info("服务器繁忙, 请稍后再试")
             return
         # 发送客户端消息
-        mf.send_to_server(tcp_socket, client_info_dict)
+        lib_.send_to_server(tcp_socket, client_info_dict)
         # ----------------- 接收并处理服务端响应消息 ------------
-        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if msg_type == "充值":
             self.show_info(server_content_dict["详情"])
 
@@ -389,21 +389,21 @@ class WndLogin(QDialog, Ui_WndLogin):
         # ----------------- 发送数据给服务器 -----------------
         account = self.edt_login_account.text()
         pwd = self.edt_login_pwd.text()
-        pwd = my_crypto.get_encrypted_str(pwd.encode())
+        pwd = crypto_.get_encrypted_str(pwd.encode())
         # 允许异地解绑. 不用发机器码
         client_info_dict = {
             "消息类型": "解绑",
             "内容": {"账号": account, "密码": pwd},
         }
         # 连接服务端
-        tcp_socket = mf.connect_server_tcp()
+        tcp_socket = lib_.connect_server_tcp()
         if not tcp_socket:
             self.show_info("服务器繁忙, 请稍后再试")
             return
         # 发送客户端消息
-        mf.send_to_server(tcp_socket, client_info_dict)
+        lib_.send_to_server(tcp_socket, client_info_dict)
         # ----------------- 接收并处理服务端响应消息 ------------
-        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if msg_type == "解绑":
             self.show_info(server_content_dict["详情"])
 
@@ -412,7 +412,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         account = self.edt_modify_account.text()
         qq = self.edt_modify_qq.text()
         new_pwd = self.edt_modify_new_pwd.text()
-        new_pwd = my_crypto.get_encrypted_str(new_pwd.encode())
+        new_pwd = crypto_.get_encrypted_str(new_pwd.encode())
         client_info_dict = {
             "消息类型": "改密",
             "内容": {
@@ -421,14 +421,14 @@ class WndLogin(QDialog, Ui_WndLogin):
                 "密码": new_pwd,
             }
         }
-        tcp_socket = mf.connect_server_tcp()  # 连接服务端
+        tcp_socket = lib_.connect_server_tcp()  # 连接服务端
         if not tcp_socket:
             self.show_info("服务器繁忙, 请稍后再试")
             return
         # 发送客户端消息
-        mf.send_to_server(tcp_socket, client_info_dict)
+        lib_.send_to_server(tcp_socket, client_info_dict)
         # ----------------- 接收并处理服务端响应消息 ------------
-        msg_type, server_content_dict = mf.recv_from_server(tcp_socket)
+        msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if msg_type == "改密":
             self.show_info(server_content_dict["详情"])
 
@@ -543,35 +543,35 @@ class WndLogin(QDialog, Ui_WndLogin):
 
 if __name__ == '__main__':
     # 初始化日志模块
-    mf.init_logging()
-    mf.log_info("初始化日志模块成功")
+    lib_.init_logging()
+    lib_.log_info("初始化日志模块成功")
 
     # 界面随DPI自动缩放
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication()
     app.setStyle(QStyleFactory.create("fusion"))
-    app.setStyleSheet(mf.qss_style)
-    mf.log_info("初始化界面样式完成")
+    app.setStyleSheet(lib_.qss_style)
+    lib_.log_info("初始化界面样式完成")
 
     # 初始化登录窗口
-    mf.wnd_login = WndLogin()
-    mf.wnd_login.show()
-    mf.wnd_login.popup_update_msg()
-    mf.log_info("初始化登录窗口完成")
+    lib_.wnd_login = WndLogin()
+    lib_.wnd_login.show()
+    lib_.wnd_login.popup_update_msg()
+    lib_.log_info("初始化登录窗口完成")
 
     # 初始化json文件
-    if not os.path.exists(mf.PATH_JSON_LOGIN):
-        mf.log_info("自动创建登录界面配置文件")
-        mf.py_to_json(cfg.default_login_dict, mf.PATH_JSON_LOGIN)
-    mf.log_info("初始化配置文件完成")
+    if not os.path.exists(lib_.PATH_JSON_LOGIN):
+        lib_.log_info("自动创建登录界面配置文件")
+        lib_.py_to_json(cfg.default_login_dict, lib_.PATH_JSON_LOGIN)
+    lib_.log_info("初始化配置文件完成")
 
     # 注册组件到系统
-    ret = mf.reg_com_to_system(mf.COM_NAME_TR)
+    ret = lib_.reg_com_to_system(lib_.COM_NAME_TR)
     print("注册组件到系统:", ret)
 
-    if mf.wnd_login.exec_() == QDialog.Accepted:
-        mf.wnd_main = WndMain()
-        mf.wnd_main.show()
-        mf.wnd_main.start_heart_beat()
+    if lib_.wnd_login.exec_() == QDialog.Accepted:
+        lib_.wnd_main = WndMain()
+        lib_.wnd_main.show()
+        lib_.wnd_main.start_heart_beat()
         sys.exit(app.exec_())
     sys.exit(0)

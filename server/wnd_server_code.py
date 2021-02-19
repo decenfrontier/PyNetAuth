@@ -57,7 +57,6 @@ class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.init_status_bar()
         self.init_mysql()
         self.init_net_auth()
         self.init_instance_field()
@@ -95,16 +94,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         lib_.dict_to_json_file(self.cfg, self.path_cfg)
 
 
-    def init_status_bar(self):
-        self.lbe_1 = QLabel("<提示> : ")
-        self.status_bar.addWidget(self.lbe_1)
-        self.lbe_info = QLabel("窗口初始化成功")
-        self.status_bar.addWidget(self.lbe_info)
-        self.lbe_2 = QLabel("最新客户端版本:")
-        self.status_bar.addPermanentWidget(self.lbe_2)
-        self.lbe_latest_ver = QLabel("x.x.x")
-        self.status_bar.addPermanentWidget(self.lbe_latest_ver)
-
     def init_mysql(self):
         try:
             global db, cursor
@@ -127,11 +116,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         lastest_time = sql_table_query_ex(sql="select max(最后更新时间) from 2用户管理")[0]["max(最后更新时间)"]
         lastest_day = str(lastest_time)[:10]
         if lastest_day != today:
-            self.show_info("新的一天到了, 清零用户管理表今日次数")
+            log_append_content("新的一天到了, 清零用户管理表今日次数")
             sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})
         # 插入今日数据库记录
         if not sql_table_query("5每日流水", {"日期": today}):
-            self.show_info("新的一天到了, 清零用户管理表今日次数")
+            log_append_content("新的一天到了, 清零用户管理表今日次数")
             sql_table_insert("5每日流水", {"日期": today})
 
     def init_net_auth(self):
@@ -149,8 +138,11 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 初始化实例属性
     def init_instance_field(self):
-        self.latest_ver = sql_table_query_ex("1项目管理", sql="select max(客户端版本) from 1项目管理")[0]["max(客户端版本)"]
-        self.lbe_latest_ver.setText(self.latest_ver)
+        # ---------------------- 状态栏 --------------------
+        self.lbe_1 = QLabel("<提示> : ")
+        self.lbe_info = QLabel("窗口初始化成功")
+        self.lbe_2 = QLabel("最新客户端版本:")
+        self.lbe_latest_ver = QLabel("x.x.x")
         # ---------------------- 界面属性 --------------------
         self.cfg = {
             "更新网址": "",
@@ -169,74 +161,75 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer_min.start(1000 * 60 * 15)
 
     def init_controls(self):
-        def init_all_table():
-            # 所有表头可视化
-            self.tbe_proj.horizontalHeader().setVisible(True)
-            self.tbe_user.horizontalHeader().setVisible(True)
-            self.tbe_card.horizontalHeader().setVisible(True)
-            # 项目管理表
-            id, ver, notice, login, reg, unbind, last_update_time = [i for i in range(7)]
-            self.tbe_proj.setColumnWidth(id, 40)
-            self.tbe_proj.setColumnWidth(ver, 70)
-            self.tbe_proj.setColumnWidth(notice, 260)
-            self.tbe_proj.setColumnWidth(login, 80)
-            self.tbe_proj.setColumnWidth(reg, 80)
-            self.tbe_proj.setColumnWidth(unbind, 80)
-            self.tbe_proj.setColumnWidth(last_update_time, 130)
-            # 用户管理表
-            id, account, pwd, qq, state, heart_time, due_time, last_login_time, last_login_ip, \
-            last_login_place, today_login_count, today_unbind_count, machine_code, reg_time, \
-            opration_system, comment, last_update_time = [i for i in range(17)]
-            self.tbe_user.setColumnWidth(id, 40)
-            self.tbe_user.setColumnWidth(account, 70)
-            self.tbe_user.setColumnWidth(pwd, 40)
-            self.tbe_user.setColumnWidth(qq, 70)
-            self.tbe_user.setColumnWidth(state, 50)
-            self.tbe_user.setColumnWidth(heart_time, 130)
-            self.tbe_user.setColumnWidth(due_time, 130)
-            self.tbe_user.setColumnWidth(last_login_time, 130)
-            self.tbe_user.setColumnWidth(machine_code, 180)
-            self.tbe_user.setColumnWidth(reg_time, 130)
-            self.tbe_user.setColumnWidth(opration_system, 175)
-            self.tbe_user.setColumnWidth(last_update_time, 130)
-            # 卡密管理表
-            id, card_key, type, gen_time, export_time, use_time = [i for i in range(6)]
-            self.tbe_card.setColumnWidth(id, 40)
-            self.tbe_card.setColumnWidth(card_key, 250)
-            self.tbe_card.setColumnWidth(type, 60)
-            self.tbe_card.setColumnWidth(gen_time, 130)
-            self.tbe_card.setColumnWidth(export_time, 130)
-            self.tbe_card.setColumnWidth(use_time, 130)
-            # 自定义数据表
-            id, key, val, en_val = [i for i in range(4)]
-            self.tbe_custom.setColumnWidth(id, 40)
-            self.tbe_custom.setColumnWidth(key, 100)
-            self.tbe_custom.setColumnWidth(val, 120)
-            self.tbe_custom.setColumnWidth(en_val, 200)
-            # 每日流水表
-            id, date = 0, 1
-            self.tbe_everyday.setColumnWidth(id, 40)
-            self.tbe_everyday.setColumnWidth(date, 80)
-            # 显示全部
-            self.show_all_tbe_proj()
-            self.show_all_tbe_user()
-            self.show_all_tbe_card()
-            self.show_all_tbe_custom()
-            self.show_all_tbe_everyday()
-
-        def init_tool_bar():
-            self.tool_bar.addAction(QIcon(":/proj.png"), "项目管理")
-            self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
-            self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
-            self.tool_bar.addAction(QIcon(":/flow.png"), "每日流水")
-            self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
-
-        # 显示第一页
+        # ------------------------------ 堆叠窗口 ------------------------------
         self.stack_widget.setCurrentIndex(0)
-        # 工具栏设置图标
-        init_tool_bar()
-        # 初始化所有表格
-        init_all_table()
+        # ------------------------------ 状态栏 ------------------------------
+        self.latest_ver = sql_table_query_ex("1项目管理", sql="select max(客户端版本) from 1项目管理")[0]["max(客户端版本)"]
+        self.lbe_latest_ver.setText(self.latest_ver)
+        self.status_bar.addWidget(self.lbe_1)
+        self.status_bar.addWidget(self.lbe_info)
+        self.status_bar.addPermanentWidget(self.lbe_2)
+        self.status_bar.addPermanentWidget(self.lbe_latest_ver)
+        # ------------------------------ 工具栏 ------------------------------
+        self.tool_bar.addAction(QIcon(":/proj.png"), "项目管理")
+        self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
+        self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
+        self.tool_bar.addAction(QIcon(":/flow.png"), "每日流水")
+        self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
+        # ------------------------------ 表 格 ------------------------------
+        # 所有表头可视化
+        self.tbe_proj.horizontalHeader().setVisible(True)
+        self.tbe_user.horizontalHeader().setVisible(True)
+        self.tbe_card.horizontalHeader().setVisible(True)
+        # 项目管理表
+        id, ver, notice, login, reg, unbind, last_update_time = [i for i in range(7)]
+        self.tbe_proj.setColumnWidth(id, 40)
+        self.tbe_proj.setColumnWidth(ver, 70)
+        self.tbe_proj.setColumnWidth(notice, 260)
+        self.tbe_proj.setColumnWidth(login, 80)
+        self.tbe_proj.setColumnWidth(reg, 80)
+        self.tbe_proj.setColumnWidth(unbind, 80)
+        self.tbe_proj.setColumnWidth(last_update_time, 130)
+        # 用户管理表
+        id, account, pwd, qq, state, heart_time, due_time, last_login_time, last_login_ip, \
+        last_login_place, today_login_count, today_unbind_count, machine_code, reg_time, \
+        opration_system, comment, last_update_time = [i for i in range(17)]
+        self.tbe_user.setColumnWidth(id, 40)
+        self.tbe_user.setColumnWidth(account, 70)
+        self.tbe_user.setColumnWidth(pwd, 40)
+        self.tbe_user.setColumnWidth(qq, 70)
+        self.tbe_user.setColumnWidth(state, 50)
+        self.tbe_user.setColumnWidth(heart_time, 130)
+        self.tbe_user.setColumnWidth(due_time, 130)
+        self.tbe_user.setColumnWidth(last_login_time, 130)
+        self.tbe_user.setColumnWidth(machine_code, 180)
+        self.tbe_user.setColumnWidth(reg_time, 130)
+        self.tbe_user.setColumnWidth(opration_system, 175)
+        self.tbe_user.setColumnWidth(last_update_time, 130)
+        # 卡密管理表
+        id, card_key, type, gen_time, export_time, use_time = [i for i in range(6)]
+        self.tbe_card.setColumnWidth(id, 40)
+        self.tbe_card.setColumnWidth(card_key, 250)
+        self.tbe_card.setColumnWidth(type, 60)
+        self.tbe_card.setColumnWidth(gen_time, 130)
+        self.tbe_card.setColumnWidth(export_time, 130)
+        self.tbe_card.setColumnWidth(use_time, 130)
+        # 自定义数据表
+        id, key, val, en_val = [i for i in range(4)]
+        self.tbe_custom.setColumnWidth(id, 40)
+        self.tbe_custom.setColumnWidth(key, 100)
+        self.tbe_custom.setColumnWidth(val, 120)
+        self.tbe_custom.setColumnWidth(en_val, 200)
+        # 每日流水表
+        id, date = 0, 1
+        self.tbe_everyday.setColumnWidth(id, 40)
+        self.tbe_everyday.setColumnWidth(date, 80)
+        # 显示全部
+        self.show_all_tbe_proj()
+        self.show_all_tbe_user()
+        self.show_all_tbe_card()
+        self.show_all_tbe_custom()
+        self.show_all_tbe_everyday()
 
     def init_menus(self):
         # 项目管理表
@@ -358,6 +351,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         )
 
     def init_sig_slot(self):
+        # 工具栏
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         # 按钮相关
         self.btn_proj_confirm.clicked.connect(self.on_btn_proj_confirm_clicked)

@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayou
     QStatusBar, QApplication, QStyleFactory, QLineEdit, QPushButton
 from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, Signal
 
-from client.qtres import qrc_wnd_login
+from client import wnd_login_rc
 from client.ui.wnd_login import Ui_WndLogin
 from client.wnd_main_code import WndMain
 from client import lib_, crypto_
@@ -546,7 +546,6 @@ if __name__ == '__main__':
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication()
     app.setStyle(QStyleFactory.create("fusion"))
-    app.setStyleSheet(lib_.qss_style)
     lib_.log_info("初始化界面样式完成")
 
     # 初始化登录窗口
@@ -558,7 +557,7 @@ if __name__ == '__main__':
     # 初始化json文件
     if not os.path.exists(lib_.PATH_JSON_LOGIN):
         lib_.log_info("自动创建登录界面配置文件")
-        lib_.py_to_json(cfg.default_login_dict, lib_.PATH_JSON_LOGIN)
+        lib_.py_to_json(lib_.cfg_login, lib_.PATH_JSON_LOGIN)
     lib_.log_info("初始化配置文件完成")
 
     # 注册组件到系统

@@ -107,7 +107,6 @@ if __name__ == '__main__':
 
     app = QApplication()
     app.setStyle(QStyleFactory.create("fusion"))
-    app.setStyleSheet(lib_.qss_style)
 
     wnd_client_main = WndMain()
     wnd_client_main.show()

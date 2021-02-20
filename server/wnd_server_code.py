@@ -33,23 +33,6 @@ user_comment = {
     "危险": "*d#flI1@34rt7%gh.",
 }
 
-qss_style = """
-    * {
-        font-size: 12px;
-        font-family: "Microsoft YaHei";
-    }
-    QTableView {
-        background: white;
-        selection-color: #000000;
-	    selection-background-color: #c4e1d2;  
-        gridline-color: rgb(213, 213, 213); 
-        alternate-background-color: rgb(243, 246, 249);
-    }
-    QTableView::item:hover	{
-	    background-color: #a1b1c9;
-    }
-"""
-
 # 发送给客户端的数据
 enc_aes_key = crypto_.encrypt_rsa(crypto_.public_key_client, aes_key)
 
@@ -1470,7 +1453,6 @@ if __name__ == '__main__':
     # 应用程序
     app = QApplication()
     app.setStyle(QStyleFactory.create("fusion"))
-    app.setStyleSheet(qss_style)
     # 窗口
     wnd_server = WndServer()
     wnd_server.show()

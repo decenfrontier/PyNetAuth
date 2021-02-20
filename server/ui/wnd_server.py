@@ -18,6 +18,20 @@ class Ui_WndServer(object):
         if not WndServer.objectName():
             WndServer.setObjectName(u"WndServer")
         WndServer.resize(1097, 633)
+        WndServer.setStyleSheet(u"    * {\n"
+"        font-size: 12px;\n"
+"        font-family: \"Microsoft YaHei\";\n"
+"    }\n"
+"    QTableView {\n"
+"        background: white;\n"
+"        selection-color: #000000;\n"
+"	    selection-background-color: #c4e1d2;  \n"
+"        gridline-color: rgb(213, 213, 213); \n"
+"        alternate-background-color: rgb(243, 246, 249);\n"
+"    }\n"
+"    QTableView::item:hover	{\n"
+"	    background-color: #a1b1c9;\n"
+"    }")
         WndServer.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.centralwidget = QWidget(WndServer)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -374,7 +388,7 @@ class Ui_WndServer(object):
         self.tbe_user.setWordWrap(False)
         self.tbe_user.setCornerButtonEnabled(False)
         self.tbe_user.setRowCount(0)
-        self.tbe_user.horizontalHeader().setVisible(True)
+        self.tbe_user.horizontalHeader().setVisible(False)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_user.verticalHeader().setVisible(False)
         self.tbe_user.verticalHeader().setMinimumSectionSize(20)
@@ -565,7 +579,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(1)
+        self.stack_widget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(WndServer)

@@ -18,6 +18,17 @@ class Ui_WndLogin(object):
         if not WndLogin.objectName():
             WndLogin.setObjectName(u"WndLogin")
         WndLogin.resize(456, 293)
+        WndLogin.setStyleSheet(u"    * {\n"
+"        font-size: 12px;\n"
+"        font-family: \"Microsoft YaHei\";\n"
+"    }\n"
+"    QTableView {\n"
+"        selection-color: #000000;\n"
+"	    selection-background-color: #c4e1d2; \n"
+"    }\n"
+"    QTableView::item:hover	{	\n"
+"	    background-color: #a1b1c9;		\n"
+"    }")
         WndLogin.setSizeGripEnabled(False)
         WndLogin.setModal(False)
         self.stack_widget = QStackedWidget(WndLogin)

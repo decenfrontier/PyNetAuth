@@ -16,20 +16,6 @@ from PySide2.QtCore import QThread
 
 from client import crypto_
 
-qss_style = """
-    * {
-        font-size: 12px;
-        font-family: "Microsoft YaHei";
-    }
-    QTableView {
-        selection-color: #000000;
-	    selection-background-color: #c4e1d2; 
-    }
-    QTableView::item:hover	{	
-	    background-color: #a1b1c9;		
-    }
-"""
-
 wnd_login = None
 wnd_main = None
 
@@ -38,10 +24,10 @@ cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 
 PATH_WORK = os.getcwd()
 PATH_SAVE = "C:\\a_b_c"
-PATH_TEMP = f"{PATH_SAVE}\\temp"
-PATH_JSON_LOGIN = f"{PATH_SAVE}\\login.json"
-PATH_JSON_MAIN = f"{PATH_SAVE}\\main.json"
-PATH_JSON_PLAN = f"{PATH_SAVE}\\plan.json"
+PATH_TEMP = "\\".join([PATH_SAVE, "temp"])
+PATH_JSON_LOGIN = "\\".join([PATH_SAVE, "login.json"])
+PATH_JSON_MAIN = "\\".join([PATH_SAVE, "main.json"])
+PATH_JSON_PLAN = "\\".join([PATH_SAVE, "plan.json"])
 
 DLL_DM_NAME = "Qt5Sqd.dll"  # dm.dll
 DLL_REGDM_NAME = "Qt5Xmr.dll"  # DmReg.dll
@@ -197,6 +183,12 @@ def create_com_obj(com_name: str):
     except:
         log_info(f"创建com对象{com_name}失败")
     return obj
+
+# ------------------------- 配置相关 -------------------------
+cfg_login = {  # 登录窗口
+    "账号": "", "密码": "", "提示更新版本": True, "记住账号密码": True,
+}
+
 
 # ------------------------- 网络验证相关 -------------------------
 # 获取机器码(主板序列号+硬盘序列号)

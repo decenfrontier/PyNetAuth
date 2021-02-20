@@ -13,6 +13,19 @@
   <property name="windowTitle">
    <string>Login</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">    * {
+        font-size: 12px;
+        font-family: &quot;Microsoft YaHei&quot;;
+    }
+    QTableView {
+        selection-color: #000000;
+	    selection-background-color: #c4e1d2; 
+    }
+    QTableView::item:hover	{	
+	    background-color: #a1b1c9;		
+    }</string>
+  </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>
   </property>

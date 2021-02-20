@@ -21,7 +21,10 @@ from server import crypto_
 lock = Lock()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_format[:10]
-path_log = f"C:\\net_auth_{today}.log"
+PATH_SAVE = "C:\\MyServer"
+path_log = f"{PATH_SAVE}\\net_auth_{today}.log"
+PATH_JSON_SERVER = "\\".join([PATH_SAVE, "server.json"])
+cfg_server = {"更新网址": "", "发卡网址": "", "注册赠送天数": 0, "免费解绑次数": 0, "解绑扣除小时": 0}
 
 server_ip = "127.0.0.1"
 server_port = 47123
@@ -36,6 +39,7 @@ user_comment = {
 # 发送给客户端的数据
 enc_aes_key = crypto_.encrypt_rsa(crypto_.public_key_client, aes_key)
 
+
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
         super().__init__()
@@ -49,32 +53,32 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_sig_slot()
         self.move(0, 160)
 
+    # 关闭套接字和数据库
     def closeEvent(self, event: QCloseEvent):
-        # 关闭套接字和数据库
         tcp_socket.close()
         cursor.close()
         db.close()
 
     # 读取配置
     def cfg_read(self):
-        cfg_load = json_file_to_dict(self.path_cfg, self.cfg)
-        self.cfg.update(cfg_load)
+        cfg_load = json_file_to_dict(PATH_JSON_SERVER, cfg_server)
+        cfg_server.update(cfg_load)
 
-        self.edt_proj_url_update.setText(self.cfg["更新网址"])
-        self.edt_proj_url_card.setText(self.cfg["发卡网址"])
-        self.edt_proj_unbind_sub_hour.setText(str(self.cfg["解绑扣除小时"]))
-        self.edt_proj_reg_gift_day.setText(str(self.cfg["注册赠送天数"]))
-        self.edt_proj_free_unbind_count.setText(str(self.cfg["免费解绑次数"]))
+        self.edt_proj_url_update.setText(cfg_server["更新网址"])
+        self.edt_proj_url_card.setText(cfg_server["发卡网址"])
+        self.edt_proj_unbind_sub_hour.setText(str(cfg_server["解绑扣除小时"]))
+        self.edt_proj_reg_gift_day.setText(str(cfg_server["注册赠送天数"]))
+        self.edt_proj_free_unbind_count.setText(str(cfg_server["免费解绑次数"]))
 
     # 写入配置
     def cfg_write(self):
-        self.cfg["发卡网址"] = self.edt_proj_url_card.text()
-        self.cfg["更新网址"] = self.edt_proj_url_update.text()
-        self.cfg["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
-        self.cfg["注册赠送天数"] = int(self.edt_proj_reg_gift_day.text())
-        self.cfg["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
+        cfg_server["发卡网址"] = self.edt_proj_url_card.text()
+        cfg_server["更新网址"] = self.edt_proj_url_update.text()
+        cfg_server["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
+        cfg_server["注册赠送天数"] = int(self.edt_proj_reg_gift_day.text())
+        cfg_server["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
 
-        dict_to_json_file(self.cfg, self.path_cfg)
+        dict_to_json_file(cfg_server, PATH_JSON_SERVER)
 
 
     def init_mysql(self):
@@ -106,8 +110,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             log_append_content("新的一天到了, 清零用户管理表今日次数")
             sql_table_insert("5每日流水", {"日期": today})
 
+    # 初始化tcp连接
     def init_net_auth(self):
-        # 初始化tcp连接
         try:
             global tcp_socket
             tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -126,15 +130,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.lbe_info = QLabel("窗口初始化成功")
         self.lbe_2 = QLabel("最新客户端版本:")
         self.lbe_latest_ver = QLabel("x.x.x")
-        # ---------------------- 界面属性 --------------------
-        self.cfg = {
-            "更新网址": "",
-            "发卡网址": "",
-            "注册赠送天数": 0,
-            "免费解绑次数": 0,
-            "解绑扣除小时": 0,
-        }
-        self.path_cfg = "C:\\cfg_wnd_server.json"
         # ---------------------- 定时器 ----------------------
         self.timer_sec = QTimer()
         self.timer_sec.timeout.connect(self.on_timer_sec_timeout)
@@ -812,7 +807,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         if cur_day != today:
             today = cur_day
             # 1.1 更新日志
-            path_log = f"C:\\net_auth_{today}.log"
+            path_log = f"{PATH_SAVE}\\net_auth_{today}.log"
             self.show_info("新的一天到了, 清零用户管理表今日次数, 新增每日流水表今日记录")
             # 1.2 更新每日次数
             sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})

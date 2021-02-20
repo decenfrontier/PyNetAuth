@@ -16,7 +16,7 @@ import socket
 
 from server.qtres import qrc_wnd_server
 from server.ui.wnd_server import Ui_WndServer
-from server import crypto_, lib_
+from server import crypto_
 
 lock = Lock()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")

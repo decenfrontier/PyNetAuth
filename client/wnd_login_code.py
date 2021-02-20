@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayou
     QStatusBar, QApplication, QStyleFactory, QLineEdit, QPushButton
 from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, Signal
 
-from client import wnd_login_rc
+import client.wnd_login_rc
 from client.ui.wnd_login import Ui_WndLogin
 from client.wnd_main_code import WndMain
 from client import lib_, crypto_
@@ -40,22 +40,22 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     # 读取配置
     def cfg_read(self):
-        cfg_load = lib_.json_file_to_dict(self.path_cfg, self.cfg)
-        self.cfg.update(cfg_load)
+        cfg_load = lib_.json_file_to_dict(lib_.PATH_JSON_LOGIN, lib_.cfg_login)
+        lib_.cfg_login.update(cfg_load)
 
-        self.edt_login_account.setText(self.cfg["账号"])
-        self.edt_login_pwd.setText(self.cfg["密码"])
-        self.chk_login_remember.setChecked(self.cfg["记住账号密码"])
-        self.chk_login_update.setChecked(self.cfg["提示更新版本"])
+        self.edt_login_account.setText(lib_.cfg_login["账号"])
+        self.edt_login_pwd.setText(lib_.cfg_login["密码"])
+        self.chk_login_remember.setChecked(lib_.cfg_login["记住账号密码"])
+        self.chk_login_update.setChecked(lib_.cfg_login["提示更新版本"])
 
     # 写入配置
     def cfg_write(self):
-        self.cfg["账号"] = self.edt_login_account.text()
-        self.cfg["密码"] = self.edt_login_pwd.text()
-        self.cfg["记住账号密码"] = self.chk_login_remember.isChecked()
-        self.cfg["提示更新版本"] = self.chk_login_update.isChecked()
+        lib_.cfg_login["账号"] = self.edt_login_account.text()
+        lib_.cfg_login["密码"] = self.edt_login_pwd.text()
+        lib_.cfg_login["记住账号密码"] = self.chk_login_remember.isChecked()
+        lib_.cfg_login["提示更新版本"] = self.chk_login_update.isChecked()
 
-        lib_.dict_to_json_file(self.cfg, self.path_cfg)
+        lib_.dict_to_json_file(lib_.cfg_login, lib_.PATH_JSON_LOGIN)
 
     # 初始化实例属性
     def init_instance_field(self):
@@ -71,14 +71,6 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.path_captcha = "\\".join([lib_.PATH_TEMP, "captcha.bmp"])  # 验证码图片保存路径
         self.captcha_ret = 999  # 验证码图片答案
         self.captcha_btn_text = ""  # 记录弹出验证窗口时点的是哪一个按钮
-        # ---------------------- 界面配置 --------------------
-        self.cfg = {
-            "账号": "",
-            "密码": "",
-            "记住账号密码": True,
-            "提示更新版本": True,
-        }
-        self.path_cfg = lib_.PATH_JSON_LOGIN
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
@@ -211,7 +203,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.lbe_captcha_pic.setPixmap(QPixmap(self.path_captcha))
 
     def popup_update_msg(self):
-        if not self.cfg["提示更新版本"]:
+        if not lib_.cfg_login["提示更新版本"]:
             return
         # 弹出更新网址
         if lib_.client_ver != lib_.latest_ver:
@@ -301,8 +293,8 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     def send_recv_login(self):
         # ----------------- 发送数据给服务器 -----------------
-        login_account = self.cfg["账号"]
-        login_pwd = self.cfg["密码"]
+        login_account = lib_.cfg_login["账号"]
+        login_pwd = lib_.cfg_login["密码"]
         login_pwd = crypto_.get_encrypted_str(login_pwd.encode())
         login_system = lib_.get_operation_system()
         # 把客户端信息整理成字典
@@ -445,8 +437,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 把控件信息保存到配置文件
         self.cfg_write()
         # 读取登录账号密码, 判断是否符合要求
-        login_account = self.cfg["账号"]
-        login_pwd = self.cfg["密码"]
+        login_account = lib_.cfg_login["账号"]
+        login_pwd = lib_.cfg_login["密码"]
         bool_list = [
             len(login_account) in range(6, 13),
             len(login_pwd) in range(6, 13),
@@ -456,7 +448,6 @@ class WndLogin(QDialog, Ui_WndLogin):
             return
         # 弹出验证窗口, 输对验证码才发送给服务端
         self.popup_captcha_wnd()
-
 
     def on_btn_reg_clicked(self):
         self.captcha_btn_text = "注册"

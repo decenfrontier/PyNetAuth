@@ -11,6 +11,7 @@ import pythoncom
 import socket
 import ctypes
 
+from comtypes.client import CreateObject
 from win32com.client import Dispatch
 from PySide2.QtCore import QThread
 

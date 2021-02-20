@@ -57,7 +57,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 读取配置
     def cfg_read(self):
-        cfg_load = lib_.json_file_to_dict(self.path_cfg, self.cfg)
+        cfg_load = json_file_to_dict(self.path_cfg, self.cfg)
         self.cfg.update(cfg_load)
 
         self.edt_proj_url_update.setText(self.cfg["更新网址"])
@@ -74,7 +74,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.cfg["注册赠送天数"] = int(self.edt_proj_reg_gift_day.text())
         self.cfg["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
 
-        lib_.dict_to_json_file(self.cfg, self.path_cfg)
+        dict_to_json_file(self.cfg, self.path_cfg)
 
 
     def init_mysql(self):
@@ -1444,6 +1444,73 @@ def get_ip_location(ip: str) -> str:
     location = f"{country}-{region}-{city}-{isp}"
     print("location:", location)
     return location
+
+
+# 路径是否存在
+def path_exist(path: str):
+    if os.path.exists(path):
+        return True
+    return False
+
+# 创建目录, 不存在才创建
+def dir_create(dir: str):
+
+    if not path_exist(dir):
+        os.makedirs(dir)
+
+# 获取目录中的文件
+def dir_get_files(dir: str):
+    ret = ""
+    for root, dirs, files in os.walk(dir):
+        ret = files
+        break
+    return ret
+
+# 创建文件
+def file_create(path: str, content=""):
+    with open(path, "a") as f:
+        f.write(content)
+
+# 清空文件内容, 若没有文件会自动创建文件
+def file_clear_content(path: str):
+    with open(path, "w+") as f:  # 打开文件并将光标置于开头
+        f.truncate()  # 截断文件光标后的内容
+
+# 读取文件内容
+def file_read_content(path: str) -> str:
+    if not path_exist(path):
+        file_create(path)
+    content = ""
+    with open(path, "r") as f:
+        content = f.read()
+    return content
+
+# 添加文件内容, 若没有文件会自动创建文件
+def file_append_content(path: str, content: str):
+    with open(path, "a") as f:
+        f.write(content)
+
+# json文件 -> py字典
+def json_file_to_dict(path_cfg: str, default_cfg: dict):
+    try:
+        # 若文件不存在, 则用默认的配置字典先创建json文件
+        if not path_exist(path_cfg):
+            with open(path_cfg, "w", encoding="utf-8") as f:
+                json.dump(default_cfg, f, ensure_ascii=False)
+        with open(path_cfg, "r", encoding="utf-8") as f:
+            cfg_load = json.load(f)
+    except:
+        print("json decode error!")
+        cfg_load = {}
+    return cfg_load
+
+# py对象 -> json文件
+def dict_to_json_file(py_dict: dict, path_cfg: str):
+    try:
+        with open(path_cfg, "w", encoding="utf-8") as f:
+            json.dump(py_dict, f, ensure_ascii=False, sort_keys=True)
+    except:
+        print("json encode error!")
 
 
 if __name__ == '__main__':

@@ -1008,6 +1008,15 @@
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
           </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderMinimumSectionSize">
+           <number>20</number>
+          </attribute>
+          <attribute name="verticalHeaderDefaultSectionSize">
+           <number>20</number>
+          </attribute>
           <column>
            <property name="text">
             <string>ID</string>

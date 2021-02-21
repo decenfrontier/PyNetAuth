@@ -236,6 +236,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_all_tbe_card()
         self.show_all_tbe_custom()
         self.show_all_tbe_everyday()
+        self.show_all_tbe_ip()
 
     def init_menus(self):
         # 项目管理表
@@ -728,8 +729,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.refresh_tbe_everyday(query_everyday_list)
 
     def show_all_tbe_ip(self):
-        print("111")
-        ...
+        # 按今日连接次数从大到小排序显示
+        query_ip_list = sql_table_query_ex(sql="select * from 6ip管理 order by 今日连接次数 desc;")
+        print(query_ip_list)
+        self.refresh_tbe_ip(query_ip_list)
 
     def refresh_tbe_proj(self, query_proj_list):
         self.tbe_proj.setRowCount(len(query_proj_list))
@@ -810,6 +813,17 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_everyday.setItem(row, 7, QTableWidgetItem(str(query_everyday["活跃用户数"])))
             self.tbe_everyday.setItem(row, 8, QTableWidgetItem(str(query_everyday["在线用户数"])))
             self.tbe_everyday.setItem(row, 9, QTableWidgetItem(query_everyday["最后更新时间"]))
+
+    def refresh_tbe_ip(self, query_ip_list: list):
+        self.tbe_ip.setRowCount(len(query_ip_list))
+        for row, query_ip in enumerate(query_ip_list):
+            query_ip["最后更新时间"] = "" if query_ip["最后更新时间"] is None else str(query_ip["最后更新时间"])
+            self.tbe_ip.setItem(row, 0, QTableWidgetItem(str(query_ip["ID"])))
+            self.tbe_ip.setItem(row, 1, QTableWidgetItem(query_ip["IP地址"]))
+            self.tbe_ip.setItem(row, 2, QTableWidgetItem(query_ip["归属地"]))
+            self.tbe_ip.setItem(row, 3, QTableWidgetItem(query_ip["今日连接时间"]))
+            self.tbe_ip.setItem(row, 4, QTableWidgetItem(str(query_ip["今日连接次数"])))
+            self.tbe_ip.setItem(row, 5, QTableWidgetItem(query_ip["最后更新时间"]))
 
     def refresh_lst_log(self):
         self.lst_log.clear()

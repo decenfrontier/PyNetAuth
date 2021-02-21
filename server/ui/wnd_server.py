@@ -574,6 +574,9 @@ class Ui_WndServer(object):
         self.tbe_ip.setHorizontalHeaderItem(5, __qtablewidgetitem49)
         self.tbe_ip.setObjectName(u"tbe_ip")
         self.tbe_ip.horizontalHeader().setStretchLastSection(True)
+        self.tbe_ip.verticalHeader().setVisible(False)
+        self.tbe_ip.verticalHeader().setMinimumSectionSize(20)
+        self.tbe_ip.verticalHeader().setDefaultSectionSize(20)
 
         self.gridLayout_5.addWidget(self.tbe_ip, 0, 0, 2, 1)
 

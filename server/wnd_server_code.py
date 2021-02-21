@@ -491,9 +491,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.edt_custom_eval.setText(self.tbe_custom.item(row, 3).text())
 
     def on_lst_log_itemDoubleClicked(self, item: QListWidgetItem):
+        def thd_cmd(path):
+            os.system(f"notepad {path}")
         file = item.text()
         path_log_file = "\\".join([PATH_LOG, file])
-        os.system(f"notepad {path_log_file}")
+        Thread(target=thd_cmd, args=(path_log_file,), daemon=True).start()
 
     def on_action_proj_del_sel_triggered(self):
         item_list = self.tbe_proj.selectedItems()

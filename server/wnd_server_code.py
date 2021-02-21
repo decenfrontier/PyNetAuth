@@ -110,10 +110,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             global db, cursor
             # 创建数据库对象
             db = pymysql.connect(
-                host="localhost",
+                host="119.29.167.100",
                 port=3306,
                 user="root",
-                password="mysql",
+                password="659457",
                 database="net_auth"
             )
             # 创建游标对象, 指定返回一个字典列表, 获取的每条数据的类型为字典(默认是元组)

@@ -556,24 +556,50 @@ class Ui_WndServer(object):
         self.page_log.setMaximumSize(QSize(16777215, 16777215))
         self.gridLayout_5 = QGridLayout(self.page_log)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.verticalSpacer = QSpacerItem(20, 90, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.tbe_ip = QTableWidget(self.page_log)
+        if (self.tbe_ip.columnCount() < 6):
+            self.tbe_ip.setColumnCount(6)
+        __qtablewidgetitem44 = QTableWidgetItem()
+        self.tbe_ip.setHorizontalHeaderItem(0, __qtablewidgetitem44)
+        __qtablewidgetitem45 = QTableWidgetItem()
+        self.tbe_ip.setHorizontalHeaderItem(1, __qtablewidgetitem45)
+        __qtablewidgetitem46 = QTableWidgetItem()
+        self.tbe_ip.setHorizontalHeaderItem(2, __qtablewidgetitem46)
+        __qtablewidgetitem47 = QTableWidgetItem()
+        self.tbe_ip.setHorizontalHeaderItem(3, __qtablewidgetitem47)
+        __qtablewidgetitem48 = QTableWidgetItem()
+        self.tbe_ip.setHorizontalHeaderItem(4, __qtablewidgetitem48)
+        __qtablewidgetitem49 = QTableWidgetItem()
+        self.tbe_ip.setHorizontalHeaderItem(5, __qtablewidgetitem49)
+        self.tbe_ip.setObjectName(u"tbe_ip")
+        self.tbe_ip.horizontalHeader().setStretchLastSection(True)
 
-        self.gridLayout_5.addItem(self.verticalSpacer, 0, 0, 1, 1)
+        self.gridLayout_5.addWidget(self.tbe_ip, 0, 0, 2, 1)
+
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setSpacing(2)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.label_14 = QLabel(self.page_log)
+        self.label_14.setObjectName(u"label_14")
+        self.label_14.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout.addWidget(self.label_14)
 
         self.lst_log = QListWidget(self.page_log)
         self.lst_log.setObjectName(u"lst_log")
         self.lst_log.setMinimumSize(QSize(0, 400))
 
-        self.gridLayout_5.addWidget(self.lst_log, 1, 0, 1, 1)
+        self.verticalLayout.addWidget(self.lst_log)
 
-        self.horizontalSpacer_3 = QSpacerItem(845, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.gridLayout_5.addItem(self.horizontalSpacer_3, 1, 1, 1, 1)
+        self.gridLayout_5.addLayout(self.verticalLayout, 0, 1, 1, 1)
 
         self.verticalSpacer_2 = QSpacerItem(20, 91, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        self.gridLayout_5.addItem(self.verticalSpacer_2, 2, 0, 1, 1)
+        self.gridLayout_5.addItem(self.verticalSpacer_2, 1, 1, 1, 1)
 
+        self.gridLayout_5.setColumnStretch(0, 4)
+        self.gridLayout_5.setColumnStretch(1, 1)
         self.stack_widget.addWidget(self.page_log)
 
         self.gridLayout.addWidget(self.stack_widget, 0, 0, 1, 1)
@@ -739,6 +765,19 @@ class Ui_WndServer(object):
         ___qtablewidgetitem42.setText(QCoreApplication.translate("WndServer", u"\u5728\u7ebf\u7528\u6237\u6570", None));
         ___qtablewidgetitem43 = self.tbe_everyday.horizontalHeaderItem(9)
         ___qtablewidgetitem43.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
+        ___qtablewidgetitem44 = self.tbe_ip.horizontalHeaderItem(0)
+        ___qtablewidgetitem44.setText(QCoreApplication.translate("WndServer", u"ID", None));
+        ___qtablewidgetitem45 = self.tbe_ip.horizontalHeaderItem(1)
+        ___qtablewidgetitem45.setText(QCoreApplication.translate("WndServer", u"IP\u5730\u5740", None));
+        ___qtablewidgetitem46 = self.tbe_ip.horizontalHeaderItem(2)
+        ___qtablewidgetitem46.setText(QCoreApplication.translate("WndServer", u"\u5f52\u5c5e\u5730", None));
+        ___qtablewidgetitem47 = self.tbe_ip.horizontalHeaderItem(3)
+        ___qtablewidgetitem47.setText(QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u8fde\u63a5\u65f6\u95f4", None));
+        ___qtablewidgetitem48 = self.tbe_ip.horizontalHeaderItem(4)
+        ___qtablewidgetitem48.setText(QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u8fde\u63a5\u6b21\u6570", None));
+        ___qtablewidgetitem49 = self.tbe_ip.horizontalHeaderItem(5)
+        ___qtablewidgetitem49.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
+        self.label_14.setText(QCoreApplication.translate("WndServer", u"\u65e5\u5fd7\u5217\u8868", None))
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))
     # retranslateUi
 

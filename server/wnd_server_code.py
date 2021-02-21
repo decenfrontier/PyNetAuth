@@ -226,6 +226,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         id, date = 0, 1
         self.tbe_everyday.setColumnWidth(id, 40)
         self.tbe_everyday.setColumnWidth(date, 80)
+        # IP管理表
+        id, today_connect_time = 0, 3
+        self.tbe_ip.setColumnWidth(id, 40)
+        self.tbe_ip.setColumnWidth(today_connect_time, 320)
         # 显示全部
         self.show_all_tbe_proj()
         self.show_all_tbe_user()

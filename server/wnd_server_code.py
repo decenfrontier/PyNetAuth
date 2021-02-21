@@ -900,11 +900,13 @@ class WndServer(QMainWindow, Ui_WndServer):
                 client_socket, client_addr = tcp_socket.accept()
             except:
                 break
-            log.info(f"新接收客户端{client_addr}, 已分配客服套接字")
-            Thread(target=self.thd_serve_client, args=(client_socket, client_addr), daemon=True).start()
+            ip = client_addr[0]
+            log.info(f"新接收客户端{ip}, 已分配客服套接字")
+            sql_table_update_ex(sql=f"update 6ip管理 set 今日连接次数=今日连接次数+1 where IP地址='{ip}'")
+            Thread(target=self.thd_serve_client, args=(client_socket, ip), daemon=True).start()
         log.info("服务端已关闭, 停止接受客户端请求...")
 
-    def thd_serve_client(self, client_socket: socket.socket, client_addr: tuple):
+    def thd_serve_client(self, client_socket: socket.socket, ip: str):
         while True:
             log.info("等待客户端发出消息中...")
             try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
@@ -947,7 +949,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 log.info(f"消息类型不存在: {msg_type}")
             else:
                 func(client_socket, client_content_dict)
-        log.info(f"客户端{client_addr}已断开连接, 服务结束")
+        log.info(f"客户端{ip}已断开连接, 服务结束")
         client_socket.close()
 
 
@@ -986,8 +988,8 @@ def deal_proj(client_socket: socket.socket, client_content_dict: dict):
             "允许登录": query_proj["允许登录"],
             "允许注册": query_proj["允许注册"],
             "允许解绑": query_proj["允许解绑"],
-            "更新网址": wnd_server.cfg["更新网址"],
-            "发卡网址": wnd_server.cfg["发卡网址"],
+            "更新网址": cfg_server["更新网址"],
+            "发卡网址": cfg_server["发卡网址"],
         }
     else:
         ret = False

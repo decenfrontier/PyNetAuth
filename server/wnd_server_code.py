@@ -58,10 +58,6 @@ class Log():
         self.logger.addHandler(self.handler_info)
         self.logger.addHandler(self.handler_warn)
 
-    def __del__(self):
-        self.logger.removeHandler(self.handler_info)
-        self.logger.removeHandler(self.handler_warn)
-
     def info(self, msg: str):
         self.logger.info(msg)
 
@@ -809,7 +805,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 ip_location_list.append((ip, location))
 
         # 获取用户表有但归属表没有的ip列表
-        query_ip_list = sql_table_query_ex(sql="select distinct A.上次登录IP from 2用户管理 A left join ip归属地 B "
+        query_ip_list = sql_table_query_ex(sql="select distinct A.上次登录IP from 2用户管理 A left join 6ip管理 B "
                                                "on A.上次登录IP=B.IP地址 where B.IP地址 is null")
         query_ip_list = [ip_dict["上次登录IP"] for ip_dict in query_ip_list]
         if query_ip_list:
@@ -827,9 +823,9 @@ class WndServer(QMainWindow, Ui_WndServer):
                 # 把获取到的归属地信息插入到IP归属表
                 ip_locations = str(ip_location_list).strip("[|]")
                 print(ip_locations)
-                sql_table_insert_ex(sql=f"insert ip归属地 values {ip_locations}")
+                sql_table_insert_ex(sql=f"insert 6ip管理 values {ip_locations}")
         # 更新用户表的上次登录地
-        sql_table_update_ex(sql="update 2用户管理 A inner join ip归属地 B on A.上次登录IP=B.IP地址 "
+        sql_table_update_ex(sql="update 2用户管理 A inner join 6ip管理 B on A.上次登录IP=B.IP地址 "
                                 "set A.上次登录地=B.归属地")
 
     def on_timer_sec_timeout(self):
@@ -929,7 +925,7 @@ def deal_init(client_socket: socket.socket, client_content_dict: dict):
         ret = False
         detail = "???"
         machine_code = client_content_dict["机器码"]
-        log.info(f"[初始Warn] IP:{ip}, MC:{machine_code}, 全局变量被修改")
+        log.warn(f"[初始Warn] IP:{ip}, MC:{machine_code}, 全局变量被修改")
     else:  # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
         ret = True
         detail = enc_aes_key
@@ -1501,7 +1497,6 @@ def dict_to_json_file(py_dict: dict, path_cfg: str):
 
 
 if __name__ == '__main__':
-    dir_create("C:\\a\\b\\c")
     log = Log()
     log.info("------------------------------------------------------------------")
     # 界面随DPI自动缩放

@@ -3,7 +3,6 @@ import socket
 import json
 import base64
 
-
 from PySide2.QtGui import QCloseEvent
 from PySide2.QtWidgets import QMainWindow, QLabel
 from PySide2.QtCore import QTimer, Signal

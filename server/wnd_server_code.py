@@ -6,6 +6,8 @@ import urllib.request, ssl
 from threading import Thread, Lock
 from multiprocessing import Pool
 from random import randint
+import logging
+from logging.handlers import TimedRotatingFileHandler
 
 from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor, QCursor
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
@@ -22,6 +24,8 @@ lock = Lock()
 cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_format[:10]
 PATH_SAVE = "C:\\MyServer"
+PATH_LOG_INFO = f"{PATH_SAVE}\\info"
+PATH_LOG_WARN = f"{PATH_SAVE}\\warn"
 path_log = f"{PATH_SAVE}\\net_auth_{today}.log"
 PATH_JSON_SERVER = "\\".join([PATH_SAVE, "server.json"])
 cfg_server = {"更新网址": "", "发卡网址": "", "注册赠送天数": 0, "免费解绑次数": 0, "解绑扣除小时": 0}
@@ -30,15 +34,38 @@ server_ip = "127.0.0.1"
 server_port = 47123
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto_.AesEncryption(aes_key)
+enc_aes_key = crypto_.encrypt_rsa(crypto_.public_key_client, aes_key)
 
 user_comment = {
     "正常": "*d#fl1I@34rt7%gh.",
     "危险": "*d#flI1@34rt7%gh.",
 }
 
-# 发送给客户端的数据
-enc_aes_key = crypto_.encrypt_rsa(crypto_.public_key_client, aes_key)
+class Log():
+    def __init__(self):
+        logging.basicConfig(level=logging.INFO)
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.INFO)
+        # 创建handler对象
+        self.handler_info = TimedRotatingFileHandler(filename=PATH_LOG_INFO, when="midnight", interval=1, backupCount=7)
+        self.handler_info.setFormatter(logging.Formatter("%(asctime)s  %(message)s"))
+        self.handler_info.setLevel(logging.INFO)
+        self.handler_warn = TimedRotatingFileHandler(filename=PATH_LOG_WARN, when="midnight", interval=1, backupCount=7)
+        self.handler_warn.setFormatter(logging.Formatter("%(asctime)s  %(message)s"))
+        self.handler_warn.setLevel(logging.WARNING)
+        # 添加handler
+        self.logger.addHandler(self.handler_info)
+        self.logger.addHandler(self.handler_warn)
 
+    def __del__(self):
+        self.logger.removeHandler(self.handler_info)
+        self.logger.removeHandler(self.handler_warn)
+
+    def info(self, msg: str):
+        self.logger.info(msg)
+
+    def warn(self, msg: str):
+        self.logger.warning(msg)
 
 class WndServer(QMainWindow, Ui_WndServer):
     def __init__(self):
@@ -94,20 +121,20 @@ class WndServer(QMainWindow, Ui_WndServer):
             )
             # 创建游标对象, 指定返回一个字典列表, 获取的每条数据的类型为字典(默认是元组)
             cursor = db.cursor(pymysql.cursors.DictCursor)
-            log_append_content("连接数据库成功")
+            log.info("连接数据库成功")
         except Exception as e:
-            log_append_content(f"mysql连接失败: {e}")
+            log.info(f"mysql连接失败: {e}")
             QMessageBox.critical(self, "错误", f"mysql连接失败: {e}")
             raise e
         # 清零用户管理表今日次数
         lastest_time = sql_table_query_ex(sql="select max(最后更新时间) from 2用户管理")[0]["max(最后更新时间)"]
         lastest_day = str(lastest_time)[:10]
         if lastest_day != today:
-            log_append_content("新的一天到了, 清零用户管理表今日次数")
+            log.info("新的一天到了, 清零用户管理表今日次数")
             sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})
         # 插入今日数据库记录
         if not sql_table_query("5每日流水", {"日期": today}):
-            log_append_content("新的一天到了, 清零用户管理表今日次数")
+            log.info("新的一天到了, 清零用户管理表今日次数")
             sql_table_insert("5每日流水", {"日期": today})
 
     # 初始化tcp连接
@@ -119,7 +146,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
             Thread(target=self.thd_accept_client, daemon=True).start()
         except Exception as e:
-            log_append_content(f"tcp连接失败: {e}")
+            log.info(f"tcp连接失败: {e}")
             QMessageBox.critical(self, "错误", f"tcp连接失败: {e}")
             raise e
 
@@ -343,7 +370,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def show_info(self, text):
         self.lbe_info.setText(text)
-        log_append_content(text)
+        log.info(text)
 
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
@@ -825,20 +852,20 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info("----------------------------- 每15分钟一轮的检测结束 -----------------------------")
 
     def thd_accept_client(self):
-        log_append_content("服务端已开启, 准备接受客户请求...")
+        log.info("服务端已开启, 准备接受客户请求...")
         while True:
-            log_append_content("等待接收新客户端...")
+            log.info("等待接收新客户端...")
             try:
                 client_socket, client_addr = tcp_socket.accept()
             except:
                 break
-            log_append_content(f"新接收客户端{client_addr}, 已分配客服套接字")
+            log.info(f"新接收客户端{client_addr}, 已分配客服套接字")
             Thread(target=self.thd_serve_client, args=(client_socket, client_addr), daemon=True).start()
-        log_append_content("服务端已关闭, 停止接受客户端请求...")
+        log.info("服务端已关闭, 停止接受客户端请求...")
 
     def thd_serve_client(self, client_socket: socket.socket, client_addr: tuple):
         while True:
-            log_append_content("等待客户端发出消息中...")
+            log.info("等待客户端发出消息中...")
             try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
                 recv_bytes = client_socket.recv(4096)
             except:
@@ -847,7 +874,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 break
             # base85解码
             json_str = base64.b85decode(recv_bytes).decode()
-            log_append_content(f"收到客户端{client_socket.getpeername()}的消息: {json_str}")
+            log.info(f"收到客户端{client_socket.getpeername()}的消息: {json_str}")
             # json字符串 转 py字典
             client_info_dict = json.loads(json_str)
             msg_type = client_info_dict["消息类型"]
@@ -876,23 +903,23 @@ class WndServer(QMainWindow, Ui_WndServer):
             }
             func = msg_func_dict.get(msg_type)
             if func is None:
-                log_append_content(f"消息类型不存在: {msg_type}")
+                log.info(f"消息类型不存在: {msg_type}")
             else:
                 func(client_socket, client_content_dict)
-        log_append_content(f"客户端{client_addr}已断开连接, 服务结束")
+        log.info(f"客户端{client_addr}已断开连接, 服务结束")
         client_socket.close()
 
 
 # 处理_初始
 def deal_init(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
-    log_append_content(f"[初始] 正在处理IP: {ip}")
+    log.info(f"[初始] 正在处理IP: {ip}")
 
     if client_content_dict["备注"] == user_comment["危险"]:  # 客户端数据被修改, 记录到日志
         ret = False
         detail = "???"
         machine_code = client_content_dict["机器码"]
-        log_append_content(f"[初始Warn] IP:{ip}, MC:{machine_code}, 全局变量被修改")
+        log.info(f"[初始Warn] IP:{ip}, MC:{machine_code}, 全局变量被修改")
     else:  # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
         ret = True
         detail = enc_aes_key
@@ -905,7 +932,7 @@ def deal_init(client_socket: socket.socket, client_content_dict: dict):
 # 处理_项目
 def deal_proj(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
-    log_append_content(f"[项目] 正在处理IP: {ip}")
+    log.info(f"[项目] 正在处理IP: {ip}")
 
     client_ver = client_content_dict["版本号"]
     query_proj_list = sql_table_query("1项目管理", {"客户端版本": client_ver})
@@ -933,7 +960,7 @@ def deal_proj(client_socket: socket.socket, client_content_dict: dict):
 # 处理_自定义数据1
 def deal_custom1(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
-    log_append_content(f"[自定义数据] 正在处理IP: {ip}")
+    log.info(f"[自定义数据] 正在处理IP: {ip}")
     # 把第一批自定义数据整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "烫烫烫",
                         "内容": {"结果": True, "详情": wnd_server.custom1}}
@@ -943,7 +970,7 @@ def deal_custom1(client_socket: socket.socket, client_content_dict: dict):
 # 处理_自定义数据2
 def deal_custom2(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
-    log_append_content(f"[自定义数据] 正在处理IP: {ip}")
+    log.info(f"[自定义数据] 正在处理IP: {ip}")
     # 把第二批自定义数据整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "屯屯屯",
                         "内容": {"结果": True, "详情": wnd_server.custom2}}
@@ -953,7 +980,7 @@ def deal_custom2(client_socket: socket.socket, client_content_dict: dict):
 # 处理_注册
 def deal_reg(client_socket: socket.socket, client_content_dict: dict):
     account = client_content_dict["账号"]
-    log_append_content(f"[注册] 正在处理账号: {account}")
+    log.info(f"[注册] 正在处理账号: {account}")
     ret = False
 
     if not sql_table_query("2用户管理", {"账号": account}):  # 不存在则插入记录
@@ -971,7 +998,7 @@ def deal_reg(client_socket: socket.socket, client_content_dict: dict):
     else:
         detail = "注册失败, 此账号已被注册!"
     # 记录到日志
-    log_append_content(f"[注册] 账号{account} {detail}")
+    log.info(f"[注册] 账号{account} {detail}")
     # 把注册结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "注册",
                         "内容": {"结果": ret, "详情": detail}}
@@ -982,7 +1009,7 @@ def deal_reg(client_socket: socket.socket, client_content_dict: dict):
 def deal_login(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()[0]
     account = client_content_dict["账号"]
-    log_append_content(f"[登录] 正在处理账号: {account}")
+    log.info(f"[登录] 正在处理账号: {account}")
     pwd = client_content_dict["密码"]
     machine_code = client_content_dict["机器码"]
     ret, query_user = False, {}
@@ -1011,7 +1038,7 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
     else:
         detail = "登录失败, 此账号不存在"
     # 记录到日志
-    log_append_content(f"[登录] 账号{account} {detail}")
+    log.info(f"[登录] 账号{account} {detail}")
     # 把登录结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "登录",
                         "内容": {"结果": ret, "详情": detail, "账号": account}}
@@ -1034,7 +1061,7 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
 # 处理_充值
 def deal_pay(client_socket: socket.socket, client_content_dict: dict):
     account = client_content_dict["账号"]
-    log_append_content(f"[充值] 正在处理账号: {account}")
+    log.info(f"[充值] 正在处理账号: {account}")
     card_key = client_content_dict["卡号"]
     ret = False
 
@@ -1071,7 +1098,7 @@ def deal_pay(client_socket: socket.socket, client_content_dict: dict):
     else:
         detail = "充值失败, 此账号不存在"
     # 记录到日志
-    log_append_content(f"[充值] 账号{account} {detail}")
+    log.info(f"[充值] 账号{account} {detail}")
     # 把充值结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "充值",
                         "内容": {"结果": ret, "详情": detail}}
@@ -1081,7 +1108,7 @@ def deal_pay(client_socket: socket.socket, client_content_dict: dict):
 # 处理_改密
 def deal_modify(client_socket: socket.socket, client_content_dict: dict):
     account = client_content_dict["账号"]
-    log_append_content(f"[改密] 正在处理账号: {account}")
+    log.info(f"[改密] 正在处理账号: {account}")
     qq = client_content_dict["QQ"]
     new_pwd = client_content_dict["密码"]
     ret = False
@@ -1099,7 +1126,7 @@ def deal_modify(client_socket: socket.socket, client_content_dict: dict):
     else:
         detail = "改密失败, 此账号不存在"
     # 记录到日志
-    log_append_content(f"[改密] 账号{account} {detail}")
+    log.info(f"[改密] 账号{account} {detail}")
     # 把改密结果整理成py字典, 并发送给客户端
     server_info_dict = {"消息类型": "改密",
                         "内容": {"结果": ret, "详情": detail}}
@@ -1109,7 +1136,7 @@ def deal_modify(client_socket: socket.socket, client_content_dict: dict):
 # 处理_心跳
 def deal_heart(client_socket: socket.socket, client_content_dict: dict):
     account = client_content_dict["账号"]
-    log_append_content(f"[心跳] 正在处理账号: {account}")
+    log.info(f"[心跳] 正在处理账号: {account}")
     comment = client_content_dict["备注"]
     machine_code = client_content_dict["机器码"]
     update_dict = {"心跳时间": cur_time_format, "备注": comment}
@@ -1132,7 +1159,7 @@ def deal_heart(client_socket: socket.socket, client_content_dict: dict):
     else:
         ret, detail = "下线", "此账号不存在"
     # 记录到日志
-    log_append_content(f"[心跳] 账号{account} {ret} {detail}")
+    log.info(f"[心跳] 账号{account} {ret} {detail}")
     # 发送消息回客户端
     server_info_dict = {"消息类型": "心跳",
                         "内容": {"结果": ret, "详情": detail}}
@@ -1144,7 +1171,7 @@ def deal_heart(client_socket: socket.socket, client_content_dict: dict):
 # 处理_离线
 def deal_offline(client_socket: socket.socket, client_content_dict: dict):
     account = client_content_dict["账号"]
-    log_append_content(f"[离线] 正在处理账号: {account}")
+    log.info(f"[离线] 正在处理账号: {account}")
     comment = client_content_dict["备注"]
     comment = "危险" if comment == user_comment["危险"] else "正常"
     update_dict = {"心跳时间": cur_time_format, "备注": comment, "状态": "离线"}
@@ -1161,7 +1188,7 @@ def deal_offline(client_socket: socket.socket, client_content_dict: dict):
     else:
         detail = f"此账号不存在, IP={client_socket.getpeername()}"
     # 记录到日志
-    log_append_content(f"[离线] 账号{account} {detail}")
+    log.info(f"[离线] 账号{account} {detail}")
     # 更新用户数据
     sql_table_update("2用户管理", update_dict, {"账号": account})
 
@@ -1169,7 +1196,7 @@ def deal_offline(client_socket: socket.socket, client_content_dict: dict):
 # 处理_解绑
 def deal_unbind(client_socket: socket.socket, client_content_dict: dict):
     account = client_content_dict["账号"]
-    log_append_content(f"[解绑] 正在处理账号: {account}")
+    log.info(f"[解绑] 正在处理账号: {account}")
     pwd = client_content_dict["密码"]
     ret = False
     query_user_list = sql_table_query("2用户管理", {"账号": account})
@@ -1190,7 +1217,7 @@ def deal_unbind(client_socket: socket.socket, client_content_dict: dict):
     else:
         detail = "解绑失败, 此账号不存在"
     # 记录到日志
-    log_append_content(f"[解绑] 账号{account} {detail}")
+    log.info(f"[解绑] 账号{account} {detail}")
     # 发送消息回客户端
     server_info_dict = {"消息类型": "解绑",
                         "内容": {"结果": ret, "详情": detail}}
@@ -1211,9 +1238,9 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
     send_bytes = base64.b85encode(json_str.encode())
     try:
         client_socket.send(send_bytes)
-        log_append_content(f"向客户端{client_socket.getpeername()}回复成功: {json_str}")
+        log.info(f"向客户端{client_socket.getpeername()}回复成功: {json_str}")
     except Exception as e:
-        log_append_content(f"向客户端{client_socket.getpeername()}回复失败: {e}")
+        log.info(f"向客户端{client_socket.getpeername()}回复失败: {e}")
 
 
 # 表_插入, 成功返回插入数, 否则返回0
@@ -1404,14 +1431,6 @@ def log_read_content() -> str:
     return content
 
 
-# 日志添加内容
-def log_append_content(content: str):
-    with lock:
-        with open(path_log, "a", encoding="utf8") as f:
-            text = f"{cur_time_format} {content}\n"
-            f.write(text)
-
-
 # 剪切板拷贝
 def clip_copy(content: str):
     clip_bd = QApplication.clipboard()
@@ -1449,7 +1468,6 @@ def path_exist(path: str):
 
 # 创建目录, 不存在才创建
 def dir_create(dir: str):
-
     if not path_exist(dir):
         os.makedirs(dir)
 
@@ -1509,7 +1527,9 @@ def dict_to_json_file(py_dict: dict, path_cfg: str):
 
 
 if __name__ == '__main__':
-    log_append_content("------------------------------------------------------------------")
+    dir_create(PATH_SAVE)
+    log = Log()
+    log.info("------------------------------------------------------------------")
     # 界面随DPI自动缩放
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     # 应用程序

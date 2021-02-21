@@ -17,7 +17,7 @@ class Ui_WndServer(object):
     def setupUi(self, WndServer):
         if not WndServer.objectName():
             WndServer.setObjectName(u"WndServer")
-        WndServer.resize(1097, 633)
+        WndServer.resize(1097, 639)
         WndServer.setStyleSheet(u"    * {\n"
 "        font-size: 12px;\n"
 "        font-family: \"Microsoft YaHei\";\n"
@@ -554,14 +554,25 @@ class Ui_WndServer(object):
         sizePolicy.setHeightForWidth(self.page_log.sizePolicy().hasHeightForWidth())
         self.page_log.setSizePolicy(sizePolicy)
         self.page_log.setMaximumSize(QSize(16777215, 16777215))
-        self.verticalLayout = QVBoxLayout(self.page_log)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(2, 2, 2, 2)
-        self.tbr_log = QTextBrowser(self.page_log)
-        self.tbr_log.setObjectName(u"tbr_log")
-        self.tbr_log.setLineWrapMode(QTextEdit.NoWrap)
+        self.gridLayout_5 = QGridLayout(self.page_log)
+        self.gridLayout_5.setObjectName(u"gridLayout_5")
+        self.verticalSpacer = QSpacerItem(20, 90, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        self.verticalLayout.addWidget(self.tbr_log)
+        self.gridLayout_5.addItem(self.verticalSpacer, 0, 0, 1, 1)
+
+        self.lst_log = QListWidget(self.page_log)
+        self.lst_log.setObjectName(u"lst_log")
+        self.lst_log.setMinimumSize(QSize(0, 400))
+
+        self.gridLayout_5.addWidget(self.lst_log, 1, 0, 1, 1)
+
+        self.horizontalSpacer_3 = QSpacerItem(845, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_5.addItem(self.horizontalSpacer_3, 1, 1, 1, 1)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 91, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout_5.addItem(self.verticalSpacer_2, 2, 0, 1, 1)
 
         self.stack_widget.addWidget(self.page_log)
 
@@ -579,7 +590,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -728,7 +739,6 @@ class Ui_WndServer(object):
         ___qtablewidgetitem42.setText(QCoreApplication.translate("WndServer", u"\u5728\u7ebf\u7528\u6237\u6570", None));
         ___qtablewidgetitem43 = self.tbe_everyday.horizontalHeaderItem(9)
         ___qtablewidgetitem43.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
-        self.tbr_log.setDocumentTitle(QCoreApplication.translate("WndServer", u"\u6267\u884c\u65e5\u5fd7", None))
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))
     # retranslateUi
 

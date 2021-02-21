@@ -11,7 +11,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor, QCursor
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
-    QMessageBox, QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit
+    QMessageBox, QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem
 from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
@@ -21,12 +21,12 @@ from server.ui.wnd_server import Ui_WndServer
 from server import crypto_
 
 lock = Lock()
-cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
-today = cur_time_format[:10]
+cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
+today = cur_time_fmt[:10]
 PATH_SAVE = "C:\\MyServer"
-PATH_LOG_INFO = f"{PATH_SAVE}\\info"
-PATH_LOG_WARN = f"{PATH_SAVE}\\warn"
-path_log = f"{PATH_SAVE}\\net_auth_{today}.log"
+PATH_LOG = f"{PATH_SAVE}\\log"
+PATH_LOG_INFO = f"{PATH_LOG}\\info"
+PATH_LOG_WARN = f"{PATH_LOG}\\warn"
 PATH_JSON_SERVER = "\\".join([PATH_SAVE, "server.json"])
 cfg_server = {"更新网址": "", "发卡网址": "", "注册赠送天数": 0, "免费解绑次数": 0, "解绑扣除小时": 0}
 
@@ -43,6 +43,7 @@ user_comment = {
 
 class Log():
     def __init__(self):
+        dir_create(PATH_LOG)
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
@@ -367,6 +368,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
         self.tbe_custom.cellClicked.connect(self.on_tbe_custom_cellClicked)
+        # 列表框
+        self.lst_log.itemDoubleClicked.connect(self.on_lst_log_itemDoubleClicked)
 
     def show_info(self, text):
         self.lbe_info.setText(text)
@@ -384,8 +387,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.stack_widget.setCurrentIndex(3)
         elif action_name == "执行日志":
             self.stack_widget.setCurrentIndex(4)
-            self.tbr_log.setText(log_read_content())
-            self.tbr_log.moveCursor(QTextCursor.End)
+            self.refresh_lst_log()
 
     def on_btn_proj_confirm_clicked(self):
         client_ver = self.edt_proj_client_ver.text()
@@ -428,7 +430,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.refresh_tbe_user(query_user_list)
 
     def on_btn_card_gen_clicked(self):
-        gen_time = cur_time_format
+        gen_time = cur_time_fmt
         card_type = self.cmb_card_type.currentText()
         card_num = int(self.edt_card_num.text())
         for i in range(card_num):
@@ -476,6 +478,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.edt_custom_key.setText(self.tbe_custom.item(row, 1).text())
         self.edt_custom_val.setText(self.tbe_custom.item(row, 2).text())
         self.edt_custom_eval.setText(self.tbe_custom.item(row, 3).text())
+
+    def on_lst_log_itemDoubleClicked(self, item: QListWidgetItem):
+        file = item.text()
+        path_log_file = "\\".join([PATH_LOG, file])
+        os.system(f"notepad {path_log_file}")
 
     def on_action_proj_del_sel_triggered(self):
         item_list = self.tbe_proj.selectedItems()
@@ -652,7 +659,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             return
         cards = "','".join(card_set)
         # 导出未使用的选中卡号
-        num = sql_table_update_ex("3卡密管理", f"导出时间='{cur_time_format}'", f"卡号 in ('{cards}') and 使用时间 is null")
+        num = sql_table_update_ex("3卡密管理", f"导出时间='{cur_time_fmt}'", f"卡号 in ('{cards}') and 使用时间 is null")
         export_card_key = "\n".join(card_set)
         self.pedt_card_export.setPlainText(export_card_key)
         # 复制到剪切板
@@ -790,6 +797,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_everyday.setItem(row, 8, QTableWidgetItem(str(query_everyday["在线用户数"])))
             self.tbe_everyday.setItem(row, 9, QTableWidgetItem(query_everyday["最后更新时间"]))
 
+    def refresh_lst_log(self):
+        self.lst_log.clear()
+        self.lst_log.addItems(dir_get_files(PATH_LOG))
+
     # 刷新ip归属地
     def refresh_ip_location(self):
         def append_ip_location(ip: str):
@@ -822,19 +833,18 @@ class WndServer(QMainWindow, Ui_WndServer):
                                 "set A.上次登录地=B.归属地")
 
     def on_timer_sec_timeout(self):
-        global cur_time_format
-        cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
+        global cur_time_fmt
+        cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
 
     def on_timer_min_timeout(self):
         self.show_info("----------------------------- 每15分钟一轮的检测开始 -----------------------------")
-        global today, path_log
-        cur_day = cur_time_format[:10]
+        global today
+        cur_day = cur_time_fmt[:10]
 
         # 1 检测日期改变
         if cur_day != today:
             today = cur_day
             # 1.1 更新日志
-            path_log = f"{PATH_SAVE}\\net_auth_{today}.log"
             self.show_info("新的一天到了, 清零用户管理表今日次数, 新增每日流水表今日记录")
             # 1.2 更新每日次数
             sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})
@@ -987,7 +997,7 @@ def deal_reg(client_socket: socket.socket, client_content_dict: dict):
         machine_code = client_content_dict["机器码"]
         query_user_list = sql_table_query("2用户管理", {"机器码": machine_code})
         if not query_user_list:  # 没有找到此机器码
-            client_content_dict["注册时间"] = cur_time_format
+            client_content_dict["注册时间"] = cur_time_fmt
             client_content_dict["到期时间"] = datetime.datetime.now()+datetime.timedelta(days=wnd_server.cfg["注册赠送天数"])
             ret = sql_table_insert("2用户管理", client_content_dict)
             detail = "注册成功" if ret else "注册失败, 数据库异常"
@@ -1021,7 +1031,7 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
             detail = "登录失败, 此账号已冻结"
         elif query_user["状态"] == "在线":
             detail = "登录失败, 此账号在线中, 请15分钟后再试"
-        elif cur_time_format > str(query_user["到期时间"]):
+        elif cur_time_fmt > str(query_user["到期时间"]):
             detail = "登录失败, 此账号已到期"
         elif pwd == query_user["密码"]:  # 判断密码是否符合
             if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
@@ -1053,7 +1063,7 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
     # 若登录成功, 才更新
     if ret:
         update_dict["机器码"] = client_content_dict["机器码"]
-        update_dict["上次登录时间"] = cur_time_format
+        update_dict["上次登录时间"] = cur_time_fmt
         update_dict["上次登录IP"] = ip
     sql_table_update("2用户管理", update_dict, {"账号": account})
 
@@ -1084,7 +1094,7 @@ def deal_pay(client_socket: socket.socket, client_content_dict: dict):
                 if ret:  # todo: 多线程访问的安全性?是否要上锁
                     detail = "充值成功"
                     # 更新卡密的使用时间
-                    sql_table_update("3卡密管理", {"使用时间": cur_time_format}, {"卡号": card_key})
+                    sql_table_update("3卡密管理", {"使用时间": cur_time_fmt}, {"卡号": card_key})
                     # 更新流水充值用户数
                     card_pay_num = card_type + "充值数"
                     sql_table_update_ex(sql=f"update 5每日流水 set 充值用户数=充值用户数+1, {card_pay_num}={card_pay_num}+1 "
@@ -1139,13 +1149,13 @@ def deal_heart(client_socket: socket.socket, client_content_dict: dict):
     log.info(f"[心跳] 正在处理账号: {account}")
     comment = client_content_dict["备注"]
     machine_code = client_content_dict["机器码"]
-    update_dict = {"心跳时间": cur_time_format, "备注": comment}
+    update_dict = {"心跳时间": cur_time_fmt, "备注": comment}
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
     if query_user_list:
         query_user = query_user_list[0]
         if query_user["状态"] == "冻结":  # 服务端已冻结此账号, 则令其下线
             ret, detail = "下线", "此账号已被冻结"
-        elif cur_time_format > str(query_user["到期时间"]):
+        elif cur_time_fmt > str(query_user["到期时间"]):
             ret, detail = "下线", "此账号已到期"
         elif comment == user_comment["危险"]:  # 发现客户危险行为
             ret, detail = "下线", "客户端数据被破解或修改"
@@ -1174,7 +1184,7 @@ def deal_offline(client_socket: socket.socket, client_content_dict: dict):
     log.info(f"[离线] 正在处理账号: {account}")
     comment = client_content_dict["备注"]
     comment = "危险" if comment == user_comment["危险"] else "正常"
-    update_dict = {"心跳时间": cur_time_format, "备注": comment, "状态": "离线"}
+    update_dict = {"心跳时间": cur_time_fmt, "备注": comment, "状态": "离线"}
 
     query_user_list = sql_table_query("2用户管理", {"账号": account})  # 查找账号是否存在
     if query_user_list:
@@ -1418,19 +1428,6 @@ def gen_rnd_card_key(lenth=30):
     return card_key
 
 
-# 日志读内容
-def log_read_content() -> str:
-    # 读取文件内容
-    content = ""
-    # 读的时候, 若没有文件会报错
-    try:
-        with open(path_log, "r", encoding="utf8") as f:
-            content = f.read()
-    except:
-        print(f"未找到文件:{path_log}")
-    return content
-
-
 # 剪切板拷贝
 def clip_copy(content: str):
     clip_bd = QApplication.clipboard()
@@ -1473,35 +1470,12 @@ def dir_create(dir: str):
 
 # 获取目录中的文件
 def dir_get_files(dir: str):
-    ret = ""
+    ret = []
     for root, dirs, files in os.walk(dir):
         ret = files
         break
     return ret
 
-# 创建文件
-def file_create(path: str, content=""):
-    with open(path, "a") as f:
-        f.write(content)
-
-# 清空文件内容, 若没有文件会自动创建文件
-def file_clear_content(path: str):
-    with open(path, "w+") as f:  # 打开文件并将光标置于开头
-        f.truncate()  # 截断文件光标后的内容
-
-# 读取文件内容
-def file_read_content(path: str) -> str:
-    if not path_exist(path):
-        file_create(path)
-    content = ""
-    with open(path, "r") as f:
-        content = f.read()
-    return content
-
-# 添加文件内容, 若没有文件会自动创建文件
-def file_append_content(path: str, content: str):
-    with open(path, "a") as f:
-        f.write(content)
 
 # json文件 -> py字典
 def json_file_to_dict(path_cfg: str, default_cfg: dict):
@@ -1527,7 +1501,7 @@ def dict_to_json_file(py_dict: dict, path_cfg: str):
 
 
 if __name__ == '__main__':
-    dir_create(PATH_SAVE)
+    dir_create("C:\\a\\b\\c")
     log = Log()
     log.info("------------------------------------------------------------------")
     # 界面随DPI自动缩放

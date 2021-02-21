@@ -21,7 +21,7 @@ wnd_login = None
 wnd_main = None
 
 cur_time_stamp = int(time.time())
-cur_time_format = time.strftime("%Y-%m-%d %H:%M:%S")
+cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
 
 PATH_WORK = os.getcwd()
 PATH_SAVE = "C:\\a_b_c"

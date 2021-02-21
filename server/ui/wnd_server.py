@@ -556,6 +556,7 @@ class Ui_WndServer(object):
         self.page_log.setMaximumSize(QSize(16777215, 16777215))
         self.gridLayout_5 = QGridLayout(self.page_log)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
+        self.gridLayout_5.setContentsMargins(2, 2, 2, 2)
         self.tbe_ip = QTableWidget(self.page_log)
         if (self.tbe_ip.columnCount() < 6):
             self.tbe_ip.setColumnCount(6)

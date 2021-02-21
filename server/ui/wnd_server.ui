@@ -991,6 +991,18 @@
         </size>
        </property>
        <layout class="QGridLayout" name="gridLayout_5" columnstretch="4,1" columnminimumwidth="0,0">
+        <property name="leftMargin">
+         <number>2</number>
+        </property>
+        <property name="topMargin">
+         <number>2</number>
+        </property>
+        <property name="rightMargin">
+         <number>2</number>
+        </property>
+        <property name="bottomMargin">
+         <number>2</number>
+        </property>
         <item row="0" column="0" rowspan="2">
          <widget class="QTableWidget" name="tbe_ip">
           <attribute name="horizontalHeaderStretchLastSection">

@@ -177,7 +177,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tool_bar.addAction(QIcon(":/users.png"), "用户管理")
         self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
         self.tool_bar.addAction(QIcon(":/flow.png"), "每日流水")
-        self.tool_bar.addAction(QIcon(":/log.png"), "执行日志")
+        self.tool_bar.addAction(QIcon(":/log.png"), "IP与日志")
         # ------------------------------ 表 格 ------------------------------
         # 所有表头可视化
         self.tbe_proj.horizontalHeader().setVisible(True)
@@ -356,6 +356,16 @@ class WndServer(QMainWindow, Ui_WndServer):
             lambda: self.menu_tbe_everyday.exec_(QCursor.pos())
         )
 
+        # IP管理表
+        self.tbe_ip.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.menu_tbe_ip = QMenu()
+        self.action_ip_show_all = QAction("显示全部IP信息")
+        self.menu_tbe_ip.addAction(self.action_ip_show_all)
+        self.action_ip_show_all.triggered.connect(self.show_all_tbe_ip)
+        self.tbe_ip.customContextMenuRequested.connect(
+            lambda: self.menu_tbe_ip.exec_(QCursor.pos())
+        )
+
     def init_sig_slot(self):
         # 工具栏
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
@@ -385,7 +395,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.stack_widget.setCurrentIndex(2)
         elif action_name == "每日流水":
             self.stack_widget.setCurrentIndex(3)
-        elif action_name == "执行日志":
+        elif action_name == "IP与日志":
             self.stack_widget.setCurrentIndex(4)
             self.refresh_lst_log()
 
@@ -716,6 +726,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 读取每日流水表全部内容
         query_everyday_list = sql_table_query("5每日流水")
         self.refresh_tbe_everyday(query_everyday_list)
+
+    def show_all_tbe_ip(self):
+        print("111")
+        ...
 
     def refresh_tbe_proj(self, query_proj_list):
         self.tbe_proj.setRowCount(len(query_proj_list))

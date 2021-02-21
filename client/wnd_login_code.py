@@ -257,7 +257,9 @@ class WndLogin(QDialog, Ui_WndLogin):
                 return True
             else:
                 detail = server_content_dict["详情"]
-                QMessageBox.information(self, "错误", detail)
+                ret = QMessageBox.information(self, "错误", detail, QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+                if ret == QMessageBox.Yes:
+                    webbrowser.open(lib_.url_update)
         return False
 
     def send_recv_custom1(self, tcp_socket: socket.socket):

@@ -874,13 +874,14 @@ class WndServer(QMainWindow, Ui_WndServer):
             today = cur_day
             # 1.1 更新日志
             self.show_info("新的一天到了, 清零用户管理表今日次数, 新增每日流水表今日记录")
-            # 1.2 更新每日次数
+            # 1.2 更新用户表每日次数
             sql_table_update("2用户管理", {"今日登录次数": 0, "今日解绑次数": 0})
-            # 1.3 插入每日流水
+            # 1.3 插入流水表新记录
             sql_table_insert("5每日流水", {"日期": today})
+            # 1.4 更新IP表每日次数
+            sql_table_update("6ip管理", {"今日连接时间": "", "今日连接次数": 0})
         # 2 刷新所有用户状态(状态为在线, 且心跳时间在15分钟前, 置为离线)
-        sql_table_update_ex("2用户管理", "状态='离线'",
-                            f"状态='在线' and 心跳时间 < date_sub(now(), interval -15 minute)")
+        sql_table_update_ex("2用户管理", "状态='离线'", "状态='在线' and 心跳时间 < date_sub(now(), interval -15 minute)")
         # 3 刷新显示所有表
         self.show_all_tbe_proj()
         self.show_all_tbe_user()

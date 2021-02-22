@@ -164,7 +164,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer_min.start(1000 * 60 * 15)
 
     def init_wnd(self):
-        self.setWindowTitle(f"Ip:{server_ip}  Port:{server_port}  Ver:{server_ver}")
+        self.setWindowTitle(f"Ip: {server_ip}  Port: {server_port}  Ver: {server_ver}")
         self.setWindowIcon(QIcon(":/server.png"))
 
     def init_controls(self):

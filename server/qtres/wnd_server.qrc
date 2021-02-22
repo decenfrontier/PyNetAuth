@@ -5,5 +5,6 @@
         <file>proj.png</file>
         <file>users.png</file>
         <file>flow.png</file>
+        <file>server.png</file>
     </qresource>
 </RCC>

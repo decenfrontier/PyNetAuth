@@ -16,7 +16,7 @@ from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
 
-from server.qtres import qrc_wnd_server
+from server import wnd_server_rc
 from server.ui.wnd_server import Ui_WndServer
 from server import crypto_
 
@@ -32,6 +32,7 @@ cfg_server = {"更新网址": "", "发卡网址": "", "注册赠送天数": 0, "
 
 server_ip = "127.0.0.1"
 server_port = 47123
+server_ver = "2.3.4"
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto_.AesEncryption(aes_key)
 enc_aes_key = crypto_.encrypt_rsa(crypto_.public_key_client, aes_key)
@@ -71,6 +72,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_mysql()
         self.init_net_auth()
         self.init_instance_field()
+        self.init_wnd()
         self.init_controls()
         self.init_menus()
         self.cfg_read()
@@ -161,6 +163,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer_min = QTimer()
         self.timer_min.timeout.connect(self.on_timer_min_timeout)
         self.timer_min.start(1000 * 60 * 15)
+
+    def init_wnd(self):
+        self.setWindowTitle(f"Ip:{server_ip}  Port:{server_port}  Ver:{server_ver}")
+        self.setWindowIcon(QIcon(":/server.png"))
 
     def init_controls(self):
         # ------------------------------ 堆叠窗口 ------------------------------

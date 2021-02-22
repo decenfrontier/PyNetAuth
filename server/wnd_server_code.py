@@ -4,7 +4,6 @@ import json
 import base64
 import urllib.request, ssl
 from threading import Thread, Lock
-from multiprocessing import Pool
 from random import randint
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -16,9 +15,9 @@ from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
 
-from server import wnd_server_rc
-from server.ui.wnd_server import Ui_WndServer
-from server import crypto_
+import wnd_server_rc
+from ui.wnd_server import Ui_WndServer
+import crypto_
 
 lock = Lock()
 cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -32,7 +31,7 @@ cfg_server = {"更新网址": "", "发卡网址": "", "注册赠送天数": 0, "
 
 server_ip = "127.0.0.1"
 server_port = 47123
-server_ver = "2.3.4"
+server_ver = "2.3.5"
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto_.AesEncryption(aes_key)
 enc_aes_key = crypto_.encrypt_rsa(crypto_.public_key_client, aes_key)

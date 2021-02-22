@@ -8,8 +8,8 @@ from PySide2.QtWidgets import QMainWindow, QLabel
 from PySide2.QtCore import QTimer, Signal
 from threading import Thread
 
-from client.ui.wnd_main import Ui_WndMain
-from client import lib_
+from ui.wnd_main import Ui_WndMain
+import lib_
 
 class WndMain(QMainWindow, Ui_WndMain):
     sig_info = Signal(str)

@@ -15,7 +15,7 @@ from comtypes.client import CreateObject
 from win32com.client import Dispatch
 from PySide2.QtCore import QThread
 
-from client import crypto_
+import crypto_
 
 wnd_login = None
 wnd_main = None
@@ -34,10 +34,19 @@ DLL_DM_NAME = "Qt5Sqd.dll"  # dm.dll
 DLL_REGDM_NAME = "Qt5Xmr.dll"  # DmReg.dll
 DLL_LW_NAME = "lw.dll"
 DLL_TR_NAME = "TURING.dll"
+DLL_MY_NAME = "yth.dll"
 
 COM_NAME_LW = "lw.lwsoft3"
 COM_NAME_DM = "dm.dmsoft"
 COM_NAME_TR = "TURING.FISR"
+
+my_dll = ctypes.WinDLL(f"dll\\{DLL_MY_NAME}")
+anti_vm = my_dll.fn1
+anti_debug1 = my_dll.fn2
+anti_debug2 = my_dll.fn3
+anti_debug3 = my_dll.fn4
+anti_anti_debug4 = my_dll.fn5
+show_task_bar_icon = my_dll.fn6
 
 # 随机数
 def rnd(min: int, max: int):

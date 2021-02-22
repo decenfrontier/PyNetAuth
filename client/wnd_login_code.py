@@ -8,10 +8,10 @@ from PySide2.QtWidgets import QDialog, QLabel, QMessageBox, QToolBar, QVBoxLayou
     QStatusBar, QApplication, QStyleFactory, QLineEdit, QPushButton
 from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, Signal
 
-import client.wnd_login_rc
-from client.ui.wnd_login import Ui_WndLogin
-from client.wnd_main_code import WndMain
-from client import lib_, crypto_
+import wnd_login_rc
+from ui.wnd_login import Ui_WndLogin
+from wnd_main_code import WndMain
+import lib_, crypto_
 
 class WndLogin(QDialog, Ui_WndLogin):
     sig_accept = Signal()
@@ -555,6 +555,13 @@ if __name__ == '__main__':
     app = QApplication()
     app.setStyle(QStyleFactory.create("fusion"))
     lib_.log_info("初始化界面样式完成")
+
+    # 检测是否环境正常
+    ret = lib_.anti_vm()
+    print("VM检查结果:", ret)
+    if lib_.anti_vm():  # 若在VM虚拟机运行
+        lib_.log_info("禁止在虚拟机内运行")
+        sys.exit(0)
 
     # 初始化登录窗口
     lib_.wnd_login = WndLogin()

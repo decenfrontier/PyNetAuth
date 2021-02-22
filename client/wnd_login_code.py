@@ -18,6 +18,7 @@ class WndLogin(QDialog, Ui_WndLogin):
     sig_reject = Signal()
     sig_info = Signal(str)
     sig_pass = Signal(bool)
+    sig_close = Signal()
 
     def __init__(self):
         super().__init__()
@@ -26,14 +27,17 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.init_wnd()
         self.init_status_bar()
         self.init_custom_sig_slot()
+        self.show()
         if self.init_net_auth():
             self.init_widgets()
             self.cfg_read()
             self.init_sig_slot()
+            self.popup_update_msg()
+            self.on_init_success()
             lib_.log_info("登录窗口初始化成功")
         else:
             lib_.log_info("登录窗口初始化失败")
-            self.close()
+            self.sig_close.emit()
 
     def closeEvent(self, event: QCloseEvent):
         self.show_info("登录窗口关闭")
@@ -130,8 +134,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 显示第一页
         self.stack_widget.setCurrentIndex(0)
         # ------------------ 验证窗口 -----------------
-        self.wnd_captcha.setWindowTitle("请输入运算结果")
-        # self.wnd_captcha.setFixedSize(245, 115)
+        self.wnd_captcha.setWindowTitle("运算结果")
         self.captcha_vlayout = QVBoxLayout(self.wnd_captcha)
         self.captcha_vlayout.addWidget(self.lbe_captcha_pic)
         self.captcha_vlayout.addWidget(self.edt_captcha_answer)
@@ -182,12 +185,13 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.sig_reject.connect(self.reject)
         self.sig_info.connect(lambda text: self.lbe_info.setText(text))
         self.sig_pass.connect(self.on_sig_pass)
+        self.sig_close.connect(self.close)
 
     def init_sig_slot(self):
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         self.btn_login.clicked.connect(self.on_btn_login_clicked)
         self.btn_reg.clicked.connect(self.on_btn_reg_clicked)
-        self.btn_exit.clicked.connect(lambda : self.close())
+        self.btn_exit.clicked.connect(lambda : self.sig_close.emit())
         self.btn_pay.clicked.connect(self.on_btn_pay_clicked)
         self.btn_unbind.clicked.connect(self.on_btn_unbind_clicked)
         self.btn_modify.clicked.connect(self.on_btn_modify_clicked)
@@ -528,6 +532,18 @@ class WndLogin(QDialog, Ui_WndLogin):
         else:
             self.show_info("验证码输入错误")
 
+    # 初始化成功后的操作
+    def on_init_success(self):
+        # 初始化json文件
+        if not os.path.exists(lib_.PATH_JSON_LOGIN):
+            lib_.log_info("自动创建登录界面配置文件")
+            lib_.dict_to_json_file(lib_.cfg_login, lib_.PATH_JSON_LOGIN)
+        lib_.log_info("初始化配置文件完成")
+
+        # 注册组件到系统
+        ret = lib_.reg_com_to_system(lib_.COM_NAME_TR)
+        print("注册组件到系统:", ret)
+
 
 if __name__ == '__main__':
     # 初始化日志模块
@@ -542,20 +558,6 @@ if __name__ == '__main__':
 
     # 初始化登录窗口
     lib_.wnd_login = WndLogin()
-    lib_.wnd_login.show()
-    lib_.wnd_login.popup_update_msg()
-    lib_.log_info("初始化登录窗口完成")
-
-    # 初始化json文件
-    if not os.path.exists(lib_.PATH_JSON_LOGIN):
-        lib_.log_info("自动创建登录界面配置文件")
-        lib_.dict_to_json_file(lib_.cfg_login, lib_.PATH_JSON_LOGIN)
-    lib_.log_info("初始化配置文件完成")
-
-    # 注册组件到系统
-    ret = lib_.reg_com_to_system(lib_.COM_NAME_TR)
-    print("注册组件到系统:", ret)
-
     if lib_.wnd_login.exec_() == QDialog.Accepted:
         lib_.wnd_main = WndMain()
         lib_.wnd_main.show()

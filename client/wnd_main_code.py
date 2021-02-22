@@ -13,6 +13,7 @@ from client import lib_
 
 class WndMain(QMainWindow, Ui_WndMain):
     sig_info = Signal(str)
+    sig_close = Signal()
 
     def __init__(self):
         super().__init__()
@@ -48,6 +49,7 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def init_custom_sig_slot(self):
         self.sig_info.connect(lambda text: self.lbe_info.setText(text))
+        self.sig_close.connect(self.close)
 
     def show_info(self, text):
         self.sig_info.emit(text)  # 信号槽, 防逆向跟踪
@@ -86,14 +88,14 @@ class WndMain(QMainWindow, Ui_WndMain):
             print("等待时间:", sleep_time)
             time.sleep(sleep_time)
         self.show_info("与服务器断开连接1...")
-        self.close()
+        self.sig_close.emit()
 
     def on_timer_timeout(self):
         lib_.cur_time_str = time.strftime("%H:%M:%S")
         lib_.cur_time_stamp += 1
         if lib_.time_diff(self.last_heart_stamp, lib_.cur_time_stamp) >= 15:  # 防止心跳线程被干掉
             self.show_info("与服务器断开连接2...")
-            self.close()
+            self.sig_close.emit()
 
 
 from PySide2.QtWidgets import QApplication, QStyleFactory

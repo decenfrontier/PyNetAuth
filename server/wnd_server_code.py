@@ -23,13 +23,13 @@ lock = Lock()
 cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_fmt[:10]
 PATH_SAVE = "C:\\MyServer"
-PATH_LOG = f"{PATH_SAVE}\\log"
-PATH_LOG_INFO = f"{PATH_LOG}\\info"
-PATH_LOG_WARN = f"{PATH_LOG}\\warn"
+PATH_LOG = "\\".join([PATH_SAVE, "log"])
+PATH_LOG_INFO = "\\".join([PATH_LOG, "info"])
+PATH_LOG_WARN = "\\".join([PATH_LOG, "warn"])
 PATH_JSON_SERVER = "\\".join([PATH_SAVE, "server.json"])
 cfg_server = {"更新网址": "", "发卡网址": "", "注册赠送天数": 0, "免费解绑次数": 0, "解绑扣除小时": 0}
 
-server_ip = "127.0.0.1"
+server_ip = "0.0.0.0"
 server_port = 47123
 server_ver = "2.3.5"
 aes_key = "csbt34.ydhl12s"  # AES密钥

@@ -633,7 +633,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         accounts = "','".join(account_set)
         num = sql_table_update(f"update 2用户管理 set 状态='{state}' where 账号 in ('{accounts}');")
         self.show_info(f"{num}个用户设置状态 {state} 成功")
-        self.show_all_tbe_user()
+        self.show_all_tbe_user()  # todo: 表查询异常: select distinct A.上次登录IP from 2用户管理 A left join 6ip管理 B on A.上次登录IP=B.IP地址 where B.IP地址 is null; -----原因: (0, '')
 
     def on_action_card_show_unuse_triggered(self):
         query_card_list = sql_table_query("select * from 3卡密管理 where 使用时间 is null;")
@@ -1290,6 +1290,7 @@ def send_to_client(client_socket: socket.socket, server_info_dict: dict):
 def sql_table_insert(sql: str, args=tuple()):
     num = 0
     try:
+        db.ping()
         num = cursor.execute(sql, args)  # 执行SQL语句
         db.commit()
     except Exception as e:
@@ -1305,6 +1306,7 @@ def sql_table_insert_ex(table_name: str, val_dict: dict):
     sql = f"insert {table_name}({keys}) values({occupys});"
     num = 0
     try:
+        db.ping()
         num = cursor.execute(sql, vals)
         db.commit()
     except Exception as e:
@@ -1316,6 +1318,7 @@ def sql_table_insert_ex(table_name: str, val_dict: dict):
 def sql_table_query(sql: str, args=tuple()):
     query_list = []
     try:
+        db.ping()
         cursor.execute(sql, args)  # 执行SQL语句
         query_list = cursor.fetchall()
         db.commit()
@@ -1337,6 +1340,7 @@ def sql_table_query_ex(table_name: str, condition_dict={}):
         sql = f"select * from {table_name};"
     query_list = []
     try:
+        db.ping()
         cursor.execute(sql, vals)  # 执行SQL语句
         query_list = cursor.fetchall()  # 获取查询结果, 没查到返回空列表
         db.commit()  # 提交到数据库
@@ -1350,6 +1354,7 @@ def sql_table_query_ex(table_name: str, condition_dict={}):
 def sql_table_update(sql: str, args=tuple()):
     num = 0
     try:
+        db.ping()
         num = cursor.execute(sql, args)  # 执行SQL语句
         db.commit()
     except Exception as e:
@@ -1377,6 +1382,7 @@ def sql_table_update_ex(table_name: str, update_dict: dict, condition_dict={}):
         sql = f"update {table_name} set {update};"
     num = 0
     try:
+        db.ping()
         num = cursor.execute(sql, update_vals+condition_vals)
         db.commit()
     except Exception as e:
@@ -1389,6 +1395,7 @@ def sql_table_update_ex(table_name: str, update_dict: dict, condition_dict={}):
 def sql_table_del(sql: str, args=tuple()):
     num = 0
     try:
+        db.ping()
         num = cursor.execute(sql, args)  # 执行SQL语句
         db.commit()
     except Exception as e:

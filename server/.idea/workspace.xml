@@ -20,6 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="548ec079-fede-4a5a-a8f4-44d639b3a445" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../client/wnd_main_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/../client/wnd_main_code.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wnd_server_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/wnd_server_code.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -100,7 +102,7 @@
       <workItem from="1613967487531" duration="2483000" />
       <workItem from="1613979684734" duration="614000" />
       <workItem from="1613980757614" duration="57000" />
-      <workItem from="1613980826388" duration="38767000" />
+      <workItem from="1613980826388" duration="42704000" />
     </task>
     <task id="LOCAL-00001" summary="把服务端移到云服务器">
       <created>1613993755942</created>
@@ -137,7 +139,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614070098820</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="优化 服务端检测改为10分钟">
+      <created>1614070855205</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1614070855205</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -161,7 +170,8 @@
     <MESSAGE value="修复 全部sql语句封装, 调用" />
     <MESSAGE value="修复 sql查询语句异常" />
     <MESSAGE value="修复 状态为在线, 且心跳时间在15分钟前, 置为离线" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复 状态为在线, 且心跳时间在15分钟前, 置为离线" />
+    <MESSAGE value="优化 服务端检测改为10分钟" />
+    <option name="LAST_COMMIT_MESSAGE" value="优化 服务端检测改为10分钟" />
   </component>
   <component name="WindowStateProjectService">
     <state x="842" y="382" key="#Notifications" timestamp="1614067128187">
@@ -172,38 +182,38 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1613981064435" />
-    <state width="1877" height="281" key="GridCell.Tab.0.bottom" timestamp="1614067120246">
+    <state width="1877" height="352" key="GridCell.Tab.0.bottom" timestamp="1614076853520">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="281" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1614067120246" />
-    <state width="1877" height="281" key="GridCell.Tab.0.center" timestamp="1614067120246">
+    <state width="1877" height="352" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
+    <state width="1877" height="352" key="GridCell.Tab.0.center" timestamp="1614076853520">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="281" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1614067120246" />
-    <state width="1877" height="281" key="GridCell.Tab.0.left" timestamp="1614067120246">
+    <state width="1877" height="352" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
+    <state width="1877" height="352" key="GridCell.Tab.0.left" timestamp="1614076853520">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="281" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1614067120246" />
-    <state width="1877" height="281" key="GridCell.Tab.0.right" timestamp="1614067120246">
+    <state width="1877" height="352" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
+    <state width="1877" height="352" key="GridCell.Tab.0.right" timestamp="1614076853520">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="281" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1614067120246" />
-    <state width="1877" height="352" key="GridCell.Tab.1.bottom" timestamp="1614053538467">
+    <state width="1877" height="352" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
+    <state width="1877" height="352" key="GridCell.Tab.1.bottom" timestamp="1614076853520">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="352" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1614053538467" />
-    <state width="1877" height="352" key="GridCell.Tab.1.center" timestamp="1614053538467">
+    <state width="1877" height="352" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
+    <state width="1877" height="352" key="GridCell.Tab.1.center" timestamp="1614076853520">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="352" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1614053538467" />
-    <state width="1877" height="352" key="GridCell.Tab.1.left" timestamp="1614053538467">
+    <state width="1877" height="352" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
+    <state width="1877" height="352" key="GridCell.Tab.1.left" timestamp="1614076853520">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="352" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1614053538467" />
-    <state width="1877" height="352" key="GridCell.Tab.1.right" timestamp="1614053538467">
+    <state width="1877" height="352" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
+    <state width="1877" height="352" key="GridCell.Tab.1.right" timestamp="1614076853520">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="352" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1614053538467" />
+    <state width="1877" height="352" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
     <state x="541" y="335" width="984" height="558" key="Registry" timestamp="1614001668883">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -225,7 +235,18 @@
     </state>
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1614001640168" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/wnd_server_code.py</url>
+          <line>632</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/server$wnd_server_code.coverage" NAME="wnd_server_code Coverage Results" MODIFIED="1614067120236" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/server$wnd_server_code.coverage" NAME="wnd_server_code Coverage Results" MODIFIED="1614076853502" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

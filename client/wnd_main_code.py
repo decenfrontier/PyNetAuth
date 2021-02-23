@@ -40,7 +40,7 @@ class WndMain(QMainWindow, Ui_WndMain):
         self.timer.timeout.connect(self.on_timer_timeout)
         self.timer.start(1000)
 
-        self.error_count = 0  # 网络通信失败次数
+        self.fail_count = 0  # 网络通信失败次数
         self.last_heart_stamp = lib_.cur_time_stamp  # 上次心跳时间点
 
     def init_status_bar(self):
@@ -56,15 +56,19 @@ class WndMain(QMainWindow, Ui_WndMain):
         lib_.log_info(text)
 
     def start_heart_beat(self):
-        self.error_count = 0
+        self.fail_count = 0
         Thread(target=self.thd_heart_beat, daemon=True).start()
 
     def thd_heart_beat(self):
         while True:
+            # 每一轮循环错误次数+1, 失败则每隔10秒连接一次
+            self.fail_count += 1
+            sleep_time = 10
+            # 尝试连接服务端
             tcp_socket = lib_.connect_server_tcp()
-            if not tcp_socket:
+            if not tcp_socket:  # 连接失败
                 lib_.log_info("与服务器连接异常...")
-            else:
+            else:  # 连接成功, 发送心跳包
                 client_info_dict = {"消息类型": "心跳",
                     "内容": {"账号": lib_.user_account, "机器码": lib_.machine_code, "备注": lib_.client_comment}}
                 lib_.send_to_server(tcp_socket, client_info_dict)
@@ -72,18 +76,15 @@ class WndMain(QMainWindow, Ui_WndMain):
                 if msg_type == "心跳":
                     heart_ret = server_content_dict["结果"]
                     if heart_ret == "正常":
-                        self.error_count = 0
+                        self.fail_count = 0  # 正常则清零失败错误
                         self.last_heart_stamp = lib_.cur_time_stamp
-                        sleep_time = 12  # 60*10, todo
+                        sleep_time = 12  # 60*9,  todo: 正常通信, 下次隔9分钟发一次心跳包
                     elif heart_ret == "下线":
-                        self.error_count = 10
+                        self.fail_count = 10
                         self.show_info(server_content_dict["详情"])
                 tcp_socket.close()  # 发送接收完立刻断开
-            # 每一轮循环错误次数+1, 失败则每隔20秒连接一次
-            self.error_count += 1
-            sleep_time = 20
             # 超过5次没连上, 跳出心跳循环, 关闭窗口
-            if self.error_count > 5:
+            if self.fail_count > 5:
                 break
             print("等待时间:", sleep_time)
             time.sleep(sleep_time)

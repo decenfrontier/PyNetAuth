@@ -8,7 +8,7 @@ from random import randint
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-from PySide2.QtGui import QIcon, QCloseEvent, QTextCursor, QCursor
+from PySide2.QtGui import QIcon, QCloseEvent, QCursor
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
     QMessageBox, QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem
 from PySide2.QtCore import Qt, QTimer
@@ -38,7 +38,9 @@ enc_aes_key = crypto_.encrypt_rsa(crypto_.public_key_client, aes_key)
 
 user_comment = {
     "正常": "*d#fl1I@34rt7%gh.",
-    "危险": "*d#flI1@34rt7%gh.",
+    "检测到改数据": "*d#flI1@34rt7%gh.",
+    "检测到虚拟机": "*d#flI2@34rt7%gh.",
+    "检测到调试器": "*d#flI3@34rt7%gh.",
 }
 
 
@@ -933,7 +935,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 if client_content_str != "":  # 解密成功, json字符串 转 py字典
                     client_content_dict = json.loads(client_content_str)
                 else:  # 解密失败
-                    log.warn(f"[危险Warn] 停止服务此ip: {ip}")  # 日志记录此IP
+                    log.warn(f"[解密Warn] 停止服务此ip: {ip}")  # 日志记录此IP
                     client_socket.close()  # 停止服务此ip
                     return
             msg_func_dict = {
@@ -963,11 +965,17 @@ def deal_init(client_socket: socket.socket, client_content_dict: dict):
     ip = client_socket.getpeername()
     log.info(f"[初始] 正在处理IP: {ip}")
 
-    if client_content_dict["备注"] == user_comment["危险"]:  # 客户端数据被修改, 记录到日志
-        ret = False
-        detail = "???"
-        machine_code = client_content_dict["机器码"]
-        log.warn(f"[初始Warn] IP:{ip}, MC:{machine_code}, 全局变量被修改")
+    machine_code = client_content_dict["机器码"]
+    ret = False
+    if client_content_dict["备注"] == user_comment["检测到改数据"]:  # 客户端数据被修改, 记录到日志
+        detail = "检测到改数据"
+        log.warn(f"[初始Warn] IP:{ip}, MC:{machine_code}, 检测到改数据")
+    elif client_content_dict["备注"] == user_comment["检测到虚拟机"]:
+        detail = "检测到虚拟机"
+        log.warn(f"[初始Warn] IP:{ip}, MC:{machine_code}, 检测到虚拟机")
+    elif client_content_dict["备注"] == user_comment["检测到调试器"]:
+        detail = "检测到调试器"
+        log.warn(f"[初始Warn] IP:{ip}, MC:{machine_code}, 检测到调试器")
     else:  # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
         ret = True
         detail = enc_aes_key

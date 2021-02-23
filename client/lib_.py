@@ -278,9 +278,14 @@ server_ip = "127.0.0.1"  # 119.29.167.100
 server_port = 47123
 machine_code = get_machine_code()
 
-normal_user = "*d#fl1I@34rt7%gh."  # 正常用户备注
-danger_user = "*d#flI1@34rt7%gh."  # 危险用户备注
-client_comment = normal_user
+user_comment = {
+    "正常": "*d#fl1I@34rt7%gh.",
+    "检测到改数据": "*d#flI1@34rt7%gh.",
+    "检测到虚拟机": "*d#flI2@34rt7%gh.",
+    "检测到调试器": "*d#flI3@34rt7%gh.",
+}
+
+client_comment = user_comment["正常"]
 
 # 从服务端获取的数据
 aes_key = "*d#f1Il@34rt7%gh."  # AES密钥, 登录界面初始化时获取, 先随机写一个迷惑破解者

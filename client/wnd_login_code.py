@@ -95,7 +95,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 检测全局变量是否被修改
         if [lib_.aes_key, lib_.user_account, lib_.pwd_pic, lib_.pwd_zk, lib_.addr_crack] != \
                 ["*d#f1Il@34rt7%gh.", "aaa", "1234", "5678", "0x8CFF98"]:
-            lib_.client_comment = lib_.danger_user  # 消息被修改
+            lib_.client_comment = lib_.user_comment["检测到改数据"]
         # 与服务端连接
         tcp_socket = lib_.connect_server_tcp()
         if not tcp_socket:

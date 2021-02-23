@@ -722,8 +722,8 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def show_all_tbe_everyday(self):
         # 读取用户表内容, 获取今日活跃用户数, 在线用户数
-        active_user_num = sql_table_query("select count(*) from 2用户管理 where date_format(心跳时间,'%Y-%m-%d')="
-                                                 "date_format(now(), '%Y-%m-%d');")[0]["count(*)"]
+        active_user_num = sql_table_query("select count(*) from 2用户管理 where date_format(心跳时间,'%%Y-%%m-%%d')="
+                                                 "date_format(now(), '%%Y-%%m-%%d');")[0]["count(*)"]
         online_user_num = sql_table_query("select count(*) from 2用户管理 where 状态='在线';")[0]["count(*)"]
         # 更新每日流水表
         sql_table_update(f"update 5每日流水 set 活跃用户数=%s, 在线用户数=%s where 日期=%s;",
@@ -1317,7 +1317,7 @@ def sql_table_query(sql: str, args=tuple()):
     query_list = []
     try:
         cursor.execute(sql, args)  # 执行SQL语句
-        query_list = cursor.execute(sql, args)
+        query_list = cursor.fetchall()
         db.commit()
     except Exception as e:
         log.warn(f"表查询异常: {sql} -----原因: {e}")

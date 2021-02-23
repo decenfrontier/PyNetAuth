@@ -884,7 +884,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             # 1.4 更新IP表每日次数  "6ip管理", {"今日连接时间": "", "今日连接次数": 0}
             sql_table_update("update 6ip管理 set 今日连接次数=0;")
         # 2 刷新所有用户状态(状态为在线, 且心跳时间在15分钟前, 置为离线)
-        sql_table_update("update 2用户管理 set 状态='离线' where 状态='在线' and 心跳时间 < date_sub(now(), interval -15 minute);")
+        sql_table_update("update 2用户管理 set 状态='离线' where 状态='在线' and 心跳时间 < date_sub(now(), interval 15 minute);")
         # 3 刷新显示所有表
         self.show_all_tbe_proj()
         self.show_all_tbe_user()

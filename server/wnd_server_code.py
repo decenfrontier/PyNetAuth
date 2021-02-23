@@ -115,8 +115,9 @@ class WndServer(QMainWindow, Ui_WndServer):
                 host="119.29.167.100",
                 port=3306,
                 user="root",
-                password="659457",
-                database="net_auth"
+                passwd="659457",
+                db="net_auth",
+                charset='utf8'
             )
             # 创建游标对象, 指定返回一个字典列表, 获取的每条数据的类型为字典(默认是元组)
             cursor = db.cursor(pymysql.cursors.DictCursor)
@@ -162,7 +163,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer_sec.start(1000)
         self.timer_min = QTimer()
         self.timer_min.timeout.connect(self.on_timer_min_timeout)
-        self.timer_min.start(1000 * 60 * 15)
+        self.timer_min.start(1000 * 60 * 15)  #  * 15
 
     def init_wnd(self):
         self.setWindowTitle(f"Ip: {server_ip}  Port: {server_port}  Ver: {server_ver}")
@@ -735,7 +736,6 @@ class WndServer(QMainWindow, Ui_WndServer):
     def show_all_tbe_ip(self):
         # 按今日连接次数从大到小排序显示
         query_ip_list = sql_table_query("select * from 6ip管理 order by 今日连接次数 desc;")
-        print(query_ip_list)
         self.refresh_tbe_ip(query_ip_list)
 
     def refresh_tbe_proj(self, query_proj_list):

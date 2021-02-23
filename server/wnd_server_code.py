@@ -163,7 +163,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer_sec.start(1000)
         self.timer_min = QTimer()
         self.timer_min.timeout.connect(self.on_timer_min_timeout)
-        self.timer_min.start(1000 * 60 * 15)  #  * 15
+        self.timer_min.start(1000 * 60 * 10)
 
     def init_wnd(self):
         self.setWindowTitle(f"Ip: {server_ip}  Port: {server_port}  Ver: {server_ver}")
@@ -868,7 +868,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
 
     def on_timer_min_timeout(self):
-        self.show_info("----------------------------- 每15分钟一轮的检测开始 -----------------------------")
+        self.show_info("----------------------------- 每10分钟一轮的检测开始 -----------------------------")
         global today
         cur_day = cur_time_fmt[:10]
 
@@ -883,15 +883,15 @@ class WndServer(QMainWindow, Ui_WndServer):
             sql_table_insert_ex("5每日流水", {"日期": today})
             # 1.4 更新IP表每日次数  "6ip管理", {"今日连接时间": "", "今日连接次数": 0}
             sql_table_update("update 6ip管理 set 今日连接次数=0;")
-        # 2 刷新所有用户状态(状态为在线, 且心跳时间在15分钟前, 置为离线)
-        sql_table_update("update 2用户管理 set 状态='离线' where 状态='在线' and 心跳时间 < date_sub(now(), interval 15 minute);")
+        # 2 刷新所有用户状态(状态为在线, 且心跳时间在10分钟前, 置为离线)
+        sql_table_update("update 2用户管理 set 状态='离线' where 状态='在线' and 心跳时间 < date_sub(now(), interval 10 minute);")
         # 3 刷新显示所有表
         self.show_all_tbe_proj()
         self.show_all_tbe_user()
         self.show_all_tbe_card()
         self.show_all_tbe_custom()
         self.show_all_tbe_everyday()
-        self.show_info("----------------------------- 每15分钟一轮的检测结束 -----------------------------")
+        self.show_info("----------------------------- 每10分钟一轮的检测结束 -----------------------------")
 
     def thd_accept_client(self):
         log.info("服务端已开启, 准备接受客户请求...")
@@ -1067,7 +1067,7 @@ def deal_login(client_socket: socket.socket, client_content_dict: dict):
         if query_user["状态"] == "冻结":
             detail = "登录失败, 此账号已冻结"
         elif query_user["状态"] == "在线":
-            detail = "登录失败, 此账号在线中, 请15分钟后再试"
+            detail = "登录失败, 此账号在线中, 请10分钟后再试"
         elif cur_time_fmt > str(query_user["到期时间"]):
             detail = "登录失败, 此账号已到期"
         elif pwd == query_user["密码"]:  # 判断密码是否符合
@@ -1250,7 +1250,7 @@ def deal_unbind(client_socket: socket.socket, client_content_dict: dict):
         if query_user["机器码"] == "":  # 若原本就没绑定机器
             detail = "无需解绑, 此账号未绑定机器"
         elif query_user["状态"] == "在线":
-            detail = "解绑失败, 此账号在线中, 请15分钟后再试"
+            detail = "解绑失败, 此账号在线中, 请10分钟后再试"
         elif query_user["状态"] == "冻结":
             detail = "解绑失败, 此账号已冻结, 无法解绑"
         elif pwd == query_user["密码"]:  # 密码正确, 把机器码置为空

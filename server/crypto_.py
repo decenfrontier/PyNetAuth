@@ -26,14 +26,20 @@ class AesEncryption():
 
     # 对明文进行加密
     def encrypt(self, plain_str: str) -> str:
-        cipher_obj = AES.new(self.key, self.mode, self.iv)
-        encrypt_str = b2a_hex(cipher_obj.encrypt(self.add_to_16(plain_str))).decode()
+        try:
+            cipher_obj = AES.new(self.key, self.mode, self.iv)
+            encrypt_str = b2a_hex(cipher_obj.encrypt(self.add_to_16(plain_str))).decode()
+        except:
+            encrypt_str = ""
         return encrypt_str
 
     # 对密文进行解密
     def decrypt(self, encrypt_str: str) -> str:
-        cipher_obj = AES.new(self.key, self.mode, self.iv)
-        decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_str.encode())).decode().rstrip("\0")
+        try:
+            cipher_obj = AES.new(self.key, self.mode, self.iv)
+            decrypt_str = cipher_obj.decrypt(a2b_hex(encrypt_str.encode())).decode().rstrip("\0")
+        except:
+            decrypt_str = ""
         return decrypt_str
 
 

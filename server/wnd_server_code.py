@@ -930,8 +930,12 @@ class WndServer(QMainWindow, Ui_WndServer):
             else:  # 若不为初始类型的消息
                 # 先aes解密, 获取json字符串
                 client_content_str = aes.decrypt(client_content_str)
-                # json字符串 转 py字典
-                client_content_dict = json.loads(client_content_str)
+                if client_content_str != "":  # 解密成功, json字符串 转 py字典
+                    client_content_dict = json.loads(client_content_str)
+                else:  # 解密失败
+                    log.warn(f"[危险Warn] 停止服务此ip: {ip}")  # 日志记录此IP
+                    client_socket.close()  # 停止服务此ip
+                    return
             msg_func_dict = {
                 "初始": deal_init,
                 "锟斤拷": deal_proj,

@@ -1,8 +1,8 @@
 import hmac
 from Crypto import Random
-from Crypto.Cipher import PKCS1_v1_5, AES, DES3
+from Crypto.Cipher import PKCS1_v1_5, AES
 from Crypto.PublicKey import RSA
-from binascii import b2a_hex, a2b_hex, b2a_base64, a2b_base64, hexlify, unhexlify
+from binascii import b2a_hex, a2b_hex, hexlify, unhexlify
 
 # ---------------------------------------- 单向散列加密 ----------------------------------------
 # 获取加密后字符

@@ -311,6 +311,7 @@ class WndLogin(QDialog, Ui_WndLogin):
                 "密码": login_pwd,
                 "机器码": lib_.machine_code,
                 "操作系统": login_system,
+                "备注": lib_.client_comment,
             }
         }
         # 发送客户端消息

@@ -39,13 +39,14 @@ aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto_.AesEncryption(aes_key)
 enc_aes_key = crypto_.encrypt_rsa(crypto_.public_key_client, aes_key)
 
-user_comment = {
+state_comment_dict = {
     "正常": "*d#fl1I@34rt7%gh.",
     "检测到改数据": "*d#flI1@34rt7%gh.",
     "检测到虚拟机": "*d#flI2@34rt7%gh.",
     "检测到调试器": "*d#flI3@34rt7%gh.",
 }
 
+comment_state_dict = {v:k for k,v in state_comment_dict.items()}
 
 class Log():
     def __init__(self):
@@ -981,13 +982,13 @@ class WndServer(QMainWindow, Ui_WndServer):
 
         machine_code = client_content_dict["机器码"]
         ret = False
-        if client_content_dict["备注"] == user_comment["检测到改数据"]:  # 客户端数据被修改, 记录到日志
+        if client_content_dict["备注"] == state_comment_dict["检测到改数据"]:  # 客户端数据被修改, 记录到日志
             detail = "检测到改数据"
             log.warn(f"[初始Warn] IP:{ip}, MC:{machine_code}, 检测到改数据")
-        elif client_content_dict["备注"] == user_comment["检测到虚拟机"]:
+        elif client_content_dict["备注"] == state_comment_dict["检测到虚拟机"]:
             detail = "检测到虚拟机"
             log.warn(f"[初始Warn] IP:{ip}, MC:{machine_code}, 检测到虚拟机")
-        elif client_content_dict["备注"] == user_comment["检测到调试器"]:
+        elif client_content_dict["备注"] == state_comment_dict["检测到调试器"]:
             detail = "检测到调试器"
             log.warn(f"[初始Warn] IP:{ip}, MC:{machine_code}, 检测到调试器")
         else:  # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
@@ -1010,7 +1011,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             ret = True
             query_proj = query_proj_list[0]
             detail = {
-                "最新版本": wnd_server.latest_ver,
+                "最新版本": cfg_server["最新版本"],
                 "客户端公告": query_proj["客户端公告"],
                 "允许登录": query_proj["允许登录"],
                 "允许注册": query_proj["允许注册"],
@@ -1111,9 +1112,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 把客户端发送过来的数据记录到数据库
         if query_user:  # 若该账号存在
             account = query_user["账号"]
-            # 无论是否登录成功, 登录次数+1
+            ori_comment = client_content_dict["备注"]
+            comment = comment_state_dict[ori_comment]
+            # 无论是否登录成功, 都要更新的字段
             update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
-                           "操作系统": client_content_dict["操作系统"]}
+                           "操作系统": client_content_dict["操作系统"],
+                           "备注": comment}
             if ret:  # 若登录成功, 才更新的项
                 update_dict["机器码"] = client_content_dict["机器码"]
                 update_dict["上次登录时间"] = cur_time_fmt

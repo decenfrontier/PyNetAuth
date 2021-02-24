@@ -112,11 +112,19 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_mysql(self):
         try:
             # 创建数据库对象
+            # self.db = pymysql.connect(
+            #     host="127.0.0.1",  # rm-2vcdv0g1sq8tj1y0wqo.mysql.cn-chengdu.rds.aliyuncs.com  119.29.167.100
+            #     port=3306,
+            #     user="root",  # cpalyth
+            #     passwd="659457",   # Kptg6594571
+            #     db="net_auth",
+            #     charset='utf8'
+            # )
             self.db = pymysql.connect(
-                host="119.29.167.100",
+                host="rm-2vcdv0g1sq8tj1y0wqo.mysql.cn-chengdu.rds.aliyuncs.com",
                 port=3306,
-                user="root",
-                passwd="659457",
+                user="cpalyth",
+                passwd="Kptg6594571",
                 db="net_auth",
                 charset='utf8'
             )
@@ -1210,21 +1218,20 @@ class WndServer(QMainWindow, Ui_WndServer):
             ret, detail = "下线", "此账号不存在"
         # 记录到日志
         log.info(f"[心跳] 账号{account} {ret} {detail}")
+        # 更新用户数据
+        self.sql_table_update_ex("2用户管理", update_dict, {"账号": account})
         # 发送消息回客户端
         server_info_dict = {"消息类型": "心跳",
                             "内容": {"结果": ret, "详情": detail}}
         self.send_to_client(client_socket, server_info_dict)
-        # 更新用户数据
-        self.sql_table_update_ex("2用户管理", update_dict, {"账号": account})
+
 
 
     # 处理_离线
     def deal_offline(self, client_socket: socket.socket, client_content_dict: dict):
         account = client_content_dict["账号"]
         log.info(f"[离线] 正在处理账号: {account}")
-        comment = client_content_dict["备注"]
-        comment = "危险" if comment == user_comment["危险"] else "正常"
-        update_dict = {"心跳时间": cur_time_fmt, "备注": comment, "状态": "离线"}
+        update_dict = {"心跳时间": cur_time_fmt, "状态": "离线"}
 
         query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,))  # 查找账号是否存在  "2用户管理", {"账号": account}
         if query_user_list:
@@ -1235,10 +1242,10 @@ class WndServer(QMainWindow, Ui_WndServer):
                 detail = "此账号已冻结, 未设置离线状态"
             else:
                 detail = "已设置为离线状态"
+            log.info(f"[离线] 账号{account} {detail}")
         else:
-            detail = f"此账号不存在, IP={client_socket.getpeername()}"
-        # 记录到日志
-        log.info(f"[离线] 账号{account} {detail}")
+            ip = client_socket.getpeername()
+            log.warn(f"[离线Warn] 此账号不存在, ip={ip}")
         # 更新用户数据
         self.sql_table_update_ex("2用户管理", update_dict, {"账号": account})
 

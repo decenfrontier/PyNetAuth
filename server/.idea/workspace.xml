@@ -62,9 +62,31 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../client" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.wnd_server_code">
+    <configuration name="scratch" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$APPLICATION_CONFIG_DIR$/scratches" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="wnd_server_code" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="server" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -90,6 +112,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.wnd_server_code" />
+        <item itemvalue="Python.scratch" />
       </list>
     </recent_temporary>
   </component>
@@ -112,7 +135,9 @@
       <workItem from="1613967487531" duration="2483000" />
       <workItem from="1613979684734" duration="614000" />
       <workItem from="1613980757614" duration="57000" />
-      <workItem from="1613980826388" duration="50597000" />
+      <workItem from="1613980826388" duration="55251000" />
+      <workItem from="1614096554047" duration="94000" />
+      <workItem from="1614128537865" duration="8961000" />
     </task>
     <task id="LOCAL-00001" summary="把服务端移到云服务器">
       <created>1613993755942</created>
@@ -177,7 +202,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614088135942</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="优化 连接对象,游标对象, 套接字对象都改为实例对象属性">
+      <created>1614091902963</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1614091902963</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -196,6 +228,7 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="把服务端移到云服务器" />
@@ -206,9 +239,14 @@
     <MESSAGE value="优化 每次操作数据库前先ping一下" />
     <MESSAGE value="优化 Aes加解密异常处理, 异常返回空内容, 同时日志记录此IP" />
     <MESSAGE value="修复 处理初始时根据备注记录日志" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复 处理初始时根据备注记录日志" />
+    <MESSAGE value="优化 连接对象,游标对象, 套接字对象都改为实例对象属性" />
+    <option name="LAST_COMMIT_MESSAGE" value="优化 连接对象,游标对象, 套接字对象都改为实例对象属性" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="552" y="178" key="#Deployment" timestamp="1614092873485">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="178" key="#Deployment/0.0.1920.1040@0.0.1920.1040" timestamp="1614092873485" />
     <state x="842" y="382" key="#Notifications" timestamp="1614067128187">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -221,54 +259,54 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1613981064435" />
-    <state width="1877" height="281" key="GridCell.Tab.0.bottom" timestamp="1614091418834">
+    <state width="1877" height="352" key="GridCell.Tab.0.bottom" timestamp="1614150937721">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="281" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1614091418834" />
-    <state width="1877" height="281" key="GridCell.Tab.0.center" timestamp="1614091418834">
+    <state width="1877" height="352" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1614150937721" />
+    <state width="1877" height="352" key="GridCell.Tab.0.center" timestamp="1614150937721">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="281" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1614091418834" />
-    <state width="1877" height="281" key="GridCell.Tab.0.left" timestamp="1614091418834">
+    <state width="1877" height="352" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1614150937721" />
+    <state width="1877" height="352" key="GridCell.Tab.0.left" timestamp="1614150937720">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="281" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1614091418834" />
-    <state width="1877" height="281" key="GridCell.Tab.0.right" timestamp="1614091418834">
+    <state width="1877" height="352" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1614150937720" />
+    <state width="1877" height="352" key="GridCell.Tab.0.right" timestamp="1614150937721">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="281" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1614091418834" />
-    <state width="1877" height="352" key="GridCell.Tab.1.bottom" timestamp="1614076853520">
+    <state width="1877" height="352" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1614150937721" />
+    <state width="1877" height="352" key="GridCell.Tab.1.bottom" timestamp="1614150763678">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="352" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
-    <state width="1877" height="352" key="GridCell.Tab.1.center" timestamp="1614076853520">
+    <state width="1877" height="352" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1614150763678" />
+    <state width="1877" height="352" key="GridCell.Tab.1.center" timestamp="1614150763678">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="352" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
-    <state width="1877" height="352" key="GridCell.Tab.1.left" timestamp="1614076853520">
+    <state width="1877" height="352" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1614150763678" />
+    <state width="1877" height="352" key="GridCell.Tab.1.left" timestamp="1614150763677">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="352" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
-    <state width="1877" height="352" key="GridCell.Tab.1.right" timestamp="1614076853520">
+    <state width="1877" height="352" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1614150763677" />
+    <state width="1877" height="352" key="GridCell.Tab.1.right" timestamp="1614150763678">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="352" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1614076853520" />
+    <state width="1877" height="352" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1614150763678" />
     <state x="541" y="335" width="984" height="558" key="Registry" timestamp="1614001668883">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="541" y="335" width="984" height="558" key="Registry/0.0.1920.1040@0.0.1920.1040" timestamp="1614001668883" />
-    <state x="461" y="164" key="SettingsEditor" timestamp="1613994221559">
+    <state x="461" y="164" key="SettingsEditor" timestamp="1614092946124">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="461" y="164" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1613994221559" />
+    <state x="461" y="164" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1614092946124" />
     <state x="92" y="92" width="1736" height="856" key="VCS.FileHistoryDialog" timestamp="1614050493564">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="92" y="92" width="1736" height="856" key="VCS.FileHistoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1614050493564" />
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1614088140669">
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1614128546965">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1614088140669" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1614128546965" />
     <state x="688" y="230" width="983" height="594" key="find.popup" timestamp="1614089278388">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -278,7 +316,15 @@
     </state>
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1614001640168" />
   </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="update_vals+condition_vals" language="Python" />
+      </configuration>
+    </watches-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/server$wnd_server_code.coverage" NAME="wnd_server_code Coverage Results" MODIFIED="1614091418826" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/server$scratch.coverage" NAME="scratch Coverage Results" MODIFIED="1614129841344" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
+    <SUITE FILE_PATH="coverage/server$wnd_server_code.coverage" NAME="wnd_server_code Coverage Results" MODIFIED="1614152063684" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

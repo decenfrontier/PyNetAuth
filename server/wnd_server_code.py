@@ -880,21 +880,22 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info("----------------------------- 每10分钟一轮的检测开始 -----------------------------")
         global today
         cur_day = cur_time_fmt[:10]
-
-        # 1 检测日期改变
+        # 重连
+        self.db.ping()
+        # 检测日期改变
         if cur_day != today:
             today = cur_day
-            # 1.1 更新日志
+            # 更新日志
             self.show_info("新的一天到了, 清零用户管理表今日次数, 新增每日流水表今日记录")
-            # 1.2 更新用户表每日次数
+            # 更新用户表每日次数
             self.sql_table_update("update 2用户管理 set 今日登录次数=0, 今日解绑次数=0;")
-            # 1.3 插入流水表新记录
+            # 插入流水表新记录
             self.sql_table_insert_ex("5每日流水", {"日期": today})
-            # 1.4 更新IP表每日次数  "6ip管理", {"今日连接时间": "", "今日连接次数": 0}
+            # 更新IP表每日次数  "6ip管理", {"今日连接时间": "", "今日连接次数": 0}
             self.sql_table_update("update 6ip管理 set 今日连接次数=0;")
-        # 2 刷新所有用户状态(状态为在线, 且心跳时间在10分钟前, 置为离线)
+        # 刷新所有用户状态(状态为在线, 且心跳时间在10分钟前, 置为离线)
         self.sql_table_update("update 2用户管理 set 状态='离线' where 状态='在线' and 心跳时间 < date_sub(now(), interval 10 minute);")
-        # 3 刷新显示所有表
+        # 刷新显示所有表
         self.show_all_tbe_proj()
         self.show_all_tbe_user()
         self.show_all_tbe_card()

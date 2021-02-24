@@ -27,7 +27,10 @@ PATH_LOG = "\\".join([PATH_SAVE, "log"])
 PATH_LOG_INFO = "\\".join([PATH_LOG, "info"])
 PATH_LOG_WARN = "\\".join([PATH_LOG, "warn"])
 PATH_JSON_SERVER = "\\".join([PATH_SAVE, "server.json"])
-cfg_server = {"更新网址": "", "发卡网址": "", "注册赠送天数": 0, "免费解绑次数": 0, "解绑扣除小时": 0}
+cfg_server = {
+    "最新版本": "0.0.0", "更新网址": "", "发卡网址": "",
+    "注册赠送天数": 0, "免费解绑次数": 0, "解绑扣除小时": 0
+}
 
 server_ip = "0.0.0.0"
 server_port = 47123
@@ -93,6 +96,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         cfg_load = json_file_to_dict(PATH_JSON_SERVER, cfg_server)
         cfg_server.update(cfg_load)
 
+        self.lbe_latest_ver.setText(cfg_server["最新版本"])
         self.edt_proj_url_update.setText(cfg_server["更新网址"])
         self.edt_proj_url_card.setText(cfg_server["发卡网址"])
         self.edt_proj_unbind_sub_hour.setText(str(cfg_server["解绑扣除小时"]))
@@ -101,6 +105,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 写入配置
     def cfg_write(self):
+        cfg_server["最新版本"] = self.lbe_latest_ver.text()
         cfg_server["发卡网址"] = self.edt_proj_url_card.text()
         cfg_server["更新网址"] = self.edt_proj_url_update.text()
         cfg_server["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
@@ -164,7 +169,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.lbe_1 = QLabel("<提示> : ")
         self.lbe_info = QLabel("窗口初始化成功")
         self.lbe_2 = QLabel("最新客户端版本:")
-        self.lbe_latest_ver = QLabel("x.x.x")
+        self.lbe_latest_ver = QLabel(cfg_server["最新版本"])
         # ---------------------- 定时器 ----------------------
         self.timer_sec = QTimer()
         self.timer_min = QTimer()
@@ -177,8 +182,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # ------------------------------ 堆叠窗口 ------------------------------
         self.stack_widget.setCurrentIndex(0)
         # ------------------------------ 状态栏 ------------------------------
-        self.latest_ver = self.sql_table_query("select max(客户端版本) from 1项目管理;")[0]["max(客户端版本)"]
-        self.lbe_latest_ver.setText(self.latest_ver)
+        self.lbe_latest_ver.setText(cfg_server["最新版本"])
         self.status_bar.addWidget(self.lbe_1)
         self.status_bar.addWidget(self.lbe_info)
         self.status_bar.addPermanentWidget(self.lbe_2)
@@ -257,15 +261,19 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_proj_del_sel = QAction("删除选中版本")
         self.action_proj_all_allow_sel = QAction("选中版本全部允许")
         self.action_proj_all_forbid_sel = QAction("选中版本全部禁止")
+        self.action_proj_set_latest_ver = QAction("设为最新版本")
         self.menu_tbe_proj.addAction(self.action_proj_show_all)
         self.menu_tbe_proj.addAction(self.action_proj_del_sel)
         self.menu_tbe_proj.addSeparator()
         self.menu_tbe_proj.addActions([self.action_proj_all_allow_sel,
                                        self.action_proj_all_forbid_sel])
+        self.menu_tbe_proj.addSeparator()
+        self.menu_tbe_proj.addAction(self.action_proj_set_latest_ver)
         self.action_proj_show_all.triggered.connect(self.show_all_tbe_proj)
         self.action_proj_del_sel.triggered.connect(self.on_action_proj_del_sel_triggered)
         self.action_proj_all_allow_sel.triggered.connect(self.on_action_proj_all_allow_sel_triggered)
         self.action_proj_all_forbid_sel.triggered.connect(self.on_action_proj_all_forbid_sel_triggered)
+        self.action_proj_set_latest_ver.triggered.connect(self.on_action_proj_set_latest_ver_triggered)
         self.tbe_proj.customContextMenuRequested.connect(
             lambda: self.menu_tbe_proj.exec_(QCursor.pos())
         )
@@ -544,6 +552,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info(f"{num}个版本全部禁止成功")
         self.show_all_tbe_proj()
 
+    def on_action_proj_set_latest_ver_triggered(self):
+        row = self.tbe_proj.currentRow()
+        ver = self.tbe_proj.item(row, 1).text()
+        cfg_server["最新版本"] = ver
+        self.lbe_latest_ver.setText(ver)
+        self.cfg_write()
+
     def on_action_user_comment_sel_triggered(self):
         item_list = self.tbe_user.selectedItems()
         account_set = {self.tbe_user.item(it.row(), 1).text() for it in item_list}
@@ -705,9 +720,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 读取表全部内容
         query_proj_list = self.sql_table_query("select * from 1项目管理;")
         self.refresh_tbe_proj(query_proj_list)
-        # 刷新最新客户端版本号
-        self.latest_ver = self.sql_table_query("select max(客户端版本) from 1项目管理;")[0]["max(客户端版本)"]
-        self.lbe_latest_ver.setText(self.latest_ver)
 
     def show_all_tbe_user(self):
         # 刷新ip归属地

@@ -718,7 +718,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def show_all_tbe_proj(self):
         # 读取表全部内容
-        query_proj_list = self.sql_table_query("select * from 1项目管理;")
+        query_proj_list = self.sql_table_query("select * from 1项目管理 order by 客户端版本 desc;")
         self.refresh_tbe_proj(query_proj_list)
 
     def show_all_tbe_user(self):
@@ -751,7 +751,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.sql_table_update(f"update 5每日流水 set 活跃用户数=%s, 在线用户数=%s where 日期=%s;",
                          (active_user_num, online_user_num, today))
         # 读取每日流水表全部内容
-        query_everyday_list = self.sql_table_query("select * from 5每日流水;")
+        query_everyday_list = self.sql_table_query("select * from 5每日流水 order by 日期 desc;")
         self.refresh_tbe_everyday(query_everyday_list)
 
     def show_all_tbe_ip(self):

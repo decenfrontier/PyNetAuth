@@ -926,49 +926,53 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info("服务端已关闭, 停止接受客户端请求...")
 
     def thd_serve_client(self, client_socket: socket.socket, ip: str):
-        log.info("等待客户端发出消息中...")
-        try:  # 若任务消息都没收到, 客户端直接退出, 会抛出异常
-            recv_bytes = client_socket.recv(4096)
-        except:
-            return
-        # base85解码
-        json_str = base64.b85decode(recv_bytes).decode()
-        log.info(f"收到客户端{client_socket.getpeername()}的消息: {json_str}")
-        # json字符串 转 py字典
-        client_info_dict = json.loads(json_str)
-        msg_type = client_info_dict["消息类型"]
-        client_content_str = client_info_dict["内容"]
-        # 把内容json字符串 转 py字典
-        if msg_type == "初始":  # 若为初始类型的消息
+        log.info(f"等待客户端{ip}发出消息中...")
+        client_socket.settimeout(2)  # 设置为非阻塞接收, 只等2秒
+        while True:
+            try:
+                recv_bytes = client_socket.recv(4096)
+            except:  # 客户端直接退出, 会抛出异常
+                break
+            if not recv_bytes:  # 若任何消息都没收到
+                break
+            # base85解码
+            json_str = base64.b85decode(recv_bytes).decode()
+            log.info(f"收到客户端{ip}的消息: {json_str}")
             # json字符串 转 py字典
-            client_content_dict = json.loads(client_content_str)
-        else:  # 若不为初始类型的消息
-            # 先aes解密, 获取json字符串
-            client_content_str = aes.decrypt(client_content_str)
-            if client_content_str != "":  # 解密成功, json字符串 转 py字典
+            client_info_dict = json.loads(json_str)
+            msg_type = client_info_dict["消息类型"]
+            client_content_str = client_info_dict["内容"]
+            # 把内容json字符串 转 py字典
+            if msg_type == "初始":  # 若为初始类型的消息
+                # json字符串 转 py字典
                 client_content_dict = json.loads(client_content_str)
-            else:  # 解密失败
-                log.warn(f"[解密Warn] 停止服务此ip: {ip}")  # 日志记录此IP
-                client_socket.close()  # 停止服务此ip
-                return
-        msg_func_dict = {
-            "初始": self.deal_init,
-            "锟斤拷": self.deal_proj,
-            "烫烫烫": self.deal_custom1,
-            "屯屯屯": self.deal_custom2,
-            "注册": self.deal_reg,
-            "登录": self.deal_login,
-            "充值": self.deal_pay,
-            "改密": self.deal_modify,
-            "心跳": self.deal_heart,
-            "离线": self.deal_offline,
-            "解绑": self.deal_unbind,
-        }
-        func = msg_func_dict.get(msg_type)
-        if func is None:
-            log.info(f"消息类型不存在: {msg_type}")
-        else:
-            func(client_socket, client_content_dict)
+            else:  # 若不为初始类型的消息
+                # 先aes解密, 获取json字符串
+                client_content_str = aes.decrypt(client_content_str)
+                if client_content_str != "":  # 解密成功, json字符串 转 py字典
+                    client_content_dict = json.loads(client_content_str)
+                else:  # 解密失败
+                    log.warn(f"[解密Warn] 停止服务此ip: {ip}")  # 日志记录此IP
+                    client_socket.close()  # 停止服务此ip
+                    return
+            msg_func_dict = {
+                "初始": self.deal_init,
+                "锟斤拷": self.deal_proj,
+                "烫烫烫": self.deal_custom1,
+                "屯屯屯": self.deal_custom2,
+                "注册": self.deal_reg,
+                "登录": self.deal_login,
+                "充值": self.deal_pay,
+                "改密": self.deal_modify,
+                "心跳": self.deal_heart,
+                "离线": self.deal_offline,
+                "解绑": self.deal_unbind,
+            }
+            func = msg_func_dict.get(msg_type)
+            if func is None:
+                log.info(f"消息类型不存在: {msg_type}")
+            else:
+                func(client_socket, client_content_dict)
         log.info(f"客户端{ip}已断开连接, 服务结束")
         client_socket.close()
 
@@ -1234,7 +1238,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.send_to_client(client_socket, server_info_dict)
 
 
-
     # 处理_离线
     def deal_offline(self, client_socket: socket.socket, client_content_dict: dict):
         ip = client_socket.getpeername()[0]
@@ -1256,6 +1259,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             log.warn(f"[离线Warn] 此账号不存在, ip={ip}")
         # 更新用户数据
         self.sql_table_update_ex("2用户管理", update_dict, {"账号": account})
+        # 发送消息回客户端
+        server_info_dict = {"消息类型": "离线",
+                            "内容": {"结果": True, "详情": "无"}}
+        self.send_to_client(client_socket, server_info_dict)
 
 
     # 处理_解绑

@@ -20,13 +20,22 @@ class WndMain(QMainWindow, Ui_WndMain):
         self.init_custom_sig_slot()
 
     def closeEvent(self, event: QCloseEvent):
+        self.send_recv_offline()
+
+    def send_recv_offline(self):
         tcp_socket = lib_.connect_server_tcp()
         if not tcp_socket:
             lib_.log_info("服务器繁忙, 请稍后再试")
             return
         client_info_dict = {"消息类型": "离线",
-            "内容": {"账号": lib_.user_account, "备注": lib_.client_comment}}
+                            "内容": {"账号": lib_.user_account, "备注": lib_.client_comment}}
         lib_.send_to_server(tcp_socket, client_info_dict)
+        msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
+        tcp_socket.close()
+        if msg_type == "离线":
+            lib_.log_info("正常退出")
+        else:
+            lib_.log_info("异常退出")
 
     # 初始化实例属性
     def init_instance_field(self):

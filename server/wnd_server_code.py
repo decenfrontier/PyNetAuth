@@ -1045,14 +1045,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"[注册] 正在处理账号: {account}")
         ret = False
 
-        # "2用户管理", {"账号": account}
         if not self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,)):  # 不存在则插入记录
             machine_code = client_content_dict["机器码"]  # "2用户管理", {"机器码": machine_code}
             query_user_list = self.sql_table_query("select * from 2用户管理 where 机器码=%s;", (machine_code,))
             if not query_user_list:  # 没有找到此机器码
                 client_content_dict["注册时间"] = cur_time_fmt
                 client_content_dict["到期时间"] = datetime.datetime.now() + datetime.timedelta(days=wnd_server.cfg["注册赠送天数"])
-                # "2用户管理", client_content_dict
                 ret = self.sql_table_insert_ex("2用户管理", client_content_dict)
                 detail = "注册成功" if ret else "注册失败, 数据库异常"
             else:
@@ -1073,7 +1071,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def deal_login(self, client_socket: socket.socket, client_content_dict: dict):
         ip = client_socket.getpeername()[0]
         account = client_content_dict["账号"]
-        log.info(f"[登录] 正在处理账号: {account}")
+        log.info(f"[登录] IP: {ip}, 正在处理账号: {account}")
         pwd = client_content_dict["密码"]
         machine_code = client_content_dict["机器码"]
         ret, query_user = False, {}
@@ -1102,29 +1100,27 @@ class WndServer(QMainWindow, Ui_WndServer):
             detail = "登录失败, 此账号不存在"
         # 记录到日志
         log.info(f"[登录] 账号{account} {detail}")
+        # 把客户端发送过来的数据记录到数据库
+        if query_user:  # 若该账号存在
+            account = query_user["账号"]
+            # 无论是否登录成功, 登录次数+1
+            update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
+                           "操作系统": client_content_dict["操作系统"]}
+            if ret:  # 若登录成功, 才更新的项
+                update_dict["机器码"] = client_content_dict["机器码"]
+                update_dict["上次登录时间"] = cur_time_fmt
+                update_dict["上次登录IP"] = ip
+            self.sql_table_update_ex("2用户管理", update_dict, {"账号": account})
         # 把登录结果整理成py字典, 并发送给客户端
         server_info_dict = {"消息类型": "登录",
                             "内容": {"结果": ret, "详情": detail, "账号": account}}
         self.send_to_client(client_socket, server_info_dict)
-        # 把客户端发送过来的数据记录到数据库
-        if not query_user:  # 若该账号不存在
-            return
-        account = query_user["账号"]
-        # 无论是否登录成功, 登录次数+1
-        update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
-                       "操作系统": client_content_dict["操作系统"]}
-        # 若登录成功, 才更新
-        if ret:
-            update_dict["机器码"] = client_content_dict["机器码"]
-            update_dict["上次登录时间"] = cur_time_fmt
-            update_dict["上次登录IP"] = ip
-        self.sql_table_update_ex("2用户管理", update_dict, {"账号": account})
-
 
     # 处理_充值
     def deal_pay(self, client_socket: socket.socket, client_content_dict: dict):
+        ip = client_socket.getpeername()[0]
         account = client_content_dict["账号"]
-        log.info(f"[充值] 正在处理账号: {account}")
+        log.info(f"[充值] IP: {ip}, 正在处理账号: {account}")
         card_key = client_content_dict["卡号"]
         ret = False
 
@@ -1169,8 +1165,9 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 处理_改密
     def deal_modify(self, client_socket: socket.socket, client_content_dict: dict):
+        ip = client_socket.getpeername()[0]
         account = client_content_dict["账号"]
-        log.info(f"[改密] 正在处理账号: {account}")
+        log.info(f"[改密] IP: {ip}, 正在处理账号: {account}")
         qq = client_content_dict["QQ"]
         new_pwd = client_content_dict["密码"]
         ret = False
@@ -1197,8 +1194,9 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 处理_心跳
     def deal_heart(self, client_socket: socket.socket, client_content_dict: dict):
+        ip = client_socket.getpeername()[0]
         account = client_content_dict["账号"]
-        log.info(f"[心跳] 正在处理账号: {account}")
+        log.info(f"[心跳] IP: {ip}, 正在处理账号: {account}")
         comment = client_content_dict["备注"]
         machine_code = client_content_dict["机器码"]
         update_dict = {"心跳时间": cur_time_fmt, "备注": comment}
@@ -1229,8 +1227,9 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 处理_离线
     def deal_offline(self, client_socket: socket.socket, client_content_dict: dict):
+        ip = client_socket.getpeername()[0]
         account = client_content_dict["账号"]
-        log.info(f"[离线] 正在处理账号: {account}")
+        log.info(f"[离线] IP: {ip}, 正在处理账号: {account}")
         update_dict = {"心跳时间": cur_time_fmt, "状态": "离线"}
 
         query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,))  # 查找账号是否存在  "2用户管理", {"账号": account}
@@ -1252,8 +1251,9 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 处理_解绑
     def deal_unbind(self, client_socket: socket.socket, client_content_dict: dict):
+        ip = client_socket.getpeername()[0]
         account = client_content_dict["账号"]
-        log.info(f"[解绑] 正在处理账号: {account}")
+        log.info(f"[解绑] IP: {ip}, 正在处理账号: {account}")
         pwd = client_content_dict["密码"]
         ret = False
         query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,))

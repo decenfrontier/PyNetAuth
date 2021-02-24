@@ -556,13 +556,6 @@ if __name__ == '__main__':
     app.setStyle(QStyleFactory.create("fusion"))
     lib_.log_info("初始化界面样式完成")
 
-    # 检测是否环境正常
-    ret = lib_.anti_vm()
-    print("VM检查结果:", ret)
-    if lib_.anti_vm():  # 若在VM虚拟机运行
-        lib_.log_info("禁止在虚拟机内运行")
-        sys.exit(0)
-
     # 初始化登录窗口
     lib_.wnd_login = WndLogin()
     if lib_.wnd_login.exec_() == QDialog.Accepted:

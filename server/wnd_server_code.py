@@ -113,10 +113,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         try:
             # 创建数据库对象
             # self.db = pymysql.connect(
-            #     host="127.0.0.1",  # rm-2vcdv0g1sq8tj1y0wqo.mysql.cn-chengdu.rds.aliyuncs.com  119.29.167.100
+            #     host="127.0.0.1",  # 119.29.167.100
             #     port=3306,
-            #     user="root",  # cpalyth
-            #     passwd="659457",   # Kptg6594571
+            #     user="root",
+            #     passwd="659457",
             #     db="net_auth",
             #     charset='utf8'
             # )
@@ -167,11 +167,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.lbe_latest_ver = QLabel("x.x.x")
         # ---------------------- 定时器 ----------------------
         self.timer_sec = QTimer()
-        self.timer_sec.timeout.connect(self.on_timer_sec_timeout)
-        self.timer_sec.start(1000)
         self.timer_min = QTimer()
-        self.timer_min.timeout.connect(self.on_timer_min_timeout)
-        self.timer_min.start(1000 * 60 * 10)
 
     def init_wnd(self):
         self.setWindowTitle(f"Ip: {server_ip}  Port: {server_port}  Ver: {server_ver}")
@@ -396,6 +392,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_custom.cellClicked.connect(self.on_tbe_custom_cellClicked)
         # 列表框
         self.lst_log.itemDoubleClicked.connect(self.on_lst_log_itemDoubleClicked)
+        # 时钟
+        self.timer_sec.timeout.connect(self.on_timer_sec_timeout)
+        self.timer_sec.start(1000)
+        self.timer_min.timeout.connect(self.on_timer_min_timeout)
+        self.timer_min.start(1000 * 60 * 10)
 
     def show_info(self, text):
         self.lbe_info.setText(text)
@@ -1302,7 +1303,6 @@ class WndServer(QMainWindow, Ui_WndServer):
     def sql_table_insert(self, sql: str, args=tuple()):
         num = 0
         try:
-            self.db.ping()
             num = self.cursor.execute(sql, args)  # 执行SQL语句
             self.db.commit()
         except Exception as e:
@@ -1318,7 +1318,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         sql = f"insert {table_name}({keys}) values({occupys});"
         num = 0
         try:
-            self.db.ping()
             num = self.cursor.execute(sql, vals)
             self.db.commit()
         except Exception as e:
@@ -1330,7 +1329,6 @@ class WndServer(QMainWindow, Ui_WndServer):
     def sql_table_query(self, sql: str, args=tuple()):
         query_list = []
         try:
-            self.db.ping()
             self.cursor.execute(sql, args)  # 执行SQL语句
             query_list = self.cursor.fetchall()
             self.db.commit()
@@ -1352,7 +1350,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             sql = f"select * from {table_name};"
         query_list = []
         try:
-            self.db.ping()
             self.cursor.execute(sql, vals)  # 执行SQL语句
             query_list = self.cursor.fetchall()  # 获取查询结果, 没查到返回空列表
             self.db.commit()  # 提交到数据库
@@ -1366,7 +1363,6 @@ class WndServer(QMainWindow, Ui_WndServer):
     def sql_table_update(self, sql: str, args=tuple()):
         num = 0
         try:
-            self.db.ping()
             num = self.cursor.execute(sql, args)  # 执行SQL语句
             self.db.commit()
         except Exception as e:
@@ -1394,7 +1390,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             sql = f"update {table_name} set {update};"
         num = 0
         try:
-            self.db.ping()
             num = self.cursor.execute(sql, update_vals+condition_vals)
             self.db.commit()
         except Exception as e:
@@ -1407,7 +1402,6 @@ class WndServer(QMainWindow, Ui_WndServer):
     def sql_table_del(self, sql: str, args=tuple()):
         num = 0
         try:
-            self.db.ping()
             num = self.cursor.execute(sql, args)  # 执行SQL语句
             self.db.commit()
         except Exception as e:

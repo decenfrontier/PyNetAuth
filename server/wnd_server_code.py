@@ -396,7 +396,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer_sec.timeout.connect(self.on_timer_sec_timeout)
         self.timer_sec.start(1000)
         self.timer_min.timeout.connect(self.on_timer_min_timeout)
-        self.timer_min.start(1000 * 60 * 10)
+        self.timer_min.start(1000 * 60)
 
     def show_info(self, text):
         self.lbe_info.setText(text)
@@ -877,10 +877,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
 
     def on_timer_min_timeout(self):
-        self.show_info("----------------------------- 每10分钟一轮的检测开始 -----------------------------")
+        self.show_info("----------------------------- 每分钟一轮的检测开始 -----------------------------")
         global today
         cur_day = cur_time_fmt[:10]
-        # 重连
+        # 若与MySQL服务端断开连接, 自动重连
         self.db.ping()
         # 检测日期改变
         if cur_day != today:
@@ -895,13 +895,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.sql_table_update("update 6ip管理 set 今日连接次数=0;")
         # 刷新所有用户状态(状态为在线, 且心跳时间在10分钟前, 置为离线)
         self.sql_table_update("update 2用户管理 set 状态='离线' where 状态='在线' and 心跳时间 < date_sub(now(), interval 10 minute);")
-        # 刷新显示所有表
-        self.show_all_tbe_proj()
-        self.show_all_tbe_user()
-        self.show_all_tbe_card()
-        self.show_all_tbe_custom()
-        self.show_all_tbe_everyday()
-        self.show_info("----------------------------- 每10分钟一轮的检测结束 -----------------------------")
+        self.show_info("----------------------------- 每分钟一轮的检测结束 -----------------------------")
 
     def thd_accept_client(self):
         log.info("服务端已开启, 准备接受客户请求...")

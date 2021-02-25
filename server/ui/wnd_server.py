@@ -17,7 +17,7 @@ class Ui_WndServer(object):
     def setupUi(self, WndServer):
         if not WndServer.objectName():
             WndServer.setObjectName(u"WndServer")
-        WndServer.resize(1097, 639)
+        WndServer.resize(1097, 644)
         WndServer.setStyleSheet(u"    * {\n"
 "        font-size: 12px;\n"
 "        font-family: \"Microsoft YaHei\";\n"
@@ -360,48 +360,68 @@ class Ui_WndServer(object):
         self.stack_widget.addWidget(self.page_proj)
         self.page_user = QWidget()
         self.page_user.setObjectName(u"page_user")
-        self.verticalLayout_3 = QVBoxLayout(self.page_user)
-        self.verticalLayout_3.setSpacing(4)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(2, 4, 2, 2)
-        self.horizontalLayout_7 = QHBoxLayout()
-        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.verticalLayout_15 = QVBoxLayout(self.page_user)
+        self.verticalLayout_15.setSpacing(4)
+        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
+        self.verticalLayout_15.setContentsMargins(2, 4, 2, 2)
+        self.horizontalLayout_21 = QHBoxLayout()
+        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
         self.btn_user_page_prev = QPushButton(self.page_user)
         self.btn_user_page_prev.setObjectName(u"btn_user_page_prev")
         self.btn_user_page_prev.setMaximumSize(QSize(30, 16777215))
 
-        self.horizontalLayout_5.addWidget(self.btn_user_page_prev)
+        self.horizontalLayout_21.addWidget(self.btn_user_page_prev)
 
         self.edt_user_page_go = QLineEdit(self.page_user)
         self.edt_user_page_go.setObjectName(u"edt_user_page_go")
         self.edt_user_page_go.setMaximumSize(QSize(50, 16777215))
         self.edt_user_page_go.setAlignment(Qt.AlignCenter)
 
-        self.horizontalLayout_5.addWidget(self.edt_user_page_go)
+        self.horizontalLayout_21.addWidget(self.edt_user_page_go)
 
         self.btn_user_page_next = QPushButton(self.page_user)
         self.btn_user_page_next.setObjectName(u"btn_user_page_next")
         self.btn_user_page_next.setMaximumSize(QSize(30, 16777215))
 
-        self.horizontalLayout_5.addWidget(self.btn_user_page_next)
+        self.horizontalLayout_21.addWidget(self.btn_user_page_next)
 
         self.btn_user_page_go = QPushButton(self.page_user)
         self.btn_user_page_go.setObjectName(u"btn_user_page_go")
         self.btn_user_page_go.setMaximumSize(QSize(30, 16777215))
 
-        self.horizontalLayout_5.addWidget(self.btn_user_page_go)
+        self.horizontalLayout_21.addWidget(self.btn_user_page_go)
 
+        self.horizontalSpacer = QSpacerItem(200, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.horizontalLayout_7.addLayout(self.horizontalLayout_5)
+        self.horizontalLayout_21.addItem(self.horizontalSpacer)
 
-        self.horizontalSpacer = QSpacerItem(518, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.chk_user_order = QCheckBox(self.page_user)
+        self.chk_user_order.setObjectName(u"chk_user_order")
 
-        self.horizontalLayout_7.addItem(self.horizontalSpacer)
+        self.horizontalLayout_21.addWidget(self.chk_user_order)
 
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.cmb_user_order_by = QComboBox(self.page_user)
+        self.cmb_user_order_by.addItem("")
+        self.cmb_user_order_by.addItem("")
+        self.cmb_user_order_by.addItem("")
+        self.cmb_user_order_by.addItem("")
+        self.cmb_user_order_by.addItem("")
+        self.cmb_user_order_by.setObjectName(u"cmb_user_order_by")
+        self.cmb_user_order_by.setMinimumSize(QSize(80, 0))
+
+        self.horizontalLayout_21.addWidget(self.cmb_user_order_by)
+
+        self.cmb_user_order = QComboBox(self.page_user)
+        self.cmb_user_order.addItem("")
+        self.cmb_user_order.addItem("")
+        self.cmb_user_order.setObjectName(u"cmb_user_order")
+
+        self.horizontalLayout_21.addWidget(self.cmb_user_order)
+
+        self.horizontalSpacer_7 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_21.addItem(self.horizontalSpacer_7)
+
         self.cmb_user_field = QComboBox(self.page_user)
         self.cmb_user_field.addItem("")
         self.cmb_user_field.addItem("")
@@ -417,7 +437,7 @@ class Ui_WndServer(object):
         self.cmb_user_field.addItem("")
         self.cmb_user_field.setObjectName(u"cmb_user_field")
 
-        self.horizontalLayout_2.addWidget(self.cmb_user_field)
+        self.horizontalLayout_21.addWidget(self.cmb_user_field)
 
         self.cmb_user_operator = QComboBox(self.page_user)
         self.cmb_user_operator.addItem("")
@@ -428,23 +448,20 @@ class Ui_WndServer(object):
         self.cmb_user_operator.addItem("")
         self.cmb_user_operator.setObjectName(u"cmb_user_operator")
 
-        self.horizontalLayout_2.addWidget(self.cmb_user_operator)
+        self.horizontalLayout_21.addWidget(self.cmb_user_operator)
 
         self.edt_user_value = QLineEdit(self.page_user)
         self.edt_user_value.setObjectName(u"edt_user_value")
 
-        self.horizontalLayout_2.addWidget(self.edt_user_value)
+        self.horizontalLayout_21.addWidget(self.edt_user_value)
 
         self.btn_user_query = QPushButton(self.page_user)
         self.btn_user_query.setObjectName(u"btn_user_query")
 
-        self.horizontalLayout_2.addWidget(self.btn_user_query)
+        self.horizontalLayout_21.addWidget(self.btn_user_query)
 
 
-        self.horizontalLayout_7.addLayout(self.horizontalLayout_2)
-
-
-        self.verticalLayout_3.addLayout(self.horizontalLayout_7)
+        self.verticalLayout_15.addLayout(self.horizontalLayout_21)
 
         self.tbe_user = QTableWidget(self.page_user)
         if (self.tbe_user.columnCount() < 17):
@@ -483,22 +500,22 @@ class Ui_WndServer(object):
         self.tbe_user.setHorizontalHeaderItem(15, __qtablewidgetitem26)
         __qtablewidgetitem27 = QTableWidgetItem()
         self.tbe_user.setHorizontalHeaderItem(16, __qtablewidgetitem27)
-        if (self.tbe_user.rowCount() < 27):
-            self.tbe_user.setRowCount(27)
+        if (self.tbe_user.rowCount() < 28):
+            self.tbe_user.setRowCount(28)
         self.tbe_user.setObjectName(u"tbe_user")
         self.tbe_user.setAlternatingRowColors(True)
         self.tbe_user.setTextElideMode(Qt.ElideNone)
         self.tbe_user.setShowGrid(True)
         self.tbe_user.setWordWrap(False)
         self.tbe_user.setCornerButtonEnabled(False)
-        self.tbe_user.setRowCount(27)
-        self.tbe_user.horizontalHeader().setVisible(False)
+        self.tbe_user.setRowCount(28)
+        self.tbe_user.horizontalHeader().setVisible(True)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_user.verticalHeader().setVisible(False)
         self.tbe_user.verticalHeader().setMinimumSectionSize(20)
         self.tbe_user.verticalHeader().setDefaultSectionSize(20)
 
-        self.verticalLayout_3.addWidget(self.tbe_user)
+        self.verticalLayout_15.addWidget(self.tbe_user)
 
         self.stack_widget.addWidget(self.page_user)
         self.page_card = QWidget()
@@ -825,7 +842,8 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(4)
+        self.stack_widget.setCurrentIndex(1)
+        self.cmb_user_order_by.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -886,6 +904,16 @@ class Ui_WndServer(object):
         self.edt_user_page_go.setText(QCoreApplication.translate("WndServer", u"0", None))
         self.btn_user_page_next.setText(QCoreApplication.translate("WndServer", u">", None))
         self.btn_user_page_go.setText(QCoreApplication.translate("WndServer", u"Go", None))
+        self.chk_user_order.setText(QCoreApplication.translate("WndServer", u"\u6392\u5e8f", None))
+        self.cmb_user_order_by.setItemText(0, QCoreApplication.translate("WndServer", u"\u5230\u671f\u65f6\u95f4", None))
+        self.cmb_user_order_by.setItemText(1, QCoreApplication.translate("WndServer", u"\u5fc3\u8df3\u65f6\u95f4", None))
+        self.cmb_user_order_by.setItemText(2, QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u767b\u5f55\u6b21\u6570", None))
+        self.cmb_user_order_by.setItemText(3, QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u89e3\u7ed1\u6b21\u6570", None))
+        self.cmb_user_order_by.setItemText(4, QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u65f6\u95f4", None))
+
+        self.cmb_user_order.setItemText(0, QCoreApplication.translate("WndServer", u"\u964d\u5e8f", None))
+        self.cmb_user_order.setItemText(1, QCoreApplication.translate("WndServer", u"\u5347\u5e8f", None))
+
         self.cmb_user_field.setItemText(0, QCoreApplication.translate("WndServer", u"\u8d26\u53f7", None))
         self.cmb_user_field.setItemText(1, QCoreApplication.translate("WndServer", u"\u5bc6\u7801", None))
         self.cmb_user_field.setItemText(2, QCoreApplication.translate("WndServer", u"QQ", None))

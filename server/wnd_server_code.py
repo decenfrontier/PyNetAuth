@@ -300,6 +300,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         # --------------------------------------------------------
         self.action_user_charge_sel = QAction("续费选中用户")
         self.action_user_charge_all = QAction("续费全部用户")
+        # --------------------------------------------------------
+        self.action_user_ip_location = QAction("更新IP归属地")
         self.menu_tbe_user.addActions([self.action_user_comment_sel,
                                        self.action_user_state_sel,
                                        self.action_user_del_sel])
@@ -310,6 +312,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_user.addSeparator()
         self.menu_tbe_user.addActions([self.action_user_charge_sel,
                                        self.action_user_charge_all])
+        self.menu_tbe_user.addSeparator()
+        self.menu_tbe_user.addAction(self.action_user_ip_location)
         self.action_user_comment_sel.triggered.connect(self.on_action_user_comment_sel_triggered)
         self.action_user_del_sel.triggered.connect(self.on_action_user_del_sel_triggered)
         self.action_user_frozen_ip.triggered.connect(self.on_action_user_frozen_ip_triggered)
@@ -317,6 +321,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_user_unfrozen_sel.triggered.connect(self.on_action_user_unfrozen_sel_triggered)
         self.action_user_charge_sel.triggered.connect(self.on_action_user_charge_sel_triggered)
         self.action_user_charge_all.triggered.connect(self.on_action_user_charge_all_triggered)
+        self.action_user_ip_location.triggered.connect(self.update_ip_location)
         self.tbe_user.customContextMenuRequested.connect(
             lambda: self.menu_tbe_user.exec_(QCursor.pos())
         )
@@ -672,8 +677,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         account_set = {self.tbe_user.item(it.row(), 1).text() for it in item_list}
         if not account_set:
             return
-        gift_day, ok_pressed = QInputDialog.getInt(self, "续费选中(选中行, 且状态不为'', 冻结)",
-                                                   "续费天数:", QLineEdit.Normal)
+        gift_day, ok_pressed = QInputDialog.getInt(self, "续费选中", "(被选中, 且状态不为'', 冻结)天数:", QLineEdit.Normal)
         if not ok_pressed:
             return
         accounts = "','".join(account_set)
@@ -685,8 +689,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_page_tbe(self.tbe_user)
 
     def on_action_user_charge_all_triggered(self):
-        gift_day, ok_pressed = QInputDialog.getInt(self, "续费全部(没到期, 且状态不为'', 冻结)",
-                                                   "续费天数:", QLineEdit.Normal)
+        gift_day, ok_pressed = QInputDialog.getInt(self, "续费全部", "(没到期, 且状态不为'', 冻结)天数:", QLineEdit.Normal)
         if not ok_pressed:
             return
         # 若用户已到期, 从now()开始加, 否则从到期时间开始加
@@ -695,6 +698,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             f"date_add(到期时间, interval {gift_day} day)) where now() < 到期时间 and 状态 not in ('', '冻结');")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
         self.show_page_tbe(self.tbe_user)
+
 
     def on_action_user_del_sel_triggered(self):
         item_list = self.tbe_user.selectedItems()
@@ -924,14 +928,14 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.lst_log.clear()
         self.lst_log.addItems(dir_get_files(PATH_LOG))
 
-    # 刷新ip归属地
-    def refresh_ip_location(self):
+    # 更新ip归属地
+    def update_ip_location(self):
         def append_ip_location(ip: str):
             location = get_ip_location(ip)
             with mutex:
                 ip_location_list.append((ip, location))
 
-        # 获取用户表有但归属表没有的ip列表
+        # 获取用户表有, 但归属表没有的, ip列表
         query_ip_list = self.sql_table_query("select distinct A.上次登录IP from 2用户管理 A left join 6ip管理 B "
                                              "on A.上次登录IP=B.IP地址 where B.IP地址 is null;")
         query_ip_list = [ip_dict["上次登录IP"] for ip_dict in query_ip_list]
@@ -953,6 +957,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 self.sql_table_insert(f"insert 6ip管理(IP地址, 归属地) values{ip_locations};")
         # 更新用户表的上次登录地
         self.sql_table_update("update 2用户管理 A inner join 6ip管理 B on A.上次登录IP=B.IP地址 set A.上次登录地=B.归属地;")
+        self.show_page_tbe(self.tbe_user)
 
     def on_timer_sec_timeout(self):
         global cur_time_fmt

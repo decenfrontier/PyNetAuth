@@ -927,7 +927,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def thd_serve_client(self, client_socket: socket.socket, ip: str):
         log.info(f"等待客户端{ip}发出消息中...")
-        client_socket.settimeout(2)  # 设置为非阻塞接收, 只等2秒
+        client_socket.settimeout(2.5)  # 设置为非阻塞接收, 只等2.5秒
         while True:
             try:
                 recv_bytes = client_socket.recv(4096)
@@ -954,7 +954,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 else:  # 解密失败
                     log.warn(f"[解密Warn] 停止服务此ip: {ip}")  # 日志记录此IP
                     client_socket.close()  # 停止服务此ip
-                    return
+                    break
             msg_func_dict = {
                 "初始": self.deal_init,
                 "锟斤拷": self.deal_proj,

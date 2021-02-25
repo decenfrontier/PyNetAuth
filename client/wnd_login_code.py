@@ -322,6 +322,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         lib_.send_to_server(tcp_socket, client_info_dict)
         # ----------------- 接收并处理服务端响应消息 ------------
         msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
+        if not msg_type:
+            self.show_info("等待服务端响应超时")
         if msg_type == "登录":
             self.show_info(server_content_dict["详情"])
             if server_content_dict["结果"]:
@@ -355,6 +357,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         lib_.send_to_server(tcp_socket, client_info_dict)
         # ----------------- 接收并处理服务端响应消息 ------------
         msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
+        if not msg_type:
+            self.show_info("等待服务端响应超时")
         if msg_type == "注册":
             self.show_info(server_content_dict["详情"])
 
@@ -376,6 +380,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         lib_.send_to_server(tcp_socket, client_info_dict)
         # ----------------- 接收并处理服务端响应消息 ------------
         msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
+        if not msg_type:
+            self.show_info("等待服务端响应超时")
         if msg_type == "充值":
             self.show_info(server_content_dict["详情"])
 
@@ -398,6 +404,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         lib_.send_to_server(tcp_socket, client_info_dict)
         # ----------------- 接收并处理服务端响应消息 ------------
         msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
+        if not msg_type:
+            self.show_info("等待服务端响应超时")
         if msg_type == "解绑":
             self.show_info(server_content_dict["详情"])
 
@@ -423,6 +431,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         lib_.send_to_server(tcp_socket, client_info_dict)
         # ----------------- 接收并处理服务端响应消息 ------------
         msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
+        if not msg_type:
+            self.show_info("等待服务端响应超时")
         if msg_type == "改密":
             self.show_info(server_content_dict["详情"])
 

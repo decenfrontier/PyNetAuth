@@ -10,7 +10,8 @@ from logging.handlers import TimedRotatingFileHandler
 
 from PySide2.QtGui import QIcon, QCloseEvent, QCursor
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
-    QMessageBox, QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem
+    QMessageBox, QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem, \
+    QTableWidget
 from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
@@ -46,7 +47,8 @@ state_comment_dict = {
     "检测到调试器": "*d#flI3@34rt7%gh.",
 }
 
-comment_state_dict = {v:k for k,v in state_comment_dict.items()}
+comment_state_dict = {v: k for k, v in state_comment_dict.items()}
+
 
 class Log():
     def __init__(self):
@@ -174,7 +176,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         # ---------------------- 定时器 ----------------------
         self.timer_sec = QTimer()
         self.timer_min = QTimer()
-
 
     def init_wnd(self):
         self.setWindowTitle(f"Ip: {server_ip}  Port: {server_port}  Ver: {server_ver}")
@@ -397,8 +398,15 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
         self.btn_custom_confirm.clicked.connect(self.on_btn_custom_confirm_clicked)
         self.btn_cfg_save.clicked.connect(self.on_btn_cfg_save_clicked)
-        self.btn_user_page_next.clicked.connect(self.on_btn_page_next_clicked)
-        self.btn_user_page_prev.clicked.connect(self.on_btn_page_prev_clicked)
+        self.btn_user_page_next.clicked.connect(
+            lambda: self.on_btn_page_next_clicked(self.tbe_user, self.edt_user_page_go)
+        )
+        self.btn_user_page_prev.clicked.connect(
+            lambda: self.on_btn_page_prev_clicked(self.tbe_user, self.edt_user_page_go)
+        )
+        self.btn_user_page_go.clicked.connect(
+            lambda: self.on_btn_page_go_clicked(self.tbe_user, self.edt_user_page_go)
+        )
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
         self.tbe_custom.cellClicked.connect(self.on_tbe_custom_cellClicked)
@@ -503,17 +511,21 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.cfg_write()
         self.show_info("保存项目配置成功")
 
-    def on_btn_page_next_clicked(self):
-        cur_page = int(self.edt_user_page_go.text())
+    def on_btn_page_next_clicked(self, tbe: QTableWidget, edt: QLineEdit):
+        cur_page = int(edt.text())
         next_page = cur_page + 1
-        self.edt_user_page_go.setText(str(next_page))
-        self.show_page_tbe_user(next_page)
+        edt.setText(str(next_page))
+        self.show_page_tbe(tbe, next_page)
 
-    def on_btn_page_prev_clicked(self):
+    def on_btn_page_prev_clicked(self, tbe: QTableWidget, edt: QLineEdit):
         cur_page = int(self.edt_user_page_go.text())
         prev_page = cur_page - 1 if cur_page > 0 else 0
         self.edt_user_page_go.setText(str(prev_page))
-        self.show_page_tbe_user(prev_page)
+        self.show_page_tbe(tbe, prev_page)
+
+    def on_btn_page_go_clicked(self, tbe: QTableWidget, edt: QLineEdit):
+        go_page = int(self.edt_user_page_go.text())
+        self.show_page_tbe(tbe, go_page)
 
     def on_tbe_proj_cellClicked(self, row: int, col: int):
         self.edt_proj_client_ver.setText(self.tbe_proj.item(row, 1).text())
@@ -635,8 +647,9 @@ class WndServer(QMainWindow, Ui_WndServer):
             return
         accounts = "','".join(account_set)
         # 若用户已到期, 从now()开始加, 否则从到期时间开始加
-        num = self.sql_table_update(f"update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), "
-                               f"date_add(到期时间, interval {gift_day} day)) where 账号 in ('{accounts}') and 状态 not in ('', '冻结');")
+        num = self.sql_table_update(
+            f"update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), "
+            f"date_add(到期时间, interval {gift_day} day)) where 账号 in ('{accounts}') and 状态 not in ('', '冻结');")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
         self.show_page_tbe_user()
 
@@ -646,8 +659,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not ok_pressed:
             return
         # 若用户已到期, 从now()开始加, 否则从到期时间开始加
-        num = self.sql_table_update(f"update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), "
-                               f"date_add(到期时间, interval {gift_day} day)) where now() < 到期时间 and 状态 not in ('', '冻结');")
+        num = self.sql_table_update(
+            f"update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), "
+            f"date_add(到期时间, interval {gift_day} day)) where now() < 到期时间 and 状态 not in ('', '冻结');")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
         self.show_page_tbe_user()
 
@@ -732,6 +746,28 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info(f"{num}个自定义数据删除成功")
         self.show_page_tbe_custom()
 
+    def show_page_tbe(self, tbe: QTableWidget, page=0):
+        tbe_name_dict = {
+            self.tbe_proj: "1项目管理", self.tbe_user: "2用户管理", self.tbe_card: "3卡密管理",
+            self.tbe_custom: "4自定义数据", self.tbe_everyday: "5每日流水", self.tbe_ip: "6ip管理"
+        }
+        tbe_order_dict = {
+            self.tbe_proj: "order by 客户端版本 desc", self.tbe_user: "", self.tbe_card: "",
+            self.tbe_custom: "", self.tbe_everyday: "order by 日期 desc", self.tbe_ip: "order by 今日连接次数 desc"
+        }
+        tbe_refresh_dict = {
+            self.tbe_proj: self.refresh_tbe_proj, self.tbe_user: self.refresh_tbe_user,
+            self.tbe_card: self.refresh_tbe_card, self.tbe_custom: self.refresh_tbe_custom,
+            self.tbe_everyday: self.refresh_tbe_everyday, self.tbe_ip: self.refresh_tbe_ip
+        }
+        tbe_name = tbe_name_dict[tbe]
+        order_fmt = tbe_order_dict[tbe]
+        refresh_func = tbe_refresh_dict[tbe]
+        sql = f"select * from {tbe_name} {order_fmt} limit %s, %s;"
+        print(sql)
+        query_list = self.sql_table_query(sql, (page*tbe.rowCount(), tbe.rowCount()))
+        refresh_func(query_list)
+
     def show_page_tbe_proj(self):
         # 读取表全部内容
         query_proj_list = self.sql_table_query("select * from 1项目管理 order by 客户端版本 desc;")
@@ -763,11 +799,11 @@ class WndServer(QMainWindow, Ui_WndServer):
     def show_page_tbe_everyday(self):
         # 读取用户表内容, 获取今日活跃用户数, 在线用户数
         active_user_num = self.sql_table_query("select count(*) from 2用户管理 where date_format(心跳时间,'%%Y-%%m-%%d')="
-                                                 "date_format(now(), '%%Y-%%m-%%d');")[0]["count(*)"]
+                                               "date_format(now(), '%%Y-%%m-%%d');")[0]["count(*)"]
         online_user_num = self.sql_table_query("select count(*) from 2用户管理 where 状态='在线';")[0]["count(*)"]
         # 更新每日流水表
         self.sql_table_update(f"update 5每日流水 set 活跃用户数=%s, 在线用户数=%s where 日期=%s;",
-                         (active_user_num, online_user_num, today))
+                              (active_user_num, online_user_num, today))
         # 读取每日流水表全部内容
         query_everyday_list = self.sql_table_query("select * from 5每日流水 order by 日期 desc;")
         self.refresh_tbe_everyday(query_everyday_list)
@@ -814,7 +850,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setItem(row, 15, QTableWidgetItem(query_user["备注"]))
             self.tbe_user.setItem(row, 16, QTableWidgetItem(query_user["最后更新时间"]))
 
-    def refresh_tbe_card(self, query_card_list):
+    def refresh_tbe_card(self, query_card_list: list):
         self.tbe_card.clearContents()
         for row, query_card in enumerate(query_card_list):
             query_card["制卡时间"] = "" if query_card["制卡时间"] is None else str(query_card["制卡时间"])
@@ -881,7 +917,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
         # todo:获取用户表有但归属表没有的ip列表
         query_ip_list = self.sql_table_query("select distinct A.上次登录IP from 2用户管理 A left join 6ip管理 B "
-                                               "on A.上次登录IP=B.IP地址 where B.IP地址 is null;")
+                                             "on A.上次登录IP=B.IP地址 where B.IP地址 is null;")
         query_ip_list = [ip_dict["上次登录IP"] for ip_dict in query_ip_list]
         if query_ip_list:
             # 并发获取这些ip的归属地
@@ -993,7 +1029,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"客户端{ip}已断开连接, 服务结束")
         client_socket.close()
 
-
     # 处理_初始
     def deal_init(self, client_socket: socket.socket, client_content_dict: dict):
         ip = client_socket.getpeername()
@@ -1017,7 +1052,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         server_info_dict = {"消息类型": "初始",
                             "内容": {"结果": ret, "详情": detail}}
         self.send_to_client(client_socket, server_info_dict)
-
 
     # 处理_项目
     def deal_proj(self, client_socket: socket.socket, client_content_dict: dict):
@@ -1046,7 +1080,6 @@ class WndServer(QMainWindow, Ui_WndServer):
                             "内容": {"结果": ret, "详情": detail}}
         self.send_to_client(client_socket, server_info_dict)
 
-
     # 处理_自定义数据1
     def deal_custom1(self, client_socket: socket.socket, client_content_dict: dict):
         ip = client_socket.getpeername()
@@ -1056,7 +1089,6 @@ class WndServer(QMainWindow, Ui_WndServer):
                             "内容": {"结果": True, "详情": wnd_server.custom1}}
         self.send_to_client(client_socket, server_info_dict)
 
-
     # 处理_自定义数据2
     def deal_custom2(self, client_socket: socket.socket, client_content_dict: dict):
         ip = client_socket.getpeername()
@@ -1065,7 +1097,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         server_info_dict = {"消息类型": "屯屯屯",
                             "内容": {"结果": True, "详情": wnd_server.custom2}}
         self.send_to_client(client_socket, server_info_dict)
-
 
     # 处理_注册
     def deal_reg(self, client_socket: socket.socket, client_content_dict: dict):
@@ -1078,7 +1109,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             query_user_list = self.sql_table_query("select * from 2用户管理 where 机器码=%s;", (machine_code,))
             if not query_user_list:  # 没有找到此机器码
                 client_content_dict["注册时间"] = cur_time_fmt
-                client_content_dict["到期时间"] = datetime.datetime.now() + datetime.timedelta(days=wnd_server.cfg["注册赠送天数"])
+                client_content_dict["到期时间"] = datetime.datetime.now() + datetime.timedelta(
+                    days=wnd_server.cfg["注册赠送天数"])
                 ret = self.sql_table_insert_ex("2用户管理", client_content_dict)
                 detail = "注册成功" if ret else "注册失败, 数据库异常"
             else:
@@ -1093,7 +1125,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         server_info_dict = {"消息类型": "注册",
                             "内容": {"结果": ret, "详情": detail}}
         self.send_to_client(client_socket, server_info_dict)
-
 
     # 处理_登录
     def deal_login(self, client_socket: socket.socket, client_content_dict: dict):
@@ -1119,7 +1150,8 @@ class WndServer(QMainWindow, Ui_WndServer):
                     detail = "登录成功"
                     if query_user["状态"] == "":  # 新到期时间 = 到期时间 + (现在时间 - 注册时间)
                         detail = "首次登录成功, 开始倒计时"
-                        self.sql_table_update("update 2用户管理 set 到期时间=date_add(到期时间, interval timestampdiff(minute, 注册时间, now()) minute);")
+                        self.sql_table_update(
+                            "update 2用户管理 set 到期时间=date_add(到期时间, interval timestampdiff(minute, 注册时间, now()) minute);")
                 else:
                     detail = "登录失败, 异机登录请先解绑"
             else:
@@ -1168,8 +1200,9 @@ class WndServer(QMainWindow, Ui_WndServer):
                     delta_day = type_time_dict[card_type]
                     account = query_user["账号"]
                     # 若到期时间大于当前时间, 则从到期时间开始加, 否则从当前时间开始加
-                    ret = self.sql_table_update("update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval %s day), "
-                                            "date_add(到期时间, interval %s day)) where 账号=%s;", (delta_day, delta_day, account))
+                    ret = self.sql_table_update(
+                        "update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval %s day), "
+                        "date_add(到期时间, interval %s day)) where 账号=%s;", (delta_day, delta_day, account))
                     if ret:
                         detail = "充值成功"
                         # 更新卡密的使用时间  "3卡密管理", {"使用时间": cur_time_fmt}, {"卡号": card_key}
@@ -1177,7 +1210,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                         # 更新流水充值用户数
                         card_pay_num = card_type + "充值数"
                         self.sql_table_update(f"update 5每日流水 set 充值用户数=充值用户数+1, {card_pay_num}={card_pay_num}+1 "
-                                                f"where 日期='{today}';")
+                                              f"where 日期='{today}';")
                     else:
                         detail = "充值失败, 数据库异常"
                 else:
@@ -1192,7 +1225,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         server_info_dict = {"消息类型": "充值",
                             "内容": {"结果": ret, "详情": detail}}
         self.send_to_client(client_socket, server_info_dict)
-
 
     # 处理_改密
     def deal_modify(self, client_socket: socket.socket, client_content_dict: dict):
@@ -1222,7 +1254,6 @@ class WndServer(QMainWindow, Ui_WndServer):
                             "内容": {"结果": ret, "详情": detail}}
         self.send_to_client(client_socket, server_info_dict)
 
-
     # 处理_心跳
     def deal_heart(self, client_socket: socket.socket, client_content_dict: dict):
         ip = client_socket.getpeername()[0]
@@ -1232,7 +1263,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         comment = comment_state_dict[ori_comment]
         machine_code = client_content_dict["机器码"]
         update_dict = {"心跳时间": cur_time_fmt, "备注": comment}
-        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,))  # 查找账号是否存在  "2用户管理", {"账号": account}
+        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;",
+                                               (account,))  # 查找账号是否存在  "2用户管理", {"账号": account}
         if query_user_list:
             query_user = query_user_list[0]
             if query_user["状态"] == "冻结":  # 服务端已冻结此账号, 则令其下线
@@ -1255,7 +1287,6 @@ class WndServer(QMainWindow, Ui_WndServer):
                             "内容": {"结果": ret, "详情": detail}}
         self.send_to_client(client_socket, server_info_dict)
 
-
     # 处理_离线
     def deal_offline(self, client_socket: socket.socket, client_content_dict: dict):
         ip = client_socket.getpeername()[0]
@@ -1265,7 +1296,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         comment = comment_state_dict[ori_comment]
         update_dict = {"心跳时间": cur_time_fmt, "状态": "离线", "备注": comment}
 
-        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,))  # 查找账号是否存在  "2用户管理", {"账号": account}
+        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;",
+                                               (account,))  # 查找账号是否存在  "2用户管理", {"账号": account}
         if query_user_list:
             query_user = query_user_list[0]
             # 若账号在线时有非法操作, 服务端自动冻结其账号, 客户端离线时不要改变冻结状态
@@ -1283,7 +1315,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         server_info_dict = {"消息类型": "离线",
                             "内容": {"结果": True, "详情": "无"}}
         self.send_to_client(client_socket, server_info_dict)
-
 
     # 处理_解绑
     def deal_unbind(self, client_socket: socket.socket, client_content_dict: dict):
@@ -1315,7 +1346,6 @@ class WndServer(QMainWindow, Ui_WndServer):
                             "内容": {"结果": ret, "详情": detail}}
         self.send_to_client(client_socket, server_info_dict)
 
-
     # 发送数据给客户端
     def send_to_client(self, client_socket: socket.socket, server_info_dict: dict):
         # 内容 转 json字符串
@@ -1333,7 +1363,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             log.info(f"向客户端{client_socket.getpeername()}回复成功: {json_str}")
         except Exception as e:
             log.info(f"向客户端{client_socket.getpeername()}回复失败: {e}")
-
 
     def sql_table_insert(self, sql: str, args=tuple()):
         num = 0
@@ -1394,7 +1423,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         print(f"表查询结果: {query_list}")
         return query_list
 
-
     def sql_table_update(self, sql: str, args=tuple()):
         num = 0
         try:
@@ -1425,14 +1453,13 @@ class WndServer(QMainWindow, Ui_WndServer):
             sql = f"update {table_name} set {update};"
         num = 0
         try:
-            num = self.cursor.execute(sql, update_vals+condition_vals)
+            num = self.cursor.execute(sql, update_vals + condition_vals)
             self.db.commit()
         except Exception as e:
             log.warn(f"表更新异常: {sql} -----原因: {e}")
             self.db.rollback()
         log.info(f"表更新数量: {num}")
         return num
-
 
     def sql_table_del(self, sql: str, args=tuple()):
         num = 0

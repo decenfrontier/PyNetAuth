@@ -964,6 +964,11 @@
           </column>
           <column>
            <property name="text">
+            <string>充值月数</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
             <string>操作系统</string>
            </property>
           </column>

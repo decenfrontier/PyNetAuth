@@ -222,7 +222,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 用户管理表
         id, account, pwd, qq, state, heart_time, due_time, last_login_time, last_login_ip, \
         last_login_place, today_login_count, today_unbind_count, machine_code, reg_time, \
-        opration_system, comment, last_update_time = [i for i in range(17)]
+        pay_month, opration_system, comment, last_update_time = [i for i in range(18)]
         self.tbe_user.setColumnWidth(id, 40)
         self.tbe_user.setColumnWidth(account, 70)
         self.tbe_user.setColumnWidth(pwd, 40)
@@ -232,6 +232,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.setColumnWidth(due_time, 130)
         self.tbe_user.setColumnWidth(last_login_time, 130)
         self.tbe_user.setColumnWidth(machine_code, 180)
+        self.tbe_user.setColumnWidth(reg_time, 130)
         self.tbe_user.setColumnWidth(reg_time, 130)
         self.tbe_user.setColumnWidth(opration_system, 175)
         self.tbe_user.setColumnWidth(last_update_time, 130)
@@ -866,9 +867,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setItem(row, 11, QTableWidgetItem(str(query_user["今日解绑次数"])))
             self.tbe_user.setItem(row, 12, QTableWidgetItem(query_user["机器码"]))
             self.tbe_user.setItem(row, 13, QTableWidgetItem(query_user["注册时间"]))
-            self.tbe_user.setItem(row, 14, QTableWidgetItem(query_user["操作系统"]))
-            self.tbe_user.setItem(row, 15, QTableWidgetItem(query_user["备注"]))
-            self.tbe_user.setItem(row, 16, QTableWidgetItem(query_user["最后更新时间"]))
+            self.tbe_user.setItem(row, 14, QTableWidgetItem(str(query_user["充值月数"])))
+            self.tbe_user.setItem(row, 15, QTableWidgetItem(query_user["操作系统"]))
+            self.tbe_user.setItem(row, 16, QTableWidgetItem(query_user["备注"]))
+            self.tbe_user.setItem(row, 17, QTableWidgetItem(query_user["最后更新时间"]))
 
     def refresh_tbe_card(self, query_card_list: list):
         self.tbe_card.clearContents()

@@ -199,6 +199,27 @@ cfg_login = {  # 登录窗口
     "账号": "", "密码": "", "提示更新版本": True, "记住账号密码": True,
 }
 
+# ------------------------- 安全相关 -------------------------
+def is_user_dangerous():
+    global client_comment
+    ret = False
+
+    ret1 = anti_vm()
+    if ret1:
+        client_comment = state_comment_dict["检测到虚拟机"]
+        ret = True
+    ret2 = anti_debug1()
+    ret3 = anti_debug2()
+    ret4 = anti_debug3()
+    ret5 = anti_anti_debug4()
+    if True in [ret2, ret3, ret4, ret5]:
+        client_comment = state_comment_dict["检测到调试器"]
+        ret = True
+    if ret:
+        print("危险")
+    else:
+        print("安全")
+    return ret
 
 # ------------------------- 网络验证相关 -------------------------
 # 获取机器码(主板序列号+硬盘序列号)
@@ -278,14 +299,14 @@ server_ip = "127.0.0.1"  # 119.29.167.100
 server_port = 47123
 machine_code = get_machine_code()
 
-user_comment = {
+state_comment_dict = {
     "正常": "*d#fl1I@34rt7%gh.",
     "检测到改数据": "*d#flI1@34rt7%gh.",
     "检测到虚拟机": "*d#flI2@34rt7%gh.",
     "检测到调试器": "*d#flI3@34rt7%gh.",
 }
 
-client_comment = user_comment["正常"]
+client_comment = state_comment_dict["正常"]
 
 # 从服务端获取的数据
 aes_key = "*d#f1Il@34rt7%gh."  # AES密钥, 登录界面初始化时获取, 先随机写一个迷惑破解者

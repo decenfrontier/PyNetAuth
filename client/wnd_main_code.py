@@ -23,6 +23,7 @@ class WndMain(QMainWindow, Ui_WndMain):
         self.send_recv_offline()
 
     def send_recv_offline(self):
+        lib_.is_user_dangerous()
         tcp_socket = lib_.connect_server_tcp()
         if not tcp_socket:
             lib_.log_info("服务器繁忙, 请稍后再试")
@@ -70,6 +71,7 @@ class WndMain(QMainWindow, Ui_WndMain):
             # 每一轮循环错误次数+1, 失败则每隔10秒连接一次
             self.fail_count += 1
             sleep_time = 10
+            lib_.is_user_dangerous()
             # 尝试连接服务端
             tcp_socket = lib_.connect_server_tcp()
             if not tcp_socket:  # 连接失败

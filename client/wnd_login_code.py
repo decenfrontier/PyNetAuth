@@ -95,7 +95,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 检测全局变量是否被修改
         if [lib_.aes_key, lib_.user_account, lib_.pwd_pic, lib_.pwd_zk, lib_.addr_crack] != \
                 ["*d#f1Il@34rt7%gh.", "aaa", "1234", "5678", "0x8CFF98"]:
-            lib_.client_comment = lib_.user_comment["检测到改数据"]
+            lib_.client_comment = lib_.state_comment_dict["检测到改数据"]
         # 与服务端连接
         tcp_socket = lib_.connect_server_tcp()
         if not tcp_socket:
@@ -298,6 +298,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         return False
 
     def send_recv_login(self):
+        lib_.is_user_dangerous()
         # ----------------- 发送数据给服务器 -----------------
         login_account = lib_.cfg_login["账号"]
         login_pwd = lib_.cfg_login["密码"]

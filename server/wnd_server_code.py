@@ -372,7 +372,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_flow_del_sel = QAction("删除选中流水信息")
         self.menu_tbe_flow.addAction(self.action_flow_del_sel)
         # todo: 添加 删除选中流水信息 函数
-        self.action_flow_del_sel.triggered.connect(None)
+        self.action_flow_del_sel.triggered.connect(self.on_action_flow_del_sel_triggered)
         self.tbe_flow.customContextMenuRequested.connect(
             lambda: self.menu_tbe_flow.exec_(QCursor.pos())
         )
@@ -778,7 +778,16 @@ class WndServer(QMainWindow, Ui_WndServer):
         num = self.sql_table_del(f"delete from 4自定义数据 where 键 in ('{keys}');")
         self.show_info(f"{num}个自定义数据删除成功")
         self.show_page_tbe(self.tbe_custom)
-        
+
+    def on_action_flow_del_sel_triggered(self):
+        item_list = self.tbe_flow.selectedItems()
+        flow_set = {self.tbe_flow.item(it.row(), 1).text() for it in item_list}
+        if not flow_set:
+            return
+        flows = "','".join(flow_set)
+        num = self.sql_table_del(f"delete from 5每日流水 where 日期 in ('{flows}');")
+        self.show_info(f"{num}条记录删除成功")
+        self.show_page_tbe(self.tbe_flow)
 
     def show_page_tbe(self, tbe: QTableWidget, page=0):
         tbe_name_dict = {

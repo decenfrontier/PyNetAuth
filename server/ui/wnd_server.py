@@ -42,11 +42,11 @@ class Ui_WndServer(object):
         self.stack_widget.setObjectName(u"stack_widget")
         self.page_proj = QWidget()
         self.page_proj.setObjectName(u"page_proj")
-        self.verticalLayout_6 = QVBoxLayout(self.page_proj)
-        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
-        self.verticalLayout_6.setContentsMargins(2, 2, 6, 2)
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.verticalLayout_7 = QVBoxLayout(self.page_proj)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.verticalLayout_7.setContentsMargins(2, 2, 2, 2)
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.tbe_proj = QTableWidget(self.page_proj)
         if (self.tbe_proj.columnCount() < 7):
             self.tbe_proj.setColumnCount(7)
@@ -64,51 +64,25 @@ class Ui_WndServer(object):
         self.tbe_proj.setHorizontalHeaderItem(5, __qtablewidgetitem5)
         __qtablewidgetitem6 = QTableWidgetItem()
         self.tbe_proj.setHorizontalHeaderItem(6, __qtablewidgetitem6)
-        if (self.tbe_proj.rowCount() < 19):
-            self.tbe_proj.setRowCount(19)
+        if (self.tbe_proj.rowCount() < 21):
+            self.tbe_proj.setRowCount(21)
         self.tbe_proj.setObjectName(u"tbe_proj")
         self.tbe_proj.setAlternatingRowColors(True)
-        self.tbe_proj.setRowCount(19)
+        self.tbe_proj.setRowCount(21)
         self.tbe_proj.horizontalHeader().setDefaultSectionSize(90)
         self.tbe_proj.horizontalHeader().setStretchLastSection(True)
         self.tbe_proj.verticalHeader().setVisible(False)
         self.tbe_proj.verticalHeader().setMinimumSectionSize(20)
         self.tbe_proj.verticalHeader().setDefaultSectionSize(20)
 
-        self.horizontalLayout.addWidget(self.tbe_proj)
+        self.horizontalLayout_4.addWidget(self.tbe_proj)
 
-        self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setSpacing(10)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_6 = QVBoxLayout()
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.groupBox_5 = QGroupBox(self.page_proj)
         self.groupBox_5.setObjectName(u"groupBox_5")
         self.formLayout_3 = QFormLayout(self.groupBox_5)
         self.formLayout_3.setObjectName(u"formLayout_3")
-        self.label = QLabel(self.groupBox_5)
-        self.label.setObjectName(u"label")
-
-        self.formLayout_3.setWidget(1, QFormLayout.LabelRole, self.label)
-
-        self.edt_proj_client_ver = QLineEdit(self.groupBox_5)
-        self.edt_proj_client_ver.setObjectName(u"edt_proj_client_ver")
-
-        self.formLayout_3.setWidget(1, QFormLayout.FieldRole, self.edt_proj_client_ver)
-
-        self.label_3 = QLabel(self.groupBox_5)
-        self.label_3.setObjectName(u"label_3")
-
-        self.formLayout_3.setWidget(2, QFormLayout.LabelRole, self.label_3)
-
-        self.pedt_proj_public_notice = QPlainTextEdit(self.groupBox_5)
-        self.pedt_proj_public_notice.setObjectName(u"pedt_proj_public_notice")
-
-        self.formLayout_3.setWidget(2, QFormLayout.FieldRole, self.pedt_proj_public_notice)
-
-        self.btn_proj_confirm = QPushButton(self.groupBox_5)
-        self.btn_proj_confirm.setObjectName(u"btn_proj_confirm")
-
-        self.formLayout_3.setWidget(4, QFormLayout.FieldRole, self.btn_proj_confirm)
-
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.chk_proj_login = QCheckBox(self.groupBox_5)
@@ -132,8 +106,39 @@ class Ui_WndServer(object):
 
         self.formLayout_3.setLayout(0, QFormLayout.SpanningRole, self.horizontalLayout_6)
 
+        self.label = QLabel(self.groupBox_5)
+        self.label.setObjectName(u"label")
 
-        self.verticalLayout_2.addWidget(self.groupBox_5)
+        self.formLayout_3.setWidget(1, QFormLayout.LabelRole, self.label)
+
+        self.edt_proj_client_ver = QLineEdit(self.groupBox_5)
+        self.edt_proj_client_ver.setObjectName(u"edt_proj_client_ver")
+
+        self.formLayout_3.setWidget(1, QFormLayout.FieldRole, self.edt_proj_client_ver)
+
+        self.label_3 = QLabel(self.groupBox_5)
+        self.label_3.setObjectName(u"label_3")
+
+        self.formLayout_3.setWidget(2, QFormLayout.LabelRole, self.label_3)
+
+        self.pedt_proj_public_notice = QPlainTextEdit(self.groupBox_5)
+        self.pedt_proj_public_notice.setObjectName(u"pedt_proj_public_notice")
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pedt_proj_public_notice.sizePolicy().hasHeightForWidth())
+        self.pedt_proj_public_notice.setSizePolicy(sizePolicy)
+        self.pedt_proj_public_notice.setMinimumSize(QSize(0, 50))
+
+        self.formLayout_3.setWidget(2, QFormLayout.FieldRole, self.pedt_proj_public_notice)
+
+        self.btn_proj_confirm = QPushButton(self.groupBox_5)
+        self.btn_proj_confirm.setObjectName(u"btn_proj_confirm")
+
+        self.formLayout_3.setWidget(3, QFormLayout.FieldRole, self.btn_proj_confirm)
+
+
+        self.verticalLayout_6.addWidget(self.groupBox_5)
 
         self.groupBox = QGroupBox(self.page_proj)
         self.groupBox.setObjectName(u"groupBox")
@@ -195,19 +200,52 @@ class Ui_WndServer(object):
         self.formLayout.setWidget(5, QFormLayout.FieldRole, self.btn_cfg_save)
 
 
-        self.verticalLayout_2.addWidget(self.groupBox)
+        self.verticalLayout_6.addWidget(self.groupBox)
+
+        self.horizontalLayout_9 = QHBoxLayout()
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.btn_proj_page_prev = QPushButton(self.page_proj)
+        self.btn_proj_page_prev.setObjectName(u"btn_proj_page_prev")
+        self.btn_proj_page_prev.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_9.addWidget(self.btn_proj_page_prev)
+
+        self.edt_proj_page_go = QLineEdit(self.page_proj)
+        self.edt_proj_page_go.setObjectName(u"edt_proj_page_go")
+        self.edt_proj_page_go.setMaximumSize(QSize(50, 16777215))
+        self.edt_proj_page_go.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_9.addWidget(self.edt_proj_page_go)
+
+        self.btn_proj_page_next = QPushButton(self.page_proj)
+        self.btn_proj_page_next.setObjectName(u"btn_proj_page_next")
+        self.btn_proj_page_next.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_9.addWidget(self.btn_proj_page_next)
+
+        self.btn_proj_page_go = QPushButton(self.page_proj)
+        self.btn_proj_page_go.setObjectName(u"btn_proj_page_go")
+        self.btn_proj_page_go.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_9.addWidget(self.btn_proj_page_go)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_9.addItem(self.horizontalSpacer_3)
 
 
-        self.horizontalLayout.addLayout(self.verticalLayout_2)
+        self.verticalLayout_6.addLayout(self.horizontalLayout_9)
 
-        self.horizontalLayout.setStretch(0, 3)
-        self.horizontalLayout.setStretch(1, 1)
 
-        self.verticalLayout_6.addLayout(self.horizontalLayout)
+        self.horizontalLayout_4.addLayout(self.verticalLayout_6)
 
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setSpacing(6)
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalLayout_4.setStretch(0, 4)
+        self.horizontalLayout_4.setStretch(1, 1)
+
+        self.verticalLayout_7.addLayout(self.horizontalLayout_4)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.tbe_custom = QTableWidget(self.page_proj)
         if (self.tbe_custom.columnCount() < 4):
             self.tbe_custom.setColumnCount(4)
@@ -230,8 +268,10 @@ class Ui_WndServer(object):
         self.tbe_custom.verticalHeader().setMinimumSectionSize(20)
         self.tbe_custom.verticalHeader().setDefaultSectionSize(20)
 
-        self.horizontalLayout_4.addWidget(self.tbe_custom)
+        self.horizontalLayout.addWidget(self.tbe_custom)
 
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.groupBox_4 = QGroupBox(self.page_proj)
         self.groupBox_4.setObjectName(u"groupBox_4")
         self.formLayout_2 = QFormLayout(self.groupBox_4)
@@ -239,85 +279,115 @@ class Ui_WndServer(object):
         self.label_8 = QLabel(self.groupBox_4)
         self.label_8.setObjectName(u"label_8")
 
-        self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.label_8)
+        self.formLayout_2.setWidget(0, QFormLayout.LabelRole, self.label_8)
 
         self.edt_custom_key = QLineEdit(self.groupBox_4)
         self.edt_custom_key.setObjectName(u"edt_custom_key")
 
-        self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.edt_custom_key)
+        self.formLayout_2.setWidget(0, QFormLayout.FieldRole, self.edt_custom_key)
 
         self.label_9 = QLabel(self.groupBox_4)
         self.label_9.setObjectName(u"label_9")
 
-        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.label_9)
+        self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.label_9)
 
         self.edt_custom_val = QLineEdit(self.groupBox_4)
         self.edt_custom_val.setObjectName(u"edt_custom_val")
 
-        self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.edt_custom_val)
+        self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.edt_custom_val)
 
         self.label_13 = QLabel(self.groupBox_4)
         self.label_13.setObjectName(u"label_13")
 
-        self.formLayout_2.setWidget(5, QFormLayout.LabelRole, self.label_13)
+        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.label_13)
 
         self.edt_custom_eval = QLineEdit(self.groupBox_4)
         self.edt_custom_eval.setObjectName(u"edt_custom_eval")
         self.edt_custom_eval.setReadOnly(True)
 
-        self.formLayout_2.setWidget(5, QFormLayout.FieldRole, self.edt_custom_eval)
+        self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.edt_custom_eval)
 
         self.btn_custom_confirm = QPushButton(self.groupBox_4)
         self.btn_custom_confirm.setObjectName(u"btn_custom_confirm")
 
-        self.formLayout_2.setWidget(9, QFormLayout.FieldRole, self.btn_custom_confirm)
+        self.formLayout_2.setWidget(3, QFormLayout.FieldRole, self.btn_custom_confirm)
 
 
-        self.horizontalLayout_4.addWidget(self.groupBox_4)
+        self.verticalLayout_2.addWidget(self.groupBox_4)
 
-        self.horizontalLayout_4.setStretch(0, 3)
-        self.horizontalLayout_4.setStretch(1, 1)
+        self.horizontalLayout_8 = QHBoxLayout()
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.btn_custom_page_prev = QPushButton(self.page_proj)
+        self.btn_custom_page_prev.setObjectName(u"btn_custom_page_prev")
+        self.btn_custom_page_prev.setMaximumSize(QSize(30, 16777215))
 
-        self.verticalLayout_6.addLayout(self.horizontalLayout_4)
+        self.horizontalLayout_8.addWidget(self.btn_custom_page_prev)
+
+        self.edt_custom_page_go = QLineEdit(self.page_proj)
+        self.edt_custom_page_go.setObjectName(u"edt_custom_page_go")
+        self.edt_custom_page_go.setMaximumSize(QSize(50, 16777215))
+        self.edt_custom_page_go.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_8.addWidget(self.edt_custom_page_go)
+
+        self.btn_custom_page_next = QPushButton(self.page_proj)
+        self.btn_custom_page_next.setObjectName(u"btn_custom_page_next")
+        self.btn_custom_page_next.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_8.addWidget(self.btn_custom_page_next)
+
+        self.btn_custom_page_go = QPushButton(self.page_proj)
+        self.btn_custom_page_go.setObjectName(u"btn_custom_page_go")
+        self.btn_custom_page_go.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_8.addWidget(self.btn_custom_page_go)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_8.addItem(self.horizontalSpacer_2)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_8)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout_2)
+
+        self.horizontalLayout.setStretch(0, 4)
+        self.horizontalLayout.setStretch(1, 1)
+
+        self.verticalLayout_7.addLayout(self.horizontalLayout)
 
         self.stack_widget.addWidget(self.page_proj)
         self.page_user = QWidget()
         self.page_user.setObjectName(u"page_user")
-        self.gridLayout_3 = QGridLayout(self.page_user)
-        self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.gridLayout_3.setContentsMargins(2, 2, 2, 2)
-        self.verticalLayout_3 = QVBoxLayout()
-        self.verticalLayout_3.setSpacing(2)
+        self.verticalLayout_3 = QVBoxLayout(self.page_user)
+        self.verticalLayout_3.setSpacing(4)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.groupBox_2 = QGroupBox(self.page_user)
-        self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setMinimumSize(QSize(220, 0))
-        self.groupBox_2.setMaximumSize(QSize(16777215, 32))
-        self.horizontalLayout_7 = QHBoxLayout(self.groupBox_2)
+        self.verticalLayout_3.setContentsMargins(2, 4, 2, 2)
+        self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.horizontalLayout_7.setContentsMargins(2, 2, 2, 2)
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.btn_user_page_prev = QPushButton(self.groupBox_2)
+        self.btn_user_page_prev = QPushButton(self.page_user)
         self.btn_user_page_prev.setObjectName(u"btn_user_page_prev")
         self.btn_user_page_prev.setMaximumSize(QSize(30, 16777215))
 
         self.horizontalLayout_5.addWidget(self.btn_user_page_prev)
 
-        self.edt_user_page_go = QLineEdit(self.groupBox_2)
+        self.edt_user_page_go = QLineEdit(self.page_user)
         self.edt_user_page_go.setObjectName(u"edt_user_page_go")
         self.edt_user_page_go.setMaximumSize(QSize(50, 16777215))
         self.edt_user_page_go.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout_5.addWidget(self.edt_user_page_go)
 
-        self.btn_user_page_next = QPushButton(self.groupBox_2)
+        self.btn_user_page_next = QPushButton(self.page_user)
         self.btn_user_page_next.setObjectName(u"btn_user_page_next")
         self.btn_user_page_next.setMaximumSize(QSize(30, 16777215))
 
         self.horizontalLayout_5.addWidget(self.btn_user_page_next)
 
-        self.btn_user_page_go = QPushButton(self.groupBox_2)
+        self.btn_user_page_go = QPushButton(self.page_user)
         self.btn_user_page_go.setObjectName(u"btn_user_page_go")
         self.btn_user_page_go.setMaximumSize(QSize(30, 16777215))
 
@@ -332,7 +402,7 @@ class Ui_WndServer(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.cmb_user_field = QComboBox(self.groupBox_2)
+        self.cmb_user_field = QComboBox(self.page_user)
         self.cmb_user_field.addItem("")
         self.cmb_user_field.addItem("")
         self.cmb_user_field.addItem("")
@@ -349,7 +419,7 @@ class Ui_WndServer(object):
 
         self.horizontalLayout_2.addWidget(self.cmb_user_field)
 
-        self.cmb_user_operator = QComboBox(self.groupBox_2)
+        self.cmb_user_operator = QComboBox(self.page_user)
         self.cmb_user_operator.addItem("")
         self.cmb_user_operator.addItem("")
         self.cmb_user_operator.addItem("")
@@ -360,12 +430,12 @@ class Ui_WndServer(object):
 
         self.horizontalLayout_2.addWidget(self.cmb_user_operator)
 
-        self.edt_user_value = QLineEdit(self.groupBox_2)
+        self.edt_user_value = QLineEdit(self.page_user)
         self.edt_user_value.setObjectName(u"edt_user_value")
 
         self.horizontalLayout_2.addWidget(self.edt_user_value)
 
-        self.btn_user_query = QPushButton(self.groupBox_2)
+        self.btn_user_query = QPushButton(self.page_user)
         self.btn_user_query.setObjectName(u"btn_user_query")
 
         self.horizontalLayout_2.addWidget(self.btn_user_query)
@@ -374,7 +444,7 @@ class Ui_WndServer(object):
         self.horizontalLayout_7.addLayout(self.horizontalLayout_2)
 
 
-        self.verticalLayout_3.addWidget(self.groupBox_2)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_7)
 
         self.tbe_user = QTableWidget(self.page_user)
         if (self.tbe_user.columnCount() < 17):
@@ -422,7 +492,7 @@ class Ui_WndServer(object):
         self.tbe_user.setWordWrap(False)
         self.tbe_user.setCornerButtonEnabled(False)
         self.tbe_user.setRowCount(27)
-        self.tbe_user.horizontalHeader().setVisible(True)
+        self.tbe_user.horizontalHeader().setVisible(False)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_user.verticalHeader().setVisible(False)
         self.tbe_user.verticalHeader().setMinimumSectionSize(20)
@@ -430,21 +500,13 @@ class Ui_WndServer(object):
 
         self.verticalLayout_3.addWidget(self.tbe_user)
 
-        self.verticalLayout_3.setStretch(0, 1)
-        self.verticalLayout_3.setStretch(1, 12)
-
-        self.gridLayout_3.addLayout(self.verticalLayout_3, 0, 0, 1, 1)
-
         self.stack_widget.addWidget(self.page_user)
         self.page_card = QWidget()
         self.page_card.setObjectName(u"page_card")
-        self.gridLayout_4 = QGridLayout(self.page_card)
-        self.gridLayout_4.setObjectName(u"gridLayout_4")
-        self.gridLayout_4.setContentsMargins(2, 2, 2, 2)
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setSpacing(2)
+        self.horizontalLayout_3 = QHBoxLayout(self.page_card)
+        self.horizontalLayout_3.setSpacing(6)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_3.setContentsMargins(2, 2, 2, 2)
         self.tbe_card = QTableWidget(self.page_card)
         if (self.tbe_card.columnCount() < 6):
             self.tbe_card.setColumnCount(6)
@@ -535,68 +597,134 @@ class Ui_WndServer(object):
 
         self.verticalLayout_5.addLayout(self.verticalLayout_4)
 
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.btn_card_page_prev = QPushButton(self.groupBox_3)
+        self.btn_card_page_prev.setObjectName(u"btn_card_page_prev")
+        self.btn_card_page_prev.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_10.addWidget(self.btn_card_page_prev)
+
+        self.edt_card_page_go = QLineEdit(self.groupBox_3)
+        self.edt_card_page_go.setObjectName(u"edt_card_page_go")
+        self.edt_card_page_go.setMaximumSize(QSize(50, 16777215))
+        self.edt_card_page_go.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_10.addWidget(self.edt_card_page_go)
+
+        self.btn_card_page_next = QPushButton(self.groupBox_3)
+        self.btn_card_page_next.setObjectName(u"btn_card_page_next")
+        self.btn_card_page_next.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_10.addWidget(self.btn_card_page_next)
+
+        self.btn_card_page_go = QPushButton(self.groupBox_3)
+        self.btn_card_page_go.setObjectName(u"btn_card_page_go")
+        self.btn_card_page_go.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_10.addWidget(self.btn_card_page_go)
+
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_10.addItem(self.horizontalSpacer_4)
+
+
+        self.verticalLayout_5.addLayout(self.horizontalLayout_10)
+
 
         self.horizontalLayout_3.addWidget(self.groupBox_3)
 
         self.horizontalLayout_3.setStretch(0, 3)
         self.horizontalLayout_3.setStretch(1, 1)
-
-        self.gridLayout_4.addLayout(self.horizontalLayout_3, 0, 0, 1, 1)
-
         self.stack_widget.addWidget(self.page_card)
-        self.page_everyday = QWidget()
-        self.page_everyday.setObjectName(u"page_everyday")
-        self.gridLayout_2 = QGridLayout(self.page_everyday)
-        self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.gridLayout_2.setContentsMargins(2, 2, 2, 2)
-        self.tbe_everyday = QTableWidget(self.page_everyday)
-        if (self.tbe_everyday.columnCount() < 10):
-            self.tbe_everyday.setColumnCount(10)
+        self.page_flow = QWidget()
+        self.page_flow.setObjectName(u"page_flow")
+        self.verticalLayout_8 = QVBoxLayout(self.page_flow)
+        self.verticalLayout_8.setSpacing(4)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_8.setContentsMargins(2, 4, 2, 2)
+        self.horizontalLayout_11 = QHBoxLayout()
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.btn_flow_page_prev = QPushButton(self.page_flow)
+        self.btn_flow_page_prev.setObjectName(u"btn_flow_page_prev")
+        self.btn_flow_page_prev.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_11.addWidget(self.btn_flow_page_prev)
+
+        self.edt_flow_page_go = QLineEdit(self.page_flow)
+        self.edt_flow_page_go.setObjectName(u"edt_flow_page_go")
+        self.edt_flow_page_go.setMaximumSize(QSize(50, 16777215))
+        self.edt_flow_page_go.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_11.addWidget(self.edt_flow_page_go)
+
+        self.btn_flow_page_next = QPushButton(self.page_flow)
+        self.btn_flow_page_next.setObjectName(u"btn_flow_page_next")
+        self.btn_flow_page_next.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_11.addWidget(self.btn_flow_page_next)
+
+        self.btn_flow_page_go = QPushButton(self.page_flow)
+        self.btn_flow_page_go.setObjectName(u"btn_flow_page_go")
+        self.btn_flow_page_go.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_11.addWidget(self.btn_flow_page_go)
+
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_11.addItem(self.horizontalSpacer_5)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_11)
+
+        self.tbe_flow = QTableWidget(self.page_flow)
+        if (self.tbe_flow.columnCount() < 10):
+            self.tbe_flow.setColumnCount(10)
         __qtablewidgetitem34 = QTableWidgetItem()
-        self.tbe_everyday.setHorizontalHeaderItem(0, __qtablewidgetitem34)
+        self.tbe_flow.setHorizontalHeaderItem(0, __qtablewidgetitem34)
         __qtablewidgetitem35 = QTableWidgetItem()
-        self.tbe_everyday.setHorizontalHeaderItem(1, __qtablewidgetitem35)
+        self.tbe_flow.setHorizontalHeaderItem(1, __qtablewidgetitem35)
         __qtablewidgetitem36 = QTableWidgetItem()
-        self.tbe_everyday.setHorizontalHeaderItem(2, __qtablewidgetitem36)
+        self.tbe_flow.setHorizontalHeaderItem(2, __qtablewidgetitem36)
         __qtablewidgetitem37 = QTableWidgetItem()
-        self.tbe_everyday.setHorizontalHeaderItem(3, __qtablewidgetitem37)
+        self.tbe_flow.setHorizontalHeaderItem(3, __qtablewidgetitem37)
         __qtablewidgetitem38 = QTableWidgetItem()
-        self.tbe_everyday.setHorizontalHeaderItem(4, __qtablewidgetitem38)
+        self.tbe_flow.setHorizontalHeaderItem(4, __qtablewidgetitem38)
         __qtablewidgetitem39 = QTableWidgetItem()
-        self.tbe_everyday.setHorizontalHeaderItem(5, __qtablewidgetitem39)
+        self.tbe_flow.setHorizontalHeaderItem(5, __qtablewidgetitem39)
         __qtablewidgetitem40 = QTableWidgetItem()
-        self.tbe_everyday.setHorizontalHeaderItem(6, __qtablewidgetitem40)
+        self.tbe_flow.setHorizontalHeaderItem(6, __qtablewidgetitem40)
         __qtablewidgetitem41 = QTableWidgetItem()
-        self.tbe_everyday.setHorizontalHeaderItem(7, __qtablewidgetitem41)
+        self.tbe_flow.setHorizontalHeaderItem(7, __qtablewidgetitem41)
         __qtablewidgetitem42 = QTableWidgetItem()
-        self.tbe_everyday.setHorizontalHeaderItem(8, __qtablewidgetitem42)
+        self.tbe_flow.setHorizontalHeaderItem(8, __qtablewidgetitem42)
         __qtablewidgetitem43 = QTableWidgetItem()
-        self.tbe_everyday.setHorizontalHeaderItem(9, __qtablewidgetitem43)
-        if (self.tbe_everyday.rowCount() < 28):
-            self.tbe_everyday.setRowCount(28)
-        self.tbe_everyday.setObjectName(u"tbe_everyday")
-        self.tbe_everyday.setAlternatingRowColors(True)
-        self.tbe_everyday.setRowCount(28)
-        self.tbe_everyday.horizontalHeader().setStretchLastSection(True)
-        self.tbe_everyday.verticalHeader().setVisible(False)
-        self.tbe_everyday.verticalHeader().setMinimumSectionSize(20)
-        self.tbe_everyday.verticalHeader().setDefaultSectionSize(20)
+        self.tbe_flow.setHorizontalHeaderItem(9, __qtablewidgetitem43)
+        if (self.tbe_flow.rowCount() < 29):
+            self.tbe_flow.setRowCount(29)
+        self.tbe_flow.setObjectName(u"tbe_flow")
+        self.tbe_flow.setAlternatingRowColors(True)
+        self.tbe_flow.setRowCount(29)
+        self.tbe_flow.horizontalHeader().setStretchLastSection(True)
+        self.tbe_flow.verticalHeader().setVisible(False)
+        self.tbe_flow.verticalHeader().setMinimumSectionSize(20)
+        self.tbe_flow.verticalHeader().setDefaultSectionSize(20)
 
-        self.gridLayout_2.addWidget(self.tbe_everyday, 0, 0, 1, 1)
+        self.verticalLayout_8.addWidget(self.tbe_flow)
 
-        self.stack_widget.addWidget(self.page_everyday)
-        self.page_log = QWidget()
-        self.page_log.setObjectName(u"page_log")
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.page_log.sizePolicy().hasHeightForWidth())
-        self.page_log.setSizePolicy(sizePolicy)
-        self.page_log.setMaximumSize(QSize(16777215, 16777215))
-        self.gridLayout_5 = QGridLayout(self.page_log)
-        self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.gridLayout_5.setContentsMargins(2, 2, 2, 2)
-        self.tbe_ip = QTableWidget(self.page_log)
+        self.stack_widget.addWidget(self.page_flow)
+        self.page_ip = QWidget()
+        self.page_ip.setObjectName(u"page_ip")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.page_ip.sizePolicy().hasHeightForWidth())
+        self.page_ip.setSizePolicy(sizePolicy1)
+        self.page_ip.setMaximumSize(QSize(16777215, 16777215))
+        self.horizontalLayout_14 = QHBoxLayout(self.page_ip)
+        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.horizontalLayout_14.setContentsMargins(2, 2, 6, 2)
+        self.tbe_ip = QTableWidget(self.page_ip)
         if (self.tbe_ip.columnCount() < 6):
             self.tbe_ip.setColumnCount(6)
         __qtablewidgetitem44 = QTableWidgetItem()
@@ -611,43 +739,77 @@ class Ui_WndServer(object):
         self.tbe_ip.setHorizontalHeaderItem(4, __qtablewidgetitem48)
         __qtablewidgetitem49 = QTableWidgetItem()
         self.tbe_ip.setHorizontalHeaderItem(5, __qtablewidgetitem49)
-        if (self.tbe_ip.rowCount() < 28):
-            self.tbe_ip.setRowCount(28)
+        if (self.tbe_ip.rowCount() < 30):
+            self.tbe_ip.setRowCount(30)
         self.tbe_ip.setObjectName(u"tbe_ip")
         self.tbe_ip.setAlternatingRowColors(True)
-        self.tbe_ip.setRowCount(28)
+        self.tbe_ip.setRowCount(30)
         self.tbe_ip.horizontalHeader().setStretchLastSection(True)
         self.tbe_ip.verticalHeader().setVisible(False)
         self.tbe_ip.verticalHeader().setMinimumSectionSize(20)
         self.tbe_ip.verticalHeader().setDefaultSectionSize(20)
 
-        self.gridLayout_5.addWidget(self.tbe_ip, 0, 0, 2, 1)
+        self.horizontalLayout_14.addWidget(self.tbe_ip)
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setSpacing(2)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.label_14 = QLabel(self.page_log)
+        self.label_14 = QLabel(self.page_ip)
         self.label_14.setObjectName(u"label_14")
         self.label_14.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout.addWidget(self.label_14)
 
-        self.lst_log = QListWidget(self.page_log)
+        self.lst_log = QListWidget(self.page_ip)
         self.lst_log.setObjectName(u"lst_log")
         self.lst_log.setMinimumSize(QSize(0, 400))
 
         self.verticalLayout.addWidget(self.lst_log)
 
+        self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
+        self.btn_ip_page_prev = QPushButton(self.page_ip)
+        self.btn_ip_page_prev.setObjectName(u"btn_ip_page_prev")
+        self.btn_ip_page_prev.setMaximumSize(QSize(30, 16777215))
 
-        self.gridLayout_5.addLayout(self.verticalLayout, 0, 1, 1, 1)
+        self.horizontalLayout_13.addWidget(self.btn_ip_page_prev)
+
+        self.edt_ip_page_go = QLineEdit(self.page_ip)
+        self.edt_ip_page_go.setObjectName(u"edt_ip_page_go")
+        self.edt_ip_page_go.setMaximumSize(QSize(50, 16777215))
+        self.edt_ip_page_go.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_13.addWidget(self.edt_ip_page_go)
+
+        self.btn_ip_page_next = QPushButton(self.page_ip)
+        self.btn_ip_page_next.setObjectName(u"btn_ip_page_next")
+        self.btn_ip_page_next.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_13.addWidget(self.btn_ip_page_next)
+
+        self.btn_ip_page_go = QPushButton(self.page_ip)
+        self.btn_ip_page_go.setObjectName(u"btn_ip_page_go")
+        self.btn_ip_page_go.setMaximumSize(QSize(30, 16777215))
+
+        self.horizontalLayout_13.addWidget(self.btn_ip_page_go)
+
+        self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_13.addItem(self.horizontalSpacer_6)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_13)
 
         self.verticalSpacer_2 = QSpacerItem(20, 91, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        self.gridLayout_5.addItem(self.verticalSpacer_2, 1, 1, 1, 1)
+        self.verticalLayout.addItem(self.verticalSpacer_2)
 
-        self.gridLayout_5.setColumnStretch(0, 4)
-        self.gridLayout_5.setColumnStretch(1, 1)
-        self.stack_widget.addWidget(self.page_log)
+
+        self.horizontalLayout_14.addLayout(self.verticalLayout)
+
+        self.horizontalLayout_14.setStretch(0, 4)
+        self.horizontalLayout_14.setStretch(1, 1)
+        self.stack_widget.addWidget(self.page_ip)
 
         self.gridLayout.addWidget(self.stack_widget, 0, 0, 1, 1)
 
@@ -663,7 +825,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(1)
+        self.stack_widget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -686,12 +848,12 @@ class Ui_WndServer(object):
         ___qtablewidgetitem6 = self.tbe_proj.horizontalHeaderItem(6)
         ___qtablewidgetitem6.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
         self.groupBox_5.setTitle(QCoreApplication.translate("WndServer", u"\u7248\u672c\u7ba1\u7406", None))
-        self.label.setText(QCoreApplication.translate("WndServer", u"\u5ba2\u6237\u7aef\u7248\u672c", None))
-        self.label_3.setText(QCoreApplication.translate("WndServer", u"\u5ba2\u6237\u7aef\u516c\u544a", None))
-        self.btn_proj_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u5b9a\u6dfb\u52a0\u6216\u4fee\u6539", None))
         self.chk_proj_login.setText(QCoreApplication.translate("WndServer", u"\u5141\u8bb8\u767b\u5f55", None))
         self.chk_proj_reg.setText(QCoreApplication.translate("WndServer", u"\u5141\u8bb8\u6ce8\u518c", None))
         self.chk_proj_unbind.setText(QCoreApplication.translate("WndServer", u"\u5141\u8bb8\u89e3\u7ed1", None))
+        self.label.setText(QCoreApplication.translate("WndServer", u"\u5ba2\u6237\u7aef\u7248\u672c", None))
+        self.label_3.setText(QCoreApplication.translate("WndServer", u"\u5ba2\u6237\u7aef\u516c\u544a", None))
+        self.btn_proj_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u5b9a\u6dfb\u52a0\u6216\u4fee\u6539", None))
         self.groupBox.setTitle(QCoreApplication.translate("WndServer", u"\u9879\u76ee\u7ba1\u7406", None))
         self.label_5.setText(QCoreApplication.translate("WndServer", u"\u66f4\u65b0\u7f51\u5740", None))
         self.label_6.setText(QCoreApplication.translate("WndServer", u"\u53d1\u5361\u7f51\u5740", None))
@@ -699,6 +861,10 @@ class Ui_WndServer(object):
         self.label_11.setText(QCoreApplication.translate("WndServer", u"\u514d\u8d39\u89e3\u7ed1\u6b21\u6570", None))
         self.label_12.setText(QCoreApplication.translate("WndServer", u"\u89e3\u7ed1\u6263\u9664\u5c0f\u65f6", None))
         self.btn_cfg_save.setText(QCoreApplication.translate("WndServer", u"\u4fdd\u5b58\u914d\u7f6e", None))
+        self.btn_proj_page_prev.setText(QCoreApplication.translate("WndServer", u"<", None))
+        self.edt_proj_page_go.setText(QCoreApplication.translate("WndServer", u"0", None))
+        self.btn_proj_page_next.setText(QCoreApplication.translate("WndServer", u">", None))
+        self.btn_proj_page_go.setText(QCoreApplication.translate("WndServer", u"Go", None))
         ___qtablewidgetitem7 = self.tbe_custom.horizontalHeaderItem(0)
         ___qtablewidgetitem7.setText(QCoreApplication.translate("WndServer", u"ID", None));
         ___qtablewidgetitem8 = self.tbe_custom.horizontalHeaderItem(1)
@@ -712,7 +878,10 @@ class Ui_WndServer(object):
         self.label_9.setText(QCoreApplication.translate("WndServer", u"\u503c", None))
         self.label_13.setText(QCoreApplication.translate("WndServer", u"\u52a0\u5bc6\u503c ", None))
         self.btn_custom_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u8ba4\u6dfb\u52a0\u6216\u4fee\u6539", None))
-        self.groupBox_2.setTitle("")
+        self.btn_custom_page_prev.setText(QCoreApplication.translate("WndServer", u"<", None))
+        self.edt_custom_page_go.setText(QCoreApplication.translate("WndServer", u"0", None))
+        self.btn_custom_page_next.setText(QCoreApplication.translate("WndServer", u">", None))
+        self.btn_custom_page_go.setText(QCoreApplication.translate("WndServer", u"Go", None))
         self.btn_user_page_prev.setText(QCoreApplication.translate("WndServer", u"<", None))
         self.edt_user_page_go.setText(QCoreApplication.translate("WndServer", u"0", None))
         self.btn_user_page_next.setText(QCoreApplication.translate("WndServer", u">", None))
@@ -796,25 +965,33 @@ class Ui_WndServer(object):
         self.label_4.setText(QCoreApplication.translate("WndServer", u"\u5361\u5bc6\u7c7b\u578b:", None))
         self.btn_card_gen.setText(QCoreApplication.translate("WndServer", u"\u786e\u5b9a\u751f\u6210", None))
         self.label_10.setText(QCoreApplication.translate("WndServer", u"\u5bfc\u51fa\u7684\u5361\u53f7:", None))
-        ___qtablewidgetitem34 = self.tbe_everyday.horizontalHeaderItem(0)
+        self.btn_card_page_prev.setText(QCoreApplication.translate("WndServer", u"<", None))
+        self.edt_card_page_go.setText(QCoreApplication.translate("WndServer", u"0", None))
+        self.btn_card_page_next.setText(QCoreApplication.translate("WndServer", u">", None))
+        self.btn_card_page_go.setText(QCoreApplication.translate("WndServer", u"Go", None))
+        self.btn_flow_page_prev.setText(QCoreApplication.translate("WndServer", u"<", None))
+        self.edt_flow_page_go.setText(QCoreApplication.translate("WndServer", u"0", None))
+        self.btn_flow_page_next.setText(QCoreApplication.translate("WndServer", u">", None))
+        self.btn_flow_page_go.setText(QCoreApplication.translate("WndServer", u"Go", None))
+        ___qtablewidgetitem34 = self.tbe_flow.horizontalHeaderItem(0)
         ___qtablewidgetitem34.setText(QCoreApplication.translate("WndServer", u"ID", None));
-        ___qtablewidgetitem35 = self.tbe_everyday.horizontalHeaderItem(1)
+        ___qtablewidgetitem35 = self.tbe_flow.horizontalHeaderItem(1)
         ___qtablewidgetitem35.setText(QCoreApplication.translate("WndServer", u"\u65e5\u671f", None));
-        ___qtablewidgetitem36 = self.tbe_everyday.horizontalHeaderItem(2)
+        ___qtablewidgetitem36 = self.tbe_flow.horizontalHeaderItem(2)
         ___qtablewidgetitem36.setText(QCoreApplication.translate("WndServer", u"\u5929\u5361\u5145\u503c\u6570", None));
-        ___qtablewidgetitem37 = self.tbe_everyday.horizontalHeaderItem(3)
+        ___qtablewidgetitem37 = self.tbe_flow.horizontalHeaderItem(3)
         ___qtablewidgetitem37.setText(QCoreApplication.translate("WndServer", u"\u5468\u5361\u5145\u503c\u6570", None));
-        ___qtablewidgetitem38 = self.tbe_everyday.horizontalHeaderItem(4)
+        ___qtablewidgetitem38 = self.tbe_flow.horizontalHeaderItem(4)
         ___qtablewidgetitem38.setText(QCoreApplication.translate("WndServer", u"\u6708\u5361\u5145\u503c\u6570", None));
-        ___qtablewidgetitem39 = self.tbe_everyday.horizontalHeaderItem(5)
+        ___qtablewidgetitem39 = self.tbe_flow.horizontalHeaderItem(5)
         ___qtablewidgetitem39.setText(QCoreApplication.translate("WndServer", u"\u5b63\u5361\u5145\u503c\u6570", None));
-        ___qtablewidgetitem40 = self.tbe_everyday.horizontalHeaderItem(6)
+        ___qtablewidgetitem40 = self.tbe_flow.horizontalHeaderItem(6)
         ___qtablewidgetitem40.setText(QCoreApplication.translate("WndServer", u"\u5145\u503c\u7528\u6237\u6570", None));
-        ___qtablewidgetitem41 = self.tbe_everyday.horizontalHeaderItem(7)
+        ___qtablewidgetitem41 = self.tbe_flow.horizontalHeaderItem(7)
         ___qtablewidgetitem41.setText(QCoreApplication.translate("WndServer", u"\u6d3b\u8dc3\u7528\u6237\u6570", None));
-        ___qtablewidgetitem42 = self.tbe_everyday.horizontalHeaderItem(8)
+        ___qtablewidgetitem42 = self.tbe_flow.horizontalHeaderItem(8)
         ___qtablewidgetitem42.setText(QCoreApplication.translate("WndServer", u"\u5728\u7ebf\u7528\u6237\u6570", None));
-        ___qtablewidgetitem43 = self.tbe_everyday.horizontalHeaderItem(9)
+        ___qtablewidgetitem43 = self.tbe_flow.horizontalHeaderItem(9)
         ___qtablewidgetitem43.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
         ___qtablewidgetitem44 = self.tbe_ip.horizontalHeaderItem(0)
         ___qtablewidgetitem44.setText(QCoreApplication.translate("WndServer", u"ID", None));
@@ -829,6 +1006,10 @@ class Ui_WndServer(object):
         ___qtablewidgetitem49 = self.tbe_ip.horizontalHeaderItem(5)
         ___qtablewidgetitem49.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
         self.label_14.setText(QCoreApplication.translate("WndServer", u"\u65e5\u5fd7\u5217\u8868", None))
+        self.btn_ip_page_prev.setText(QCoreApplication.translate("WndServer", u"<", None))
+        self.edt_ip_page_go.setText(QCoreApplication.translate("WndServer", u"0", None))
+        self.btn_ip_page_next.setText(QCoreApplication.translate("WndServer", u">", None))
+        self.btn_ip_page_go.setText(QCoreApplication.translate("WndServer", u"Go", None))
         self.tool_bar.setWindowTitle(QCoreApplication.translate("WndServer", u"toolBar", None))
     # retranslateUi
 

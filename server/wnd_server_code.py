@@ -242,8 +242,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_custom.setColumnWidth(en_val, 200)
         # 每日流水表
         id, date = 0, 1
-        self.tbe_everyday.setColumnWidth(id, 40)
-        self.tbe_everyday.setColumnWidth(date, 80)
+        self.tbe_flow.setColumnWidth(id, 40)
+        self.tbe_flow.setColumnWidth(date, 80)
         # IP管理表
         id, today_connect_time = 0, 3
         self.tbe_ip.setColumnWidth(id, 40)
@@ -253,7 +253,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_page_tbe_user()
         self.show_page_tbe_card()
         self.show_page_tbe_custom()
-        self.show_page_tbe_everyday()
+        self.show_page_tbe_flow()
         self.show_page_tbe_ip()
 
     def init_menus(self):
@@ -370,13 +370,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         )
 
         # 每日流水表
-        self.tbe_everyday.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.menu_tbe_everyday = QMenu()
-        self.action_everyday_show_all = QAction("显示全部流水信息")
-        self.menu_tbe_everyday.addAction(self.action_everyday_show_all)
-        self.action_everyday_show_all.triggered.connect(self.show_page_tbe_everyday)
-        self.tbe_everyday.customContextMenuRequested.connect(
-            lambda: self.menu_tbe_everyday.exec_(QCursor.pos())
+        self.tbe_flow.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.menu_tbe_flow = QMenu()
+        self.action_flow_show_all = QAction("显示全部流水信息")
+        self.menu_tbe_flow.addAction(self.action_flow_show_all)
+        self.action_flow_show_all.triggered.connect(self.show_page_tbe_flow)
+        self.tbe_flow.customContextMenuRequested.connect(
+            lambda: self.menu_tbe_flow.exec_(QCursor.pos())
         )
 
         # IP管理表
@@ -749,16 +749,16 @@ class WndServer(QMainWindow, Ui_WndServer):
     def show_page_tbe(self, tbe: QTableWidget, page=0):
         tbe_name_dict = {
             self.tbe_proj: "1项目管理", self.tbe_user: "2用户管理", self.tbe_card: "3卡密管理",
-            self.tbe_custom: "4自定义数据", self.tbe_everyday: "5每日流水", self.tbe_ip: "6ip管理"
+            self.tbe_custom: "4自定义数据", self.tbe_flow: "5每日流水", self.tbe_ip: "6ip管理"
         }
         tbe_order_dict = {
             self.tbe_proj: "order by 客户端版本 desc", self.tbe_user: "", self.tbe_card: "",
-            self.tbe_custom: "", self.tbe_everyday: "order by 日期 desc", self.tbe_ip: "order by 今日连接次数 desc"
+            self.tbe_custom: "", self.tbe_flow: "order by 日期 desc", self.tbe_ip: "order by 今日连接次数 desc"
         }
         tbe_refresh_dict = {
             self.tbe_proj: self.refresh_tbe_proj, self.tbe_user: self.refresh_tbe_user,
             self.tbe_card: self.refresh_tbe_card, self.tbe_custom: self.refresh_tbe_custom,
-            self.tbe_everyday: self.refresh_tbe_everyday, self.tbe_ip: self.refresh_tbe_ip
+            self.tbe_flow: self.refresh_tbe_flow, self.tbe_ip: self.refresh_tbe_ip
         }
         tbe_name = tbe_name_dict[tbe]
         order_fmt = tbe_order_dict[tbe]
@@ -796,7 +796,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                         "zk": key_eval_dict.pop("zk")}
         self.custom2 = key_eval_dict
 
-    def show_page_tbe_everyday(self):
+    def show_page_tbe_flow(self):
         # 读取用户表内容, 获取今日活跃用户数, 在线用户数
         active_user_num = self.sql_table_query("select count(*) from 2用户管理 where date_format(心跳时间,'%%Y-%%m-%%d')="
                                                "date_format(now(), '%%Y-%%m-%%d');")[0]["count(*)"]
@@ -805,8 +805,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.sql_table_update(f"update 5每日流水 set 活跃用户数=%s, 在线用户数=%s where 日期=%s;",
                               (active_user_num, online_user_num, today))
         # 读取每日流水表全部内容
-        query_everyday_list = self.sql_table_query("select * from 5每日流水 order by 日期 desc;")
-        self.refresh_tbe_everyday(query_everyday_list)
+        query_flow_list = self.sql_table_query("select * from 5每日流水 order by 日期 desc;")
+        self.refresh_tbe_flow(query_flow_list)
 
     def show_page_tbe_ip(self):
         # 按今日连接次数从大到小排序显示
@@ -877,21 +877,21 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_custom.setItem(row, 2, QTableWidgetItem(query_custom["值"]))
             self.tbe_custom.setItem(row, 3, QTableWidgetItem(query_custom["加密值"]))
 
-    def refresh_tbe_everyday(self, query_everyday_list: list):
-        self.tbe_everyday.clearContents()
-        for row, query_everyday in enumerate(query_everyday_list):
-            query_everyday["日期"] = "" if query_everyday["日期"] is None else str(query_everyday["日期"])
-            query_everyday["最后更新时间"] = "" if query_everyday["最后更新时间"] is None else str(query_everyday["最后更新时间"])
-            self.tbe_everyday.setItem(row, 0, QTableWidgetItem(str(query_everyday["ID"])))
-            self.tbe_everyday.setItem(row, 1, QTableWidgetItem(query_everyday["日期"]))
-            self.tbe_everyday.setItem(row, 2, QTableWidgetItem(str(query_everyday["天卡充值数"])))
-            self.tbe_everyday.setItem(row, 3, QTableWidgetItem(str(query_everyday["周卡充值数"])))
-            self.tbe_everyday.setItem(row, 4, QTableWidgetItem(str(query_everyday["月卡充值数"])))
-            self.tbe_everyday.setItem(row, 5, QTableWidgetItem(str(query_everyday["季卡充值数"])))
-            self.tbe_everyday.setItem(row, 6, QTableWidgetItem(str(query_everyday["充值用户数"])))
-            self.tbe_everyday.setItem(row, 7, QTableWidgetItem(str(query_everyday["活跃用户数"])))
-            self.tbe_everyday.setItem(row, 8, QTableWidgetItem(str(query_everyday["在线用户数"])))
-            self.tbe_everyday.setItem(row, 9, QTableWidgetItem(query_everyday["最后更新时间"]))
+    def refresh_tbe_flow(self, query_flow_list: list):
+        self.tbe_flow.clearContents()
+        for row, query_flow in enumerate(query_flow_list):
+            query_flow["日期"] = "" if query_flow["日期"] is None else str(query_flow["日期"])
+            query_flow["最后更新时间"] = "" if query_flow["最后更新时间"] is None else str(query_flow["最后更新时间"])
+            self.tbe_flow.setItem(row, 0, QTableWidgetItem(str(query_flow["ID"])))
+            self.tbe_flow.setItem(row, 1, QTableWidgetItem(query_flow["日期"]))
+            self.tbe_flow.setItem(row, 2, QTableWidgetItem(str(query_flow["天卡充值数"])))
+            self.tbe_flow.setItem(row, 3, QTableWidgetItem(str(query_flow["周卡充值数"])))
+            self.tbe_flow.setItem(row, 4, QTableWidgetItem(str(query_flow["月卡充值数"])))
+            self.tbe_flow.setItem(row, 5, QTableWidgetItem(str(query_flow["季卡充值数"])))
+            self.tbe_flow.setItem(row, 6, QTableWidgetItem(str(query_flow["充值用户数"])))
+            self.tbe_flow.setItem(row, 7, QTableWidgetItem(str(query_flow["活跃用户数"])))
+            self.tbe_flow.setItem(row, 8, QTableWidgetItem(str(query_flow["在线用户数"])))
+            self.tbe_flow.setItem(row, 9, QTableWidgetItem(query_flow["最后更新时间"]))
 
     def refresh_tbe_ip(self, query_ip_list: list):
         self.tbe_ip.clearContents()

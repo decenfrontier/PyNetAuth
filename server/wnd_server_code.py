@@ -1102,7 +1102,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                             "内容": {"结果": ret, "详情": detail}}
         self.send_to_client(client_socket, server_info_dict)
 
-    # 处理_自定义数据1
+    # todo:处理_自定义数据1
     def deal_custom1(self, client_socket: socket.socket, client_content_dict: dict):
         ip = client_socket.getpeername()
         log.info(f"[自定义数据] 正在处理IP: {ip}")
@@ -1227,12 +1227,15 @@ class WndServer(QMainWindow, Ui_WndServer):
                         "date_add(到期时间, interval %s day)) where 账号=%s;", (delta_day, delta_day, account))
                     if ret:
                         detail = "充值成功"
-                        # 更新卡密的使用时间  "3卡密管理", {"使用时间": cur_time_fmt}, {"卡号": card_key}
+                        # 更新卡密表-使用时间
                         self.sql_table_update("update 3卡密管理 set 使用时间=%s where 卡号=%s;", (cur_time_fmt, card_key))
-                        # 更新流水充值用户数
+                        # 更新流水表-充值用户数
                         card_pay_num = card_type + "充值数"
                         self.sql_table_update(f"update 5每日流水 set 充值用户数=充值用户数+1, {card_pay_num}={card_pay_num}+1 "
                                               f"where 日期='{today}';")
+                        # 更新用户表-充值月数
+                        add_month = delta_day // 30
+                        self.sql_table_update("update 2用户管理 set 充值月数=充值月数+%s where 账号=%s", (add_month, account))
                     else:
                         detail = "充值失败, 数据库异常"
                 else:

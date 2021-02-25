@@ -522,12 +522,12 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.popup_captcha_wnd()
 
     def on_btn_captcha_commit_clicked(self):
+        self.wnd_captcha.close()
         if self.edt_captcha_answer.text() == str(self.captcha_ret):
             self.sig_pass.emit(True)
         else:
             self.sig_pass.emit(False)
         self.edt_captcha_answer.setText("")
-        self.wnd_captcha.close()
 
     def on_sig_pass(self, is_pass: bool):
         if is_pass:

@@ -215,6 +215,7 @@ def is_user_dangerous():
     if True in [ret2, ret3, ret4, ret5]:
         client_comment = state_comment_dict["检测到调试器"]
         ret = True
+    # todo: 正式发布前删掉
     if ret:
         print("危险")
     else:

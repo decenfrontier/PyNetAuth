@@ -663,7 +663,7 @@
              </size>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <item>
              <property name="text">
@@ -688,6 +688,11 @@
             <item>
              <property name="text">
               <string>注册时间</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>充值月数</string>
              </property>
             </item>
            </widget>

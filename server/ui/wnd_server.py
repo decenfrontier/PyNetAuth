@@ -406,6 +406,7 @@ class Ui_WndServer(object):
         self.cmb_user_order_by.addItem("")
         self.cmb_user_order_by.addItem("")
         self.cmb_user_order_by.addItem("")
+        self.cmb_user_order_by.addItem("")
         self.cmb_user_order_by.setObjectName(u"cmb_user_order_by")
         self.cmb_user_order_by.setMinimumSize(QSize(80, 0))
 
@@ -845,7 +846,7 @@ class Ui_WndServer(object):
         self.retranslateUi(WndServer)
 
         self.stack_widget.setCurrentIndex(1)
-        self.cmb_user_order_by.setCurrentIndex(1)
+        self.cmb_user_order_by.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -912,6 +913,7 @@ class Ui_WndServer(object):
         self.cmb_user_order_by.setItemText(2, QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u767b\u5f55\u6b21\u6570", None))
         self.cmb_user_order_by.setItemText(3, QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u89e3\u7ed1\u6b21\u6570", None))
         self.cmb_user_order_by.setItemText(4, QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u65f6\u95f4", None))
+        self.cmb_user_order_by.setItemText(5, QCoreApplication.translate("WndServer", u"\u5145\u503c\u6708\u6570", None))
 
         self.cmb_user_order.setItemText(0, QCoreApplication.translate("WndServer", u"\u964d\u5e8f", None))
         self.cmb_user_order.setItemText(1, QCoreApplication.translate("WndServer", u"\u5347\u5e8f", None))

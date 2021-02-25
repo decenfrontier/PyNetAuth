@@ -803,13 +803,15 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_page_tbe(self.tbe_ip)
 
     def show_page_tbe(self, tbe: QTableWidget, page=-1):
-        if page == -1:  # 默认显示当前页
+        # 若page为-1则获取当前页
+        if page == -1:
             tbe_page_dict = {
                 self.tbe_proj: int(self.edt_proj_page_go.text()), self.tbe_user: int(self.edt_user_page_go.text()),
                 self.tbe_card: int(self.edt_card_page_go.text()), self.tbe_custom: int(self.edt_custom_page_go.text()),
                 self.tbe_flow: int(self.edt_flow_page_go.text()), self.tbe_ip: int(self.edt_ip_page_go.text())
             }
             page = tbe_page_dict[tbe]
+        # 获取表名,顺序,刷新函数
         tbe_name_dict = {
             self.tbe_proj: "1项目管理", self.tbe_user: "2用户管理", self.tbe_card: "3卡密管理",
             self.tbe_custom: "4自定义数据", self.tbe_flow: "5每日流水", self.tbe_ip: "6ip管理"
@@ -830,9 +832,16 @@ class WndServer(QMainWindow, Ui_WndServer):
         tbe_name = tbe_name_dict[tbe]
         order_fmt = tbe_order_dict[tbe]
         refresh_func = tbe_refresh_dict[tbe]
+        # before操作
+        if tbe_name == "5每日流水":
+            self.update_today_flow()
+        # 查询并刷新表格
         sql = f"select * from {tbe_name} {order_fmt} limit %s, %s;"
         query_list = self.sql_table_query(sql, (page*tbe.rowCount(), tbe.rowCount()))
         refresh_func(query_list)
+        # After操作
+        if tbe_name == "4自定义数据":
+            self.update_custom_data(query_list)
 
     def refresh_tbe_proj(self, query_proj_list):
         self.tbe_proj.clearContents()
@@ -960,6 +969,24 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 更新用户表的上次登录地
         self.sql_table_update("update 2用户管理 A inner join 6ip管理 B on A.上次登录IP=B.IP地址 set A.上次登录地=B.归属地;")
         self.show_page_tbe(self.tbe_user)
+
+    # 更新 自定义数据
+    def update_custom_data(self, query_custom_list: list):
+        # 刷新 第一批自定义数据 和 第二批自定义数据
+        key_eval_dict = {custom_dict["键"]: custom_dict["加密值"] for custom_dict in query_custom_list}
+        self.custom1 = {"pic": key_eval_dict.pop("pic"),
+                        "zk": key_eval_dict.pop("zk")}
+        self.custom2 = key_eval_dict
+
+    # 更新 今日流水
+    def update_today_flow(self):
+        # 读取用户表内容, 获取今日活跃用户数, 在线用户数
+        active_user_num = self.sql_table_query("select count(*) from 2用户管理 where date_format(心跳时间,'%%Y-%%m-%%d')="
+                                               "date_format(now(), '%%Y-%%m-%%d');")[0]["count(*)"]
+        online_user_num = self.sql_table_query("select count(*) from 2用户管理 where 状态='在线';")[0]["count(*)"]
+        # 更新每日流水表
+        self.sql_table_update("update 5每日流水 set 活跃用户数=%s, 在线用户数=%s where 日期=%s;",
+                              (active_user_num, online_user_num, today))
 
     def on_timer_sec_timeout(self):
         global cur_time_fmt
@@ -1102,7 +1129,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                             "内容": {"结果": ret, "详情": detail}}
         self.send_to_client(client_socket, server_info_dict)
 
-    # todo:处理_自定义数据1
+    # 处理_自定义数据1
     def deal_custom1(self, client_socket: socket.socket, client_content_dict: dict):
         ip = client_socket.getpeername()
         log.info(f"[自定义数据] 正在处理IP: {ip}")

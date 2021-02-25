@@ -307,6 +307,7 @@ class Ui_WndServer(object):
         self.edt_user_page_go = QLineEdit(self.groupBox_2)
         self.edt_user_page_go.setObjectName(u"edt_user_page_go")
         self.edt_user_page_go.setMaximumSize(QSize(50, 16777215))
+        self.edt_user_page_go.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout_5.addWidget(self.edt_user_page_go)
 
@@ -421,7 +422,7 @@ class Ui_WndServer(object):
         self.tbe_user.setWordWrap(False)
         self.tbe_user.setCornerButtonEnabled(False)
         self.tbe_user.setRowCount(27)
-        self.tbe_user.horizontalHeader().setVisible(False)
+        self.tbe_user.horizontalHeader().setVisible(True)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_user.verticalHeader().setVisible(False)
         self.tbe_user.verticalHeader().setMinimumSectionSize(20)
@@ -662,7 +663,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(4)
+        self.stack_widget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(WndServer)
@@ -713,6 +714,7 @@ class Ui_WndServer(object):
         self.btn_custom_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u8ba4\u6dfb\u52a0\u6216\u4fee\u6539", None))
         self.groupBox_2.setTitle("")
         self.btn_user_page_prev.setText(QCoreApplication.translate("WndServer", u"<", None))
+        self.edt_user_page_go.setText(QCoreApplication.translate("WndServer", u"0", None))
         self.btn_user_page_next.setText(QCoreApplication.translate("WndServer", u">", None))
         self.btn_user_page_go.setText(QCoreApplication.translate("WndServer", u"Go", None))
         self.cmb_user_field.setItemText(0, QCoreApplication.translate("WndServer", u"\u8d26\u53f7", None))

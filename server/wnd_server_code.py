@@ -174,13 +174,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # ---------------------- 定时器 ----------------------
         self.timer_sec = QTimer()
         self.timer_min = QTimer()
-        # ---------------------- 表格行数
-        self.row_tbe_proj = self.tbe_proj.rowCount()
-        self.row_tbe_user = self.tbe_user.rowCount()
-        self.row_tbe_card = self.tbe_card.rowCount()
-        self.row_tbe_custom = self.tbe_custom.rowCount()
-        self.row_tbe_everyday = self.tbe_everyday.rowCount()
-        self.row_tbe_ip = self.tbe_ip.rowCount()
+
 
     def init_wnd(self):
         self.setWindowTitle(f"Ip: {server_ip}  Port: {server_port}  Ver: {server_ver}")
@@ -403,6 +397,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
         self.btn_custom_confirm.clicked.connect(self.on_btn_custom_confirm_clicked)
         self.btn_cfg_save.clicked.connect(self.on_btn_cfg_save_clicked)
+        self.btn_user_page_next.clicked.connect(self.on_btn_page_next_clicked)
+        self.btn_user_page_prev.clicked.connect(self.on_btn_page_prev_clicked)
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
         self.tbe_custom.cellClicked.connect(self.on_tbe_custom_cellClicked)
@@ -506,6 +502,18 @@ class WndServer(QMainWindow, Ui_WndServer):
     def on_btn_cfg_save_clicked(self):
         self.cfg_write()
         self.show_info("保存项目配置成功")
+
+    def on_btn_page_next_clicked(self):
+        cur_page = int(self.edt_user_page_go.text())
+        next_page = cur_page + 1
+        self.edt_user_page_go.setText(str(next_page))
+        self.show_page_tbe_user(next_page)
+
+    def on_btn_page_prev_clicked(self):
+        cur_page = int(self.edt_user_page_go.text())
+        prev_page = cur_page - 1 if cur_page > 0 else 0
+        self.edt_user_page_go.setText(str(prev_page))
+        self.show_page_tbe_user(prev_page)
 
     def on_tbe_proj_cellClicked(self, row: int, col: int):
         self.edt_proj_client_ver.setText(self.tbe_proj.item(row, 1).text())
@@ -733,8 +741,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 刷新ip归属地
         self.refresh_ip_location()
         # 读取表全部内容
-        idx = page * self.row_tbe_user
-        query_user_list = self.sql_table_query("select * from 2用户管理 limit %s, %s;", (idx, self.row_tbe_user))
+        idx = page * self.tbe_user.rowCount()
+        query_user_list = self.sql_table_query("select * from 2用户管理 limit %s, %s;",
+                                               (idx, self.tbe_user.rowCount()))
         self.refresh_tbe_user(query_user_list)
 
     def show_page_tbe_card(self):

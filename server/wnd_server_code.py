@@ -371,7 +371,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_flow = QMenu()
         self.action_flow_del_sel = QAction("删除选中流水信息")
         self.menu_tbe_flow.addAction(self.action_flow_del_sel)
-        # todo: 添加 删除选中流水信息 函数
         self.action_flow_del_sel.triggered.connect(self.on_action_flow_del_sel_triggered)
         self.tbe_flow.customContextMenuRequested.connect(
             lambda: self.menu_tbe_flow.exec_(QCursor.pos())
@@ -382,8 +381,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_ip = QMenu()
         self.action_ip_set_location = QAction("设置IP归属地")
         self.menu_tbe_ip.addAction(self.action_ip_set_location)
-        # todo: 添加 设置IP归属地 函数
-        self.action_ip_set_location.triggered.connect(None)
+        self.action_ip_set_location.triggered.connect(self.on_action_ip_set_location_triggered)
         self.tbe_ip.customContextMenuRequested.connect(
             lambda: self.menu_tbe_ip.exec_(QCursor.pos())
         )
@@ -789,7 +787,24 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info(f"{num}条记录删除成功")
         self.show_page_tbe(self.tbe_flow)
 
-    def show_page_tbe(self, tbe: QTableWidget, page=0):
+    def on_action_ip_set_location_triggered(self):
+        row = self.tbe_ip.currentItem().row()
+        ip = self.tbe_ip.item(row, 1).text()
+        location, ok_pressed = QInputDialog.getText(self, "设置归属地", f"{ip}:", QLineEdit.Normal)
+        if not ok_pressed:
+            return
+        num = self.sql_table_update("update 6ip管理 set 归属地=%s where IP地址=%s;", (location, ip))
+        self.show_info(f"{num}条记录更新成功")
+        self.show_page_tbe(self.tbe_ip)
+
+    def show_page_tbe(self, tbe: QTableWidget, page=-1):
+        if page == -1:  # 默认显示当前页
+            tbe_page_dict = {
+                self.tbe_proj: int(self.edt_proj_page_go.text()), self.tbe_user: int(self.edt_user_page_go.text()),
+                self.tbe_card: int(self.edt_card_page_go.text()), self.tbe_custom: int(self.edt_custom_page_go.text()),
+                self.tbe_flow: int(self.edt_flow_page_go.text()), self.tbe_ip: int(self.edt_ip_page_go.text())
+            }
+            page = tbe_page_dict[tbe]
         tbe_name_dict = {
             self.tbe_proj: "1项目管理", self.tbe_user: "2用户管理", self.tbe_card: "3卡密管理",
             self.tbe_custom: "4自定义数据", self.tbe_flow: "5每日流水", self.tbe_ip: "6ip管理"

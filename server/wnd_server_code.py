@@ -8,7 +8,7 @@ from random import randint
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-from PySide2.QtGui import QIcon, QCloseEvent, QCursor
+from PySide2.QtGui import QIcon, QCloseEvent, QCursor, QIntValidator
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
     QMessageBox, QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem, \
     QTableWidget
@@ -176,6 +176,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         # ---------------------- 定时器 ----------------------
         self.timer_sec = QTimer()
         self.timer_min = QTimer()
+        # ---------------------- 验证器 ----------------------
+        self.int_validator = QIntValidator()
 
     def init_wnd(self):
         self.setWindowTitle(f"Ip: {server_ip}  Port: {server_port}  Ver: {server_ver}")
@@ -196,6 +198,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tool_bar.addAction(QIcon(":/card.png"), "卡密管理")
         self.tool_bar.addAction(QIcon(":/flow.png"), "每日流水")
         self.tool_bar.addAction(QIcon(":/log.png"), "IP与日志")
+        # ------------------------------ 编辑框 ------------------------------
+        self.edt_proj_page_go.setValidator(self.int_validator)
+        self.edt_user_page_go.setValidator(self.int_validator)
+        self.edt_card_page_go.setValidator(self.int_validator)
+        self.edt_custom_page_go.setValidator(self.int_validator)
+        self.edt_flow_page_go.setValidator(self.int_validator)
+        self.edt_ip_page_go.setValidator(self.int_validator)
         # ------------------------------ 表 格 ------------------------------
         # 所有表头可视化
         self.tbe_proj.horizontalHeader().setVisible(True)

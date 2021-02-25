@@ -1211,7 +1211,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         ip = client_socket.getpeername()[0]
         account = client_content_dict["账号"]
         log.info(f"[心跳] IP: {ip}, 正在处理账号: {account}")
-        comment = client_content_dict["备注"]
+        ori_comment = client_content_dict["备注"]
+        comment = comment_state_dict[ori_comment]
         machine_code = client_content_dict["机器码"]
         update_dict = {"心跳时间": cur_time_fmt, "备注": comment}
         query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,))  # 查找账号是否存在  "2用户管理", {"账号": account}
@@ -1226,10 +1227,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             else:
                 ret, detail = "正常", ""
                 update_dict["状态"] = "在线"
+            log.info(f"[心跳] 账号{account} {ret} {detail}")
         else:
             ret, detail = "下线", "此账号不存在"
-        # 记录到日志
-        log.info(f"[心跳] 账号{account} {ret} {detail}")
+            log.warn(f"[心跳Warn] 账号{account} {detail}")
         # 更新用户数据
         self.sql_table_update_ex("2用户管理", update_dict, {"账号": account})
         # 发送消息回客户端
@@ -1243,7 +1244,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         ip = client_socket.getpeername()[0]
         account = client_content_dict["账号"]
         log.info(f"[离线] IP: {ip}, 正在处理账号: {account}")
-        update_dict = {"心跳时间": cur_time_fmt, "状态": "离线"}
+        ori_comment = client_content_dict["备注"]
+        comment = comment_state_dict[ori_comment]
+        update_dict = {"心跳时间": cur_time_fmt, "状态": "离线", "备注": comment}
 
         query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,))  # 查找账号是否存在  "2用户管理", {"账号": account}
         if query_user_list:

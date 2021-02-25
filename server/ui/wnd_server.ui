@@ -49,7 +49,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page_proj">
        <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -456,22 +456,14 @@
               <layout class="QHBoxLayout" name="horizontalLayout_5">
                <item>
                 <widget class="QPushButton" name="btn_user_page_prev">
-                 <property name="text">
-                  <string>前一页</string>
+                 <property name="maximumSize">
+                  <size>
+                   <width>30</width>
+                   <height>16777215</height>
+                  </size>
                  </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="btn_user_page_next">
                  <property name="text">
-                  <string>后一页</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_15">
-                 <property name="text">
-                  <string>转到第</string>
+                  <string>&lt;</string>
                  </property>
                 </widget>
                </item>
@@ -479,22 +471,22 @@
                 <widget class="QLineEdit" name="edt_user_page_go">
                  <property name="maximumSize">
                   <size>
-                   <width>40</width>
+                   <width>50</width>
                    <height>16777215</height>
                   </size>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_16">
+                <widget class="QPushButton" name="btn_user_page_next">
                  <property name="maximumSize">
                   <size>
-                   <width>20</width>
+                   <width>30</width>
                    <height>16777215</height>
                   </size>
                  </property>
                  <property name="text">
-                  <string>页</string>
+                  <string>&gt;</string>
                  </property>
                 </widget>
                </item>
@@ -502,7 +494,7 @@
                 <widget class="QPushButton" name="btn_user_page_go">
                  <property name="maximumSize">
                   <size>
-                   <width>50</width>
+                   <width>30</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -520,7 +512,7 @@
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>350</width>
+                 <width>518</width>
                  <height>20</height>
                 </size>
                </property>
@@ -843,7 +835,7 @@
              <bool>false</bool>
             </property>
             <property name="rowCount">
-             <number>0</number>
+             <number>30</number>
             </property>
             <attribute name="horizontalHeaderVisible">
              <bool>false</bool>
@@ -863,6 +855,36 @@
             <attribute name="verticalHeaderDefaultSectionSize">
              <number>20</number>
             </attribute>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
             <column>
              <property name="text">
               <string>ID</string>

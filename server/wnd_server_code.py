@@ -174,6 +174,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         # ---------------------- 定时器 ----------------------
         self.timer_sec = QTimer()
         self.timer_min = QTimer()
+        # ---------------------- 表格行数
+        self.row_tbe_proj = self.tbe_proj.rowCount()
+        self.row_tbe_user = self.tbe_user.rowCount()
+        self.row_tbe_card = self.tbe_card.rowCount()
+        self.row_tbe_custom = self.tbe_custom.rowCount()
+        self.row_tbe_everyday = self.tbe_everyday.rowCount()
+        self.row_tbe_ip = self.tbe_ip.rowCount()
 
     def init_wnd(self):
         self.setWindowTitle(f"Ip: {server_ip}  Port: {server_port}  Ver: {server_ver}")
@@ -247,12 +254,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_ip.setColumnWidth(id, 40)
         self.tbe_ip.setColumnWidth(today_connect_time, 320)
         # 显示全部
-        self.show_all_tbe_proj()
-        self.show_all_tbe_user()
-        self.show_all_tbe_card()
-        self.show_all_tbe_custom()
-        self.show_all_tbe_everyday()
-        self.show_all_tbe_ip()
+        self.show_page_tbe_proj()
+        self.show_page_tbe_user()
+        self.show_page_tbe_card()
+        self.show_page_tbe_custom()
+        self.show_page_tbe_everyday()
+        self.show_page_tbe_ip()
 
     def init_menus(self):
         # 项目管理表
@@ -270,7 +277,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                                        self.action_proj_all_forbid_sel])
         self.menu_tbe_proj.addSeparator()
         self.menu_tbe_proj.addAction(self.action_proj_set_latest_ver)
-        self.action_proj_show_all.triggered.connect(self.show_all_tbe_proj)
+        self.action_proj_show_all.triggered.connect(self.show_page_tbe_proj)
         self.action_proj_del_sel.triggered.connect(self.on_action_proj_del_sel_triggered)
         self.action_proj_all_allow_sel.triggered.connect(self.on_action_proj_all_allow_sel_triggered)
         self.action_proj_all_forbid_sel.triggered.connect(self.on_action_proj_all_forbid_sel_triggered)
@@ -304,7 +311,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_user.addSeparator()
         self.menu_tbe_user.addActions([self.action_user_charge_sel,
                                        self.action_user_charge_all])
-        self.action_user_show_all.triggered.connect(self.show_all_tbe_user)
+        self.action_user_show_all.triggered.connect(self.show_page_tbe_user)
         self.action_user_comment_sel.triggered.connect(self.on_action_user_comment_sel_triggered)
         self.action_user_del_sel.triggered.connect(self.on_action_user_del_sel_triggered)
         self.action_user_frozen_ip.triggered.connect(self.on_action_user_frozen_ip_triggered)
@@ -344,7 +351,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                                        self.action_card_del_used])
         self.menu_tbe_card.addSeparator()
         self.menu_tbe_card.addAction(self.action_card_export_sel)
-        self.action_card_show_all.triggered.connect(self.show_all_tbe_card)
+        self.action_card_show_all.triggered.connect(self.show_page_tbe_card)
         self.action_card_show_unuse.triggered.connect(self.on_action_card_show_unuse_triggered)
         self.action_card_show_export.triggered.connect(self.on_action_card_show_export_triggered)
         self.action_card_del_sel.triggered.connect(self.on_action_card_del_sel_triggered)
@@ -361,7 +368,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_custom_del_sel = QAction("删除选中自定义数据")
         self.menu_tbe_custom.addActions([self.action_custom_show_all,
                                          self.action_custom_del_sel])
-        self.action_custom_show_all.triggered.connect(self.show_all_tbe_custom)
+        self.action_custom_show_all.triggered.connect(self.show_page_tbe_custom)
         self.action_custom_del_sel.triggered.connect(self.on_action_custom_del_sel_triggered)
         self.tbe_custom.customContextMenuRequested.connect(
             lambda: self.menu_tbe_custom.exec_(QCursor.pos())
@@ -372,7 +379,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_everyday = QMenu()
         self.action_everyday_show_all = QAction("显示全部流水信息")
         self.menu_tbe_everyday.addAction(self.action_everyday_show_all)
-        self.action_everyday_show_all.triggered.connect(self.show_all_tbe_everyday)
+        self.action_everyday_show_all.triggered.connect(self.show_page_tbe_everyday)
         self.tbe_everyday.customContextMenuRequested.connect(
             lambda: self.menu_tbe_everyday.exec_(QCursor.pos())
         )
@@ -382,7 +389,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.menu_tbe_ip = QMenu()
         self.action_ip_show_all = QAction("显示全部IP信息")
         self.menu_tbe_ip.addAction(self.action_ip_show_all)
-        self.action_ip_show_all.triggered.connect(self.show_all_tbe_ip)
+        self.action_ip_show_all.triggered.connect(self.show_page_tbe_ip)
         self.tbe_ip.customContextMenuRequested.connect(
             lambda: self.menu_tbe_ip.exec_(QCursor.pos())
         )
@@ -454,7 +461,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         else:
             num = self.sql_table_insert_ex("1项目管理", val_dict)
             self.show_info(f"{num}个版本添加成功")
-        self.show_all_tbe_proj()
+        self.show_page_tbe_proj()
 
     def on_btn_user_query_clicked(self):
         field = self.cmb_user_field.currentText()
@@ -480,7 +487,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 self.show_info(f"生成{card_type}{card_key}成功")
             else:
                 self.show_info(f"生成{card_type}{card_key}失败")
-        self.show_all_tbe_card()
+        self.show_page_tbe_card()
 
     def on_btn_custom_confirm_clicked(self):
         key = self.edt_custom_key.text()
@@ -494,7 +501,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         else:  # 没查到, 则插入
             num = self.sql_table_insert("insert 4自定义数据(键, 值, 加密值) values(%s, %s, %s);", (key, val, eval))
             self.show_info(f"{num}个自定义数据添加成功")
-        self.show_all_tbe_custom()
+        self.show_page_tbe_custom()
 
     def on_btn_cfg_save_clicked(self):
         self.cfg_write()
@@ -531,7 +538,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         vers = "','".join(ver_set)  # "1项目管理", f"客户端版本 in ('{vers}')"
         num = self.sql_table_del(f"delete from 1项目管理 where 客户端版本 in ('{vers}');")
         self.show_info(f"{num}个版本删除成功")
-        self.show_all_tbe_proj()
+        self.show_page_tbe_proj()
 
     def on_action_proj_all_allow_sel_triggered(self):
         item_list = self.tbe_proj.selectedItems()
@@ -541,7 +548,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         vers = "','".join(ver_set)
         num = self.sql_table_update(f"update 1项目管理 set 允许登录=1,允许注册=1,允许解绑=1 where 客户端版本 in ('{vers}');")
         self.show_info(f"{num}个版本全部允许成功")
-        self.show_all_tbe_proj()
+        self.show_page_tbe_proj()
 
     def on_action_proj_all_forbid_sel_triggered(self):
         item_list = self.tbe_proj.selectedItems()
@@ -551,7 +558,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         vers = "','".join(ver_set)
         num = self.sql_table_update(f"update 1项目管理 set 允许登录=0,允许注册=0,允许解绑=0 where 客户端版本 in ('{vers}');")
         self.show_info(f"{num}个版本全部禁止成功")
-        self.show_all_tbe_proj()
+        self.show_page_tbe_proj()
 
     def on_action_proj_set_latest_ver_triggered(self):
         row = self.tbe_proj.currentRow()
@@ -571,7 +578,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         accounts = "','".join(account_set)  # "2用户管理", f"备注='{comment}'", f"账号 in ('{accounts}')"
         num = self.sql_table_update(f"update 2用户管理 set 备注='{comment}' where 账号 in ('{accounts}');")
         self.show_info(f"{num}个用户备注成功")
-        self.show_all_tbe_user()
+        self.show_page_tbe_user()
 
     def on_action_user_frozen_ip_triggered(self):
         frozen_ip, ok_pressed = QInputDialog.getText(self, "冻结IP下的所有账号", "IP:", QLineEdit.Normal)
@@ -579,7 +586,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             return
         num = self.sql_table_update(f"update 2用户管理 set 状态='冻结', 备注='冻结IP下的所有账号' where 上次登录IP='{frozen_ip}';")
         self.show_info(f"{num}个用户冻结IP成功")
-        self.show_all_tbe_user()
+        self.show_page_tbe_user()
 
     def on_action_user_frozen_sel_triggered(self):
         item_list = self.tbe_user.selectedItems()
@@ -592,7 +599,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         accounts = "','".join(account_set)  # "2用户管理", f"状态='冻结', 备注='{comment}'", f"账号 in ('{accounts}')"
         num = self.sql_table_update(f"update 2用户管理 set 状态='冻结', 备注='{comment}' where 账号 in ('{accounts}');")
         self.show_info(f"{num}个账号冻结成功")
-        self.show_all_tbe_user()
+        self.show_page_tbe_user()
 
     def on_action_user_unfrozen_sel_triggered(self):
         item_list = self.tbe_user.selectedItems()
@@ -607,7 +614,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 解冻时备注应加天数  "2用户管理", f"状态='离线', 备注=datediff(到期时间, 心跳时间)", f"账号 in ('{accounts}')"
         num = self.sql_table_update(f"update 2用户管理 set 状态='离线', 备注=datediff(到期时间, 心跳时间) where 账号 in ('{accounts}');")
         self.show_info(f"{num}个账号解冻成功")
-        self.show_all_tbe_user()
+        self.show_page_tbe_user()
 
     def on_action_user_charge_sel_triggered(self):
         item_list = self.tbe_user.selectedItems()
@@ -623,7 +630,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         num = self.sql_table_update(f"update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), "
                                f"date_add(到期时间, interval {gift_day} day)) where 账号 in ('{accounts}') and 状态 not in ('', '冻结');")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
-        self.show_all_tbe_user()
+        self.show_page_tbe_user()
 
     def on_action_user_charge_all_triggered(self):
         gift_day, ok_pressed = QInputDialog.getInt(self, "续费全部(没到期, 且状态不为'', 冻结)",
@@ -634,7 +641,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         num = self.sql_table_update(f"update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval {gift_day} day), "
                                f"date_add(到期时间, interval {gift_day} day)) where now() < 到期时间 and 状态 not in ('', '冻结');")
         self.show_info(f"{num}个用户续费{gift_day}天成功")
-        self.show_all_tbe_user()
+        self.show_page_tbe_user()
 
     def on_action_user_del_sel_triggered(self):
         item_list = self.tbe_user.selectedItems()
@@ -647,7 +654,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         accounts = "','".join(account_set)
         num = self.sql_table_del(f"delete from 2用户管理 where 账号 in ('{accounts}');")
         self.show_info(f"{num}个用户删除成功")
-        self.show_all_tbe_user()
+        self.show_page_tbe_user()
 
     def on_action_user_state_triggered(self):
         state = self.sender().text()
@@ -658,7 +665,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         accounts = "','".join(account_set)
         num = self.sql_table_update(f"update 2用户管理 set 状态='{state}' where 账号 in ('{accounts}');")
         self.show_info(f"{num}个用户设置状态 {state} 成功")
-        self.show_all_tbe_user()
+        self.show_page_tbe_user()
 
     def on_action_card_show_unuse_triggered(self):
         query_card_list = self.sql_table_query("select * from 3卡密管理 where 使用时间 is null;")
@@ -682,7 +689,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         cards = "','".join(card_set)  # "3卡密管理", f"卡号 in ('{cards}')"
         self.sql_table_del(f"delete from 3卡密管理 where 卡号 in ('{cards}');")
         self.show_info("已删除选中的卡号")
-        self.show_all_tbe_card()
+        self.show_page_tbe_card()
 
     def on_action_card_del_used_triggered(self):
         ret = QMessageBox.information(self, "提示", "是否确定删除已使用的卡号?",
@@ -690,7 +697,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         if ret != QMessageBox.Yes:
             return
         self.sql_table_del("delete from 3卡密管理 where 使用时间 is not null;")
-        self.show_all_tbe_card()
+        self.show_page_tbe_card()
 
     def on_action_card_export_sel_triggered(self):
         item_list = self.tbe_card.selectedItems()
@@ -705,7 +712,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 复制到剪切板
         clip_copy(export_card_key)
         self.show_info(f"{num}个卡号已复制到剪切板")
-        self.show_all_tbe_card()
+        self.show_page_tbe_card()
 
     def on_action_custom_del_sel_triggered(self):
         item_list = self.tbe_custom.selectedItems()
@@ -715,25 +722,26 @@ class WndServer(QMainWindow, Ui_WndServer):
         keys = "','".join(key_set)  # "4自定义数据", f"键 in ('{keys}')"
         num = self.sql_table_del(f"delete from 4自定义数据 where 键 in ('{keys}');")
         self.show_info(f"{num}个自定义数据删除成功")
-        self.show_all_tbe_custom()
+        self.show_page_tbe_custom()
 
-    def show_all_tbe_proj(self):
+    def show_page_tbe_proj(self):
         # 读取表全部内容
         query_proj_list = self.sql_table_query("select * from 1项目管理 order by 客户端版本 desc;")
         self.refresh_tbe_proj(query_proj_list)
 
-    def show_all_tbe_user(self):
+    def show_page_tbe_user(self, page=0):
         # 刷新ip归属地
         self.refresh_ip_location()
         # 读取表全部内容
-        query_user_list = self.sql_table_query("select * from 2用户管理;")
+        idx = page * self.row_tbe_user
+        query_user_list = self.sql_table_query("select * from 2用户管理 limit %s, %s;", (idx, self.row_tbe_user))
         self.refresh_tbe_user(query_user_list)
 
-    def show_all_tbe_card(self):
+    def show_page_tbe_card(self):
         query_card_list = self.sql_table_query("select * from 3卡密管理;")
         self.refresh_tbe_card(query_card_list)
 
-    def show_all_tbe_custom(self):
+    def show_page_tbe_custom(self):
         # 读取表全部内容
         query_custom_list = self.sql_table_query("select * from 4自定义数据;")
         self.refresh_tbe_custom(query_custom_list)
@@ -743,7 +751,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                         "zk": key_eval_dict.pop("zk")}
         self.custom2 = key_eval_dict
 
-    def show_all_tbe_everyday(self):
+    def show_page_tbe_everyday(self):
         # 读取用户表内容, 获取今日活跃用户数, 在线用户数
         active_user_num = self.sql_table_query("select count(*) from 2用户管理 where date_format(心跳时间,'%%Y-%%m-%%d')="
                                                  "date_format(now(), '%%Y-%%m-%%d');")[0]["count(*)"]
@@ -755,7 +763,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         query_everyday_list = self.sql_table_query("select * from 5每日流水 order by 日期 desc;")
         self.refresh_tbe_everyday(query_everyday_list)
 
-    def show_all_tbe_ip(self):
+    def show_page_tbe_ip(self):
         # 按今日连接次数从大到小排序显示
         query_ip_list = self.sql_table_query("select * from 6ip管理 order by 今日连接次数 desc;")
         self.refresh_tbe_ip(query_ip_list)

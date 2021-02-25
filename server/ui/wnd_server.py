@@ -571,8 +571,11 @@ class Ui_WndServer(object):
         self.tbe_everyday.setHorizontalHeaderItem(8, __qtablewidgetitem42)
         __qtablewidgetitem43 = QTableWidgetItem()
         self.tbe_everyday.setHorizontalHeaderItem(9, __qtablewidgetitem43)
+        if (self.tbe_everyday.rowCount() < 28):
+            self.tbe_everyday.setRowCount(28)
         self.tbe_everyday.setObjectName(u"tbe_everyday")
         self.tbe_everyday.setAlternatingRowColors(True)
+        self.tbe_everyday.setRowCount(28)
         self.tbe_everyday.horizontalHeader().setStretchLastSection(True)
         self.tbe_everyday.verticalHeader().setVisible(False)
         self.tbe_everyday.verticalHeader().setMinimumSectionSize(20)
@@ -607,7 +610,11 @@ class Ui_WndServer(object):
         self.tbe_ip.setHorizontalHeaderItem(4, __qtablewidgetitem48)
         __qtablewidgetitem49 = QTableWidgetItem()
         self.tbe_ip.setHorizontalHeaderItem(5, __qtablewidgetitem49)
+        if (self.tbe_ip.rowCount() < 28):
+            self.tbe_ip.setRowCount(28)
         self.tbe_ip.setObjectName(u"tbe_ip")
+        self.tbe_ip.setAlternatingRowColors(True)
+        self.tbe_ip.setRowCount(28)
         self.tbe_ip.horizontalHeader().setStretchLastSection(True)
         self.tbe_ip.verticalHeader().setVisible(False)
         self.tbe_ip.verticalHeader().setMinimumSectionSize(20)
@@ -655,7 +662,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(2)
+        self.stack_widget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(WndServer)

@@ -769,6 +769,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.refresh_tbe_ip(query_ip_list)
 
     def refresh_tbe_proj(self, query_proj_list):
+        self.tbe_proj.clearContents()
         for row, query_proj in enumerate(query_proj_list):
             self.tbe_proj.setItem(row, 0, QTableWidgetItem(str(query_proj["ID"])))
             self.tbe_proj.setItem(row, 1, QTableWidgetItem(query_proj["客户端版本"]))
@@ -779,6 +780,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_proj.setItem(row, 6, QTableWidgetItem(str(query_proj["最后更新时间"])))
 
     def refresh_tbe_user(self, query_user_list):
+        self.tbe_user.clearContents()
         for row, query_user in enumerate(query_user_list):
             query_user["到期时间"] = "" if query_user["到期时间"] is None else str(query_user["到期时间"])
             query_user["心跳时间"] = "" if query_user["心跳时间"] is None else str(query_user["心跳时间"])
@@ -804,6 +806,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setItem(row, 16, QTableWidgetItem(query_user["最后更新时间"]))
 
     def refresh_tbe_card(self, query_card_list):
+        self.tbe_card.clearContents()
         for row, query_card in enumerate(query_card_list):
             query_card["制卡时间"] = "" if query_card["制卡时间"] is None else str(query_card["制卡时间"])
             query_card["导出时间"] = "" if query_card["导出时间"] is None else str(query_card["导出时间"])
@@ -822,6 +825,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_card.setItem(row, 5, use_time)
 
     def refresh_tbe_custom(self, query_custom_list: list):
+        self.tbe_custom.clearContents()
         for row, query_custom in enumerate(query_custom_list):
             self.tbe_custom.setItem(row, 0, QTableWidgetItem(str(query_custom["ID"])))
             self.tbe_custom.setItem(row, 1, QTableWidgetItem(query_custom["键"]))
@@ -829,6 +833,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_custom.setItem(row, 3, QTableWidgetItem(query_custom["加密值"]))
 
     def refresh_tbe_everyday(self, query_everyday_list: list):
+        self.tbe_everyday.clearContents()
         for row, query_everyday in enumerate(query_everyday_list):
             query_everyday["日期"] = "" if query_everyday["日期"] is None else str(query_everyday["日期"])
             query_everyday["最后更新时间"] = "" if query_everyday["最后更新时间"] is None else str(query_everyday["最后更新时间"])
@@ -844,6 +849,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_everyday.setItem(row, 9, QTableWidgetItem(query_everyday["最后更新时间"]))
 
     def refresh_tbe_ip(self, query_ip_list: list):
+        self.tbe_ip.clearContents()
         for row, query_ip in enumerate(query_ip_list):
             query_ip["最后更新时间"] = "" if query_ip["最后更新时间"] is None else str(query_ip["最后更新时间"])
             self.tbe_ip.setItem(row, 0, QTableWidgetItem(str(query_ip["ID"])))

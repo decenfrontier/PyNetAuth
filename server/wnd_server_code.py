@@ -398,15 +398,49 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
         self.btn_custom_confirm.clicked.connect(self.on_btn_custom_confirm_clicked)
         self.btn_cfg_save.clicked.connect(self.on_btn_cfg_save_clicked)
+
+        self.btn_proj_page_next.clicked.connect(
+            lambda: self.on_btn_page_next_clicked(self.tbe_proj, self.edt_proj_page_go))
+        self.btn_proj_page_prev.clicked.connect(
+            lambda: self.on_btn_page_prev_clicked(self.tbe_proj, self.edt_proj_page_go))
+        self.btn_proj_page_go.clicked.connect(
+            lambda: self.on_btn_page_go_clicked(self.tbe_proj, self.edt_proj_page_go))
+
         self.btn_user_page_next.clicked.connect(
-            lambda: self.on_btn_page_next_clicked(self.tbe_user, self.edt_user_page_go)
-        )
+            lambda: self.on_btn_page_next_clicked(self.tbe_user, self.edt_user_page_go))
         self.btn_user_page_prev.clicked.connect(
-            lambda: self.on_btn_page_prev_clicked(self.tbe_user, self.edt_user_page_go)
-        )
+            lambda: self.on_btn_page_prev_clicked(self.tbe_user, self.edt_user_page_go))
         self.btn_user_page_go.clicked.connect(
-            lambda: self.on_btn_page_go_clicked(self.tbe_user, self.edt_user_page_go)
-        )
+            lambda: self.on_btn_page_go_clicked(self.tbe_user, self.edt_user_page_go))
+
+        self.btn_card_page_next.clicked.connect(
+            lambda: self.on_btn_page_next_clicked(self.tbe_card, self.edt_card_page_go))
+        self.btn_card_page_prev.clicked.connect(
+            lambda: self.on_btn_page_prev_clicked(self.tbe_card, self.edt_card_page_go))
+        self.btn_card_page_go.clicked.connect(
+            lambda: self.on_btn_page_go_clicked(self.tbe_card, self.edt_card_page_go))
+
+        self.btn_custom_page_next.clicked.connect(
+            lambda: self.on_btn_page_next_clicked(self.tbe_custom, self.edt_custom_page_go))
+        self.btn_custom_page_prev.clicked.connect(
+            lambda: self.on_btn_page_prev_clicked(self.tbe_custom, self.edt_custom_page_go))
+        self.btn_custom_page_go.clicked.connect(
+            lambda: self.on_btn_page_go_clicked(self.tbe_custom, self.edt_custom_page_go))
+
+        self.btn_flow_page_next.clicked.connect(
+            lambda: self.on_btn_page_next_clicked(self.tbe_flow, self.edt_flow_page_go))
+        self.btn_flow_page_prev.clicked.connect(
+            lambda: self.on_btn_page_prev_clicked(self.tbe_flow, self.edt_flow_page_go))
+        self.btn_flow_page_go.clicked.connect(
+            lambda: self.on_btn_page_go_clicked(self.tbe_flow, self.edt_flow_page_go))
+
+        self.btn_ip_page_next.clicked.connect(
+            lambda: self.on_btn_page_next_clicked(self.tbe_ip, self.edt_ip_page_go))
+        self.btn_ip_page_prev.clicked.connect(
+            lambda: self.on_btn_page_prev_clicked(self.tbe_ip, self.edt_ip_page_go))
+        self.btn_ip_page_go.clicked.connect(
+            lambda: self.on_btn_page_go_clicked(self.tbe_ip, self.edt_ip_page_go))
+
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
         self.tbe_custom.cellClicked.connect(self.on_tbe_custom_cellClicked)
@@ -518,13 +552,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_page_tbe(tbe, next_page)
 
     def on_btn_page_prev_clicked(self, tbe: QTableWidget, edt: QLineEdit):
-        cur_page = int(self.edt_user_page_go.text())
+        cur_page = int(edt.text())
         prev_page = cur_page - 1 if cur_page > 0 else 0
-        self.edt_user_page_go.setText(str(prev_page))
+        edt.setText(str(prev_page))
         self.show_page_tbe(tbe, prev_page)
 
     def on_btn_page_go_clicked(self, tbe: QTableWidget, edt: QLineEdit):
-        go_page = int(self.edt_user_page_go.text())
+        go_page = int(edt.text())
         self.show_page_tbe(tbe, go_page)
 
     def on_tbe_proj_cellClicked(self, row: int, col: int):

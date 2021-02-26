@@ -19,7 +19,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="548ec079-fede-4a5a-a8f4-44d639b3a445" name="Default Changelist" comment="" />
+    <list default="true" id="548ec079-fede-4a5a-a8f4-44d639b3a445" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../.idea/deployment.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../client/lib_.py" beforeDir="false" afterPath="$PROJECT_DIR$/../client/lib_.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../client/wnd_login_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/../client/wnd_login_code.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wnd_server_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/wnd_server_code.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,10 +62,10 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.externalTools" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.wnd_server_code">
     <configuration name="scratch" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -136,6 +142,8 @@
       <workItem from="1613980826388" duration="55251000" />
       <workItem from="1614096554047" duration="94000" />
       <workItem from="1614128537865" duration="15717000" />
+      <workItem from="1614330789577" duration="4267000" />
+      <workItem from="1614346662997" duration="433000" />
     </task>
     <task id="LOCAL-00001" summary="把服务端移到云服务器">
       <created>1613993755942</created>
@@ -324,10 +332,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="541" y="335" width="984" height="558" key="Registry/0.0.1920.1040@0.0.1920.1040" timestamp="1614001668883" />
-    <state x="461" y="164" key="SettingsEditor" timestamp="1614160023245">
+    <state x="244" y="161" key="SettingsEditor" timestamp="1614339322519">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="461" y="164" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1614160023245" />
+    <state x="244" y="161" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1614339322519" />
     <state x="92" y="92" width="1736" height="856" key="VCS.FileHistoryDialog" timestamp="1614050493564">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -340,6 +348,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="688" y="230" width="983" height="594" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1614089278388" />
+    <state x="1247" y="368" key="ftp.server.browser" timestamp="1614337947678">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="1247" y="368" key="ftp.server.browser/0.0.1920.1040@0.0.1920.1040" timestamp="1614337947678" />
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1614001640168">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

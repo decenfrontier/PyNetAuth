@@ -28,8 +28,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.init_wnd()
         self.init_status_bar()
         self.init_custom_sig_slot()
-        self.show()
         if self.init_net_auth():
+            self.show()
             self.init_widgets()
             self.cfg_read()
             self.init_sig_slot()

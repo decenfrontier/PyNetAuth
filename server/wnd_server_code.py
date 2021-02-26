@@ -86,7 +86,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_menus()
         self.cfg_read()
         self.init_sig_slot()
-        self.move(0, 160)
 
     # 关闭套接字和数据库
     def closeEvent(self, event: QCloseEvent):
@@ -129,7 +128,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             #     charset='utf8'
             # )
             self.db = pymysql.connect(
-                host="rm-2vcdv0g1sq8tj1y0wqo.mysql.cn-chengdu.rds.aliyuncs.com",
+                # 外网域名: rm-2vcdv0g1sq8tj1y0wqo.mysql.cn-chengdu.rds.aliyuncs.com
+                host="rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com",
                 port=3306,
                 user="cpalyth",
                 passwd="Kptg6594571",
@@ -182,6 +182,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def init_wnd(self):
         self.setWindowTitle(f"Ip: {server_ip}  Port: {server_port}  Ver: {server_ver}")
         self.setWindowIcon(QIcon(":/server.png"))
+        self.move(260, 25)
 
     def init_controls(self):
         # ------------------------------ 堆叠窗口 ------------------------------
@@ -554,6 +555,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_page_tbe(tbe, go_page)
 
     def on_tbe_proj_cellClicked(self, row: int, col: int):
+        if not self.tbe_proj.item(row, 0):
+            return
         self.edt_proj_client_ver.setText(self.tbe_proj.item(row, 1).text())
         self.pedt_proj_public_notice.setPlainText(self.tbe_proj.item(row, 2).text())
         self.chk_proj_login.setChecked(int(self.tbe_proj.item(row, 3).text()))
@@ -561,6 +564,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.chk_proj_unbind.setChecked(int(self.tbe_proj.item(row, 5).text()))
 
     def on_tbe_custom_cellClicked(self, row: int, col: int):
+        if not self.tbe_custom.item(row, 0):
+            return
         self.edt_custom_key.setText(self.tbe_custom.item(row, 1).text())
         self.edt_custom_val.setText(self.tbe_custom.item(row, 2).text())
         self.edt_custom_eval.setText(self.tbe_custom.item(row, 3).text())
@@ -982,7 +987,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
 
     def on_timer_min_timeout(self):
-        self.show_info("----------------------------- 每分钟一轮的检测开始 -----------------------------")
+        log.info("----------------------------- 检测开始 -----------------------------")
         global today
         cur_day = cur_time_fmt[:10]
         # 若与MySQL服务端断开连接, 自动重连
@@ -1000,7 +1005,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.sql_table_update("update 6ip管理 set 今日连接次数=0;")
         # 刷新所有用户状态(状态为在线, 且心跳时间在10分钟前, 置为离线)
         self.sql_table_update("update 2用户管理 set 状态='离线' where 状态='在线' and 心跳时间 < date_sub(now(), interval 10 minute);")
-        self.show_info("----------------------------- 每分钟一轮的检测结束 -----------------------------")
+        log.info("----------------------------- 检测结束 -----------------------------\n")
 
     def thd_accept_client(self):
         log.info("服务端已开启, 准备接受客户请求...")

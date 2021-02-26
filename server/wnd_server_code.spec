@@ -1,13 +1,14 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-block_cipher = None
+from PyInstaller.archive.pyz_crypto import PyiBlockCipher
 
+block_cipher = PyiBlockCipher(key="659457")
 
 a = Analysis(['wnd_server_code.py'],
              pathex=['E:\\PycharmProjects\\PyNetAuth\\server'],
              binaries=[],
              datas=[],
-             hiddenimports=[],
+             hiddenimports=["PySide2.QtXml"],
              hookspath=[],
              runtime_hooks=[],
              excludes=["Cython", "WMI", "comtypes"],
@@ -25,13 +26,14 @@ exe = EXE(pyz,
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
-          upx=True,
-          console=True )
+          upx=False,
+          console=True,
+		  icon="F:\\icon\\1.ico")
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
                a.datas,
                strip=False,
-               upx=True,
+               upx=False,
                upx_exclude=[],
                name='wnd_server_code')

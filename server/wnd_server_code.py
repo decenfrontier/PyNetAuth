@@ -526,10 +526,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         eval = aes.encrypt(val)
         self.edt_custom_eval.setText(eval)
         if self.is_record_exist("4自定义数据", "键=%s", key):  # 查到, 则更新
-            num = self.sql_table_update("update 4自定义数据 set 值=%s, 加密值=%s where 键=%s;", (val, eval, key))
+            num = self.sql_table_update("update 4自定义数据 set 值=%s, 加密值=%s where 键=%s;", val, eval, key)
             self.show_info(f"{num}个自定义数据更新成功")
         else:  # 没查到, 则插入
-            num = self.sql_table_insert("insert 4自定义数据(键, 值, 加密值) values(%s, %s, %s);", (key, val, eval))
+            num = self.sql_table_insert("insert 4自定义数据(键, 值, 加密值) values(%s, %s, %s);", key, val, eval)
             self.show_info(f"{num}个自定义数据添加成功")
         self.show_page_tbe(self.tbe_custom)
 
@@ -787,7 +787,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         location, ok_pressed = QInputDialog.getText(self, "设置归属地", f"{ip}:", QLineEdit.Normal)
         if not ok_pressed:
             return
-        num = self.sql_table_update("update 6ip管理 set 归属地=%s where IP地址=%s;", (location, ip))
+        num = self.sql_table_update("update 6ip管理 set 归属地=%s where IP地址=%s;", location, ip)
         self.show_info(f"{num}条记录更新成功")
         self.show_page_tbe(self.tbe_ip)
 
@@ -975,7 +975,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         online_user_num = self.sql_table_query("select count(*) from 2用户管理 where 状态='在线';")[0]["count(*)"]
         # 更新每日流水表
         self.sql_table_update("update 5每日流水 set 活跃用户数=%s, 在线用户数=%s where 日期=%s;",
-                              (active_user_num, online_user_num, today))
+                              active_user_num, online_user_num, today)
 
     def on_timer_sec_timeout(self):
         global cur_time_fmt
@@ -1012,7 +1012,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 break
             ip = client_addr[0]
             log.info(f"新接收客户端{ip}, 已分配客服套接字")
-            self.sql_table_update("update 6ip管理 set 今日连接次数=今日连接次数+1 where IP地址=%s;", (ip,))
+            self.sql_table_update("update 6ip管理 set 今日连接次数=今日连接次数+1 where IP地址=%s;", ip)
             Thread(target=self.thd_serve_client, args=(client_socket, ip), daemon=True).start()
         log.info("服务端已关闭, 停止接受客户端请求...")
 
@@ -1240,18 +1240,18 @@ class WndServer(QMainWindow, Ui_WndServer):
                     # 若到期时间大于当前时间, 则从到期时间开始加, 否则从当前时间开始加
                     ret = self.sql_table_update(
                         "update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval %s day), "
-                        "date_add(到期时间, interval %s day)) where 账号=%s;", (delta_day, delta_day, account))
+                        "date_add(到期时间, interval %s day)) where 账号=%s;", delta_day, delta_day, account)
                     if ret:
                         detail = "充值成功"
                         # 更新卡密表-使用时间
-                        self.sql_table_update("update 3卡密管理 set 使用时间=%s where 卡号=%s;", (cur_time_fmt, card_key))
+                        self.sql_table_update("update 3卡密管理 set 使用时间=%s where 卡号=%s;", cur_time_fmt, card_key)
                         # 更新流水表-充值用户数
                         card_pay_num = card_type + "充值数"
                         self.sql_table_update(f"update 5每日流水 set 充值用户数=充值用户数+1, {card_pay_num}={card_pay_num}+1 "
                                               f"where 日期='{today}';")
                         # 更新用户表-充值月数
                         add_month = delta_day // 30
-                        self.sql_table_update("update 2用户管理 set 充值月数=充值月数+%s where 账号=%s", (add_month, account))
+                        self.sql_table_update("update 2用户管理 set 充值月数=充值月数+%s where 账号=%s", add_month, account)
                     else:
                         detail = "充值失败, 数据库异常"
                 else:
@@ -1372,7 +1372,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             elif query_user["状态"] == "冻结":
                 detail = "解绑失败, 此账号已冻结, 无法解绑"
             elif pwd == query_user["密码"]:  # 密码正确, 把机器码置为空
-                ret = self.sql_table_update("update 2用户管理 set 机器码='', 今日解绑次数=今日解绑次数+1 where 账号=%s;", (account,))
+                ret = self.sql_table_update("update 2用户管理 set 机器码='', 今日解绑次数=今日解绑次数+1 where 账号=%s;", account)
                 detail = "解绑成功" if ret else "解绑失败, 数据库异常"
             else:
                 detail = "解绑失败, 密码错误"

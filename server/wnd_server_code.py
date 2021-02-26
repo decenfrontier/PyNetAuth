@@ -143,14 +143,14 @@ class WndServer(QMainWindow, Ui_WndServer):
             log.info(f"mysql连接失败: {e}")
             QMessageBox.critical(self, "错误", f"mysql连接失败: {e}")
             raise e
-        # 清零用户管理表今日次数
+        # todo: 优化 清零用户管理表今日次数
         lastest_time = self.sql_table_query("select max(最后更新时间) from 2用户管理;")[0]["max(最后更新时间)"]
         lastest_day = str(lastest_time)[:10]
         if lastest_day != today:
             log.info("新的一天到了, 清零用户管理表今日次数")
-            self.sql_table_update("update 2用户管理 set 今日登录次数=0, 今日解绑次数=0;")  # "2用户管理", {"今日登录次数": 0, "今日解绑次数": 0}
+            self.sql_table_update("update 2用户管理 set 今日登录次数=0, 今日解绑次数=0;")
         # 插入每日流水表今日记录
-        if not self.sql_table_query("select * from 5每日流水 where 日期=%s;", (today,)):  # "5每日流水", {"日期": today}
+        if not self.is_record_exist("5每日流水", "日期=%s", today):
             log.info("新的一天到了, 插入每日流水表今日记录")
             self.sql_table_insert_ex("5每日流水", {"日期": today})
 
@@ -476,27 +476,17 @@ class WndServer(QMainWindow, Ui_WndServer):
     def on_btn_proj_confirm_clicked(self):
         client_ver = self.edt_proj_client_ver.text()
         pub_notice = self.pedt_proj_public_notice.toPlainText()
-        url_update = self.edt_proj_url_update.text()
-        url_card = self.edt_proj_url_card.text()
-        reg_gift_day = self.edt_proj_reg_gift_day.text()
-        free_unbind_count = self.edt_proj_free_unbind_count.text()
-        unbind_sub_hour = self.edt_proj_unbind_sub_hour.text()
         allow_login = int(self.chk_proj_login.isChecked())
         allow_reg = int(self.chk_proj_reg.isChecked())
         allow_unbind = int(self.chk_proj_unbind.isChecked())
         val_dict = {
             "客户端版本": client_ver,
             "客户端公告": pub_notice,
-            "更新网址": url_update,
-            "发卡网址": url_card,
-            "注册赠送天数": reg_gift_day,
-            "免费解绑次数": free_unbind_count,
-            "解绑扣除小时": unbind_sub_hour,
             "允许登录": allow_login,
             "允许注册": allow_reg,
             "允许解绑": allow_unbind,
         }
-        if self.sql_table_query("select * from 1项目管理 where 客户端版本=%s;", (client_ver,)):
+        if self.is_record_exist("1项目管理", "客户端版本=%s", client_ver):
             num = self.sql_table_update_ex("1项目管理", val_dict, {"客户端版本": client_ver})
             self.show_info(f"{num}个版本更新成功")
         else:
@@ -535,8 +525,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         val = self.edt_custom_val.text()
         eval = aes.encrypt(val)
         self.edt_custom_eval.setText(eval)
-        query_custom_list = self.sql_table_query("select * from 4自定义数据 where 键=%s;", (key,))
-        if query_custom_list:  # 查到, 则更新
+        if self.is_record_exist("4自定义数据", "键=%s", key):  # 查到, 则更新
             num = self.sql_table_update("update 4自定义数据 set 值=%s, 加密值=%s where 键=%s;", (val, eval, key))
             self.show_info(f"{num}个自定义数据更新成功")
         else:  # 没查到, 则插入
@@ -837,7 +826,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.update_today_flow()
         # 查询并刷新表格
         sql = f"select * from {tbe_name} {order_fmt} limit %s, %s;"
-        query_list = self.sql_table_query(sql, (page*tbe.rowCount(), tbe.rowCount()))
+        query_list = self.sql_table_query(sql, page*tbe.rowCount(), tbe.rowCount())
         refresh_func(query_list)
         # After操作
         if tbe_name == "4自定义数据":
@@ -1108,7 +1097,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"[项目] 正在处理IP: {ip}")
 
         client_ver = client_content_dict["版本号"]  # "1项目管理", {"客户端版本": client_ver}
-        query_proj_list = self.sql_table_query("select * from 1项目管理 where 客户端版本=%s;", (client_ver,))
+        query_proj_list = self.sql_table_query("select * from 1项目管理 where 客户端版本=%s;", client_ver)
         if query_proj_list:
             ret = True
             query_proj = query_proj_list[0]
@@ -1153,9 +1142,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"[注册] 正在处理账号: {account}")
         ret = False
 
-        if not self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,)):  # 不存在则插入记录
+        if not self.is_record_exist("2用户管理", "账号=%s", account):  # 不存在则插入记录
             machine_code = client_content_dict["机器码"]  # "2用户管理", {"机器码": machine_code}
-            query_user_list = self.sql_table_query("select * from 2用户管理 where 机器码=%s;", (machine_code,))
+            query_user_list = self.sql_table_query("select * from 2用户管理 where 机器码=%s;", machine_code)
             if not query_user_list:  # 没有找到此机器码
                 client_content_dict["注册时间"] = cur_time_fmt
                 client_content_dict["到期时间"] = datetime.datetime.now() + datetime.timedelta(
@@ -1184,7 +1173,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         machine_code = client_content_dict["机器码"]
         ret, query_user = False, {}
 
-        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,))  # 判断账号是否存在
+        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)  # 判断账号是否存在
         if query_user_list:
             query_user = query_user_list[0]
             if query_user["状态"] == "冻结":
@@ -1287,13 +1276,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         new_pwd = client_content_dict["密码"]
         ret = False
 
-        # 查询数据库, 判断用户是否存在  "2用户管理", {"账号": account}
-        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,))  # 查找账号是否存在
+        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)  # 查找账号是否存在
         if query_user_list:
             query_user = query_user_list[0]
             query_qq = query_user["QQ"]
-            if qq == query_qq:  # "2用户管理", {"密码": new_pwd}, {"账号": account}
-                ret = self.sql_table_update("update 2用户管理 set 密码=%s where 账号=%s;", (new_pwd, account))
+            if qq == query_qq:
+                ret = self.sql_table_update("update 2用户管理 set 密码=%s where 账号=%s;", new_pwd, account)
                 detail = "改密成功" if ret else "改密失败, 数据库异常"
             else:
                 detail = "改密失败, QQ错误"
@@ -1315,9 +1303,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         comment = comment_state_dict[ori_comment]
         machine_code = client_content_dict["机器码"]
         update_dict = {"心跳时间": cur_time_fmt, "备注": comment}
-        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;",
-                                               (account,))  # 查找账号是否存在  "2用户管理", {"账号": account}
-        if query_user_list:
+
+        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)
+        if query_user_list:  # 若账号存在
             query_user = query_user_list[0]
             if query_user["状态"] == "冻结":  # 服务端已冻结此账号, 则令其下线
                 ret, detail = "下线", "此账号已被冻结"
@@ -1348,8 +1336,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         comment = comment_state_dict[ori_comment]
         update_dict = {"心跳时间": cur_time_fmt, "状态": "离线", "备注": comment}
 
-        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;",
-                                               (account,))  # 查找账号是否存在  "2用户管理", {"账号": account}
+        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)
         if query_user_list:
             query_user = query_user_list[0]
             # 若账号在线时有非法操作, 服务端自动冻结其账号, 客户端离线时不要改变冻结状态
@@ -1375,7 +1362,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"[解绑] IP: {ip}, 正在处理账号: {account}")
         pwd = client_content_dict["密码"]
         ret = False
-        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", (account,))
+        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)
         if query_user_list:  # 判断账号是否存在
             query_user = query_user_list[0]
             if query_user["机器码"] == "":  # 若原本就没绑定机器
@@ -1416,7 +1403,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         except Exception as e:
             log.info(f"向客户端{client_socket.getpeername()}回复失败: {e}")
 
-    def sql_table_insert(self, sql: str, args=tuple()):
+    def sql_table_insert(self, sql: str, *args):
         num = 0
         try:
             num = self.cursor.execute(sql, args)  # 执行SQL语句
@@ -1442,7 +1429,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"表插入扩展数量: {num}")
         return num
 
-    def sql_table_query(self, sql: str, args=tuple()):
+    def sql_table_query(self, sql: str, *args):
         query_list = []
         try:
             self.cursor.execute(sql, args)  # 执行SQL语句
@@ -1475,7 +1462,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         print(f"表查询结果: {query_list}")
         return query_list
 
-    def sql_table_update(self, sql: str, args=tuple()):
+    def sql_table_update(self, sql: str, *args):
         num = 0
         try:
             num = self.cursor.execute(sql, args)  # 执行SQL语句
@@ -1513,7 +1500,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"表更新数量: {num}")
         return num
 
-    def sql_table_del(self, sql: str, args=tuple()):
+    def sql_table_del(self, sql: str, *args):
         num = 0
         try:
             num = self.cursor.execute(sql, args)  # 执行SQL语句
@@ -1523,6 +1510,13 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.db.rollback()
         log.info(f"表删除数量: {num}")
         return num
+
+    # 是否记录存在
+    def is_record_exist(self, table_name: str, record: str, *args):
+        ret = self.sql_table_query(f"select 1 from {table_name} where {record} limit 1;", args)
+        if ret:
+            return True
+        return False
 
 
 # 生成随机卡密

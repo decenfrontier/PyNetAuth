@@ -12,6 +12,7 @@ import wnd_login_rc
 from ui.wnd_login import Ui_WndLogin
 from wnd_main_code import WndMain
 import lib_, crypto_
+from lib_ import rnd
 
 class WndLogin(QDialog, Ui_WndLogin):
     sig_accept = Signal()
@@ -75,12 +76,15 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.path_captcha = "\\".join([lib_.PATH_TEMP, "captcha.bmp"])  # 验证码图片保存路径
         self.captcha_ret = 999  # 验证码图片答案
         self.captcha_btn_text = ""  # 记录弹出验证窗口时点的是哪一个按钮
+        # ---------------------
+        self.start_point = QPoint(0, 0)  # 使窗口支持拖动移动
+        self.back_img = QPixmap(f":/back{rnd(1,3)}.jpg")
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
         self.setAttribute(Qt.WA_TranslucentBackground)  # 透明背景
         self.setWindowFlags(Qt.FramelessWindowHint)  # 设置为无边框, 但任务栏有图标
-        self.start_point = QPoint(0, 0)  # 使窗口支持拖动移动
+
 
     def init_status_bar(self):
         self.status_bar.addWidget(self.lbe_1)
@@ -118,7 +122,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 背景
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        pix_map = QPixmap(":/back1.jpg").scaled(self.size())
+        pix_map = self.back_img.scaled(self.size())
         painter.drawPixmap(self.rect(), pix_map)
         # 圆角
         bmp = QBitmap(self.size())

@@ -6,5 +6,7 @@
         <file>notice.png</file>
         <file>pay.png</file>
         <file>register.png</file>
+        <file>back2.jpg</file>
+        <file>back3.jpg</file>
     </qresource>
 </RCC>

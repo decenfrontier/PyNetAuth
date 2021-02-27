@@ -78,7 +78,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.captcha_btn_text = ""  # 记录弹出验证窗口时点的是哪一个按钮
         # ---------------------
         self.start_point = QPoint(0, 0)  # 使窗口支持拖动移动
-        self.back_img = QPixmap(f":/back{rnd(1,3)}.jpg")
+        self.back_img = QPixmap(f":/back{rnd(1,6)}.jpg")
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象

@@ -876,6 +876,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_proj.setItem(row, 6, QTableWidgetItem(str(query_proj["最后更新时间"])))
 
     def refresh_tbe_user(self, query_user_list):
+        self.tbe_user.setSortingEnabled(False)  # 在更新时将自动排序关掉
         self.tbe_user.clearContents()
         for row, query_user in enumerate(query_user_list):
             query_user["到期时间"] = "" if query_user["到期时间"] is None else str(query_user["到期时间"])
@@ -901,8 +902,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setItem(row, 15, QTableWidgetItem(query_user["操作系统"]))
             self.tbe_user.setItem(row, 16, QTableWidgetItem(query_user["备注"]))
             self.tbe_user.setItem(row, 17, QTableWidgetItem(query_user["最后更新时间"]))
+        self.tbe_user.setSortingEnabled(True)  # 更新完毕后再打开自动排序
 
     def refresh_tbe_card(self, query_card_list: list):
+        self.tbe_card.setSortingEnabled(False)  # 在更新时将自动排序关掉
         self.tbe_card.clearContents()
         for row, query_card in enumerate(query_card_list):
             query_card["制卡时间"] = "" if query_card["制卡时间"] is None else str(query_card["制卡时间"])
@@ -920,6 +923,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_card.setItem(row, 3, gen_time)
             self.tbe_card.setItem(row, 4, export_time)
             self.tbe_card.setItem(row, 5, use_time)
+        self.tbe_card.setSortingEnabled(True)  # 更新完毕后再打开自动排序
 
     def refresh_tbe_custom(self, query_custom_list: list):
         self.tbe_custom.clearContents()
@@ -946,6 +950,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_flow.setItem(row, 9, QTableWidgetItem(query_flow["最后更新时间"]))
 
     def refresh_tbe_ip(self, query_ip_list: list):
+        self.tbe_ip.setSortingEnabled(False)  # 在更新时将自动排序关掉
         self.tbe_ip.clearContents()
         for row, query_ip in enumerate(query_ip_list):
             query_ip["最后更新时间"] = "" if query_ip["最后更新时间"] is None else str(query_ip["最后更新时间"])
@@ -955,6 +960,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_ip.setItem(row, 3, QTableWidgetItem(query_ip["今日连接时间"]))
             self.tbe_ip.setItem(row, 4, QTableWidgetItem(str(query_ip["今日连接次数"])))
             self.tbe_ip.setItem(row, 5, QTableWidgetItem(query_ip["最后更新时间"]))
+        self.tbe_ip.setSortingEnabled(True)  # 更新完毕后再打开自动排序
 
     def refresh_lst_log(self):
         self.lst_log.clear()

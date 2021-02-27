@@ -1,4 +1,3 @@
-# my function, 客户端登录界面, 和 主界面的函数库
 import base64
 import time
 import wmi
@@ -335,7 +334,7 @@ url_card = "https://www.bilibili.com"  # 发卡网址
 allow_login = False  # 允许登录
 allow_reg = False  # 允许注册
 allow_unbind = False  # 允许解绑
-latest_ver = "x.x.x"  # 最新版本
+latest_ver = "0.0.0"  # 最新版本
 
 # 构造加密类实例化对象
 aes = crypto_.AesEncryption(aes_key)  # 先构造一个假的

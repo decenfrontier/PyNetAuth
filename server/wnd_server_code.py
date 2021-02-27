@@ -11,7 +11,7 @@ from logging.handlers import TimedRotatingFileHandler
 from PySide2.QtGui import QIcon, QCloseEvent, QCursor, QIntValidator
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
     QMessageBox, QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem, \
-    QTableWidget
+    QTableWidget, QHeaderView
 from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
@@ -445,6 +445,15 @@ class WndServer(QMainWindow, Ui_WndServer):
         # 表格相关
         self.tbe_proj.cellClicked.connect(self.on_tbe_proj_cellClicked)
         self.tbe_custom.cellClicked.connect(self.on_tbe_custom_cellClicked)
+        self.tbe_user.horizontalHeader().sortIndicatorChanged.connect(
+            lambda col, order: self.tbe_user.sortItems(col, order)
+        )
+        self.tbe_card.horizontalHeader().sortIndicatorChanged.connect(
+            lambda col, order: self.tbe_card.sortItems(col, order)
+        )
+        self.tbe_ip.horizontalHeader().sortIndicatorChanged.connect(
+            lambda col, order: self.tbe_ip.sortItems(col, order)
+        )
         # 列表框
         self.lst_log.itemDoubleClicked.connect(self.on_lst_log_itemDoubleClicked)
         # 时钟

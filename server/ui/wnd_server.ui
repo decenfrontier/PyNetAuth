@@ -49,7 +49,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page_proj">
        <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -845,6 +845,9 @@
           <property name="showGrid">
            <bool>true</bool>
           </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
           <property name="wordWrap">
            <bool>false</bool>
           </property>
@@ -855,6 +858,9 @@
            <number>28</number>
           </property>
           <attribute name="horizontalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
            <bool>true</bool>
           </attribute>
           <attribute name="horizontalHeaderStretchLastSection">
@@ -1019,6 +1025,9 @@
           <property name="showGrid">
            <bool>true</bool>
           </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
           <property name="wordWrap">
            <bool>false</bool>
           </property>
@@ -1029,7 +1038,7 @@
            <number>30</number>
           </property>
           <attribute name="horizontalHeaderVisible">
-           <bool>false</bool>
+           <bool>true</bool>
           </attribute>
           <attribute name="horizontalHeaderDefaultSectionSize">
            <number>100</number>
@@ -1504,6 +1513,9 @@
         <item>
          <widget class="QTableWidget" name="tbe_ip">
           <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="sortingEnabled">
            <bool>true</bool>
           </property>
           <property name="rowCount">

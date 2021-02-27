@@ -509,10 +509,12 @@ class Ui_WndServer(object):
         self.tbe_user.setAlternatingRowColors(True)
         self.tbe_user.setTextElideMode(Qt.ElideNone)
         self.tbe_user.setShowGrid(True)
+        self.tbe_user.setSortingEnabled(True)
         self.tbe_user.setWordWrap(False)
         self.tbe_user.setCornerButtonEnabled(False)
         self.tbe_user.setRowCount(28)
-        self.tbe_user.horizontalHeader().setVisible(True)
+        self.tbe_user.horizontalHeader().setVisible(False)
+        self.tbe_user.horizontalHeader().setProperty("showSortIndicator", True)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_user.verticalHeader().setVisible(False)
         self.tbe_user.verticalHeader().setMinimumSectionSize(20)
@@ -548,10 +550,11 @@ class Ui_WndServer(object):
         self.tbe_card.setAlternatingRowColors(True)
         self.tbe_card.setTextElideMode(Qt.ElideNone)
         self.tbe_card.setShowGrid(True)
+        self.tbe_card.setSortingEnabled(True)
         self.tbe_card.setWordWrap(False)
         self.tbe_card.setCornerButtonEnabled(False)
         self.tbe_card.setRowCount(30)
-        self.tbe_card.horizontalHeader().setVisible(False)
+        self.tbe_card.horizontalHeader().setVisible(True)
         self.tbe_card.horizontalHeader().setDefaultSectionSize(100)
         self.tbe_card.horizontalHeader().setStretchLastSection(True)
         self.tbe_card.verticalHeader().setVisible(False)
@@ -763,6 +766,7 @@ class Ui_WndServer(object):
             self.tbe_ip.setRowCount(30)
         self.tbe_ip.setObjectName(u"tbe_ip")
         self.tbe_ip.setAlternatingRowColors(True)
+        self.tbe_ip.setSortingEnabled(True)
         self.tbe_ip.setRowCount(30)
         self.tbe_ip.horizontalHeader().setStretchLastSection(True)
         self.tbe_ip.verticalHeader().setVisible(False)
@@ -845,7 +849,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(1)
+        self.stack_widget.setCurrentIndex(2)
         self.cmb_user_order_by.setCurrentIndex(0)
 
 

@@ -142,7 +142,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             log.info(f"mysql连接失败: {e}")
             QMessageBox.critical(self, "错误", f"mysql连接失败: {e}")
             raise e
-        # todo: 优化 清零用户管理表今日次数
         lastest_time = self.sql_table_query("select max(最后更新时间) from 2用户管理;")[0]["max(最后更新时间)"]
         lastest_day = str(lastest_time)[:10]
         if lastest_day != today:

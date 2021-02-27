@@ -422,7 +422,7 @@ class Ui_WndLogin(object):
 
         self.retranslateUi(WndLogin)
 
-        self.stack_widget.setCurrentIndex(4)
+        self.stack_widget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(WndLogin)
@@ -452,7 +452,7 @@ class Ui_WndLogin(object):
         self.label_6.setText(QCoreApplication.translate("WndLogin", u"\u5bc6\u7801:", None))
         self.label_5.setText(QCoreApplication.translate("WndLogin", u"\u8d26\u53f7:", None))
 #if QT_CONFIG(tooltip)
-        self.edt_reg_account.setToolTip(QCoreApplication.translate("WndLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
+        self.edt_reg_account.setToolTip(QCoreApplication.translate("WndLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d, \u6bcf\u53f0\u673a\u5668\u53ea\u80fd\u6ce8\u518c\u4e00\u4e2a\u8d26\u53f7, \u4e14\u8d26\u53f7\u540d\u65e0\u6cd5\u4fee\u6539", None))
 #endif // QT_CONFIG(tooltip)
         self.edt_reg_account.setText("")
 #if QT_CONFIG(tooltip)

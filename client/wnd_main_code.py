@@ -34,9 +34,9 @@ class WndMain(QMainWindow, Ui_WndMain):
         msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         tcp_socket.close()
         if msg_type == "离线":
-            lib_.log.info("正常退出")
+            lib_.log.info("---------------------------- 客户端正常退出 ----------------------------")
         else:
-            lib_.log.info("异常退出")
+            lib_.log.info("---------------------------- 客户端异常退出 ----------------------------")
 
     # 初始化实例属性
     def init_instance_field(self):
@@ -86,7 +86,7 @@ class WndMain(QMainWindow, Ui_WndMain):
                     if heart_ret == "正常":
                         self.fail_count = 0  # 正常则清零失败错误
                         self.last_heart_stamp = lib_.cur_time_stamp
-                        sleep_time = 12  # 60*9,  todo: 正常通信, 下次隔9分钟发一次心跳包
+                        sleep_time = 60*9  # 正常通信, 下次隔9分钟发一次心跳包
                     elif heart_ret == "下线":
                         self.fail_count = 10
                         self.show_info(server_content_dict["详情"])

@@ -41,7 +41,7 @@ class WndLogin(QDialog, Ui_WndLogin):
             self.sig_close.emit()
 
     def closeEvent(self, event: QCloseEvent):
-        self.show_info("登录窗口关闭")
+        lib_.log.info("---------------------------- 登录窗口关闭 ----------------------------")
 
     # 读取配置
     def cfg_read(self):
@@ -566,7 +566,7 @@ class WndLogin(QDialog, Ui_WndLogin):
 
 
 if __name__ == '__main__':
-    # 初始化日志模块
+    lib_.log.info("---------------------------- 客户端启动 ----------------------------")
     lib_.log.info("初始化日志模块成功")
 
     # 界面随DPI自动缩放

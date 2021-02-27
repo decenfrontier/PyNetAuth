@@ -45,7 +45,7 @@
     <string/>
    </property>
    <property name="currentIndex">
-    <number>4</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="page_login">
     <layout class="QGridLayout" name="gridLayout_13">
@@ -295,7 +295,7 @@
           <item row="0" column="1">
            <widget class="QLineEdit" name="edt_reg_account">
             <property name="toolTip">
-             <string>字母数字组合, 6-12位</string>
+             <string>字母数字组合, 6-12位, 每台机器只能注册一个账号, 且账号名无法修改</string>
             </property>
             <property name="text">
              <string/>

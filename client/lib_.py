@@ -180,6 +180,7 @@ def is_user_dangerous():
 
     ret1 = anti_vm()
     if ret1:
+        print("检测到虚拟机")
         client_comment = state_comment_dict["检测到虚拟机"]
         ret = True
     ret2 = anti_debug1()
@@ -187,13 +188,12 @@ def is_user_dangerous():
     ret4 = anti_debug3()
     ret5 = anti_anti_debug4()
     if True in [ret2, ret3, ret4, ret5]:
+        print("检测到调试器")
         client_comment = state_comment_dict["检测到调试器"]
         ret = True
     # todo: 正式发布前删掉
-    if ret:
-        print("危险")
-    else:
-        print("安全")
+    if not ret:
+        print("没检测到调试器和虚拟机")
     return ret
 
 # ------------------------- 网络验证相关 -------------------------

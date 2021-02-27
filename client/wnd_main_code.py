@@ -26,7 +26,7 @@ class WndMain(QMainWindow, Ui_WndMain):
         lib_.is_user_dangerous()
         tcp_socket = lib_.connect_server_tcp()
         if not tcp_socket:
-            lib_.log_info("服务器繁忙, 请稍后再试")
+            lib_.log.info("服务器繁忙, 请稍后再试")
             return
         client_info_dict = {"消息类型": "离线",
                             "内容": {"账号": lib_.user_account, "备注": lib_.client_comment}}
@@ -34,9 +34,9 @@ class WndMain(QMainWindow, Ui_WndMain):
         msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         tcp_socket.close()
         if msg_type == "离线":
-            lib_.log_info("正常退出")
+            lib_.log.info("正常退出")
         else:
-            lib_.log_info("异常退出")
+            lib_.log.info("异常退出")
 
     # 初始化实例属性
     def init_instance_field(self):
@@ -60,7 +60,7 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def show_info(self, text):
         self.sig_info.emit(text)  # 信号槽, 防逆向跟踪
-        lib_.log_info(text)
+        lib_.log.info(text)
 
     def start_heart_beat(self):
         self.fail_count = 0
@@ -75,7 +75,7 @@ class WndMain(QMainWindow, Ui_WndMain):
             # 尝试连接服务端
             tcp_socket = lib_.connect_server_tcp()
             if not tcp_socket:  # 连接失败
-                lib_.log_info("与服务器连接异常...")
+                lib_.log.info("与服务器连接异常...")
             else:  # 连接成功, 发送心跳包
                 client_info_dict = {"消息类型": "心跳",
                     "内容": {"账号": lib_.user_account, "机器码": lib_.machine_code, "备注": lib_.client_comment}}

@@ -28,16 +28,16 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.init_wnd()
         self.init_status_bar()
         self.init_custom_sig_slot()
+        self.show()
         if self.init_net_auth():
-            self.show()
             self.init_widgets()
             self.cfg_read()
             self.init_sig_slot()
             self.popup_update_msg()
             self.on_init_success()
-            lib_.log_info("登录窗口初始化成功")
+            lib_.log.info("登录窗口初始化成功")
         else:
-            lib_.log_info("登录窗口初始化失败")
+            lib_.log.info("登录窗口初始化失败")
             self.sig_close.emit()
 
     def closeEvent(self, event: QCloseEvent):
@@ -73,7 +73,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.lbe_captcha_pic = QLabel("图片验证码", self.wnd_captcha)
         self.edt_captcha_answer = QLineEdit(self.wnd_captcha)
         self.btn_captcha_commit = QPushButton("提交", self.wnd_captcha)
-        self.path_captcha = "\\".join([lib_.PATH_TEMP, "captcha.bmp"])  # 验证码图片保存路径
+        self.path_captcha = "\\".join([lib_.DIR_TEMP, "captcha.bmp"])  # 验证码图片保存路径
         self.captcha_ret = 999  # 验证码图片答案
         self.captcha_btn_text = ""  # 记录弹出验证窗口时点的是哪一个按钮
         # ---------------------
@@ -92,7 +92,7 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     def show_info(self, text):
         self.sig_info.emit(text)  # 信号槽, 防逆向跟踪
-        lib_.log_info(text)
+        lib_.log.info(text)
 
     # 初始化网络验证
     def init_net_auth(self):
@@ -103,8 +103,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 与服务端连接
         tcp_socket = lib_.connect_server_tcp()
         if not tcp_socket:
-            lib_.log_info("服务器繁忙, 请稍后再试")
-            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试")
+            lib_.log.warn("服务器繁忙, 请稍后再试0")
+            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试0")
             return False
         if self.send_recv_init(tcp_socket) and self.send_recv_proj(tcp_socket):
             return True
@@ -228,7 +228,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 等待服务端响应初始消息
         msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if not msg_type:
-            self.show_info("服务器繁忙, 请稍后再试, 错误码: 1")
+            lib_.log.warn("服务器繁忙, 请稍后再试1")
+            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试1")
             return False
         if msg_type == "初始":
             if server_content_dict["结果"]:
@@ -250,7 +251,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 等待服务端响应项目消息
         msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if not msg_type:
-            self.show_info("服务器繁忙, 请稍后再试, 错误码: 2")
+            lib_.log.warn("服务器繁忙, 请稍后再试2")
+            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试2")
             return False
         if msg_type == "锟斤拷":
             if server_content_dict["结果"]:
@@ -277,7 +279,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 处理服务端响应消息
         msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if not msg_type:
-            self.show_info("服务器繁忙, 请稍后再试, 错误码: 3")
+            lib_.log.warn("服务器繁忙, 请稍后再试3")
+            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试3")
             return False
         if msg_type == "烫烫烫":
             detail_dict = server_content_dict["详情"]
@@ -293,7 +296,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 处理服务端响应消息
         msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
         if not msg_type:
-            self.show_info("服务器繁忙, 请稍后再试, 错误码: 4")
+            lib_.log.warn("服务器繁忙, 请稍后再试4")
+            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试4")
             return False
         if msg_type == "屯屯屯":
             detail_dict = server_content_dict["详情"]
@@ -552,9 +556,9 @@ class WndLogin(QDialog, Ui_WndLogin):
     def on_init_success(self):
         # 初始化json文件
         if not os.path.exists(lib_.PATH_JSON_LOGIN):
-            lib_.log_info("自动创建登录界面配置文件")
+            lib_.log.info("自动创建登录界面配置文件")
             lib_.dict_to_json_file(lib_.cfg_login, lib_.PATH_JSON_LOGIN)
-        lib_.log_info("初始化配置文件完成")
+        lib_.log.info("初始化配置文件完成")
 
         # 注册组件到系统
         ret = lib_.reg_com_to_system(lib_.COM_NAME_TR)
@@ -563,14 +567,13 @@ class WndLogin(QDialog, Ui_WndLogin):
 
 if __name__ == '__main__':
     # 初始化日志模块
-    lib_.init_logging()
-    lib_.log_info("初始化日志模块成功")
+    lib_.log.info("初始化日志模块成功")
 
     # 界面随DPI自动缩放
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication()
     app.setStyle(QStyleFactory.create("fusion"))
-    lib_.log_info("初始化界面样式完成")
+    lib_.log.info("初始化界面样式完成")
 
     # 初始化登录窗口
     lib_.wnd_login = WndLogin()

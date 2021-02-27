@@ -5,11 +5,12 @@ import wmi
 import platform
 import json
 import random
-import logging
 import os
 import pythoncom
 import socket
 import ctypes
+import logging
+from logging.handlers import TimedRotatingFileHandler
 
 from comtypes.client import CreateObject
 from win32com.client import Dispatch
@@ -17,37 +18,27 @@ from PySide2.QtCore import QThread
 
 import crypto_
 
-wnd_login = None
-wnd_main = None
+# ---------------------- 日志操作 ----------------------
+class Log():
+    def __init__(self):
+        logging.basicConfig(level=logging.INFO)
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.INFO)
+        # 创建handler对象
+        self.handler_info = TimedRotatingFileHandler(filename=PATH_CLIENT_LOG, when="midnight", interval=1, backupCount=3)
+        self.handler_info.setFormatter(logging.Formatter("%(asctime)s  %(message)s"))
+        self.handler_info.setLevel(logging.INFO)
+        # 添加handler
+        self.logger.addHandler(self.handler_info)
 
-cur_time_stamp = int(time.time())
-cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
+    def info(self, msg: str):
+        self.logger.info(msg)
 
-PATH_WORK = os.getcwd()
-PATH_SAVE = "C:\\a_b_c"
-PATH_TEMP = "\\".join([PATH_SAVE, "temp"])
-PATH_JSON_LOGIN = "\\".join([PATH_SAVE, "login.json"])
-PATH_JSON_MAIN = "\\".join([PATH_SAVE, "main.json"])
-PATH_JSON_PLAN = "\\".join([PATH_SAVE, "plan.json"])
+    def warn(self, msg: str):
+        self.logger.warning(msg)
 
-DLL_DM_NAME = "Qt5Sqd.dll"  # dm.dll
-DLL_REGDM_NAME = "Qt5Xmr.dll"  # DmReg.dll
-DLL_LW_NAME = "lw.dll"
-DLL_TR_NAME = "TURING.dll"
-DLL_MY_NAME = "yth.dll"
 
-COM_NAME_LW = "lw.lwsoft3"
-COM_NAME_DM = "dm.dmsoft"
-COM_NAME_TR = "TURING.FISR"
-
-my_dll = ctypes.WinDLL(f"dll\\{DLL_MY_NAME}")
-anti_vm = my_dll.fn1
-anti_debug1 = my_dll.fn2
-anti_debug2 = my_dll.fn3
-anti_debug3 = my_dll.fn4
-anti_anti_debug4 = my_dll.fn5
-show_task_bar_icon = my_dll.fn6
-
+# ---------------------- 时间相关 ----------------------
 # 随机数
 def rnd(min: int, max: int):
     return random.randint(min, max)
@@ -66,23 +57,7 @@ def msleep(min_ms: int, max_ms=None):
         t_ms = rnd(min_ms, max_ms)
     QThread.msleep(t_ms)
 
-# ---------------------- 日志操作 ----------------------
-def init_logging():
-    logging.basicConfig(level=logging.DEBUG,
-                        format="%(asctime)s  %(message)s",
-                        filename=f"{PATH_SAVE}\\run.log",
-                        filemode="w",
-                        datefmt="%m-%d  %H:%M:%S")
 
-
-def log_info(msg):
-    logging.info(msg)
-    print(msg)
-
-
-def log_debug(msg):
-    logging.debug(msg)
-    print(msg)
 
 # ---------------------- 文件操作 ----------------------
 def path_exist(path: str):
@@ -119,7 +94,7 @@ def file_rename(dir: str, old_file: str, new_file: str):
     try:
         os.rename(f"{dir}\\{old_file}", f"{dir}\\{new_file}")
     except:
-        log_info("file_rename异常")
+        log.warn("file_rename error")
         raise OSError
 
 def file_clear_content(path: str):
@@ -151,7 +126,7 @@ def json_file_to_dict(path_cfg: str, default_cfg: dict):
         with open(path_cfg, "r", encoding="utf-8") as f:
             cfg_load = json.load(f)
     except:
-        print("json decode error!")
+        log.warn(f"json decode error! {path_cfg} {default_cfg}")
         cfg_load = {}
     return cfg_load
 
@@ -161,11 +136,10 @@ def dict_to_json_file(py_dict: dict, path_cfg: str):
         with open(path_cfg, "w", encoding="utf-8") as f:
             json.dump(py_dict, f, ensure_ascii=False, sort_keys=True)
     except:
-        print("json encode error!")
+        log.warn(f"json encode error! {py_dict} {path_cfg}")
 
 # 注册组件到系统
-def reg_com_to_system(obj_name):
-    # type: (str) -> bool
+def reg_com_to_system(obj_name: str) -> bool:
     obj_dll_dict = {COM_NAME_LW: DLL_LW_NAME, COM_NAME_DM: DLL_DM_NAME, COM_NAME_TR: DLL_TR_NAME}
     dll_name = obj_dll_dict[obj_name]
 
@@ -191,7 +165,7 @@ def create_com_obj(com_name: str):
         else:
             obj = Dispatch(com_name)  # dm, tr
     except:
-        log_info(f"创建com对象{com_name}失败")
+        log.info(f"创建com对象{com_name}失败")
     return obj
 
 # ------------------------- 配置相关 -------------------------
@@ -267,7 +241,7 @@ def send_to_server(tcp_socket: socket.socket, client_info_dict: dict):
         tcp_socket.send(send_bytes)
         print(f"客户端数据, 发送成功: {json_str}")
     except Exception as e:
-        log_info(f"客户端数据, 发送失败: {e}")
+        log.info(f"客户端数据, 发送失败: {e}")
 
 # 从服务端接收数据
 def recv_from_server(tcp_socket: socket.socket):
@@ -295,6 +269,45 @@ def recv_from_server(tcp_socket: socket.socket):
     server_content_dict = json.loads(server_content_str)
     return msg_type, server_content_dict
 
+DIR_WORK = os.getcwd()
+DIR_SAVE = "C:\\a_b_c"
+DIR_LOG = "\\".join([DIR_SAVE, "log"])
+DIR_TEMP = "\\".join([DIR_SAVE, "temp"])
+dir_create(DIR_SAVE)
+dir_create(DIR_LOG)
+dir_create(DIR_TEMP)
+
+PATH_CLIENT_LOG = "\\".join([DIR_LOG, "client.log"])
+PATH_JSON_LOGIN = "\\".join([DIR_SAVE, "login.json"])
+PATH_JSON_MAIN = "\\".join([DIR_SAVE, "main.json"])
+PATH_JSON_PLAN = "\\".join([DIR_SAVE, "plan.json"])
+
+wnd_login = None
+wnd_main = None
+
+cur_time_stamp = int(time.time())
+cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
+log = Log()
+
+DLL_DM_NAME = "Qt5Sqd.dll"  # dm.dll
+DLL_REGDM_NAME = "Qt5Xmr.dll"  # DmReg.dll
+DLL_LW_NAME = "lw.dll"
+DLL_TR_NAME = "TURING.dll"
+DLL_MY_NAME = "yth.dll"
+
+COM_NAME_LW = "lw.lwsoft3"
+COM_NAME_DM = "dm.dmsoft"
+COM_NAME_TR = "TURING.FISR"
+
+my_dll = ctypes.WinDLL(f"dll\\{DLL_MY_NAME}")
+anti_vm = my_dll.fn1
+anti_debug1 = my_dll.fn2
+anti_debug2 = my_dll.fn3
+anti_debug3 = my_dll.fn4
+anti_anti_debug4 = my_dll.fn5
+show_task_bar_icon = my_dll.fn6
+
+# ------------------------- 网络验证相关 -------------------------
 client_ver = "3.6.8"
 server_ip = "www.gbdjob.cn"  # 119.29.167.100  127.0.0.1  47.108.170.195
 server_port = 47123

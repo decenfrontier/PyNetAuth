@@ -23,11 +23,11 @@ import crypto_
 lock = Lock()
 cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_fmt[:10]
-PATH_SAVE = "C:\\MyServer"
-PATH_LOG = "\\".join([PATH_SAVE, "log"])
-PATH_LOG_INFO = "\\".join([PATH_LOG, "info"])
-PATH_LOG_WARN = "\\".join([PATH_LOG, "warn"])
-PATH_JSON_SERVER = "\\".join([PATH_SAVE, "server.json"])
+DIR_SAVE = "C:\\MyServer"
+DIR_LOG = "\\".join([DIR_SAVE, "log"])
+PATH_LOG_INFO = "\\".join([DIR_LOG, "info.log"])
+PATH_LOG_WARN = "\\".join([DIR_LOG, "warn.log"])
+PATH_JSON_SERVER = "\\".join([DIR_SAVE, "server.json"])
 cfg_server = {
     "最新版本": "0.0.0", "更新网址": "", "发卡网址": "",
     "注册赠送天数": 0, "免费解绑次数": 0, "解绑扣除小时": 0
@@ -52,7 +52,7 @@ comment_state_dict = {v: k for k, v in state_comment_dict.items()}
 
 class Log():
     def __init__(self):
-        dir_create(PATH_LOG)
+        dir_create(DIR_LOG)
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
@@ -128,7 +128,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             #     charset='utf8'
             # )
             self.db = pymysql.connect(
-                # 外网域名: rm-2vcdv0g1sq8tj1y0wqo.mysql.cn-chengdu.rds.aliyuncs.com
                 host="rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com",
                 port=3306,
                 user="cpalyth",
@@ -575,7 +574,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             os.system(f"notepad {path}")
 
         file = item.text()
-        path_log_file = "\\".join([PATH_LOG, file])
+        path_log_file = "\\".join([DIR_LOG, file])
         Thread(target=thd_cmd, args=(path_log_file,), daemon=True).start()
 
     def on_action_proj_del_sel_triggered(self):
@@ -931,7 +930,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def refresh_lst_log(self):
         self.lst_log.clear()
-        self.lst_log.addItems(dir_get_files(PATH_LOG))
+        self.lst_log.addItems(dir_get_files(DIR_LOG))
 
     # 更新ip归属地
     def update_ip_location(self):

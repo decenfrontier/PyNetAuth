@@ -35,7 +35,9 @@ cfg_server = {
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "2.3.5"
+server_ver = "2.8.5"
+mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 公网
+
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto_.AesEncryption(aes_key)
 enc_aes_key = crypto_.encrypt_rsa(crypto_.public_key_client, aes_key)
@@ -82,7 +84,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_net_auth()
         self.init_instance_field()
         self.init_wnd()
-        self.init_controls()
+        self.init_widgets()
         self.init_menus()
         self.cfg_read()
         self.init_sig_slot()
@@ -118,22 +120,13 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def init_mysql(self):
         try:
-            # 创建数据库对象
-            # self.db = pymysql.connect(
-            #     host="127.0.0.1",  # 119.29.167.100
-            #     port=3306,
-            #     user="root",
-            #     passwd="659457",
-            #     db="net_auth",
-            #     charset='utf8'
-            # )
             self.db = pymysql.connect(
-                host="rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com",
+                host=mysql_host,
                 port=3306,
                 user="cpalyth",
                 passwd="Kptg6594571",
                 db="net_auth",
-                charset='utf8'
+                charset="utf8"
             )
             # 创建游标对象, 指定返回一个字典列表, 获取的每条数据的类型为字典(默认是元组)
             self.cursor = self.db.cursor(pymysql.cursors.DictCursor)
@@ -182,7 +175,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.setWindowIcon(QIcon(":/server.png"))
         self.move(260, 25)
 
-    def init_controls(self):
+    def init_widgets(self):
         # ------------------------------ 堆叠窗口 ------------------------------
         self.stack_widget.setCurrentIndex(0)
         # ------------------------------ 状态栏 ------------------------------
@@ -270,16 +263,22 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_proj.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_proj = QMenu()
         self.action_proj_del_sel = QAction("删除选中版本")
+        self.action_proj_sel_notice = QAction("选中版本设置公告")
+        self.action_proj_all_notice = QAction("全部版本设置公告")
         self.action_proj_all_allow_sel = QAction("选中版本全部允许")
         self.action_proj_all_forbid_sel = QAction("选中版本全部禁止")
         self.action_proj_set_latest_ver = QAction("设为最新版本")
         self.menu_tbe_proj.addAction(self.action_proj_del_sel)
         self.menu_tbe_proj.addSeparator()
-        self.menu_tbe_proj.addActions([self.action_proj_all_allow_sel,
+        self.menu_tbe_proj.addActions([self.action_proj_sel_notice,
+                                       self.action_proj_all_notice,
+                                       self.action_proj_all_allow_sel,
                                        self.action_proj_all_forbid_sel])
         self.menu_tbe_proj.addSeparator()
         self.menu_tbe_proj.addAction(self.action_proj_set_latest_ver)
         self.action_proj_del_sel.triggered.connect(self.on_action_proj_del_sel_triggered)
+        self.action_proj_sel_notice.triggered.connect(self.on_action_proj_sel_notice_triggered)
+        self.action_proj_all_notice.triggered.connect(self.on_action_proj_all_notice_triggered)
         self.action_proj_all_allow_sel.triggered.connect(self.on_action_proj_all_allow_sel_triggered)
         self.action_proj_all_forbid_sel.triggered.connect(self.on_action_proj_all_forbid_sel_triggered)
         self.action_proj_set_latest_ver.triggered.connect(self.on_action_proj_set_latest_ver_triggered)
@@ -584,9 +583,30 @@ class WndServer(QMainWindow, Ui_WndServer):
         ret = QMessageBox.information(self, "警告", "是否确认删除选中版本?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if ret != QMessageBox.Yes:
             return
-        vers = "','".join(ver_set)  # "1项目管理", f"客户端版本 in ('{vers}')"
+        vers = "','".join(ver_set)
         num = self.sql_table_del(f"delete from 1项目管理 where 客户端版本 in ('{vers}');")
         self.show_info(f"{num}个版本删除成功")
+        self.show_page_tbe(self.tbe_proj)
+
+    def on_action_proj_sel_notice_triggered(self):
+        item_list = self.tbe_proj.selectedItems()
+        ver_set = {self.tbe_proj.item(it.row(), 1).text() for it in item_list}
+        if not ver_set:
+            return
+        notice, ok_pressed = QInputDialog.getText(self, "设置选中", "公告:", QLineEdit.Normal)
+        if not ok_pressed:
+            return
+        vers = "','".join(ver_set)
+        num = self.sql_table_update(f"update 1项目管理 set 客户端公告=%s where 客户端版本 in ('{vers}');", notice)
+        self.show_info(f"{num}个记录更新成功")
+        self.show_page_tbe(self.tbe_proj)
+
+    def on_action_proj_all_notice_triggered(self):
+        notice, ok_pressed = QInputDialog.getText(self, "设置全部", "公告:", QLineEdit.Normal)
+        if not ok_pressed:
+            return
+        num = self.sql_table_update(f"update 1项目管理 set 客户端公告=%s;", notice)
+        self.show_info(f"{num}个记录更新成功")
         self.show_page_tbe(self.tbe_proj)
 
     def on_action_proj_all_allow_sel_triggered(self):

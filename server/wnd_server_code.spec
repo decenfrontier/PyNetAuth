@@ -27,7 +27,7 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=False,
-          console=False,
+          console=True,
 		  icon="F:\\icon\\1.ico")
 coll = COLLECT(exe,
                a.binaries,

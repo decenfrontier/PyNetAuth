@@ -28,11 +28,11 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.init_wnd()
         self.init_status_bar()
         self.init_custom_sig_slot()
+        self.init_widgets()
+        self.cfg_read()
+        self.init_sig_slot()
         self.show()
         if self.init_net_auth():
-            self.init_widgets()
-            self.cfg_read()
-            self.init_sig_slot()
             self.popup_update_msg()
             self.on_init_success()
             lib_.log.info("登录窗口初始化成功")
@@ -78,7 +78,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.captcha_btn_text = ""  # 记录弹出验证窗口时点的是哪一个按钮
         # ---------------------
         self.start_point = QPoint(0, 0)  # 使窗口支持拖动移动
-        self.back_img = QPixmap(f":/back{rnd(1,6)}.jpg")
+        self.back_img = QPixmap(":/back{}.jpg".format(rnd(1,6)))
 
     def init_wnd(self):
         self.setAttribute(Qt.WA_DeleteOnClose)  # 窗口关闭时删除对象
@@ -173,16 +173,6 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.edt_reg_account.setValidator(QRegExpValidator(reg_exp_acount_pwd))
         self.edt_reg_pwd.setValidator(QRegExpValidator(reg_exp_acount_pwd))
         self.edt_reg_qq.setValidator(QRegExpValidator(reg_exp_qq_number))
-        # ------------------ 设置标签格式 -----------------
-        # 充值页
-        self.lbe_pay_key.setText("<a href={}>充值卡号: </a>".format(lib_.url_card))
-        # 公告页
-        self.lbe_notice.setText("<a href={}>公 告</a>".format(lib_.url_update))
-        self.lbe_notice_text.setText(lib_.notice)
-        # ------------------ 设置按钮状态 -----------------
-        self.btn_login.setEnabled(lib_.allow_login)
-        self.btn_reg.setEnabled(lib_.allow_reg)
-        self.btn_unbind.setEnabled(lib_.allow_unbind)
 
     def init_custom_sig_slot(self):
         self.sig_accept.connect(self.accept)
@@ -554,15 +544,25 @@ class WndLogin(QDialog, Ui_WndLogin):
 
     # 初始化成功后的操作
     def on_init_success(self):
+        # ------------------ 设置按钮状态 -----------------
+        self.btn_login.setEnabled(lib_.allow_login)
+        self.btn_reg.setEnabled(lib_.allow_reg)
+        self.btn_unbind.setEnabled(lib_.allow_unbind)
+        # 充值页
+        self.lbe_pay_key.setText("<a href={}>充值卡号: </a>".format(lib_.url_card))
+        # 公告页
+        self.lbe_notice.setText("<a href={}>公 告</a>".format(lib_.url_update))
+        self.lbe_notice_text.setText(lib_.notice)
+
         # 初始化json文件
         if not os.path.exists(lib_.PATH_JSON_LOGIN):
             lib_.log.info("自动创建登录界面配置文件")
             lib_.dict_to_json_file(lib_.cfg_login, lib_.PATH_JSON_LOGIN)
         lib_.log.info("初始化配置文件完成")
 
-        # 注册组件到系统
+        # 系统注册组件
         ret = lib_.reg_com_to_system(lib_.COM_NAME_TR)
-        print("注册组件到系统:", ret)
+        lib_.log.info("系统注册组件结果: {}".format(ret))
 
 
 if __name__ == '__main__':

@@ -36,7 +36,7 @@ cfg_server = {
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "2.8.5"
+server_ver = "2.9.4"
 mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 公网
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
@@ -395,6 +395,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.btn_card_gen.clicked.connect(self.on_btn_card_gen_clicked)
         self.btn_custom_confirm.clicked.connect(self.on_btn_custom_confirm_clicked)
         self.btn_cfg_save.clicked.connect(self.on_btn_cfg_save_clicked)
+        self.btn_cfg_read.clicked.connect(self.on_btn_cfg_read_clicked)
 
         self.btn_proj_page_next.clicked.connect(
             lambda: self.on_btn_page_next_clicked(self.tbe_proj, self.edt_proj_page_go))
@@ -539,6 +540,10 @@ class WndServer(QMainWindow, Ui_WndServer):
     def on_btn_cfg_save_clicked(self):
         self.cfg_write()
         self.show_info("保存项目配置成功")
+
+    def on_btn_cfg_read_clicked(self):
+        self.cfg_read()
+        self.show_info("读取项目配置成功")
 
     def on_btn_page_next_clicked(self, tbe: QTableWidget, edt: QLineEdit):
         cur_page = int(edt.text())

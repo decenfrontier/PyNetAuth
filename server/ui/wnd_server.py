@@ -155,6 +155,7 @@ class Ui_WndServer(object):
 
         self.btn_proj_confirm = QPushButton(self.groupBox_5)
         self.btn_proj_confirm.setObjectName(u"btn_proj_confirm")
+        self.btn_proj_confirm.setMinimumSize(QSize(120, 0))
 
         self.gridLayout_2.addWidget(self.btn_proj_confirm, 1, 2, 1, 1)
 
@@ -225,7 +226,7 @@ class Ui_WndServer(object):
 
         self.gridLayout_3.addWidget(self.tedt_proj_public_notice, 3, 1, 2, 6)
 
-        self.verticalSpacer = QSpacerItem(20, 120, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer = QSpacerItem(20, 139, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.gridLayout_3.addItem(self.verticalSpacer, 4, 0, 1, 1)
 
@@ -233,6 +234,11 @@ class Ui_WndServer(object):
         self.btn_cfg_save.setObjectName(u"btn_cfg_save")
 
         self.gridLayout_3.addWidget(self.btn_cfg_save, 5, 5, 1, 2)
+
+        self.btn_cfg_read = QPushButton(self.groupBox)
+        self.btn_cfg_read.setObjectName(u"btn_cfg_read")
+
+        self.gridLayout_3.addWidget(self.btn_cfg_read, 5, 3, 1, 2)
 
 
         self.verticalLayout_6.addWidget(self.groupBox)
@@ -275,43 +281,52 @@ class Ui_WndServer(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.groupBox_4 = QGroupBox(self.page_proj)
         self.groupBox_4.setObjectName(u"groupBox_4")
-        self.formLayout_2 = QFormLayout(self.groupBox_4)
-        self.formLayout_2.setObjectName(u"formLayout_2")
-        self.label_8 = QLabel(self.groupBox_4)
-        self.label_8.setObjectName(u"label_8")
+        self.gridLayout_4 = QGridLayout(self.groupBox_4)
+        self.gridLayout_4.setObjectName(u"gridLayout_4")
+        self.horizontalSpacer_8 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.formLayout_2.setWidget(0, QFormLayout.LabelRole, self.label_8)
-
-        self.edt_custom_key = QLineEdit(self.groupBox_4)
-        self.edt_custom_key.setObjectName(u"edt_custom_key")
-
-        self.formLayout_2.setWidget(0, QFormLayout.FieldRole, self.edt_custom_key)
-
-        self.label_9 = QLabel(self.groupBox_4)
-        self.label_9.setObjectName(u"label_9")
-
-        self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.label_9)
-
-        self.edt_custom_val = QLineEdit(self.groupBox_4)
-        self.edt_custom_val.setObjectName(u"edt_custom_val")
-
-        self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.edt_custom_val)
+        self.gridLayout_4.addItem(self.horizontalSpacer_8, 2, 0, 1, 7)
 
         self.label_13 = QLabel(self.groupBox_4)
         self.label_13.setObjectName(u"label_13")
 
-        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.label_13)
+        self.gridLayout_4.addWidget(self.label_13, 1, 0, 1, 1)
+
+        self.label_8 = QLabel(self.groupBox_4)
+        self.label_8.setObjectName(u"label_8")
+
+        self.gridLayout_4.addWidget(self.label_8, 0, 0, 1, 1)
+
+        self.label_9 = QLabel(self.groupBox_4)
+        self.label_9.setObjectName(u"label_9")
+
+        self.gridLayout_4.addWidget(self.label_9, 0, 5, 1, 1)
 
         self.edt_custom_eval = QLineEdit(self.groupBox_4)
         self.edt_custom_eval.setObjectName(u"edt_custom_eval")
         self.edt_custom_eval.setReadOnly(True)
 
-        self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.edt_custom_eval)
+        self.gridLayout_4.addWidget(self.edt_custom_eval, 1, 1, 1, 7)
+
+        self.horizontalSpacer_9 = QSpacerItem(81, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_4.addItem(self.horizontalSpacer_9, 0, 4, 1, 1)
+
+        self.edt_custom_val = QLineEdit(self.groupBox_4)
+        self.edt_custom_val.setObjectName(u"edt_custom_val")
+
+        self.gridLayout_4.addWidget(self.edt_custom_val, 0, 6, 1, 2)
+
+        self.edt_custom_key = QLineEdit(self.groupBox_4)
+        self.edt_custom_key.setObjectName(u"edt_custom_key")
+
+        self.gridLayout_4.addWidget(self.edt_custom_key, 0, 1, 1, 1)
 
         self.btn_custom_confirm = QPushButton(self.groupBox_4)
         self.btn_custom_confirm.setObjectName(u"btn_custom_confirm")
+        self.btn_custom_confirm.setMinimumSize(QSize(120, 0))
 
-        self.formLayout_2.setWidget(3, QFormLayout.FieldRole, self.btn_custom_confirm)
+        self.gridLayout_4.addWidget(self.btn_custom_confirm, 2, 7, 1, 1)
 
 
         self.verticalLayout_2.addWidget(self.groupBox_4)
@@ -350,11 +365,13 @@ class Ui_WndServer(object):
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_8)
 
+        self.verticalLayout_2.setStretch(0, 6)
+        self.verticalLayout_2.setStretch(1, 1)
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
 
-        self.horizontalLayout.setStretch(0, 4)
-        self.horizontalLayout.setStretch(1, 1)
+        self.horizontalLayout.setStretch(0, 3)
+        self.horizontalLayout.setStretch(1, 2)
 
         self.verticalLayout_7.addLayout(self.horizontalLayout)
 
@@ -890,6 +907,7 @@ class Ui_WndServer(object):
         self.label_11.setText(QCoreApplication.translate("WndServer", u"\u514d\u8d39\u89e3\u7ed1\u6b21\u6570", None))
         self.label_3.setText(QCoreApplication.translate("WndServer", u"\u5ba2\u6237\u7aef\u516c\u544a", None))
         self.btn_cfg_save.setText(QCoreApplication.translate("WndServer", u"\u4fdd\u5b58\u914d\u7f6e", None))
+        self.btn_cfg_read.setText(QCoreApplication.translate("WndServer", u"\u8bfb\u53d6\u914d\u7f6e", None))
         ___qtablewidgetitem6 = self.tbe_custom.horizontalHeaderItem(0)
         ___qtablewidgetitem6.setText(QCoreApplication.translate("WndServer", u"ID", None));
         ___qtablewidgetitem7 = self.tbe_custom.horizontalHeaderItem(1)
@@ -899,9 +917,9 @@ class Ui_WndServer(object):
         ___qtablewidgetitem9 = self.tbe_custom.horizontalHeaderItem(3)
         ___qtablewidgetitem9.setText(QCoreApplication.translate("WndServer", u"\u52a0\u5bc6\u503c", None));
         self.groupBox_4.setTitle(QCoreApplication.translate("WndServer", u"\u81ea\u5b9a\u4e49\u6570\u636e", None))
+        self.label_13.setText(QCoreApplication.translate("WndServer", u"\u5bc6", None))
         self.label_8.setText(QCoreApplication.translate("WndServer", u"\u952e", None))
         self.label_9.setText(QCoreApplication.translate("WndServer", u"\u503c", None))
-        self.label_13.setText(QCoreApplication.translate("WndServer", u"\u52a0\u5bc6\u503c ", None))
         self.btn_custom_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u8ba4\u6dfb\u52a0\u6216\u4fee\u6539", None))
         self.btn_custom_page_prev.setText(QCoreApplication.translate("WndServer", u"<", None))
         self.edt_custom_page_go.setText(QCoreApplication.translate("WndServer", u"0", None))

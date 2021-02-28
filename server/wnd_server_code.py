@@ -1140,13 +1140,13 @@ class WndServer(QMainWindow, Ui_WndServer):
             ret = True
             query_proj = query_proj_list[0]
             detail = {
-                "最新版本": cfg_server["最新版本"],
-                "客户端公告": query_proj["客户端公告"],
                 "允许登录": query_proj["允许登录"],
                 "允许注册": query_proj["允许注册"],
                 "允许解绑": query_proj["允许解绑"],
+                "客户端公告": cfg_server["客户端公告"],
                 "更新网址": cfg_server["更新网址"],
                 "发卡网址": cfg_server["发卡网址"],
+                "最新版本": cfg_server["最新版本"],
             }
         else:
             ret = False

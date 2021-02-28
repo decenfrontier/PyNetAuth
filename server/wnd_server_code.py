@@ -30,7 +30,8 @@ PATH_LOG_WARN = "\\".join([DIR_LOG, "warn.log"])
 PATH_JSON_SERVER = "\\".join([DIR_SAVE, "server.json"])
 cfg_server = {
     "最新版本": "0.0.0", "更新网址": "", "发卡网址": "",
-    "注册赠送天数": 0, "免费解绑次数": 0, "解绑扣除小时": 0
+    "充值赠送天数": 0, "免费解绑次数": 0, "解绑扣除小时": 0,
+    "客户端公告": ""
 }
 
 server_ip = "0.0.0.0"
@@ -104,8 +105,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.edt_proj_url_update.setText(cfg_server["更新网址"])
         self.edt_proj_url_card.setText(cfg_server["发卡网址"])
         self.edt_proj_unbind_sub_hour.setText(str(cfg_server["解绑扣除小时"]))
-        self.edt_proj_reg_gift_day.setText(str(cfg_server["注册赠送天数"]))
+        self.edt_proj_pay_gift_day.setText(str(cfg_server["充值赠送天数"]))
         self.edt_proj_free_unbind_count.setText(str(cfg_server["免费解绑次数"]))
+        self.tedt_proj_public_notice.setHtml(cfg_server["客户端公告"])
 
     # 写入配置
     def cfg_write(self):
@@ -113,8 +115,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         cfg_server["发卡网址"] = self.edt_proj_url_card.text()
         cfg_server["更新网址"] = self.edt_proj_url_update.text()
         cfg_server["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
-        cfg_server["注册赠送天数"] = int(self.edt_proj_reg_gift_day.text())
+        cfg_server["充值赠送天数"] = int(self.edt_proj_pay_gift_day.text())
         cfg_server["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
+        cfg_server["客户端公告"] = self.tedt_proj_public_notice.toHtml()
 
         dict_to_json_file(cfg_server, PATH_JSON_SERVER)
 
@@ -203,10 +206,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.horizontalHeader().setVisible(True)
         self.tbe_card.horizontalHeader().setVisible(True)
         # 项目管理表
-        id, ver, notice, login, reg, unbind, last_update_time = [i for i in range(7)]
+        id, ver, login, reg, unbind, last_update_time = [i for i in range(6)]
         self.tbe_proj.setColumnWidth(id, 40)
         self.tbe_proj.setColumnWidth(ver, 70)
-        self.tbe_proj.setColumnWidth(notice, 260)
         self.tbe_proj.setColumnWidth(login, 80)
         self.tbe_proj.setColumnWidth(reg, 80)
         self.tbe_proj.setColumnWidth(unbind, 80)
@@ -482,7 +484,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def on_btn_proj_confirm_clicked(self):
         client_ver = self.edt_proj_client_ver.text()
-        pub_notice = self.pedt_proj_public_notice.toPlainText()
+        pub_notice = self.tedt_proj_public_notice.toHtml()
         allow_login = int(self.chk_proj_login.isChecked())
         allow_reg = int(self.chk_proj_reg.isChecked())
         allow_unbind = int(self.chk_proj_unbind.isChecked())
@@ -564,7 +566,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not self.tbe_proj.item(row, 0):
             return
         self.edt_proj_client_ver.setText(self.tbe_proj.item(row, 1).text())
-        self.pedt_proj_public_notice.setPlainText(self.tbe_proj.item(row, 2).text())
         self.chk_proj_login.setChecked(int(self.tbe_proj.item(row, 3).text()))
         self.chk_proj_reg.setChecked(int(self.tbe_proj.item(row, 4).text()))
         self.chk_proj_unbind.setChecked(int(self.tbe_proj.item(row, 5).text()))
@@ -869,11 +870,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         for row, query_proj in enumerate(query_proj_list):
             self.tbe_proj.setItem(row, 0, QTableWidgetItem(str(query_proj["ID"])))
             self.tbe_proj.setItem(row, 1, QTableWidgetItem(query_proj["客户端版本"]))
-            self.tbe_proj.setItem(row, 2, QTableWidgetItem(query_proj["客户端公告"]))
-            self.tbe_proj.setItem(row, 3, QTableWidgetItem(str(query_proj["允许登录"])))
-            self.tbe_proj.setItem(row, 4, QTableWidgetItem(str(query_proj["允许注册"])))
-            self.tbe_proj.setItem(row, 5, QTableWidgetItem(str(query_proj["允许解绑"])))
-            self.tbe_proj.setItem(row, 6, QTableWidgetItem(str(query_proj["最后更新时间"])))
+            self.tbe_proj.setItem(row, 2, QTableWidgetItem(str(query_proj["允许登录"])))
+            self.tbe_proj.setItem(row, 3, QTableWidgetItem(str(query_proj["允许注册"])))
+            self.tbe_proj.setItem(row, 4, QTableWidgetItem(str(query_proj["允许解绑"])))
+            self.tbe_proj.setItem(row, 5, QTableWidgetItem(str(query_proj["最后更新时间"])))
 
     def refresh_tbe_user(self, query_user_list):
         self.tbe_user.setSortingEnabled(False)  # 在更新时将自动排序关掉
@@ -1186,7 +1186,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             if not query_user_list:  # 没有找到此机器码
                 client_content_dict["注册时间"] = cur_time_fmt
                 client_content_dict["到期时间"] = datetime.datetime.now() + datetime.timedelta(
-                    days=wnd_server.cfg["注册赠送天数"])
+                    days=wnd_server.cfg["充值赠送天数"])
                 ret = self.sql_table_insert_ex("2用户管理", client_content_dict)
                 detail = "注册成功" if ret else "注册失败, 数据库异常"
             else:

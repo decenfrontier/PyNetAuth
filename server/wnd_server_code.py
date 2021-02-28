@@ -251,7 +251,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # IP管理表
         id, today_connect_time = 0, 3
         self.tbe_ip.setColumnWidth(id, 40)
-        self.tbe_ip.setColumnWidth(today_connect_time, 320)
+        self.tbe_ip.setColumnWidth(today_connect_time, 290)
         # 显示全部
         self.show_page_tbe(self.tbe_proj)
         self.show_page_tbe(self.tbe_user)
@@ -1236,15 +1236,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         card_key = client_content_dict["卡号"]
         ret = False
 
-        query_user_list = self.sql_table_query_ex("2用户管理", {"账号": account})  # 查找账号是否存在
-        if query_user_list:  # 账号存在
-            query_user = query_user_list[0]
+        if self.is_record_exist("2用户管理", "账号=%s", account):  # 账号存在
             query_card_list = self.sql_table_query_ex("3卡密管理", {"卡号": card_key})  # 查询数据库, 判断卡密是否存在
             if query_card_list:
                 query_card = query_card_list[0]
                 if not query_card["使用时间"]:  # 卡密未被使用
                     # 更新账号到期时间
-                    type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 120, "年卡": 365, "永久卡": 3650}
+                    type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 90, "年卡": 365, "永久卡": 3650}
                     card_type = query_card["卡类型"]
                     delta_day = type_time_dict[card_type]
                     # 再加上充值赠送天数
@@ -1255,7 +1253,8 @@ class WndServer(QMainWindow, Ui_WndServer):
                         "update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval %s day), "
                         "date_add(到期时间, interval %s day)) where 账号=%s;", delta_day, delta_day, account)
                     if ret:
-                        detail = "充值成功"
+                        due_time = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)[0]["到期时间"]
+                        detail = f"充值成功, 到期时间: {due_time}"
                         # 更新卡密表-使用时间
                         self.sql_table_update("update 3卡密管理 set 使用时间=%s where 卡号=%s;", cur_time_fmt, card_key)
                         # 更新流水表-充值用户数

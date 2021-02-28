@@ -308,7 +308,7 @@ show_task_bar_icon = my_dll.fn6
 
 # ------------------------- 网络验证相关 -------------------------
 client_ver = "3.6.8"
-server_ip = "www.gbdjob.cn"  # 119.29.167.100  127.0.0.1  47.108.170.195
+server_ip = "127.0.0.1"  # 47.108.170.195  www.gbdjob.cn
 server_port = 47123
 machine_code = get_machine_code()
 

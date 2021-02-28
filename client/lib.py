@@ -15,7 +15,7 @@ from comtypes.client import CreateObject
 from win32com.client import Dispatch
 from PySide2.QtCore import QThread
 
-import crypto_
+import crypto
 
 # ---------------------- 日志操作 ----------------------
 class Log():
@@ -116,7 +116,7 @@ def file_append_content(path: str, content: str):
         f.write(content)
 
 # json文件 -> py字典
-def json_file_to_dict(path_cfg: str, default_cfg: dict):
+def json_file_to_dict(path_cfg: str, default_cfg={}):
     try:
         # 若文件不存在, 则用默认的配置字典先创建json文件
         if not path_exist(path_cfg):
@@ -129,6 +129,15 @@ def json_file_to_dict(path_cfg: str, default_cfg: dict):
         cfg_load = {}
     return cfg_load
 
+# json字符串 -> py字典
+def json_str_to_dict(json_str: str):
+    try:
+        cfg_load = json.loads(json_str)
+    except:
+        log.warn(f"json decode error! {json_str}")
+        cfg_load = {}
+    return cfg_load
+
 # py对象 -> json文件
 def dict_to_json_file(py_dict: dict, path_cfg: str):
     try:
@@ -136,6 +145,15 @@ def dict_to_json_file(py_dict: dict, path_cfg: str):
             json.dump(py_dict, f, ensure_ascii=False, sort_keys=True)
     except:
         log.warn(f"json encode error! {py_dict} {path_cfg}")
+
+# py对象 -> json字符串
+def dict_to_json_str(py_dict: dict):
+    try:
+        json_str = json.dumps(py_dict, ensure_ascii=False, sort_keys=True)
+    except:
+        log.warn(f"json encode error! {py_dict}")
+        json_str = "{}"
+    return json_str
 
 # 注册组件到系统
 def reg_com_to_system(obj_name: str) -> bool:
@@ -227,13 +245,13 @@ def connect_server_tcp():
 # 发送数据给服务端
 def send_to_server(tcp_socket: socket.socket, client_info_dict: dict):
     # 内容 转 json字符串
-    client_info_dict["内容"] = json.dumps(client_info_dict["内容"], ensure_ascii=False)
+    client_info_dict["内容"] = dict_to_json_str(client_info_dict["内容"])
     # 根据消息类型决定是否对内容aes加密
     if client_info_dict["消息类型"] != "初始":
         # 对json内容进行aes加密
         client_info_dict["内容"] = aes.encrypt(client_info_dict["内容"])
     # 把整个客户端信息字典 转 json字符串
-    json_str = json.dumps(client_info_dict, ensure_ascii=False)
+    json_str = dict_to_json_str(client_info_dict)
     # json字符串 base85编码
     send_bytes = base64.b85encode(json_str.encode())
     try:
@@ -257,7 +275,7 @@ def recv_from_server(tcp_socket: socket.socket):
     json_str = base64.b85decode(recv_bytes).decode()
     print(f"收到服务端的消息: {json_str}")
     # json字符串 转 py字典
-    server_info_dict = json.loads(json_str)
+    server_info_dict = json_str_to_dict(json_str)
     msg_type = server_info_dict["消息类型"]
     server_content_str = server_info_dict["内容"]
     # 把内容json字符串 转 py字典
@@ -265,7 +283,7 @@ def recv_from_server(tcp_socket: socket.socket):
         # 先aes解密, 获取json字符串
         server_content_str = aes.decrypt(server_content_str)
     # json字符串 转 py字典
-    server_content_dict = json.loads(server_content_str)
+    server_content_dict = json_str_to_dict(server_content_str)
     return msg_type, server_content_dict
 
 DIR_WORK = os.getcwd()
@@ -337,5 +355,5 @@ allow_unbind = False  # 允许解绑
 latest_ver = "0.0.0"  # 最新版本
 
 # 构造加密类实例化对象
-aes = crypto_.AesEncryption(aes_key)  # 先构造一个假的
+aes = crypto.AesEncryption(aes_key)  # 先构造一个假的
 

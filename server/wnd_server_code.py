@@ -18,7 +18,7 @@ import socket
 
 import wnd_server_rc
 from ui.wnd_server import Ui_WndServer
-import crypto_
+import crypto
 
 lock = Lock()
 cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -40,8 +40,8 @@ server_ver = "2.9.4"
 mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 公网
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
-aes = crypto_.AesEncryption(aes_key)
-enc_aes_key = crypto_.encrypt_rsa(crypto_.public_key_client, aes_key)
+aes = crypto.AesEncryption(aes_key)
+enc_aes_key = crypto.encrypt_rsa(crypto.public_key_client, aes_key)
 
 state_comment_dict = {
     "正常": "*d#fl1I@34rt7%gh.",
@@ -107,7 +107,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.edt_proj_pay_gift_day.setText(str(cfg_server["充值赠送天数"]))
         self.edt_proj_unbind_sub_hour.setText(str(cfg_server["解绑扣除小时"]))
         self.edt_proj_free_unbind_count.setText(str(cfg_server["免费解绑次数"]))
-        self.tedt_proj_public_notice.setHtml(cfg_server["客户端公告"])
+        self.tedt_proj_public_notice.setPlainText(cfg_server["客户端公告"])
 
     # 写入配置
     def cfg_write(self):
@@ -117,7 +117,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         cfg_server["充值赠送天数"] = int(self.edt_proj_pay_gift_day.text())
         cfg_server["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
         cfg_server["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
-        cfg_server["客户端公告"] = self.tedt_proj_public_notice.toHtml()
+        cfg_server["客户端公告"] = self.tedt_proj_public_notice.toPlainText()
 
         dict_to_json_file(cfg_server, PATH_JSON_SERVER)
 
@@ -1046,18 +1046,18 @@ class WndServer(QMainWindow, Ui_WndServer):
             json_str = base64.b85decode(recv_bytes).decode()
             log.info(f"收到客户端{ip}的消息: {json_str}")
             # json字符串 转 py字典
-            client_info_dict = json.loads(json_str)
+            client_info_dict = json_str_to_dict(json_str)
             msg_type = client_info_dict["消息类型"]
             client_content_str = client_info_dict["内容"]
             # 把内容json字符串 转 py字典
             if msg_type == "初始":  # 若为初始类型的消息
                 # json字符串 转 py字典
-                client_content_dict = json.loads(client_content_str)
+                client_content_dict = json_str_to_dict(client_content_str)
             else:  # 若不为初始类型的消息
                 # 先aes解密, 获取json字符串
                 client_content_str = aes.decrypt(client_content_str)
                 if client_content_str != "":  # 解密成功, json字符串 转 py字典
-                    client_content_dict = json.loads(client_content_str)
+                    client_content_dict = json_str_to_dict(client_content_str)
                 else:  # 解密失败
                     log.warn(f"[解密Warn] 停止服务此ip: {ip}")  # 日志记录此IP
                     client_socket.close()  # 停止服务此ip
@@ -1405,13 +1405,13 @@ class WndServer(QMainWindow, Ui_WndServer):
     # 发送数据给客户端
     def send_to_client(self, client_socket: socket.socket, server_info_dict: dict):
         # 内容 转 json字符串
-        server_info_dict["内容"] = json.dumps(server_info_dict["内容"], ensure_ascii=False)
+        server_info_dict["内容"] = dict_to_json_str(server_info_dict["内容"])
         # 根据消息类型决定是否对内容aes加密
         if server_info_dict["消息类型"] != "初始":  # 若不为初始类型的消息
             # 对json内容进行aes加密
             server_info_dict["内容"] = aes.encrypt(server_info_dict["内容"])
         # 把整个服务端信息字典 转 json字符串
-        json_str = json.dumps(server_info_dict, ensure_ascii=False)
+        json_str = dict_to_json_str(server_info_dict)
         # json字符串 base85编码
         send_bytes = base64.b85encode(json_str.encode())
         try:
@@ -1598,9 +1598,8 @@ def dir_get_files(dir: str):
         break
     return ret
 
-
 # json文件 -> py字典
-def json_file_to_dict(path_cfg: str, default_cfg: dict):
+def json_file_to_dict(path_cfg: str, default_cfg={}):
     try:
         # 若文件不存在, 则用默认的配置字典先创建json文件
         if not path_exist(path_cfg):
@@ -1609,10 +1608,18 @@ def json_file_to_dict(path_cfg: str, default_cfg: dict):
         with open(path_cfg, "r", encoding="utf-8") as f:
             cfg_load = json.load(f)
     except:
-        print("json decode error!")
+        log.warn(f"json decode error! {path_cfg} {default_cfg}")
         cfg_load = {}
     return cfg_load
 
+# json字符串 -> py字典
+def json_str_to_dict(json_str: str):
+    try:
+        cfg_load = json.loads(json_str)
+    except:
+        log.warn(f"json decode error! {json_str}")
+        cfg_load = {}
+    return cfg_load
 
 # py对象 -> json文件
 def dict_to_json_file(py_dict: dict, path_cfg: str):
@@ -1620,7 +1627,16 @@ def dict_to_json_file(py_dict: dict, path_cfg: str):
         with open(path_cfg, "w", encoding="utf-8") as f:
             json.dump(py_dict, f, ensure_ascii=False, sort_keys=True)
     except:
-        print("json encode error!")
+        log.warn(f"json encode error! {py_dict} {path_cfg}")
+
+# py对象 -> json字符串
+def dict_to_json_str(py_dict: dict):
+    try:
+        json_str = json.dumps(py_dict, ensure_ascii=False, sort_keys=True)
+    except:
+        log.warn(f"json encode error! {py_dict}")
+        json_str = "{}"
+    return json_str
 
 
 if __name__ == '__main__':

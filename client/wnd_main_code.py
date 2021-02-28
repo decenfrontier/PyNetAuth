@@ -6,7 +6,7 @@ from PySide2.QtCore import QTimer, Signal
 from threading import Thread
 
 from ui.wnd_main import Ui_WndMain
-import lib_
+import lib
 
 class WndMain(QMainWindow, Ui_WndMain):
     sig_info = Signal(str)
@@ -23,20 +23,20 @@ class WndMain(QMainWindow, Ui_WndMain):
         self.send_recv_offline()
 
     def send_recv_offline(self):
-        lib_.is_user_dangerous()
-        tcp_socket = lib_.connect_server_tcp()
+        lib.is_user_dangerous()
+        tcp_socket = lib.connect_server_tcp()
         if not tcp_socket:
-            lib_.log.info("服务器繁忙, 请稍后再试")
+            lib.log.info("服务器繁忙, 请稍后再试")
             return
         client_info_dict = {"消息类型": "离线",
-                            "内容": {"账号": lib_.user_account, "备注": lib_.client_comment}}
-        lib_.send_to_server(tcp_socket, client_info_dict)
-        msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
+                            "内容": {"账号": lib.user_account, "备注": lib.client_comment}}
+        lib.send_to_server(tcp_socket, client_info_dict)
+        msg_type, server_content_dict = lib.recv_from_server(tcp_socket)
         tcp_socket.close()
         if msg_type == "离线":
-            lib_.log.info("---------------------------- 客户端正常退出 ----------------------------")
+            lib.log.info("---------------------------- 客户端正常退出 ----------------------------")
         else:
-            lib_.log.info("---------------------------- 客户端异常退出 ----------------------------")
+            lib.log.info("---------------------------- 客户端异常退出 ----------------------------")
 
     # 初始化实例属性
     def init_instance_field(self):
@@ -48,7 +48,7 @@ class WndMain(QMainWindow, Ui_WndMain):
         self.timer.start(1000)
 
         self.fail_count = 0  # 网络通信失败次数
-        self.last_heart_stamp = lib_.cur_time_stamp  # 上次心跳时间点
+        self.last_heart_stamp = lib.cur_time_stamp  # 上次心跳时间点
 
     def init_status_bar(self):
         self.status_bar.addWidget(self.lbe_1)
@@ -60,7 +60,7 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def show_info(self, text):
         self.sig_info.emit(text)  # 信号槽, 防逆向跟踪
-        lib_.log.info(text)
+        lib.log.info(text)
 
     def start_heart_beat(self):
         self.fail_count = 0
@@ -71,21 +71,21 @@ class WndMain(QMainWindow, Ui_WndMain):
             # 每一轮循环错误次数+1, 失败则每隔10秒连接一次
             self.fail_count += 1
             sleep_time = 10
-            lib_.is_user_dangerous()
+            lib.is_user_dangerous()
             # 尝试连接服务端
-            tcp_socket = lib_.connect_server_tcp()
+            tcp_socket = lib.connect_server_tcp()
             if not tcp_socket:  # 连接失败
-                lib_.log.info("与服务器连接异常...")
+                lib.log.info("与服务器连接异常...")
             else:  # 连接成功, 发送心跳包
                 client_info_dict = {"消息类型": "心跳",
-                    "内容": {"账号": lib_.user_account, "机器码": lib_.machine_code, "备注": lib_.client_comment}}
-                lib_.send_to_server(tcp_socket, client_info_dict)
-                msg_type, server_content_dict = lib_.recv_from_server(tcp_socket)
+                    "内容": {"账号": lib.user_account, "机器码": lib.machine_code, "备注": lib.client_comment}}
+                lib.send_to_server(tcp_socket, client_info_dict)
+                msg_type, server_content_dict = lib.recv_from_server(tcp_socket)
                 if msg_type == "心跳":
                     heart_ret = server_content_dict["结果"]
                     if heart_ret == "正常":
                         self.fail_count = 0  # 正常则清零失败错误
-                        self.last_heart_stamp = lib_.cur_time_stamp
+                        self.last_heart_stamp = lib.cur_time_stamp
                         sleep_time = 60*9  # 正常通信, 下次隔9分钟发一次心跳包
                     elif heart_ret == "下线":
                         self.fail_count = 10
@@ -100,9 +100,9 @@ class WndMain(QMainWindow, Ui_WndMain):
         self.sig_close.emit()
 
     def on_timer_timeout(self):
-        lib_.cur_time_str = time.strftime("%H:%M:%S")
-        lib_.cur_time_stamp += 1
-        if lib_.time_diff(self.last_heart_stamp, lib_.cur_time_stamp) >= 15:  # 防止心跳线程被干掉
+        lib.cur_time_str = time.strftime("%H:%M:%S")
+        lib.cur_time_stamp += 1
+        if lib.time_diff(self.last_heart_stamp, lib.cur_time_stamp) >= 15:  # 防止心跳线程被干掉
             self.show_info("与服务器断开连接2...")
             self.sig_close.emit()
 

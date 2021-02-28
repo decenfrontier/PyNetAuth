@@ -104,8 +104,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.lbe_latest_ver.setText(cfg_server["最新版本"])
         self.edt_proj_url_update.setText(cfg_server["更新网址"])
         self.edt_proj_url_card.setText(cfg_server["发卡网址"])
-        self.edt_proj_unbind_sub_hour.setText(str(cfg_server["解绑扣除小时"]))
         self.edt_proj_pay_gift_day.setText(str(cfg_server["充值赠送天数"]))
+        self.edt_proj_unbind_sub_hour.setText(str(cfg_server["解绑扣除小时"]))
         self.edt_proj_free_unbind_count.setText(str(cfg_server["免费解绑次数"]))
         self.tedt_proj_public_notice.setHtml(cfg_server["客户端公告"])
 
@@ -114,8 +114,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         cfg_server["最新版本"] = self.lbe_latest_ver.text()
         cfg_server["发卡网址"] = self.edt_proj_url_card.text()
         cfg_server["更新网址"] = self.edt_proj_url_update.text()
-        cfg_server["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
         cfg_server["充值赠送天数"] = int(self.edt_proj_pay_gift_day.text())
+        cfg_server["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
         cfg_server["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
         cfg_server["客户端公告"] = self.tedt_proj_public_notice.toHtml()
 
@@ -265,22 +265,16 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_proj.setContextMenuPolicy(Qt.CustomContextMenu)
         self.menu_tbe_proj = QMenu()
         self.action_proj_del_sel = QAction("删除选中版本")
-        self.action_proj_sel_notice = QAction("选中版本设置公告")
-        self.action_proj_all_notice = QAction("全部版本设置公告")
         self.action_proj_all_allow_sel = QAction("选中版本全部允许")
         self.action_proj_all_forbid_sel = QAction("选中版本全部禁止")
         self.action_proj_set_latest_ver = QAction("设为最新版本")
         self.menu_tbe_proj.addAction(self.action_proj_del_sel)
         self.menu_tbe_proj.addSeparator()
-        self.menu_tbe_proj.addActions([self.action_proj_sel_notice,
-                                       self.action_proj_all_notice,
-                                       self.action_proj_all_allow_sel,
+        self.menu_tbe_proj.addActions([self.action_proj_all_allow_sel,
                                        self.action_proj_all_forbid_sel])
         self.menu_tbe_proj.addSeparator()
         self.menu_tbe_proj.addAction(self.action_proj_set_latest_ver)
         self.action_proj_del_sel.triggered.connect(self.on_action_proj_del_sel_triggered)
-        self.action_proj_sel_notice.triggered.connect(self.on_action_proj_sel_notice_triggered)
-        self.action_proj_all_notice.triggered.connect(self.on_action_proj_all_notice_triggered)
         self.action_proj_all_allow_sel.triggered.connect(self.on_action_proj_all_allow_sel_triggered)
         self.action_proj_all_forbid_sel.triggered.connect(self.on_action_proj_all_forbid_sel_triggered)
         self.action_proj_set_latest_ver.triggered.connect(self.on_action_proj_set_latest_ver_triggered)
@@ -596,27 +590,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         vers = "','".join(ver_set)
         num = self.sql_table_del(f"delete from 1项目管理 where 客户端版本 in ('{vers}');")
         self.show_info(f"{num}个版本删除成功")
-        self.show_page_tbe(self.tbe_proj)
-
-    def on_action_proj_sel_notice_triggered(self):
-        item_list = self.tbe_proj.selectedItems()
-        ver_set = {self.tbe_proj.item(it.row(), 1).text() for it in item_list}
-        if not ver_set:
-            return
-        notice, ok_pressed = QInputDialog.getText(self, "设置选中", "公告:", QLineEdit.Normal)
-        if not ok_pressed:
-            return
-        vers = "','".join(ver_set)
-        num = self.sql_table_update(f"update 1项目管理 set 客户端公告=%s where 客户端版本 in ('{vers}');", notice)
-        self.show_info(f"{num}个记录更新成功")
-        self.show_page_tbe(self.tbe_proj)
-
-    def on_action_proj_all_notice_triggered(self):
-        notice, ok_pressed = QInputDialog.getText(self, "设置全部", "公告:", QLineEdit.Normal)
-        if not ok_pressed:
-            return
-        num = self.sql_table_update(f"update 1项目管理 set 客户端公告=%s;", notice)
-        self.show_info(f"{num}个记录更新成功")
         self.show_page_tbe(self.tbe_proj)
 
     def on_action_proj_all_allow_sel_triggered(self):
@@ -1274,7 +1247,9 @@ class WndServer(QMainWindow, Ui_WndServer):
                     type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 120, "年卡": 365, "永久卡": 3650}
                     card_type = query_card["卡类型"]
                     delta_day = type_time_dict[card_type]
-                    account = query_user["账号"]
+                    # 再加上充值赠送天数
+                    delta_day += (delta_day // 30) * cfg_server["充值赠送天数"]
+                    log.info(f"[充值] 账号: {account}增加天数{delta_day}")
                     # 若到期时间大于当前时间, 则从到期时间开始加, 否则从当前时间开始加
                     ret = self.sql_table_update(
                         "update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval %s day), "

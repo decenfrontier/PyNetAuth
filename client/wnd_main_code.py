@@ -16,7 +16,7 @@ class WndMain(QMainWindow, Ui_WndMain):
         super().__init__()
         self.setupUi(self)
         self.init_instance_field()
-        self.init_status_bar()
+        self.init_widgets()
         self.init_custom_sig_slot()
 
     def closeEvent(self, event: QCloseEvent):
@@ -50,9 +50,13 @@ class WndMain(QMainWindow, Ui_WndMain):
         self.fail_count = 0  # 网络通信失败次数
         self.last_heart_stamp = lib.cur_time_stamp  # 上次心跳时间点
 
-    def init_status_bar(self):
+    def init_widgets(self):
+        # ------------------------------ 窗口 ------------------------------
+        self.setWindowTitle("到期时间:" + lib.due_time)
+        # ------------------------------ 状态栏 ------------------------------
         self.status_bar.addWidget(self.lbe_1)
         self.status_bar.addWidget(self.lbe_info)
+
 
     def init_custom_sig_slot(self):
         self.sig_info.connect(lambda text: self.lbe_info.setText(text))
@@ -83,13 +87,14 @@ class WndMain(QMainWindow, Ui_WndMain):
                 msg_type, server_content_dict = lib.recv_from_server(tcp_socket)
                 if msg_type == "心跳":
                     heart_ret = server_content_dict["结果"]
+                    detail = server_content_dict["详情"]
                     if heart_ret == "正常":
                         self.fail_count = 0  # 正常则清零失败错误
                         self.last_heart_stamp = lib.cur_time_stamp
                         sleep_time = 60*9  # 正常通信, 下次隔9分钟发一次心跳包
                     elif heart_ret == "下线":
                         self.fail_count = 10
-                        self.show_info(server_content_dict["详情"])
+                        self.show_info(detail)
                 tcp_socket.close()  # 发送接收完立刻断开
             # 超过5次没连上, 跳出心跳循环, 关闭窗口
             if self.fail_count > 5:

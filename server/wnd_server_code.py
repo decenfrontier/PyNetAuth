@@ -36,7 +36,7 @@ cfg_server = {
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "2.9.4"
+server_ver = "2.9.6"
 mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 公网
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
@@ -1201,9 +1201,10 @@ class WndServer(QMainWindow, Ui_WndServer):
             elif pwd == query_user["密码"]:  # 判断密码是否符合
                 if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
                     ret = True
-                    detail = "登录成功"
+                    due_time = query_user["到期时间"]
+                    detail = str(due_time)
+                    # 用户若是第一次登录, 重新计算到期时间
                     if query_user["状态"] == "":  # 新到期时间 = 到期时间 + (现在时间 - 注册时间)
-                        detail = "首次登录成功, 开始倒计时"
                         self.sql_table_update(
                             "update 2用户管理 set 到期时间=date_add(到期时间, interval timestampdiff(minute, 注册时间, now()) minute);")
                 else:

@@ -324,13 +324,17 @@ class WndLogin(QDialog, Ui_WndLogin):
         if not msg_type:
             self.show_info("等待服务端响应超时")
         if msg_type == "登录":
-            self.show_info(server_content_dict["详情"])
+            detail = server_content_dict["详情"]
             if server_content_dict["结果"]:
+                self.show_info("登录成功")
+                lib.due_time = detail
                 lib.user_account = server_content_dict["账号"]
                 if self.send_recv_custom1(tcp_socket) and self.send_recv_custom2(tcp_socket):
                     self.sig_accept.emit()  # 登录界面接受
                 else:
                     self.sig_reject.emit()  # 登录界面拒绝
+            else:
+                self.show_info(detail)
 
     def send_recv_reg(self):
         # ----------------- 发送数据给服务器 -----------------

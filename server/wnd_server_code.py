@@ -479,13 +479,11 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def on_btn_proj_confirm_clicked(self):
         client_ver = self.edt_proj_client_ver.text()
-        pub_notice = self.tedt_proj_public_notice.toHtml()
         allow_login = int(self.chk_proj_login.isChecked())
         allow_reg = int(self.chk_proj_reg.isChecked())
         allow_unbind = int(self.chk_proj_unbind.isChecked())
         val_dict = {
             "客户端版本": client_ver,
-            "客户端公告": pub_notice,
             "允许登录": allow_login,
             "允许注册": allow_reg,
             "允许解绑": allow_unbind,
@@ -565,9 +563,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         if not self.tbe_proj.item(row, 0):
             return
         self.edt_proj_client_ver.setText(self.tbe_proj.item(row, 1).text())
-        self.chk_proj_login.setChecked(int(self.tbe_proj.item(row, 3).text()))
-        self.chk_proj_reg.setChecked(int(self.tbe_proj.item(row, 4).text()))
-        self.chk_proj_unbind.setChecked(int(self.tbe_proj.item(row, 5).text()))
+        self.chk_proj_login.setChecked(int(self.tbe_proj.item(row, 2).text()))
+        self.chk_proj_reg.setChecked(int(self.tbe_proj.item(row, 3).text()))
+        self.chk_proj_unbind.setChecked(int(self.tbe_proj.item(row, 4).text()))
 
     def on_tbe_custom_cellClicked(self, row: int, col: int):
         if not self.tbe_custom.item(row, 0):
@@ -1605,7 +1603,7 @@ def json_file_to_dict(path_cfg: str, default_cfg={}):
         # 若文件不存在, 则用默认的配置字典先创建json文件
         if not path_exist(path_cfg):
             with open(path_cfg, "w", encoding="utf-8") as f:
-                json.dump(default_cfg, f, ensure_ascii=False)
+                json.dump(default_cfg, f, ensure_ascii=False, sort_keys=True, indent=4)
         with open(path_cfg, "r", encoding="utf-8") as f:
             cfg_load = json.load(f)
     except:
@@ -1626,7 +1624,7 @@ def json_str_to_dict(json_str: str):
 def dict_to_json_file(py_dict: dict, path_cfg: str):
     try:
         with open(path_cfg, "w", encoding="utf-8") as f:
-            json.dump(py_dict, f, ensure_ascii=False, sort_keys=True)
+            json.dump(py_dict, f, ensure_ascii=False, sort_keys=True, indent=4)
     except:
         log.warn(f"json encode error! {py_dict} {path_cfg}")
 

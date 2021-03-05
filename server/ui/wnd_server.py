@@ -64,11 +64,11 @@ class Ui_WndServer(object):
         self.tbe_proj.setHorizontalHeaderItem(4, __qtablewidgetitem4)
         __qtablewidgetitem5 = QTableWidgetItem()
         self.tbe_proj.setHorizontalHeaderItem(5, __qtablewidgetitem5)
-        if (self.tbe_proj.rowCount() < 21):
-            self.tbe_proj.setRowCount(21)
+        if (self.tbe_proj.rowCount() < 20):
+            self.tbe_proj.setRowCount(20)
         self.tbe_proj.setObjectName(u"tbe_proj")
         self.tbe_proj.setAlternatingRowColors(True)
-        self.tbe_proj.setRowCount(21)
+        self.tbe_proj.setRowCount(20)
         self.tbe_proj.horizontalHeader().setDefaultSectionSize(90)
         self.tbe_proj.horizontalHeader().setStretchLastSection(True)
         self.tbe_proj.verticalHeader().setVisible(False)
@@ -522,8 +522,8 @@ class Ui_WndServer(object):
         self.tbe_user.setHorizontalHeaderItem(16, __qtablewidgetitem26)
         __qtablewidgetitem27 = QTableWidgetItem()
         self.tbe_user.setHorizontalHeaderItem(17, __qtablewidgetitem27)
-        if (self.tbe_user.rowCount() < 28):
-            self.tbe_user.setRowCount(28)
+        if (self.tbe_user.rowCount() < 26):
+            self.tbe_user.setRowCount(26)
         self.tbe_user.setObjectName(u"tbe_user")
         self.tbe_user.setAlternatingRowColors(True)
         self.tbe_user.setTextElideMode(Qt.ElideNone)
@@ -531,7 +531,7 @@ class Ui_WndServer(object):
         self.tbe_user.setSortingEnabled(True)
         self.tbe_user.setWordWrap(False)
         self.tbe_user.setCornerButtonEnabled(False)
-        self.tbe_user.setRowCount(28)
+        self.tbe_user.setRowCount(26)
         self.tbe_user.horizontalHeader().setVisible(False)
         self.tbe_user.horizontalHeader().setProperty("showSortIndicator", True)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
@@ -563,8 +563,8 @@ class Ui_WndServer(object):
         self.tbe_card.setHorizontalHeaderItem(4, __qtablewidgetitem32)
         __qtablewidgetitem33 = QTableWidgetItem()
         self.tbe_card.setHorizontalHeaderItem(5, __qtablewidgetitem33)
-        if (self.tbe_card.rowCount() < 30):
-            self.tbe_card.setRowCount(30)
+        if (self.tbe_card.rowCount() < 28):
+            self.tbe_card.setRowCount(28)
         self.tbe_card.setObjectName(u"tbe_card")
         self.tbe_card.setAlternatingRowColors(True)
         self.tbe_card.setTextElideMode(Qt.ElideNone)
@@ -572,7 +572,7 @@ class Ui_WndServer(object):
         self.tbe_card.setSortingEnabled(True)
         self.tbe_card.setWordWrap(False)
         self.tbe_card.setCornerButtonEnabled(False)
-        self.tbe_card.setRowCount(30)
+        self.tbe_card.setRowCount(28)
         self.tbe_card.horizontalHeader().setVisible(False)
         self.tbe_card.horizontalHeader().setDefaultSectionSize(100)
         self.tbe_card.horizontalHeader().setStretchLastSection(True)
@@ -742,11 +742,11 @@ class Ui_WndServer(object):
         self.tbe_flow.setHorizontalHeaderItem(8, __qtablewidgetitem42)
         __qtablewidgetitem43 = QTableWidgetItem()
         self.tbe_flow.setHorizontalHeaderItem(9, __qtablewidgetitem43)
-        if (self.tbe_flow.rowCount() < 29):
-            self.tbe_flow.setRowCount(29)
+        if (self.tbe_flow.rowCount() < 26):
+            self.tbe_flow.setRowCount(26)
         self.tbe_flow.setObjectName(u"tbe_flow")
         self.tbe_flow.setAlternatingRowColors(True)
-        self.tbe_flow.setRowCount(29)
+        self.tbe_flow.setRowCount(26)
         self.tbe_flow.horizontalHeader().setStretchLastSection(True)
         self.tbe_flow.verticalHeader().setVisible(False)
         self.tbe_flow.verticalHeader().setMinimumSectionSize(20)
@@ -868,7 +868,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(3)
         self.cmb_user_order_by.setCurrentIndex(0)
 
 

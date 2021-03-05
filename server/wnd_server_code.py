@@ -838,7 +838,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         query_list = self.sql_table_query(sql, page*tbe.rowCount(), tbe.rowCount())
         refresh_func(query_list)
         # After操作
-        if tbe_name == "4自定义数据":
+        if tbe_name == "4自定义数据" and page==0:
             self.update_custom_data(query_list)
 
     def refresh_tbe_proj(self, query_proj_list):

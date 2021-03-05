@@ -264,11 +264,11 @@ class Ui_WndServer(object):
         self.tbe_custom.setHorizontalHeaderItem(2, __qtablewidgetitem8)
         __qtablewidgetitem9 = QTableWidgetItem()
         self.tbe_custom.setHorizontalHeaderItem(3, __qtablewidgetitem9)
-        if (self.tbe_custom.rowCount() < 8):
-            self.tbe_custom.setRowCount(8)
+        if (self.tbe_custom.rowCount() < 10):
+            self.tbe_custom.setRowCount(10)
         self.tbe_custom.setObjectName(u"tbe_custom")
         self.tbe_custom.setAlternatingRowColors(True)
-        self.tbe_custom.setRowCount(8)
+        self.tbe_custom.setRowCount(10)
         self.tbe_custom.horizontalHeader().setStretchLastSection(True)
         self.tbe_custom.verticalHeader().setVisible(False)
         self.tbe_custom.verticalHeader().setCascadingSectionResizes(False)
@@ -868,7 +868,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(3)
+        self.stack_widget.setCurrentIndex(0)
         self.cmb_user_order_by.setCurrentIndex(0)
 
 

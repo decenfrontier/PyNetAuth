@@ -121,7 +121,7 @@ def json_file_to_dict(path_cfg: str, default_cfg={}):
         # 若文件不存在, 则用默认的配置字典先创建json文件
         if not path_exist(path_cfg):
             with open(path_cfg, "w", encoding="utf-8") as f:
-                json.dump(default_cfg, f, ensure_ascii=False)
+                json.dump(default_cfg, f, ensure_ascii=False, sort_keys=True, indent=4)
         with open(path_cfg, "r", encoding="utf-8") as f:
             cfg_load = json.load(f)
     except:
@@ -142,7 +142,7 @@ def json_str_to_dict(json_str: str):
 def dict_to_json_file(py_dict: dict, path_cfg: str):
     try:
         with open(path_cfg, "w", encoding="utf-8") as f:
-            json.dump(py_dict, f, ensure_ascii=False, sort_keys=True)
+            json.dump(py_dict, f, ensure_ascii=False, sort_keys=True, indent=4)
     except:
         log.warn(f"json encode error! {py_dict} {path_cfg}")
 

@@ -7,6 +7,7 @@ from threading import Thread, Lock
 from random import randint
 import logging
 from logging.handlers import TimedRotatingFileHandler
+from concurrent.futures import ThreadPoolExecutor
 
 from PySide2.QtGui import QIcon, QCloseEvent, QCursor, QIntValidator
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
@@ -29,14 +30,14 @@ PATH_LOG_INFO = "\\".join([DIR_LOG, "info.log"])
 PATH_LOG_WARN = "\\".join([DIR_LOG, "warn.log"])
 PATH_JSON_SERVER = "\\".join([DIR_SAVE, "server.json"])
 cfg_server = {
-    "最新版本": "0.0.0", "更新网址": "", "发卡网址": "",
+    "最新版本": "0.0.0", "更新网址": "www.baidu.com", "发卡网址": "www.bilibili.com",
     "充值赠送天数": 0, "免费解绑次数": 0, "解绑扣除小时": 0,
     "客户端公告": ""
 }
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "2.9.6"
+server_ver = "3.0.0"
 mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 公网
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
@@ -172,6 +173,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer_min = QTimer()
         # ---------------------- 验证器 ----------------------
         self.int_validator = QIntValidator()
+        # ---------------------- 线程池 ----------------------
+        self.pool = ThreadPoolExecutor(4)  # 最大线程数为4
 
     def init_wnd(self):
         self.setWindowTitle(f"Ip: {server_ip}  Port: {server_port}  Ver: {server_ver}")
@@ -1027,7 +1030,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             ip = client_addr[0]
             log.info(f"新接收客户端{ip}, 已分配客服套接字")
             self.sql_table_update("update 6ip管理 set 今日连接次数=今日连接次数+1 where IP地址=%s;", ip)
-            Thread(target=self.thd_serve_client, args=(client_socket, ip), daemon=True).start()
+            self.pool.submit(self.thd_serve_client, client_socket, ip)
         log.info("服务端已关闭, 停止接受客户端请求...")
 
     def thd_serve_client(self, client_socket: socket.socket, ip: str):
@@ -1110,7 +1113,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         ip = client_socket.getpeername()
         log.info(f"[项目] 正在处理IP: {ip}")
 
-        client_ver = client_content_dict["版本号"]  # "1项目管理", {"客户端版本": client_ver}
+        client_ver = client_content_dict["版本号"]
         query_proj_list = self.sql_table_query("select * from 1项目管理 where 客户端版本=%s;", client_ver)
         if query_proj_list:
             ret = True

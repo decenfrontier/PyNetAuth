@@ -1163,12 +1163,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         ret = False
 
         if not self.is_record_exist("2用户管理", "账号=%s", account):  # 不存在则插入记录
-            machine_code = client_content_dict["机器码"]  # "2用户管理", {"机器码": machine_code}
+            machine_code = client_content_dict["机器码"]
             query_user_list = self.sql_table_query("select * from 2用户管理 where 机器码=%s;", machine_code)
-            if not query_user_list:  # 没有找到此机器码
+            if not query_user_list:  # 没有找到此机器码, 则同意注册
                 client_content_dict["注册时间"] = cur_time_fmt
-                client_content_dict["到期时间"] = datetime.datetime.now() + datetime.timedelta(
-                    days=wnd_server.cfg["充值赠送天数"])
+                client_content_dict["到期时间"] = cur_time_fmt
                 ret = self.sql_table_insert_ex("2用户管理", client_content_dict)
                 detail = "注册成功" if ret else "注册失败, 数据库异常"
             else:

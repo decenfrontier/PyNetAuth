@@ -85,7 +85,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.init_mysql()
         self.init_net_auth()
         self.init_instance_field()
-        self.init_wnd()
         self.init_widgets()
         self.init_menus()
         self.cfg_read()
@@ -176,12 +175,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         # ---------------------- 线程池 ----------------------
         self.pool = ThreadPoolExecutor(4)  # 最大线程数为4
 
-    def init_wnd(self):
+
+    def init_widgets(self):
+        # ------------------------------ 窗口 ------------------------------
         self.setWindowTitle(f"Ip: {server_ip}  Port: {server_port}  Ver: {server_ver}")
         self.setWindowIcon(QIcon(":/server.png"))
         self.move(260, 25)
-
-    def init_widgets(self):
         # ------------------------------ 堆叠窗口 ------------------------------
         self.stack_widget.setCurrentIndex(0)
         # ------------------------------ 状态栏 ------------------------------
@@ -221,17 +220,19 @@ class WndServer(QMainWindow, Ui_WndServer):
         last_login_place, today_login_count, today_unbind_count, machine_code, reg_time, \
         pay_month, opration_system, comment, last_update_time = [i for i in range(18)]
         self.tbe_user.setColumnWidth(id, 40)
-        self.tbe_user.setColumnWidth(account, 70)
+        self.tbe_user.setColumnWidth(account, 80)
         self.tbe_user.setColumnWidth(pwd, 40)
-        self.tbe_user.setColumnWidth(qq, 70)
+        self.tbe_user.setColumnWidth(qq, 80)
         self.tbe_user.setColumnWidth(state, 50)
         self.tbe_user.setColumnWidth(heart_time, 130)
         self.tbe_user.setColumnWidth(due_time, 130)
         self.tbe_user.setColumnWidth(last_login_time, 130)
+        self.tbe_user.setColumnWidth(last_login_place, 120)
         self.tbe_user.setColumnWidth(machine_code, 180)
         self.tbe_user.setColumnWidth(reg_time, 130)
         self.tbe_user.setColumnWidth(reg_time, 130)
-        self.tbe_user.setColumnWidth(opration_system, 175)
+        self.tbe_user.setColumnWidth(opration_system, 180)
+        self.tbe_user.setColumnWidth(comment, 180)
         self.tbe_user.setColumnWidth(last_update_time, 130)
         # 卡密管理表
         id, card_key, type, gen_time, export_time, use_time = [i for i in range(6)]
@@ -252,9 +253,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_flow.setColumnWidth(id, 40)
         self.tbe_flow.setColumnWidth(date, 80)
         # IP管理表
-        id, today_connect_time = 0, 3
+        id, ip, addr, today_connect_time = 0, 1, 2, 3
         self.tbe_ip.setColumnWidth(id, 40)
-        self.tbe_ip.setColumnWidth(today_connect_time, 290)
+        self.tbe_ip.setColumnWidth(ip, 110)
+        self.tbe_ip.setColumnWidth(addr, 130)
+        self.tbe_ip.setColumnWidth(today_connect_time, 240)
         # 显示全部
         self.show_page_tbe(self.tbe_proj)
         self.show_page_tbe(self.tbe_user)

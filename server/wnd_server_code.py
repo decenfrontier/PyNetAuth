@@ -823,7 +823,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         }
         tbe_order_dict = {
             self.tbe_proj: "order by 客户端版本 desc", self.tbe_user: "", self.tbe_card: "",
-            self.tbe_custom: "", self.tbe_flow: "order by 日期 desc", self.tbe_ip: "order by 今日连接次数 desc"
+            self.tbe_custom: "", self.tbe_flow: "order by 日期 desc", self.tbe_ip: ""
         }
         tbe_refresh_dict = {
             self.tbe_proj: self.refresh_tbe_proj, self.tbe_user: self.refresh_tbe_user,
@@ -945,13 +945,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_ip.clearContents()
         for row, query_ip in enumerate(query_ip_list):
             query_ip["最后更新时间"] = "" if query_ip["最后更新时间"] is None else str(query_ip["最后更新时间"])
-            item_today_connect_count = QTableWidgetItem()
-            item_today_connect_count.setData(Qt.DisplayRole, query_ip["今日连接次数"])
             self.tbe_ip.setItem(row, 0, QTableWidgetItem(str(query_ip["ID"])))
             self.tbe_ip.setItem(row, 1, QTableWidgetItem(query_ip["IP地址"]))
             self.tbe_ip.setItem(row, 2, QTableWidgetItem(query_ip["归属地"]))
             self.tbe_ip.setItem(row, 3, QTableWidgetItem(query_ip["今日连接时间"]))
-            self.tbe_ip.setItem(row, 4, item_today_connect_count)
+            self.tbe_ip.setItem(row, 4, QTableWidgetItem(str(query_ip["今日连接次数"])))
             self.tbe_ip.setItem(row, 5, QTableWidgetItem(query_ip["最后更新时间"]))
         self.tbe_ip.setSortingEnabled(True)  # 更新完毕后再打开自动排序
 
@@ -1027,8 +1025,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.sql_table_update("update 2用户管理 set 今日登录次数=0, 今日解绑次数=0;")
             # 插入流水表新记录
             self.sql_table_insert_ex("5每日流水", {"日期": today})
-            # 更新IP表每日次数  "6ip管理", {"今日连接时间": "", "今日连接次数": 0}
-            self.sql_table_update("update 6ip管理 set 今日连接次数=0;")
         # 刷新所有用户状态(状态为在线, 且心跳时间在10分钟前, 置为离线)
         self.sql_table_update("update 2用户管理 set 状态='离线' where 状态='在线' and 心跳时间 < date_sub(now(), interval 10 minute);")
         log.info("----------------------------- 检测结束 -----------------------------\n")
@@ -1043,7 +1039,6 @@ class WndServer(QMainWindow, Ui_WndServer):
                 break
             ip = client_addr[0]
             log.info(f"新接收客户端{ip}, 已分配客服套接字")
-            self.sql_table_update("update 6ip管理 set 今日连接次数=今日连接次数+1 where IP地址=%s;", ip)
             self.pool.submit(self.thd_serve_client, client_socket, ip)
         log.info("服务端已关闭, 停止接受客户端请求...")
 

@@ -393,6 +393,11 @@ class WndServer(QMainWindow, Ui_WndServer):
         )
 
     def init_sig_slot(self):
+        # 时钟
+        self.timer_sec.timeout.connect(self.on_timer_sec_timeout)
+        self.timer_sec.start(1000)
+        self.timer_min.timeout.connect(self.on_timer_min_timeout)
+        self.timer_min.start(1000 * 60)
         # 工具栏
         self.tool_bar.actionTriggered.connect(self.on_tool_bar_actionTriggered)
         # 按钮相关
@@ -459,11 +464,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         )
         # 列表框
         self.lst_log.itemDoubleClicked.connect(self.on_lst_log_itemDoubleClicked)
-        # 时钟
-        self.timer_sec.timeout.connect(self.on_timer_sec_timeout)
-        self.timer_sec.start(1000)
-        self.timer_min.timeout.connect(self.on_timer_min_timeout)
-        self.timer_min.start(1000 * 60)
+
 
     def show_info(self, text):
         self.lbe_info.setText(text)
@@ -866,7 +867,15 @@ class WndServer(QMainWindow, Ui_WndServer):
             query_user["上次登录时间"] = "" if query_user["上次登录时间"] is None else str(query_user["上次登录时间"])
             query_user["注册时间"] = "" if query_user["注册时间"] is None else str(query_user["注册时间"])
             query_user["最后更新时间"] = "" if query_user["最后更新时间"] is None else str(query_user["最后更新时间"])
-            self.tbe_user.setItem(row, 0, QTableWidgetItem(str(query_user["ID"])))
+            item_id = QTableWidgetItem()
+            item_id.setData(Qt.DisplayRole, query_user["ID"])
+            item_today_login_count = QTableWidgetItem()
+            item_today_login_count.setData(Qt.DisplayRole, query_user["今日登录次数"])
+            item_today_unbind_count = QTableWidgetItem()
+            item_today_unbind_count.setData(Qt.DisplayRole, query_user["今日解绑次数"])
+            item_pay_month = QTableWidgetItem()
+            item_pay_month.setData(Qt.DisplayRole, query_user["充值月数"])
+            self.tbe_user.setItem(row, 0, item_id)
             self.tbe_user.setItem(row, 1, QTableWidgetItem(query_user["账号"]))
             self.tbe_user.setItem(row, 2, QTableWidgetItem("***"))
             self.tbe_user.setItem(row, 3, QTableWidgetItem(query_user["QQ"]))
@@ -876,11 +885,11 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setItem(row, 7, QTableWidgetItem(query_user["上次登录时间"]))
             self.tbe_user.setItem(row, 8, QTableWidgetItem(query_user["上次登录IP"]))
             self.tbe_user.setItem(row, 9, QTableWidgetItem(query_user["上次登录地"]))
-            self.tbe_user.setItem(row, 10, QTableWidgetItem(str(query_user["今日登录次数"])))
-            self.tbe_user.setItem(row, 11, QTableWidgetItem(str(query_user["今日解绑次数"])))
+            self.tbe_user.setItem(row, 10, item_today_login_count)
+            self.tbe_user.setItem(row, 11, item_today_unbind_count)
             self.tbe_user.setItem(row, 12, QTableWidgetItem(query_user["机器码"]))
             self.tbe_user.setItem(row, 13, QTableWidgetItem(query_user["注册时间"]))
-            self.tbe_user.setItem(row, 14, QTableWidgetItem(str(query_user["充值月数"])))
+            self.tbe_user.setItem(row, 14, item_pay_month)
             self.tbe_user.setItem(row, 15, QTableWidgetItem(query_user["操作系统"]))
             self.tbe_user.setItem(row, 16, QTableWidgetItem(query_user["备注"]))
             self.tbe_user.setItem(row, 17, QTableWidgetItem(query_user["最后更新时间"]))
@@ -936,11 +945,13 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_ip.clearContents()
         for row, query_ip in enumerate(query_ip_list):
             query_ip["最后更新时间"] = "" if query_ip["最后更新时间"] is None else str(query_ip["最后更新时间"])
+            item_today_connect_count = QTableWidgetItem()
+            item_today_connect_count.setData(Qt.DisplayRole, query_ip["今日连接次数"])
             self.tbe_ip.setItem(row, 0, QTableWidgetItem(str(query_ip["ID"])))
             self.tbe_ip.setItem(row, 1, QTableWidgetItem(query_ip["IP地址"]))
             self.tbe_ip.setItem(row, 2, QTableWidgetItem(query_ip["归属地"]))
             self.tbe_ip.setItem(row, 3, QTableWidgetItem(query_ip["今日连接时间"]))
-            self.tbe_ip.setItem(row, 4, QTableWidgetItem(str(query_ip["今日连接次数"])))
+            self.tbe_ip.setItem(row, 4, item_today_connect_count)
             self.tbe_ip.setItem(row, 5, QTableWidgetItem(query_ip["最后更新时间"]))
         self.tbe_ip.setSortingEnabled(True)  # 更新完毕后再打开自动排序
 

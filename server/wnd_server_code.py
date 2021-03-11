@@ -10,9 +10,8 @@ from logging.handlers import TimedRotatingFileHandler
 from concurrent.futures import ThreadPoolExecutor
 
 from PySide2.QtGui import QIcon, QCloseEvent, QCursor, QIntValidator
-from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, \
-    QMessageBox, QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem, \
-    QTableWidget, QHeaderView
+from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, QMessageBox, QHeaderView,\
+    QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem, QTableWidget
 from PySide2.QtCore import Qt, QTimer
 import pymysql
 import socket
@@ -28,17 +27,15 @@ DIR_SAVE = "C:\\MyServer"
 DIR_LOG = "\\".join([DIR_SAVE, "log"])
 PATH_LOG_INFO = "\\".join([DIR_LOG, "info.log"])
 PATH_LOG_WARN = "\\".join([DIR_LOG, "warn.log"])
-PATH_JSON_SERVER = "\\".join([DIR_SAVE, "server.json"])
 cfg_server = {
-    "最新版本": "0.0.0", "更新网址": "www.baidu.com", "发卡网址": "www.bilibili.com",
-    "充值赠送天数": 0, "免费解绑次数": 0, "解绑扣除小时": 0,
-    "客户端公告": ""
+    "更新网址": "www.baidu.com", "发卡网址": "www.bilibili.com", "充值赠送天数": 0,
+    "免费解绑次数": 0, "解绑扣除小时": 0, "客户端公告": "", "最新客户端版本": "0.0.0",
 }
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "3.0.0"
-mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 公网
+server_ver = "3.0.7"
+mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
@@ -98,28 +95,30 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 读取配置
     def cfg_read(self):
-        cfg_load = json_file_to_dict(PATH_JSON_SERVER, cfg_server)
+        cfg_load =  self.sql_table_query("select * from 7项目配置 where id=1;")[0]
         cfg_server.update(cfg_load)
 
-        self.lbe_latest_ver.setText(cfg_server["最新版本"])
         self.edt_proj_url_update.setText(cfg_server["更新网址"])
         self.edt_proj_url_card.setText(cfg_server["发卡网址"])
         self.edt_proj_pay_gift_day.setText(str(cfg_server["充值赠送天数"]))
         self.edt_proj_unbind_sub_hour.setText(str(cfg_server["解绑扣除小时"]))
         self.edt_proj_free_unbind_count.setText(str(cfg_server["免费解绑次数"]))
         self.tedt_proj_public_notice.setPlainText(cfg_server["客户端公告"])
+        self.lbe_latest_ver.setText(cfg_server["最新客户端版本"])
+
 
     # 写入配置
     def cfg_write(self):
-        cfg_server["最新版本"] = self.lbe_latest_ver.text()
         cfg_server["发卡网址"] = self.edt_proj_url_card.text()
         cfg_server["更新网址"] = self.edt_proj_url_update.text()
         cfg_server["充值赠送天数"] = int(self.edt_proj_pay_gift_day.text())
         cfg_server["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
         cfg_server["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
         cfg_server["客户端公告"] = self.tedt_proj_public_notice.toPlainText()
+        cfg_server["最新客户端版本"] = self.lbe_latest_ver.text()
 
-        dict_to_json_file(cfg_server, PATH_JSON_SERVER)
+        num = self.sql_table_update_ex("7项目配置", cfg_server, {"id": 1})
+        log.info(f"配置保存结果:{num}")
 
     def init_mysql(self):
         try:
@@ -166,7 +165,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.lbe_1 = QLabel("<提示> : ")
         self.lbe_info = QLabel("窗口初始化成功")
         self.lbe_2 = QLabel("最新客户端版本:")
-        self.lbe_latest_ver = QLabel(cfg_server["最新版本"])
+        self.lbe_latest_ver = QLabel(cfg_server["最新客户端版本"])
         # ---------------------- 定时器 ----------------------
         self.timer_sec = QTimer()
         self.timer_min = QTimer()
@@ -184,7 +183,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         # ------------------------------ 堆叠窗口 ------------------------------
         self.stack_widget.setCurrentIndex(0)
         # ------------------------------ 状态栏 ------------------------------
-        self.lbe_latest_ver.setText(cfg_server["最新版本"])
+        self.lbe_latest_ver.setText(cfg_server["最新客户端版本"])
         self.status_bar.addWidget(self.lbe_1)
         self.status_bar.addWidget(self.lbe_info)
         self.status_bar.addPermanentWidget(self.lbe_2)
@@ -273,7 +272,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_proj_del_sel = QAction("删除选中版本")
         self.action_proj_all_allow_sel = QAction("选中版本全部允许")
         self.action_proj_all_forbid_sel = QAction("选中版本全部禁止")
-        self.action_proj_set_latest_ver = QAction("设为最新版本")
+        self.action_proj_set_latest_ver = QAction("设为最新客户端版本")
         self.menu_tbe_proj.addAction(self.action_proj_del_sel)
         self.menu_tbe_proj.addSeparator()
         self.menu_tbe_proj.addActions([self.action_proj_all_allow_sel,
@@ -625,7 +624,7 @@ class WndServer(QMainWindow, Ui_WndServer):
     def on_action_proj_set_latest_ver_triggered(self):
         row = self.tbe_proj.currentRow()
         ver = self.tbe_proj.item(row, 1).text()
-        cfg_server["最新版本"] = ver
+        cfg_server["最新客户端版本"] = ver
         self.lbe_latest_ver.setText(ver)
         self.cfg_write()
 
@@ -1134,7 +1133,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                 "客户端公告": cfg_server["客户端公告"],
                 "更新网址": cfg_server["更新网址"],
                 "发卡网址": cfg_server["发卡网址"],
-                "最新版本": cfg_server["最新版本"],
+                "最新客户端版本": cfg_server["最新客户端版本"],
             }
         else:
             ret = False

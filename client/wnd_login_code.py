@@ -253,7 +253,7 @@ class WndLogin(QDialog, Ui_WndLogin):
                 lib.allow_login = detail_dict["允许登录"]
                 lib.allow_reg = detail_dict["允许注册"]
                 lib.allow_unbind = detail_dict["允许解绑"]
-                lib.latest_ver = detail_dict["最新版本"]
+                lib.latest_ver = detail_dict["最新客户端版本"]
                 return True
             else:
                 detail = server_content_dict["详情"]
@@ -270,7 +270,6 @@ class WndLogin(QDialog, Ui_WndLogin):
         msg_type, server_content_dict = lib.recv_from_server(tcp_socket)
         if not msg_type:
             lib.log.warn("服务器繁忙, 请稍后再试3")
-            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试3")
             return False
         if msg_type == "烫烫烫":
             detail_dict = server_content_dict["详情"]
@@ -287,7 +286,6 @@ class WndLogin(QDialog, Ui_WndLogin):
         msg_type, server_content_dict = lib.recv_from_server(tcp_socket)
         if not msg_type:
             lib.log.warn("服务器繁忙, 请稍后再试4")
-            QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试4")
             return False
         if msg_type == "屯屯屯":
             detail_dict = server_content_dict["详情"]

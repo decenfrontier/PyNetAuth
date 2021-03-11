@@ -185,10 +185,7 @@ def create_com_obj(com_name: str):
         log.info(f"创建com对象{com_name}失败")
     return obj
 
-# ------------------------- 配置相关 -------------------------
-cfg_login = {  # 登录窗口
-    "账号": "", "密码": "", "提示更新版本": True, "记住账号密码": True,
-}
+
 
 # ------------------------- 安全相关 -------------------------
 def is_user_dangerous():
@@ -286,6 +283,7 @@ def recv_from_server(tcp_socket: socket.socket):
     server_content_dict = json_str_to_dict(server_content_str)
     return msg_type, server_content_dict
 
+
 DIR_WORK = os.getcwd()
 DIR_SAVE = "C:\\a_b_c"
 DIR_LOG = "\\".join([DIR_SAVE, "log"])
@@ -325,7 +323,7 @@ anti_anti_debug4 = my_dll.fn5
 show_task_bar_icon = my_dll.fn6
 
 # ------------------------- 网络验证相关 -------------------------
-client_ver = "3.6.8"
+client_ver = "5.2.83"
 server_ip = "127.0.0.1"  # 47.108.170.195  www.gbdjob.cn
 server_port = 47123
 machine_code = get_machine_code()
@@ -353,8 +351,12 @@ url_card = "https://www.bilibili.com"  # 发卡网址
 allow_login = False  # 允许登录
 allow_reg = False  # 允许注册
 allow_unbind = False  # 允许解绑
-latest_ver = "0.0.0"  # 最新版本
+latest_ver = "0.0.0"  # 最新客户端版本
 
 # 构造加密类实例化对象
 aes = crypto.AesEncryption(aes_key)  # 先构造一个假的
 
+# ------------------------- 配置相关 -------------------------
+cfg_login = {  # 登录窗口
+    "账号": "", "密码": "", "提示更新版本": True, "记住账号密码": True,
+}

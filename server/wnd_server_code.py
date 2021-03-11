@@ -35,7 +35,7 @@ cfg_server = {
 server_ip = "0.0.0.0"
 server_port = 47123
 server_ver = "3.0.7"
-mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网
+mysql_host = "rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
@@ -1195,20 +1195,35 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"[登录] IP: {ip}, 正在处理账号: {account}")
         pwd = client_content_dict["密码"]
         machine_code = client_content_dict["机器码"]
+        ori_comment = client_content_dict["备注"]
+        comment = comment_state_dict[ori_comment]
         ret, query_user = False, {}
 
         query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)  # 判断账号是否存在
         if query_user_list:
             query_user = query_user_list[0]
+            # 用户存在的情况下, 无论是否登录成功, 都要更新的字段
+            update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
+                           "操作系统": client_content_dict["操作系统"],
+                           "备注": comment}
             if query_user["状态"] == "冻结":
                 detail = "登录失败, 此账号已冻结"
             elif query_user["状态"] == "在线":
                 detail = "登录失败, 此账号在线中, 请10分钟后再试"
             elif cur_time_fmt > str(query_user["到期时间"]):
                 detail = "登录失败, 此账号已到期"
+            elif comment != "正常":
+                update_dict["状态"] = "冻结"
+                detail = "登录失败, What's Your Problem?"
+                log.warn(f"[登录Warn] 账号:{account} {ip} {comment}, 自动冻结")
             elif pwd == query_user["密码"]:  # 判断密码是否符合
                 if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
                     ret = True
+                    # 登录成功, 才更新的项
+                    update_dict["机器码"] = client_content_dict["机器码"]
+                    update_dict["上次登录时间"] = cur_time_fmt
+                    update_dict["上次登录IP"] = ip
+                    # 返回到期时间给用户
                     due_time = query_user["到期时间"]
                     detail = str(due_time)
                     # 用户若是第一次登录, 重新计算到期时间
@@ -1225,17 +1240,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"[登录] 账号{account} {detail}")
         # 把客户端发送过来的数据记录到数据库
         if query_user:  # 若该账号存在
-            account = query_user["账号"]
-            ori_comment = client_content_dict["备注"]
-            comment = comment_state_dict[ori_comment]
-            # 无论是否登录成功, 都要更新的字段
-            update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
-                           "操作系统": client_content_dict["操作系统"],
-                           "备注": comment}
-            if ret:  # 若登录成功, 才更新的项
-                update_dict["机器码"] = client_content_dict["机器码"]
-                update_dict["上次登录时间"] = cur_time_fmt
-                update_dict["上次登录IP"] = ip
             self.sql_table_update_ex("2用户管理", update_dict, {"账号": account})
         # 把登录结果整理成py字典, 并发送给客户端
         server_info_dict = {"消息类型": "登录",

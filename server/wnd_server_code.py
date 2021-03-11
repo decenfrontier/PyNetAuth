@@ -41,14 +41,14 @@ aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
 enc_aes_key = crypto.encrypt_rsa(crypto.public_key_client, aes_key)
 
-state_comment_dict = {
+action_code_dict = {
     "正常": "*d#fl1I@34rt7%gh.",
     "检测到改数据": "*d#flI1@34rt7%gh.",
     "检测到虚拟机": "*d#flI2@34rt7%gh.",
     "检测到调试器": "*d#flI3@34rt7%gh.",
 }
 
-comment_state_dict = {v: k for k, v in state_comment_dict.items()}
+code_action_dict = {v: k for k, v in action_code_dict.items()}
 
 
 class Log():
@@ -633,10 +633,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         account_set = {self.tbe_user.item(it.row(), 1).text() for it in item_list}
         if not account_set:
             return
-        comment, ok_pressed = QInputDialog.getText(self, "备注", "备注:", QLineEdit.Normal)
+        comment, ok_pressed = QInputDialog.getText(self, "备注用户", "备注:", QLineEdit.Normal)
         if not ok_pressed:
             return
-        accounts = "','".join(account_set)  # "2用户管理", f"备注='{comment}'", f"账号 in ('{accounts}')"
+        accounts = "','".join(account_set)
         num = self.sql_table_update(f"update 2用户管理 set 备注='{comment}' where 账号 in ('{accounts}');")
         self.show_info(f"{num}个用户备注成功")
         self.show_page_tbe(self.tbe_user)
@@ -657,7 +657,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         comment, ok_pressed = QInputDialog.getText(self, "冻结", "备注原因:", QLineEdit.Normal)
         if not ok_pressed:
             return
-        accounts = "','".join(account_set)  # "2用户管理", f"状态='冻结', 备注='{comment}'", f"账号 in ('{accounts}')"
+        accounts = "','".join(account_set)
         num = self.sql_table_update(f"update 2用户管理 set 状态='冻结', 备注='{comment}' where 账号 in ('{accounts}');")
         self.show_info(f"{num}个账号冻结成功")
         self.show_page_tbe(self.tbe_user)
@@ -672,7 +672,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         if ret != QMessageBox.Yes:
             return
         accounts = "','".join(account_set)
-        # 解冻时备注应加天数  "2用户管理", f"状态='离线', 备注=datediff(到期时间, 心跳时间)", f"账号 in ('{accounts}')"
+        # 解冻时备注应加天数
         num = self.sql_table_update(f"update 2用户管理 set 状态='离线', 备注=datediff(到期时间, 心跳时间) where 账号 in ('{accounts}');")
         self.show_info(f"{num}个账号解冻成功")
         self.show_page_tbe(self.tbe_user)
@@ -890,7 +890,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setItem(row, 13, QTableWidgetItem(query_user["注册时间"]))
             self.tbe_user.setItem(row, 14, item_pay_month)
             self.tbe_user.setItem(row, 15, QTableWidgetItem(query_user["操作系统"]))
-            self.tbe_user.setItem(row, 16, QTableWidgetItem(query_user["备注"]))
+            self.tbe_user.setItem(row, 16, QTableWidgetItem(query_user["用户行为"]))
             self.tbe_user.setItem(row, 17, QTableWidgetItem(query_user["最后更新时间"]))
         self.tbe_user.setSortingEnabled(True)  # 更新完毕后再打开自动排序
 
@@ -1099,13 +1099,13 @@ class WndServer(QMainWindow, Ui_WndServer):
 
         machine_code = client_content_dict["机器码"]
         ret = False
-        if client_content_dict["备注"] == state_comment_dict["检测到改数据"]:  # 客户端数据被修改, 记录到日志
+        if client_content_dict["用户行为"] == action_code_dict["检测到改数据"]:  # 客户端数据被修改, 记录到日志
             detail = "检测到改数据"
             log.warn(f"[初始Warn] IP:{ip}, MC:{machine_code}, 检测到改数据")
-        elif client_content_dict["备注"] == state_comment_dict["检测到虚拟机"]:
+        elif client_content_dict["用户行为"] == action_code_dict["检测到虚拟机"]:
             detail = "检测到虚拟机"
             log.warn(f"[初始Warn] IP:{ip}, MC:{machine_code}, 检测到虚拟机")
-        elif client_content_dict["备注"] == state_comment_dict["检测到调试器"]:
+        elif client_content_dict["用户行为"] == action_code_dict["检测到调试器"]:
             detail = "检测到调试器"
             log.warn(f"[初始Warn] IP:{ip}, MC:{machine_code}, 检测到调试器")
         else:  # 若用户没有用OD修改掉这个数据, 才把RSA加密数据发过去
@@ -1195,8 +1195,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"[登录] IP: {ip}, 正在处理账号: {account}")
         pwd = client_content_dict["密码"]
         machine_code = client_content_dict["机器码"]
-        ori_comment = client_content_dict["备注"]
-        comment = comment_state_dict[ori_comment]
+        action_code = client_content_dict["用户行为"]
+        action = code_action_dict[action_code]
         ret, query_user = False, {}
 
         query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)  # 判断账号是否存在
@@ -1205,17 +1205,17 @@ class WndServer(QMainWindow, Ui_WndServer):
             # 用户存在的情况下, 无论是否登录成功, 都要更新的字段
             update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
                            "操作系统": client_content_dict["操作系统"],
-                           "备注": comment}
+                           "用户行为": action}
             if query_user["状态"] == "冻结":
                 detail = "登录失败, 此账号已冻结"
             elif query_user["状态"] == "在线":
                 detail = "登录失败, 此账号在线中, 请10分钟后再试"
             elif cur_time_fmt > str(query_user["到期时间"]):
                 detail = "登录失败, 此账号已到期"
-            elif comment != "正常":
+            elif action != "正常":
                 update_dict["状态"] = "冻结"
                 detail = "登录失败, What's Your Problem?"
-                log.warn(f"[登录Warn] 账号:{account} {ip} {comment}, 自动冻结")
+                log.warn(f"[登录Warn] 账号:{account} {ip} {action}, 自动冻结")
             elif pwd == query_user["密码"]:  # 判断密码是否符合
                 if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
                     ret = True
@@ -1329,10 +1329,10 @@ class WndServer(QMainWindow, Ui_WndServer):
         ip = client_socket.getpeername()[0]
         account = client_content_dict["账号"]
         log.info(f"[心跳] IP: {ip}, 正在处理账号: {account}")
-        ori_comment = client_content_dict["备注"]
-        comment = comment_state_dict[ori_comment]
+        action_code = client_content_dict["用户行为"]
+        action = code_action_dict[action_code]
         machine_code = client_content_dict["机器码"]
-        update_dict = {"心跳时间": cur_time_fmt, "备注": comment}
+        update_dict = {"心跳时间": cur_time_fmt, "用户行为": action}
 
         query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)
         if query_user_list:  # 若账号存在
@@ -1362,9 +1362,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         ip = client_socket.getpeername()[0]
         account = client_content_dict["账号"]
         log.info(f"[离线] IP: {ip}, 正在处理账号: {account}")
-        ori_comment = client_content_dict["备注"]
-        comment = comment_state_dict[ori_comment]
-        update_dict = {"心跳时间": cur_time_fmt, "状态": "离线", "备注": comment}
+        action_code = client_content_dict["用户行为"]
+        action = code_action_dict[action_code]
+        update_dict = {"心跳时间": cur_time_fmt, "状态": "离线", "用户行为": action}
 
         query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)
         if query_user_list:

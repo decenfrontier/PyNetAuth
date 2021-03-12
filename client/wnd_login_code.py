@@ -99,7 +99,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         # 检测全局变量是否被修改
         if [lib.aes_key, lib.user_account, lib.pwd_pic, lib.pwd_zk, lib.addr_crack] != \
                 ["*d#f1Il@34rt7%gh.", "aaa", "1234", "5678", "0x8CFF98"]:
-            lib.client_comment = lib.state_comment_dict["检测到改数据"]
+            lib.action_code = lib.action_code_dict["检测到改数据"]
         # 与服务端连接
         tcp_socket = lib.connect_server_tcp()
         if not tcp_socket:
@@ -213,7 +213,7 @@ class WndLogin(QDialog, Ui_WndLogin):
     # 发送接收初始消息
     def send_recv_init(self, tcp_socket: socket.socket):
         client_info_dict = {"消息类型": "初始",
-                            "内容": {"备注": lib.client_comment, "机器码": lib.machine_code}}
+                            "内容": {"用户行为": lib.action_code, "机器码": lib.machine_code}}
         lib.send_to_server(tcp_socket, client_info_dict)
         # 等待服务端响应初始消息
         msg_type, server_content_dict = lib.recv_from_server(tcp_socket)
@@ -308,7 +308,7 @@ class WndLogin(QDialog, Ui_WndLogin):
                 "密码": login_pwd,
                 "机器码": lib.machine_code,
                 "操作系统": login_system,
-                "备注": lib.client_comment,
+                "用户行为": lib.action_code,
             }
         }
         # 发送客户端消息

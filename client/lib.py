@@ -189,13 +189,13 @@ def create_com_obj(com_name: str):
 
 # ------------------------- 安全相关 -------------------------
 def is_user_dangerous():
-    global client_comment
+    global action_code
     ret = False
 
     ret1 = anti_vm()
     if ret1:
         print("检测到虚拟机")
-        client_comment = state_comment_dict["检测到虚拟机"]
+        action_code = action_code_dict["检测到虚拟机"]
         ret = True
     ret2 = anti_debug1()
     ret3 = anti_debug2()
@@ -203,7 +203,7 @@ def is_user_dangerous():
     ret5 = anti_anti_debug4()
     if True in [ret2, ret3, ret4, ret5]:
         print("检测到调试器")
-        client_comment = state_comment_dict["检测到调试器"]
+        action_code = action_code_dict["检测到调试器"]
         ret = True
     # todo: 正式发布前删掉
     if not ret:
@@ -328,14 +328,14 @@ server_ip = "127.0.0.1"  # 47.108.170.195  www.gbdjob.cn
 server_port = 47123
 machine_code = get_machine_code()
 
-state_comment_dict = {
+action_code_dict = {
     "正常": "*d#fl1I@34rt7%gh.",
     "检测到改数据": "*d#flI1@34rt7%gh.",
     "检测到虚拟机": "*d#flI2@34rt7%gh.",
     "检测到调试器": "*d#flI3@34rt7%gh.",
 }
 
-client_comment = state_comment_dict["正常"]
+action_code = action_code_dict["正常"]
 
 # 从服务端获取的数据
 aes_key = "*d#f1Il@34rt7%gh."  # AES密钥, 登录界面初始化时获取, 先随机写一个迷惑破解者

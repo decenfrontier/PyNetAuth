@@ -29,7 +29,7 @@ class WndMain(QMainWindow, Ui_WndMain):
             lib.log.info("服务器繁忙, 请稍后再试")
             return
         client_info_dict = {"消息类型": "离线",
-                            "内容": {"账号": lib.user_account, "备注": lib.client_comment}}
+                            "内容": {"账号": lib.user_account, "用户行为": lib.action_code}}
         lib.send_to_server(tcp_socket, client_info_dict)
         msg_type, server_content_dict = lib.recv_from_server(tcp_socket)
         tcp_socket.close()
@@ -82,7 +82,7 @@ class WndMain(QMainWindow, Ui_WndMain):
                 lib.log.info("与服务器连接异常...")
             else:  # 连接成功, 发送心跳包
                 client_info_dict = {"消息类型": "心跳",
-                    "内容": {"账号": lib.user_account, "机器码": lib.machine_code, "备注": lib.client_comment}}
+                    "内容": {"账号": lib.user_account, "机器码": lib.machine_code, "用户行为": lib.action_code}}
                 lib.send_to_server(tcp_socket, client_info_dict)
                 msg_type, server_content_dict = lib.recv_from_server(tcp_socket)
                 if msg_type == "心跳":

@@ -215,11 +215,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_proj.setColumnWidth(unbind, 80)
         self.tbe_proj.setColumnWidth(last_update_time, 130)
         # 用户管理表
-        id, account, pwd, qq, state, heart_time, due_time, last_login_time, last_login_ip, \
+        id, account, comment, pwd, qq, state, heart_time, due_time, last_login_time, last_login_ip, \
         last_login_place, today_login_count, today_unbind_count, machine_code, reg_time, \
-        pay_month, opration_system, comment, last_update_time = [i for i in range(18)]
+        pay_month, opration_system, action, last_update_time = [i for i in range(19)]
         self.tbe_user.setColumnWidth(id, 40)
         self.tbe_user.setColumnWidth(account, 80)
+        self.tbe_user.setColumnWidth(comment, 50)
         self.tbe_user.setColumnWidth(pwd, 40)
         self.tbe_user.setColumnWidth(qq, 80)
         self.tbe_user.setColumnWidth(state, 50)
@@ -231,7 +232,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.setColumnWidth(reg_time, 130)
         self.tbe_user.setColumnWidth(reg_time, 130)
         self.tbe_user.setColumnWidth(opration_system, 180)
-        self.tbe_user.setColumnWidth(comment, 180)
+        self.tbe_user.setColumnWidth(action, 60)
         self.tbe_user.setColumnWidth(last_update_time, 130)
         # 卡密管理表
         id, card_key, type, gen_time, export_time, use_time = [i for i in range(6)]
@@ -876,22 +877,23 @@ class WndServer(QMainWindow, Ui_WndServer):
             item_pay_month.setData(Qt.DisplayRole, query_user["充值月数"])
             self.tbe_user.setItem(row, 0, item_id)
             self.tbe_user.setItem(row, 1, QTableWidgetItem(query_user["账号"]))
-            self.tbe_user.setItem(row, 2, QTableWidgetItem("***"))
-            self.tbe_user.setItem(row, 3, QTableWidgetItem(query_user["QQ"]))
-            self.tbe_user.setItem(row, 4, QTableWidgetItem(query_user["状态"]))
-            self.tbe_user.setItem(row, 5, QTableWidgetItem(query_user["到期时间"]))
-            self.tbe_user.setItem(row, 6, QTableWidgetItem(query_user["心跳时间"]))
-            self.tbe_user.setItem(row, 7, QTableWidgetItem(query_user["上次登录时间"]))
-            self.tbe_user.setItem(row, 8, QTableWidgetItem(query_user["上次登录IP"]))
-            self.tbe_user.setItem(row, 9, QTableWidgetItem(query_user["上次登录地"]))
-            self.tbe_user.setItem(row, 10, item_today_login_count)
-            self.tbe_user.setItem(row, 11, item_today_unbind_count)
-            self.tbe_user.setItem(row, 12, QTableWidgetItem(query_user["机器码"]))
-            self.tbe_user.setItem(row, 13, QTableWidgetItem(query_user["注册时间"]))
-            self.tbe_user.setItem(row, 14, item_pay_month)
-            self.tbe_user.setItem(row, 15, QTableWidgetItem(query_user["操作系统"]))
-            self.tbe_user.setItem(row, 16, QTableWidgetItem(query_user["用户行为"]))
-            self.tbe_user.setItem(row, 17, QTableWidgetItem(query_user["最后更新时间"]))
+            self.tbe_user.setItem(row, 2, QTableWidgetItem(query_user["备注"]))
+            self.tbe_user.setItem(row, 3, QTableWidgetItem("***"))
+            self.tbe_user.setItem(row, 4, QTableWidgetItem(query_user["QQ"]))
+            self.tbe_user.setItem(row, 5, QTableWidgetItem(query_user["状态"]))
+            self.tbe_user.setItem(row, 6, QTableWidgetItem(query_user["到期时间"]))
+            self.tbe_user.setItem(row, 7, QTableWidgetItem(query_user["心跳时间"]))
+            self.tbe_user.setItem(row, 8, QTableWidgetItem(query_user["上次登录时间"]))
+            self.tbe_user.setItem(row, 9, QTableWidgetItem(query_user["上次登录IP"]))
+            self.tbe_user.setItem(row, 10, QTableWidgetItem(query_user["上次登录地"]))
+            self.tbe_user.setItem(row, 11, item_today_login_count)
+            self.tbe_user.setItem(row, 12, item_today_unbind_count)
+            self.tbe_user.setItem(row, 13, QTableWidgetItem(query_user["机器码"]))
+            self.tbe_user.setItem(row, 14, QTableWidgetItem(query_user["注册时间"]))
+            self.tbe_user.setItem(row, 15, item_pay_month)
+            self.tbe_user.setItem(row, 16, QTableWidgetItem(query_user["操作系统"]))
+            self.tbe_user.setItem(row, 17, QTableWidgetItem(query_user["用户行为"]))
+            self.tbe_user.setItem(row, 18, QTableWidgetItem(query_user["最后更新时间"]))
         self.tbe_user.setSortingEnabled(True)  # 更新完毕后再打开自动排序
 
     def refresh_tbe_card(self, query_card_list: list):

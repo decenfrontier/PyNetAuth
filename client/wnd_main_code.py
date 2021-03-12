@@ -52,7 +52,7 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def init_widgets(self):
         # ------------------------------ 窗口 ------------------------------
-        self.setWindowTitle("到期时间:" + lib.due_time)
+        self.setWindowTitle("到期时间: " + lib.due_time)
         # ------------------------------ 状态栏 ------------------------------
         self.status_bar.addWidget(self.lbe_1)
         self.status_bar.addWidget(self.lbe_info)

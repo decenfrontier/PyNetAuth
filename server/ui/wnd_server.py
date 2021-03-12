@@ -484,8 +484,8 @@ class Ui_WndServer(object):
         self.verticalLayout_15.addLayout(self.horizontalLayout_21)
 
         self.tbe_user = QTableWidget(self.page_user)
-        if (self.tbe_user.columnCount() < 18):
-            self.tbe_user.setColumnCount(18)
+        if (self.tbe_user.columnCount() < 19):
+            self.tbe_user.setColumnCount(19)
         __qtablewidgetitem10 = QTableWidgetItem()
         self.tbe_user.setHorizontalHeaderItem(0, __qtablewidgetitem10)
         __qtablewidgetitem11 = QTableWidgetItem()
@@ -522,6 +522,8 @@ class Ui_WndServer(object):
         self.tbe_user.setHorizontalHeaderItem(16, __qtablewidgetitem26)
         __qtablewidgetitem27 = QTableWidgetItem()
         self.tbe_user.setHorizontalHeaderItem(17, __qtablewidgetitem27)
+        __qtablewidgetitem28 = QTableWidgetItem()
+        self.tbe_user.setHorizontalHeaderItem(18, __qtablewidgetitem28)
         if (self.tbe_user.rowCount() < 26):
             self.tbe_user.setRowCount(26)
         self.tbe_user.setObjectName(u"tbe_user")
@@ -532,7 +534,7 @@ class Ui_WndServer(object):
         self.tbe_user.setWordWrap(False)
         self.tbe_user.setCornerButtonEnabled(False)
         self.tbe_user.setRowCount(26)
-        self.tbe_user.horizontalHeader().setVisible(False)
+        self.tbe_user.horizontalHeader().setVisible(True)
         self.tbe_user.horizontalHeader().setProperty("showSortIndicator", True)
         self.tbe_user.horizontalHeader().setStretchLastSection(True)
         self.tbe_user.verticalHeader().setVisible(False)
@@ -551,18 +553,18 @@ class Ui_WndServer(object):
         self.tbe_card = QTableWidget(self.page_card)
         if (self.tbe_card.columnCount() < 6):
             self.tbe_card.setColumnCount(6)
-        __qtablewidgetitem28 = QTableWidgetItem()
-        self.tbe_card.setHorizontalHeaderItem(0, __qtablewidgetitem28)
         __qtablewidgetitem29 = QTableWidgetItem()
-        self.tbe_card.setHorizontalHeaderItem(1, __qtablewidgetitem29)
+        self.tbe_card.setHorizontalHeaderItem(0, __qtablewidgetitem29)
         __qtablewidgetitem30 = QTableWidgetItem()
-        self.tbe_card.setHorizontalHeaderItem(2, __qtablewidgetitem30)
+        self.tbe_card.setHorizontalHeaderItem(1, __qtablewidgetitem30)
         __qtablewidgetitem31 = QTableWidgetItem()
-        self.tbe_card.setHorizontalHeaderItem(3, __qtablewidgetitem31)
+        self.tbe_card.setHorizontalHeaderItem(2, __qtablewidgetitem31)
         __qtablewidgetitem32 = QTableWidgetItem()
-        self.tbe_card.setHorizontalHeaderItem(4, __qtablewidgetitem32)
+        self.tbe_card.setHorizontalHeaderItem(3, __qtablewidgetitem32)
         __qtablewidgetitem33 = QTableWidgetItem()
-        self.tbe_card.setHorizontalHeaderItem(5, __qtablewidgetitem33)
+        self.tbe_card.setHorizontalHeaderItem(4, __qtablewidgetitem33)
+        __qtablewidgetitem34 = QTableWidgetItem()
+        self.tbe_card.setHorizontalHeaderItem(5, __qtablewidgetitem34)
         if (self.tbe_card.rowCount() < 28):
             self.tbe_card.setRowCount(28)
         self.tbe_card.setObjectName(u"tbe_card")
@@ -722,26 +724,26 @@ class Ui_WndServer(object):
         self.tbe_flow = QTableWidget(self.page_flow)
         if (self.tbe_flow.columnCount() < 10):
             self.tbe_flow.setColumnCount(10)
-        __qtablewidgetitem34 = QTableWidgetItem()
-        self.tbe_flow.setHorizontalHeaderItem(0, __qtablewidgetitem34)
         __qtablewidgetitem35 = QTableWidgetItem()
-        self.tbe_flow.setHorizontalHeaderItem(1, __qtablewidgetitem35)
+        self.tbe_flow.setHorizontalHeaderItem(0, __qtablewidgetitem35)
         __qtablewidgetitem36 = QTableWidgetItem()
-        self.tbe_flow.setHorizontalHeaderItem(2, __qtablewidgetitem36)
+        self.tbe_flow.setHorizontalHeaderItem(1, __qtablewidgetitem36)
         __qtablewidgetitem37 = QTableWidgetItem()
-        self.tbe_flow.setHorizontalHeaderItem(3, __qtablewidgetitem37)
+        self.tbe_flow.setHorizontalHeaderItem(2, __qtablewidgetitem37)
         __qtablewidgetitem38 = QTableWidgetItem()
-        self.tbe_flow.setHorizontalHeaderItem(4, __qtablewidgetitem38)
+        self.tbe_flow.setHorizontalHeaderItem(3, __qtablewidgetitem38)
         __qtablewidgetitem39 = QTableWidgetItem()
-        self.tbe_flow.setHorizontalHeaderItem(5, __qtablewidgetitem39)
+        self.tbe_flow.setHorizontalHeaderItem(4, __qtablewidgetitem39)
         __qtablewidgetitem40 = QTableWidgetItem()
-        self.tbe_flow.setHorizontalHeaderItem(6, __qtablewidgetitem40)
+        self.tbe_flow.setHorizontalHeaderItem(5, __qtablewidgetitem40)
         __qtablewidgetitem41 = QTableWidgetItem()
-        self.tbe_flow.setHorizontalHeaderItem(7, __qtablewidgetitem41)
+        self.tbe_flow.setHorizontalHeaderItem(6, __qtablewidgetitem41)
         __qtablewidgetitem42 = QTableWidgetItem()
-        self.tbe_flow.setHorizontalHeaderItem(8, __qtablewidgetitem42)
+        self.tbe_flow.setHorizontalHeaderItem(7, __qtablewidgetitem42)
         __qtablewidgetitem43 = QTableWidgetItem()
-        self.tbe_flow.setHorizontalHeaderItem(9, __qtablewidgetitem43)
+        self.tbe_flow.setHorizontalHeaderItem(8, __qtablewidgetitem43)
+        __qtablewidgetitem44 = QTableWidgetItem()
+        self.tbe_flow.setHorizontalHeaderItem(9, __qtablewidgetitem44)
         if (self.tbe_flow.rowCount() < 26):
             self.tbe_flow.setRowCount(26)
         self.tbe_flow.setObjectName(u"tbe_flow")
@@ -769,18 +771,18 @@ class Ui_WndServer(object):
         self.tbe_ip = QTableWidget(self.page_ip)
         if (self.tbe_ip.columnCount() < 6):
             self.tbe_ip.setColumnCount(6)
-        __qtablewidgetitem44 = QTableWidgetItem()
-        self.tbe_ip.setHorizontalHeaderItem(0, __qtablewidgetitem44)
         __qtablewidgetitem45 = QTableWidgetItem()
-        self.tbe_ip.setHorizontalHeaderItem(1, __qtablewidgetitem45)
+        self.tbe_ip.setHorizontalHeaderItem(0, __qtablewidgetitem45)
         __qtablewidgetitem46 = QTableWidgetItem()
-        self.tbe_ip.setHorizontalHeaderItem(2, __qtablewidgetitem46)
+        self.tbe_ip.setHorizontalHeaderItem(1, __qtablewidgetitem46)
         __qtablewidgetitem47 = QTableWidgetItem()
-        self.tbe_ip.setHorizontalHeaderItem(3, __qtablewidgetitem47)
+        self.tbe_ip.setHorizontalHeaderItem(2, __qtablewidgetitem47)
         __qtablewidgetitem48 = QTableWidgetItem()
-        self.tbe_ip.setHorizontalHeaderItem(4, __qtablewidgetitem48)
+        self.tbe_ip.setHorizontalHeaderItem(3, __qtablewidgetitem48)
         __qtablewidgetitem49 = QTableWidgetItem()
-        self.tbe_ip.setHorizontalHeaderItem(5, __qtablewidgetitem49)
+        self.tbe_ip.setHorizontalHeaderItem(4, __qtablewidgetitem49)
+        __qtablewidgetitem50 = QTableWidgetItem()
+        self.tbe_ip.setHorizontalHeaderItem(5, __qtablewidgetitem50)
         if (self.tbe_ip.rowCount() < 30):
             self.tbe_ip.setRowCount(30)
         self.tbe_ip.setObjectName(u"tbe_ip")
@@ -868,7 +870,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(0)
+        self.stack_widget.setCurrentIndex(1)
         self.cmb_user_order_by.setCurrentIndex(0)
 
 
@@ -967,49 +969,51 @@ class Ui_WndServer(object):
         ___qtablewidgetitem11 = self.tbe_user.horizontalHeaderItem(1)
         ___qtablewidgetitem11.setText(QCoreApplication.translate("WndServer", u"\u8d26\u53f7", None));
         ___qtablewidgetitem12 = self.tbe_user.horizontalHeaderItem(2)
-        ___qtablewidgetitem12.setText(QCoreApplication.translate("WndServer", u"\u5bc6\u7801", None));
+        ___qtablewidgetitem12.setText(QCoreApplication.translate("WndServer", u"\u5907\u6ce8", None));
         ___qtablewidgetitem13 = self.tbe_user.horizontalHeaderItem(3)
-        ___qtablewidgetitem13.setText(QCoreApplication.translate("WndServer", u"QQ", None));
+        ___qtablewidgetitem13.setText(QCoreApplication.translate("WndServer", u"\u5bc6\u7801", None));
         ___qtablewidgetitem14 = self.tbe_user.horizontalHeaderItem(4)
-        ___qtablewidgetitem14.setText(QCoreApplication.translate("WndServer", u"\u72b6\u6001", None));
+        ___qtablewidgetitem14.setText(QCoreApplication.translate("WndServer", u"QQ", None));
         ___qtablewidgetitem15 = self.tbe_user.horizontalHeaderItem(5)
-        ___qtablewidgetitem15.setText(QCoreApplication.translate("WndServer", u"\u5230\u671f\u65f6\u95f4", None));
+        ___qtablewidgetitem15.setText(QCoreApplication.translate("WndServer", u"\u72b6\u6001", None));
         ___qtablewidgetitem16 = self.tbe_user.horizontalHeaderItem(6)
-        ___qtablewidgetitem16.setText(QCoreApplication.translate("WndServer", u"\u5fc3\u8df3\u65f6\u95f4", None));
+        ___qtablewidgetitem16.setText(QCoreApplication.translate("WndServer", u"\u5230\u671f\u65f6\u95f4", None));
         ___qtablewidgetitem17 = self.tbe_user.horizontalHeaderItem(7)
-        ___qtablewidgetitem17.setText(QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55\u65f6\u95f4", None));
+        ___qtablewidgetitem17.setText(QCoreApplication.translate("WndServer", u"\u5fc3\u8df3\u65f6\u95f4", None));
         ___qtablewidgetitem18 = self.tbe_user.horizontalHeaderItem(8)
-        ___qtablewidgetitem18.setText(QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55IP", None));
+        ___qtablewidgetitem18.setText(QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55\u65f6\u95f4", None));
         ___qtablewidgetitem19 = self.tbe_user.horizontalHeaderItem(9)
-        ___qtablewidgetitem19.setText(QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55\u5730", None));
+        ___qtablewidgetitem19.setText(QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55IP", None));
         ___qtablewidgetitem20 = self.tbe_user.horizontalHeaderItem(10)
-        ___qtablewidgetitem20.setText(QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u767b\u5f55\u6b21\u6570", None));
+        ___qtablewidgetitem20.setText(QCoreApplication.translate("WndServer", u"\u4e0a\u6b21\u767b\u5f55\u5730", None));
         ___qtablewidgetitem21 = self.tbe_user.horizontalHeaderItem(11)
-        ___qtablewidgetitem21.setText(QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u89e3\u7ed1\u6b21\u6570", None));
+        ___qtablewidgetitem21.setText(QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u767b\u5f55\u6b21\u6570", None));
         ___qtablewidgetitem22 = self.tbe_user.horizontalHeaderItem(12)
-        ___qtablewidgetitem22.setText(QCoreApplication.translate("WndServer", u"\u673a\u5668\u7801", None));
+        ___qtablewidgetitem22.setText(QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u89e3\u7ed1\u6b21\u6570", None));
         ___qtablewidgetitem23 = self.tbe_user.horizontalHeaderItem(13)
-        ___qtablewidgetitem23.setText(QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u65f6\u95f4", None));
+        ___qtablewidgetitem23.setText(QCoreApplication.translate("WndServer", u"\u673a\u5668\u7801", None));
         ___qtablewidgetitem24 = self.tbe_user.horizontalHeaderItem(14)
-        ___qtablewidgetitem24.setText(QCoreApplication.translate("WndServer", u"\u5145\u503c\u6708\u6570", None));
+        ___qtablewidgetitem24.setText(QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u65f6\u95f4", None));
         ___qtablewidgetitem25 = self.tbe_user.horizontalHeaderItem(15)
-        ___qtablewidgetitem25.setText(QCoreApplication.translate("WndServer", u"\u64cd\u4f5c\u7cfb\u7edf", None));
+        ___qtablewidgetitem25.setText(QCoreApplication.translate("WndServer", u"\u5145\u503c\u6708\u6570", None));
         ___qtablewidgetitem26 = self.tbe_user.horizontalHeaderItem(16)
-        ___qtablewidgetitem26.setText(QCoreApplication.translate("WndServer", u"\u5907\u6ce8", None));
+        ___qtablewidgetitem26.setText(QCoreApplication.translate("WndServer", u"\u64cd\u4f5c\u7cfb\u7edf", None));
         ___qtablewidgetitem27 = self.tbe_user.horizontalHeaderItem(17)
-        ___qtablewidgetitem27.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
-        ___qtablewidgetitem28 = self.tbe_card.horizontalHeaderItem(0)
-        ___qtablewidgetitem28.setText(QCoreApplication.translate("WndServer", u"ID", None));
-        ___qtablewidgetitem29 = self.tbe_card.horizontalHeaderItem(1)
-        ___qtablewidgetitem29.setText(QCoreApplication.translate("WndServer", u"\u5361\u53f7", None));
-        ___qtablewidgetitem30 = self.tbe_card.horizontalHeaderItem(2)
-        ___qtablewidgetitem30.setText(QCoreApplication.translate("WndServer", u"\u5361\u7c7b\u578b", None));
-        ___qtablewidgetitem31 = self.tbe_card.horizontalHeaderItem(3)
-        ___qtablewidgetitem31.setText(QCoreApplication.translate("WndServer", u"\u5236\u5361\u65f6\u95f4", None));
-        ___qtablewidgetitem32 = self.tbe_card.horizontalHeaderItem(4)
-        ___qtablewidgetitem32.setText(QCoreApplication.translate("WndServer", u"\u5bfc\u51fa\u65f6\u95f4", None));
-        ___qtablewidgetitem33 = self.tbe_card.horizontalHeaderItem(5)
-        ___qtablewidgetitem33.setText(QCoreApplication.translate("WndServer", u"\u4f7f\u7528\u65f6\u95f4", None));
+        ___qtablewidgetitem27.setText(QCoreApplication.translate("WndServer", u"\u7528\u6237\u884c\u4e3a", None));
+        ___qtablewidgetitem28 = self.tbe_user.horizontalHeaderItem(18)
+        ___qtablewidgetitem28.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
+        ___qtablewidgetitem29 = self.tbe_card.horizontalHeaderItem(0)
+        ___qtablewidgetitem29.setText(QCoreApplication.translate("WndServer", u"ID", None));
+        ___qtablewidgetitem30 = self.tbe_card.horizontalHeaderItem(1)
+        ___qtablewidgetitem30.setText(QCoreApplication.translate("WndServer", u"\u5361\u53f7", None));
+        ___qtablewidgetitem31 = self.tbe_card.horizontalHeaderItem(2)
+        ___qtablewidgetitem31.setText(QCoreApplication.translate("WndServer", u"\u5361\u7c7b\u578b", None));
+        ___qtablewidgetitem32 = self.tbe_card.horizontalHeaderItem(3)
+        ___qtablewidgetitem32.setText(QCoreApplication.translate("WndServer", u"\u5236\u5361\u65f6\u95f4", None));
+        ___qtablewidgetitem33 = self.tbe_card.horizontalHeaderItem(4)
+        ___qtablewidgetitem33.setText(QCoreApplication.translate("WndServer", u"\u5bfc\u51fa\u65f6\u95f4", None));
+        ___qtablewidgetitem34 = self.tbe_card.horizontalHeaderItem(5)
+        ___qtablewidgetitem34.setText(QCoreApplication.translate("WndServer", u"\u4f7f\u7528\u65f6\u95f4", None));
         self.groupBox_3.setTitle("")
         self.cmb_card_type.setItemText(0, QCoreApplication.translate("WndServer", u"\u5929\u5361", None))
         self.cmb_card_type.setItemText(1, QCoreApplication.translate("WndServer", u"\u5468\u5361", None))
@@ -1030,38 +1034,38 @@ class Ui_WndServer(object):
         self.edt_flow_page_go.setText(QCoreApplication.translate("WndServer", u"0", None))
         self.btn_flow_page_next.setText(QCoreApplication.translate("WndServer", u">", None))
         self.btn_flow_page_go.setText(QCoreApplication.translate("WndServer", u"Go", None))
-        ___qtablewidgetitem34 = self.tbe_flow.horizontalHeaderItem(0)
-        ___qtablewidgetitem34.setText(QCoreApplication.translate("WndServer", u"ID", None));
-        ___qtablewidgetitem35 = self.tbe_flow.horizontalHeaderItem(1)
-        ___qtablewidgetitem35.setText(QCoreApplication.translate("WndServer", u"\u65e5\u671f", None));
-        ___qtablewidgetitem36 = self.tbe_flow.horizontalHeaderItem(2)
-        ___qtablewidgetitem36.setText(QCoreApplication.translate("WndServer", u"\u5929\u5361\u5145\u503c\u6570", None));
-        ___qtablewidgetitem37 = self.tbe_flow.horizontalHeaderItem(3)
-        ___qtablewidgetitem37.setText(QCoreApplication.translate("WndServer", u"\u5468\u5361\u5145\u503c\u6570", None));
-        ___qtablewidgetitem38 = self.tbe_flow.horizontalHeaderItem(4)
-        ___qtablewidgetitem38.setText(QCoreApplication.translate("WndServer", u"\u6708\u5361\u5145\u503c\u6570", None));
-        ___qtablewidgetitem39 = self.tbe_flow.horizontalHeaderItem(5)
-        ___qtablewidgetitem39.setText(QCoreApplication.translate("WndServer", u"\u5b63\u5361\u5145\u503c\u6570", None));
-        ___qtablewidgetitem40 = self.tbe_flow.horizontalHeaderItem(6)
-        ___qtablewidgetitem40.setText(QCoreApplication.translate("WndServer", u"\u5145\u503c\u7528\u6237\u6570", None));
-        ___qtablewidgetitem41 = self.tbe_flow.horizontalHeaderItem(7)
-        ___qtablewidgetitem41.setText(QCoreApplication.translate("WndServer", u"\u6d3b\u8dc3\u7528\u6237\u6570", None));
-        ___qtablewidgetitem42 = self.tbe_flow.horizontalHeaderItem(8)
-        ___qtablewidgetitem42.setText(QCoreApplication.translate("WndServer", u"\u5728\u7ebf\u7528\u6237\u6570", None));
-        ___qtablewidgetitem43 = self.tbe_flow.horizontalHeaderItem(9)
-        ___qtablewidgetitem43.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
-        ___qtablewidgetitem44 = self.tbe_ip.horizontalHeaderItem(0)
-        ___qtablewidgetitem44.setText(QCoreApplication.translate("WndServer", u"ID", None));
-        ___qtablewidgetitem45 = self.tbe_ip.horizontalHeaderItem(1)
-        ___qtablewidgetitem45.setText(QCoreApplication.translate("WndServer", u"IP\u5730\u5740", None));
-        ___qtablewidgetitem46 = self.tbe_ip.horizontalHeaderItem(2)
-        ___qtablewidgetitem46.setText(QCoreApplication.translate("WndServer", u"\u5f52\u5c5e\u5730", None));
-        ___qtablewidgetitem47 = self.tbe_ip.horizontalHeaderItem(3)
-        ___qtablewidgetitem47.setText(QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u8fde\u63a5\u65f6\u95f4", None));
-        ___qtablewidgetitem48 = self.tbe_ip.horizontalHeaderItem(4)
-        ___qtablewidgetitem48.setText(QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u8fde\u63a5\u6b21\u6570", None));
-        ___qtablewidgetitem49 = self.tbe_ip.horizontalHeaderItem(5)
-        ___qtablewidgetitem49.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
+        ___qtablewidgetitem35 = self.tbe_flow.horizontalHeaderItem(0)
+        ___qtablewidgetitem35.setText(QCoreApplication.translate("WndServer", u"ID", None));
+        ___qtablewidgetitem36 = self.tbe_flow.horizontalHeaderItem(1)
+        ___qtablewidgetitem36.setText(QCoreApplication.translate("WndServer", u"\u65e5\u671f", None));
+        ___qtablewidgetitem37 = self.tbe_flow.horizontalHeaderItem(2)
+        ___qtablewidgetitem37.setText(QCoreApplication.translate("WndServer", u"\u5929\u5361\u5145\u503c\u6570", None));
+        ___qtablewidgetitem38 = self.tbe_flow.horizontalHeaderItem(3)
+        ___qtablewidgetitem38.setText(QCoreApplication.translate("WndServer", u"\u5468\u5361\u5145\u503c\u6570", None));
+        ___qtablewidgetitem39 = self.tbe_flow.horizontalHeaderItem(4)
+        ___qtablewidgetitem39.setText(QCoreApplication.translate("WndServer", u"\u6708\u5361\u5145\u503c\u6570", None));
+        ___qtablewidgetitem40 = self.tbe_flow.horizontalHeaderItem(5)
+        ___qtablewidgetitem40.setText(QCoreApplication.translate("WndServer", u"\u5b63\u5361\u5145\u503c\u6570", None));
+        ___qtablewidgetitem41 = self.tbe_flow.horizontalHeaderItem(6)
+        ___qtablewidgetitem41.setText(QCoreApplication.translate("WndServer", u"\u5145\u503c\u7528\u6237\u6570", None));
+        ___qtablewidgetitem42 = self.tbe_flow.horizontalHeaderItem(7)
+        ___qtablewidgetitem42.setText(QCoreApplication.translate("WndServer", u"\u6d3b\u8dc3\u7528\u6237\u6570", None));
+        ___qtablewidgetitem43 = self.tbe_flow.horizontalHeaderItem(8)
+        ___qtablewidgetitem43.setText(QCoreApplication.translate("WndServer", u"\u5728\u7ebf\u7528\u6237\u6570", None));
+        ___qtablewidgetitem44 = self.tbe_flow.horizontalHeaderItem(9)
+        ___qtablewidgetitem44.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
+        ___qtablewidgetitem45 = self.tbe_ip.horizontalHeaderItem(0)
+        ___qtablewidgetitem45.setText(QCoreApplication.translate("WndServer", u"ID", None));
+        ___qtablewidgetitem46 = self.tbe_ip.horizontalHeaderItem(1)
+        ___qtablewidgetitem46.setText(QCoreApplication.translate("WndServer", u"IP\u5730\u5740", None));
+        ___qtablewidgetitem47 = self.tbe_ip.horizontalHeaderItem(2)
+        ___qtablewidgetitem47.setText(QCoreApplication.translate("WndServer", u"\u5f52\u5c5e\u5730", None));
+        ___qtablewidgetitem48 = self.tbe_ip.horizontalHeaderItem(3)
+        ___qtablewidgetitem48.setText(QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u8fde\u63a5\u65f6\u95f4", None));
+        ___qtablewidgetitem49 = self.tbe_ip.horizontalHeaderItem(4)
+        ___qtablewidgetitem49.setText(QCoreApplication.translate("WndServer", u"\u4eca\u65e5\u8fde\u63a5\u6b21\u6570", None));
+        ___qtablewidgetitem50 = self.tbe_ip.horizontalHeaderItem(5)
+        ___qtablewidgetitem50.setText(QCoreApplication.translate("WndServer", u"\u6700\u540e\u66f4\u65b0\u65f6\u95f4", None));
         self.label_14.setText(QCoreApplication.translate("WndServer", u"\u65e5\u5fd7\u5217\u8868", None))
         self.btn_ip_page_prev.setText(QCoreApplication.translate("WndServer", u"<", None))
         self.edt_ip_page_go.setText(QCoreApplication.translate("WndServer", u"0", None))

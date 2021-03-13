@@ -722,6 +722,11 @@
             </item>
             <item>
              <property name="text">
+              <string>上次登录版本</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
               <string>今日登录次数</string>
              </property>
             </item>
@@ -809,6 +814,11 @@
             <item>
              <property name="text">
               <string>上次登录IP</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>上次登录版本</string>
              </property>
             </item>
             <item>
@@ -1004,6 +1014,11 @@
           <column>
            <property name="text">
             <string>上次登录地</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>上次登录版本</string>
            </property>
           </column>
           <column>

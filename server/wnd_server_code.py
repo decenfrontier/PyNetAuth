@@ -34,8 +34,8 @@ cfg_server = {
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "3.1.0"
-mysql_host = "rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
+server_ver = "3.1.1"
+mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
@@ -216,8 +216,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_proj.setColumnWidth(last_update_time, 130)
         # 用户管理表
         id, account, comment, pwd, qq, state, heart_time, due_time, last_login_time, last_login_ip, \
-        last_login_place, today_login_count, today_unbind_count, machine_code, reg_time, \
-        pay_month, opration_system, action, last_update_time = [i for i in range(19)]
+        last_login_place, last_login_ver, today_login_count, today_unbind_count, machine_code, reg_time, \
+        pay_month, opration_system, action, last_update_time = [i for i in range(20)]
         self.tbe_user.setColumnWidth(id, 40)
         self.tbe_user.setColumnWidth(account, 80)
         self.tbe_user.setColumnWidth(comment, 50)
@@ -228,11 +228,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.tbe_user.setColumnWidth(due_time, 130)
         self.tbe_user.setColumnWidth(last_login_time, 130)
         self.tbe_user.setColumnWidth(last_login_place, 120)
+        self.tbe_user.setColumnWidth(last_login_ver, 90)
         self.tbe_user.setColumnWidth(machine_code, 180)
         self.tbe_user.setColumnWidth(reg_time, 130)
         self.tbe_user.setColumnWidth(reg_time, 130)
         self.tbe_user.setColumnWidth(opration_system, 180)
-        self.tbe_user.setColumnWidth(action, 60)
+        self.tbe_user.setColumnWidth(action, 70)
         self.tbe_user.setColumnWidth(last_update_time, 130)
         # 卡密管理表
         id, card_key, type, gen_time, export_time, use_time = [i for i in range(6)]
@@ -886,14 +887,15 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.tbe_user.setItem(row, 8, QTableWidgetItem(query_user["上次登录时间"]))
             self.tbe_user.setItem(row, 9, QTableWidgetItem(query_user["上次登录IP"]))
             self.tbe_user.setItem(row, 10, QTableWidgetItem(query_user["上次登录地"]))
-            self.tbe_user.setItem(row, 11, item_today_login_count)
-            self.tbe_user.setItem(row, 12, item_today_unbind_count)
-            self.tbe_user.setItem(row, 13, QTableWidgetItem(query_user["机器码"]))
-            self.tbe_user.setItem(row, 14, QTableWidgetItem(query_user["注册时间"]))
-            self.tbe_user.setItem(row, 15, item_pay_month)
-            self.tbe_user.setItem(row, 16, QTableWidgetItem(query_user["操作系统"]))
-            self.tbe_user.setItem(row, 17, QTableWidgetItem(query_user["用户行为"]))
-            self.tbe_user.setItem(row, 18, QTableWidgetItem(query_user["最后更新时间"]))
+            self.tbe_user.setItem(row, 11, QTableWidgetItem(query_user["上次登录版本"]))
+            self.tbe_user.setItem(row, 12, item_today_login_count)
+            self.tbe_user.setItem(row, 13, item_today_unbind_count)
+            self.tbe_user.setItem(row, 14, QTableWidgetItem(query_user["机器码"]))
+            self.tbe_user.setItem(row, 15, QTableWidgetItem(query_user["注册时间"]))
+            self.tbe_user.setItem(row, 16, item_pay_month)
+            self.tbe_user.setItem(row, 17, QTableWidgetItem(query_user["操作系统"]))
+            self.tbe_user.setItem(row, 18, QTableWidgetItem(query_user["用户行为"]))
+            self.tbe_user.setItem(row, 19, QTableWidgetItem(query_user["最后更新时间"]))
         self.tbe_user.setSortingEnabled(True)  # 更新完毕后再打开自动排序
 
     def refresh_tbe_card(self, query_card_list: list):
@@ -1225,6 +1227,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                     update_dict["机器码"] = client_content_dict["机器码"]
                     update_dict["上次登录时间"] = cur_time_fmt
                     update_dict["上次登录IP"] = ip
+                    update_dict["上次登录版本"] = client_content_dict["上次登录版本"]
                     # 返回到期时间给用户
                     due_time = query_user["到期时间"]
                     detail = str(due_time)

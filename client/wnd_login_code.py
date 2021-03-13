@@ -309,6 +309,7 @@ class WndLogin(QDialog, Ui_WndLogin):
                 "机器码": lib.machine_code,
                 "操作系统": login_system,
                 "用户行为": lib.action_code,
+                "上次登录版本": lib.client_ver,
             }
         }
         # 发送客户端消息

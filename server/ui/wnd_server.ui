@@ -49,7 +49,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page_proj">
        <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -322,26 +322,6 @@
                <item row="2" column="2">
                 <widget class="QLineEdit" name="edt_proj_pay_gift_day"/>
                </item>
-               <item row="2" column="3">
-                <widget class="QLabel" name="label_12">
-                 <property name="text">
-                  <string>解绑扣除小时</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="4">
-                <widget class="QLineEdit" name="edt_proj_unbind_sub_hour"/>
-               </item>
-               <item row="2" column="5">
-                <widget class="QLabel" name="label_11">
-                 <property name="text">
-                  <string>免费解绑次数</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="6">
-                <widget class="QLineEdit" name="edt_proj_free_unbind_count"/>
-               </item>
                <item row="3" column="0">
                 <widget class="QLabel" name="label_3">
                  <property name="text">
@@ -365,17 +345,34 @@
                  </property>
                 </spacer>
                </item>
-               <item row="5" column="5" colspan="2">
-                <widget class="QPushButton" name="btn_cfg_save">
+               <item row="2" column="3">
+                <widget class="QCheckBox" name="chk_additional_gift">
                  <property name="text">
-                  <string>保存配置</string>
+                  <string>额外赠送 累计充值月数 * </string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="3" colspan="2">
+               <item row="2" column="6">
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>天 </string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="4" colspan="2">
+                <widget class="QLineEdit" name="edt_addtional_gift"/>
+               </item>
+               <item row="5" column="3">
                 <widget class="QPushButton" name="btn_cfg_read">
                  <property name="text">
                   <string>读取配置</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="4" colspan="3">
+                <widget class="QPushButton" name="btn_cfg_save">
+                 <property name="text">
+                  <string>保存配置</string>
                  </property>
                 </widget>
                </item>
@@ -918,7 +915,7 @@
            <number>26</number>
           </property>
           <attribute name="horizontalHeaderVisible">
-           <bool>true</bool>
+           <bool>false</bool>
           </attribute>
           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
            <bool>true</bool>

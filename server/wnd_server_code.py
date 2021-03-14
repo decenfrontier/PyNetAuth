@@ -29,7 +29,7 @@ PATH_LOG_INFO = "\\".join([DIR_LOG, "info.log"])
 PATH_LOG_WARN = "\\".join([DIR_LOG, "warn.log"])
 cfg_server = {
     "更新网址": "www.baidu.com", "发卡网址": "www.bilibili.com", "充值赠送天数": 0,
-    "免费解绑次数": 0, "解绑扣除小时": 0, "客户端公告": "", "最新客户端版本": "0.0.0",
+    "额外赠送": True, "额外赠送倍率": 3, "客户端公告": "", "最新客户端版本": "0.0.0",
 }
 
 server_ip = "0.0.0.0"
@@ -101,8 +101,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.edt_proj_url_update.setText(cfg_server["更新网址"])
         self.edt_proj_url_card.setText(cfg_server["发卡网址"])
         self.edt_proj_pay_gift_day.setText(str(cfg_server["充值赠送天数"]))
-        self.edt_proj_unbind_sub_hour.setText(str(cfg_server["解绑扣除小时"]))
-        self.edt_proj_free_unbind_count.setText(str(cfg_server["免费解绑次数"]))
+        self.chk_additional_gift.setChecked(cfg_server["额外赠送"])
+        self.edt_addtional_gift.setText(str(cfg_server["额外赠送倍率"]))
         self.tedt_proj_public_notice.setPlainText(cfg_server["客户端公告"])
         self.lbe_latest_ver.setText(cfg_server["最新客户端版本"])
 
@@ -112,8 +112,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         cfg_server["发卡网址"] = self.edt_proj_url_card.text()
         cfg_server["更新网址"] = self.edt_proj_url_update.text()
         cfg_server["充值赠送天数"] = int(self.edt_proj_pay_gift_day.text())
-        cfg_server["免费解绑次数"] = int(self.edt_proj_free_unbind_count.text())
-        cfg_server["解绑扣除小时"] = int(self.edt_proj_unbind_sub_hour.text())
+        cfg_server["额外赠送"] = self.chk_additional_gift.isChecked()
+        cfg_server["额外赠送倍率"] = int(self.edt_addtional_gift.text())
         cfg_server["客户端公告"] = self.tedt_proj_public_notice.toPlainText()
         cfg_server["最新客户端版本"] = self.lbe_latest_ver.text()
 
@@ -1259,24 +1259,33 @@ class WndServer(QMainWindow, Ui_WndServer):
         card_key = client_content_dict["卡号"]
         ret = False
 
-        if self.is_record_exist("2用户管理", "账号=%s", account):  # 账号存在
+        query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)
+        if query_user_list:  # 账号存在
+            query_user = query_user_list[0]
             query_card_list = self.sql_table_query_ex("3卡密管理", {"卡号": card_key})  # 查询数据库, 判断卡密是否存在
             if query_card_list:
                 query_card = query_card_list[0]
                 if not query_card["使用时间"]:  # 卡密未被使用
-                    # 更新账号到期时间
+                    # 根据卡类型计算基础天数
                     type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 90, "年卡": 365, "永久卡": 3650}
                     card_type = query_card["卡类型"]
-                    delta_day = type_time_dict[card_type]
-                    # 再加上充值赠送天数
-                    delta_day += (delta_day // 30) * cfg_server["充值赠送天数"]
-                    log.info(f"[充值] 账号: {account}增加天数{delta_day}")
+                    base_day = type_time_dict[card_type]
+                    # 充值赠送天数
+                    additional_day1 = (base_day // 30) * cfg_server["充值赠送天数"]
+                    # 额外赠送天数
+                    additional_day2 = query_user["充值月数"] * cfg_server["额外赠送倍率"]
+                    # 计算总共增加天数
+                    additional_day = additional_day1 + additional_day2
+                    if additional_day > base_day:
+                        additional_day = base_day
+                    delta_day = base_day + additional_day
+                    log.info(f"[充值] 账号: {account}, 充值{card_type}, 增加天数{delta_day}")
                     # 若到期时间大于当前时间, 则从到期时间开始加, 否则从当前时间开始加
                     ret = self.sql_table_update(
                         "update 2用户管理 set 到期时间 = if(到期时间 < now(), date_add(now(), interval %s day), "
                         "date_add(到期时间, interval %s day)) where 账号=%s;", delta_day, delta_day, account)
                     if ret:
-                        due_time = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)[0]["到期时间"]
+                        due_time = self.sql_table_query("select 到期时间 from 2用户管理 where 账号=%s;", account)[0]["到期时间"]
                         detail = f"充值成功, 到期时间: {due_time}"
                         # 更新卡密表-使用时间
                         self.sql_table_update("update 3卡密管理 set 使用时间=%s where 卡号=%s;", cur_time_fmt, card_key)
@@ -1285,7 +1294,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                         self.sql_table_update(f"update 5每日流水 set 充值用户数=充值用户数+1, {card_pay_num}={card_pay_num}+1 "
                                               f"where 日期='{today}';")
                         # 更新用户表-充值月数
-                        add_month = delta_day // 30
+                        add_month = base_day // 30
                         self.sql_table_update("update 2用户管理 set 充值月数=充值月数+%s where 账号=%s", add_month, account)
                     else:
                         detail = "充值失败, 数据库异常"

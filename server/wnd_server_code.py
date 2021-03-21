@@ -34,8 +34,8 @@ cfg_server = {
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "3.1.1"
-mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
+server_ver = "3.1.4"
+mysql_host = "rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
@@ -875,7 +875,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             item_today_unbind_count = QTableWidgetItem()
             item_today_unbind_count.setData(Qt.DisplayRole, query_user["今日解绑次数"])
             item_pay_month = QTableWidgetItem()
-            item_pay_month.setData(Qt.DisplayRole, query_user["充值月数"])
+            item_pay_month.setData(Qt.DisplayRole, query_user["累计充值月数"])
             self.tbe_user.setItem(row, 0, item_id)
             self.tbe_user.setItem(row, 1, QTableWidgetItem(query_user["账号"]))
             self.tbe_user.setItem(row, 2, QTableWidgetItem(query_user["备注"]))
@@ -1273,7 +1273,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                     # 充值赠送天数
                     additional_day1 = (base_day // 30) * cfg_server["充值赠送天数"]
                     # 额外赠送天数
-                    additional_day2 = query_user["充值月数"] * cfg_server["额外赠送倍率"]
+                    additional_day2 = (base_day // 30) * query_user["累计充值月数"] * cfg_server["额外赠送倍率"]
                     # 计算总共增加天数
                     additional_day = additional_day1 + additional_day2
                     if additional_day > base_day:
@@ -1293,9 +1293,9 @@ class WndServer(QMainWindow, Ui_WndServer):
                         card_pay_num = card_type + "充值数"
                         self.sql_table_update(f"update 5每日流水 set 充值用户数=充值用户数+1, {card_pay_num}={card_pay_num}+1 "
                                               f"where 日期='{today}';")
-                        # 更新用户表-充值月数
+                        # 更新用户表-累计充值月数
                         add_month = base_day // 30
-                        self.sql_table_update("update 2用户管理 set 充值月数=充值月数+%s where 账号=%s", add_month, account)
+                        self.sql_table_update("update 2用户管理 set 累计充值月数=累计充值月数+%s where 账号=%s", add_month, account)
                     else:
                         detail = "充值失败, 数据库异常"
                 else:

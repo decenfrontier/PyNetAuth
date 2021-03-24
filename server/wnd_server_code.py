@@ -34,7 +34,7 @@ cfg_server = {
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "3.1.4"
+server_ver = "3.1.5"
 mysql_host = "rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
@@ -1234,7 +1234,8 @@ class WndServer(QMainWindow, Ui_WndServer):
                     # 用户若是第一次登录, 重新计算到期时间
                     if query_user["状态"] == "":  # 新到期时间 = 到期时间 + (现在时间 - 注册时间)
                         self.sql_table_update(
-                            "update 2用户管理 set 到期时间=date_add(到期时间, interval timestampdiff(minute, 注册时间, now()) minute);")
+                            "update 2用户管理 set 到期时间=date_add(到期时间, interval timestampdiff(minute, 注册时间, now()) minute) "
+                            "where 账号=%s;", account)
                 else:
                     detail = "登录失败, 异机登录请先解绑"
             else:

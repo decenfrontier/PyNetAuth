@@ -34,8 +34,8 @@ cfg_server = {
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "3.1.6"
-mysql_host = "rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
+server_ver = "3.1.8"
+mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
@@ -49,6 +49,9 @@ action_code_dict = {
 }
 
 code_action_dict = {v: k for k, v in action_code_dict.items()}
+
+TBE_USER_ACCOUNT = 1
+TBE_USER_STATE = 5
 
 
 class Log():
@@ -296,9 +299,8 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.action_user_state_sel = QAction("设置选中用户状态")  # 二级菜单
         self.action_user_del_sel = QAction("删除选中用户")
         # --------------------------------------------------------
-        self.action_user_frozen_ip = QAction("冻结指定IP下的所有用户")
-        self.action_user_frozen_sel = QAction("冻结选中用户")
-        self.action_user_unfrozen_sel = QAction("解冻选中用户")
+        self.action_user_frozen_sel = QAction("冻结该用户")
+        self.action_user_unfrozen_sel = QAction("解冻该用户")
         # --------------------------------------------------------
         self.action_user_charge_sel = QAction("续费选中用户")
         self.action_user_charge_all = QAction("续费全部用户")
@@ -308,19 +310,20 @@ class WndServer(QMainWindow, Ui_WndServer):
                                        self.action_user_state_sel,
                                        self.action_user_del_sel])
         self.menu_tbe_user.addSeparator()
-        self.menu_tbe_user.addActions([self.action_user_frozen_ip,
-                                       self.action_user_frozen_sel,
+        self.menu_tbe_user.addActions([self.action_user_frozen_sel,
                                        self.action_user_unfrozen_sel])
         self.menu_tbe_user.addSeparator()
         self.menu_tbe_user.addActions([self.action_user_charge_sel,
                                        self.action_user_charge_all])
         self.menu_tbe_user.addSeparator()
         self.menu_tbe_user.addAction(self.action_user_ip_location)
+
         self.action_user_comment_sel.triggered.connect(self.on_action_user_comment_sel_triggered)
         self.action_user_del_sel.triggered.connect(self.on_action_user_del_sel_triggered)
-        self.action_user_frozen_ip.triggered.connect(self.on_action_user_frozen_ip_triggered)
+
         self.action_user_frozen_sel.triggered.connect(self.on_action_user_frozen_sel_triggered)
         self.action_user_unfrozen_sel.triggered.connect(self.on_action_user_unfrozen_sel_triggered)
+
         self.action_user_charge_sel.triggered.connect(self.on_action_user_charge_sel_triggered)
         self.action_user_charge_all.triggered.connect(self.on_action_user_charge_all_triggered)
         self.action_user_ip_location.triggered.connect(self.update_ip_location)
@@ -643,42 +646,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info(f"{num}个用户备注成功")
         self.show_page_tbe(self.tbe_user)
 
-    def on_action_user_frozen_ip_triggered(self):
-        frozen_ip, ok_pressed = QInputDialog.getText(self, "冻结IP下的所有账号", "IP:", QLineEdit.Normal)
-        if not ok_pressed or not frozen_ip:
-            return
-        num = self.sql_table_update(f"update 2用户管理 set 状态='冻结', 备注='冻结IP下的所有账号' where 上次登录IP='{frozen_ip}';")
-        self.show_info(f"{num}个用户冻结IP成功")
-        self.show_page_tbe(self.tbe_user)
-
-    def on_action_user_frozen_sel_triggered(self):
-        item_list = self.tbe_user.selectedItems()
-        account_set = {self.tbe_user.item(it.row(), 1).text() for it in item_list}
-        if not account_set:
-            return
-        comment, ok_pressed = QInputDialog.getText(self, "冻结", "备注原因:", QLineEdit.Normal)
-        if not ok_pressed:
-            return
-        accounts = "','".join(account_set)
-        num = self.sql_table_update(f"update 2用户管理 set 状态='冻结', 备注='{comment}' where 账号 in ('{accounts}');")
-        self.show_info(f"{num}个账号冻结成功")
-        self.show_page_tbe(self.tbe_user)
-
-    def on_action_user_unfrozen_sel_triggered(self):
-        item_list = self.tbe_user.selectedItems()
-        account_set = {self.tbe_user.item(it.row(), 1).text() for it in item_list
-                       if self.tbe_user.item(it.row(), 4).text() == "冻结"}
-        if not account_set:
-            return
-        ret = QMessageBox.information(self, "提示", "确定解冻选中账号?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-        if ret != QMessageBox.Yes:
-            return
-        accounts = "','".join(account_set)
-        # 解冻时备注应加天数
-        num = self.sql_table_update(f"update 2用户管理 set 状态='离线', 备注=datediff(到期时间, 心跳时间) where 账号 in ('{accounts}');")
-        self.show_info(f"{num}个账号解冻成功")
-        self.show_page_tbe(self.tbe_user)
-
     def on_action_user_charge_sel_triggered(self):
         item_list = self.tbe_user.selectedItems()
         account_set = {self.tbe_user.item(it.row(), 1).text() for it in item_list}
@@ -720,6 +687,40 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info(f"{num}个用户删除成功")
         self.show_page_tbe(self.tbe_user)
 
+
+    def on_action_user_frozen_sel_triggered(self):
+        ret = QMessageBox.information(self, "提示", "确定冻结该账号?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if ret != QMessageBox.Yes:
+            return
+        cur_item = self.tbe_user.currentItem()
+        row = cur_item.row()
+        account = self.tbe_user.item(row, TBE_USER_ACCOUNT).text()
+        num = self.sql_table_update("update 2用户管理 set 状态=%s where 账号=%s;", "冻结", account)
+        self.show_info(f"{num}个用户冻结成功")
+        self.show_page_tbe(self.tbe_user)
+
+
+    def on_action_user_unfrozen_sel_triggered(self):
+        ret = QMessageBox.information(self, "提示", "确定解冻该账号?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if ret != QMessageBox.Yes:
+            return
+        cur_item = self.tbe_user.currentItem()
+        row = cur_item.row()
+        account = self.tbe_user.item(row, TBE_USER_ACCOUNT).text()
+        state = self.tbe_user.item(row, TBE_USER_STATE).text()
+        if state != "冻结":
+            self.show_info("解冻失败, 该账号未被冻结")
+            return
+        # 若账号已到期, 则 到期时间=现在时间+(到期时间-心跳时间),
+        # 若账号未到期, 则 到期时间=到期时间+(现在时间-心跳时间)
+        num = self.sql_table_update("update 2用户管理 set 状态=%s, 到期时间 = if(到期时间 < now(), "
+                                    "date_add(now(), interval hour(timediff(到期时间, 心跳时间)) hour), "
+                                    "date_add(到期时间, interval hour(timediff(now(), 心跳时间)) hour)) where 账号=%s;",
+                                    "离线", account)
+        self.show_info(f"{num}个用户解冻成功")
+        self.show_page_tbe(self.tbe_user)
+
+
     def on_action_user_state_triggered(self):
         state = self.sender().text()
         item_list = self.tbe_user.selectedItems()
@@ -731,10 +732,12 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.show_info(f"{num}个用户设置状态 {state} 成功")
         self.show_page_tbe(self.tbe_user)
 
+
     def on_action_card_show_unuse_triggered(self):
         query_card_list = self.sql_table_query("select * from 3卡密管理 where 使用时间 is null;")
         self.refresh_tbe_card(query_card_list)
         self.show_info("已显示未使用卡密")
+
 
     def on_action_card_show_export_triggered(self):
         query_card_list = self.sql_table_query("select * from 3卡密管理 where 导出时间 is not null;")

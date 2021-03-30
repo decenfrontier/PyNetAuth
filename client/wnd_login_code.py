@@ -245,18 +245,18 @@ class WndLogin(QDialog, Ui_WndLogin):
             QMessageBox.information(self, "错误", "服务器繁忙, 请稍后再试2")
             return False
         if msg_type == "锟斤拷":
-            if server_content_dict["结果"]:
-                detail_dict = server_content_dict["详情"]
-                lib.notice = detail_dict["客户端公告"]
-                lib.url_update = detail_dict["更新网址"]
-                lib.url_card = detail_dict["发卡网址"]
-                lib.allow_login = detail_dict["允许登录"]
-                lib.allow_reg = detail_dict["允许注册"]
-                lib.allow_unbind = detail_dict["允许解绑"]
-                lib.latest_ver = detail_dict["最新客户端版本"]
+            detail_dict = server_content_dict["详情"]
+            lib.notice = detail_dict["客户端公告"]
+            lib.url_update = detail_dict["更新网址"]
+            lib.url_card = detail_dict["发卡网址"]
+            lib.allow_login = detail_dict["允许登录"]
+            lib.allow_reg = detail_dict["允许注册"]
+            lib.allow_unbind = detail_dict["允许解绑"]
+            lib.latest_ver = detail_dict["最新客户端版本"]
+            if lib.allow_login:
                 return True
             else:
-                detail = server_content_dict["详情"]
+                detail = "当前版本过低无法使用, 请更新"
                 ret = QMessageBox.information(self, "错误", detail, QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
                 if ret == QMessageBox.Yes:
                     webbrowser.open(lib.url_update)

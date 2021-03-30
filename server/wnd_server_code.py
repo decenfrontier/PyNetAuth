@@ -34,7 +34,7 @@ cfg_server = {
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "3.1.5"
+server_ver = "3.1.6"
 mysql_host = "rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
@@ -1124,11 +1124,9 @@ class WndServer(QMainWindow, Ui_WndServer):
     def deal_proj(self, client_socket: socket.socket, client_content_dict: dict):
         ip = client_socket.getpeername()
         log.info(f"[项目] 正在处理IP: {ip}")
-
         client_ver = client_content_dict["版本号"]
         query_proj_list = self.sql_table_query("select * from 1项目管理 where 客户端版本=%s;", client_ver)
         if query_proj_list:
-            ret = True
             query_proj = query_proj_list[0]
             detail = {
                 "允许登录": query_proj["允许登录"],
@@ -1140,11 +1138,18 @@ class WndServer(QMainWindow, Ui_WndServer):
                 "最新客户端版本": cfg_server["最新客户端版本"],
             }
         else:
-            ret = False
-            detail = "客户端版本过低, 请下载最新版本"
+            detail = {
+                "允许登录": False,
+                "允许注册": False,
+                "允许解绑": False,
+                "客户端公告": cfg_server["客户端公告"],
+                "更新网址": cfg_server["更新网址"],
+                "发卡网址": cfg_server["发卡网址"],
+                "最新客户端版本": cfg_server["最新客户端版本"],
+            }
         # 把处理_项目数据结果整理成py字典, 并发送给客户端
         server_info_dict = {"消息类型": "锟斤拷",
-                            "内容": {"结果": ret, "详情": detail}}
+                            "内容": {"结果": True, "详情": detail}}
         self.send_to_client(client_socket, server_info_dict)
 
     # 处理_自定义数据1
@@ -1212,8 +1217,8 @@ class WndServer(QMainWindow, Ui_WndServer):
                            "用户行为": action}
             if query_user["状态"] == "冻结":
                 detail = "登录失败, 此账号已冻结"
-            elif query_user["状态"] == "在线":
-                detail = "登录失败, 此账号在线中, 请10分钟后再试"
+            # elif query_user["状态"] == "在线":
+            #     detail = "登录失败, 此账号在线中, 请10分钟后再试"
             elif cur_time_fmt > str(query_user["到期时间"]):
                 detail = "登录失败, 此账号已到期"
             elif action != "正常":

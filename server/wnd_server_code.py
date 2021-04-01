@@ -34,8 +34,8 @@ cfg_server = {
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "3.1.9"
-mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
+server_ver = "3.2.2"
+mysql_host = "rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
@@ -1237,14 +1237,14 @@ class WndServer(QMainWindow, Ui_WndServer):
             update_dict = {"今日登录次数": query_user["今日登录次数"] + 1,
                            "操作系统": client_content_dict["操作系统"],
                            "用户行为": action}
-            if query_user["状态"] == "冻结":
-                detail = "登录失败, 此账号已冻结"
-            elif cur_time_fmt > str(query_user["到期时间"]):
-                detail = "登录失败, 此账号已到期"
-            elif action != "正常":
+            if action != "正常":
                 update_dict["状态"] = "冻结"
                 detail = "登录失败, What's Your Problem?"
                 log.warn(f"[登录Warn] 账号:{account} {ip} {action}, 自动冻结")
+            elif query_user["状态"] == "冻结":
+                detail = "登录失败, 此账号已冻结"
+            elif cur_time_fmt > str(query_user["到期时间"]):
+                detail = "登录失败, 此账号已到期"
             elif pwd == query_user["密码"]:  # 判断密码是否符合
                 if query_user["机器码"] in (machine_code, ""):  # 判断机器码是否符合
                     ret = True
@@ -1439,13 +1439,17 @@ class WndServer(QMainWindow, Ui_WndServer):
             query_user = query_user_list[0]
             if query_user["机器码"] == "":  # 若原本就没绑定机器
                 detail = "无需解绑, 此账号未绑定机器"
-            # elif query_user["状态"] == "在线":
-            #     detail = "解绑失败, 此账号在线中, 请10分钟后再试"
             elif query_user["状态"] == "冻结":
                 detail = "解绑失败, 此账号已冻结, 无法解绑"
+            elif query_user["今日解绑次数"] > 4:
+                detail = "解绑失败, 今日解绑次数>4"
             elif pwd == query_user["密码"]:  # 密码正确, 把机器码置为空
-                ret = self.sql_table_update("update 2用户管理 set 机器码='', 今日解绑次数=今日解绑次数+1 where 账号=%s;", account)
-                detail = "解绑成功" if ret else "解绑失败, 数据库异常"
+                num = self.sql_table_update("update 2用户管理 set 机器码='', 今日解绑次数=今日解绑次数+1 where 账号=%s;", account)
+                if num:
+                    ret = True
+                    detail = "解绑成功"
+                else:
+                    detail = "解绑失败, 数据库异常"
             else:
                 detail = "解绑失败, 密码错误"
         else:

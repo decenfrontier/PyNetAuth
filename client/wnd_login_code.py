@@ -248,7 +248,6 @@ class WndLogin(QDialog, Ui_WndLogin):
             detail_dict = server_content_dict["详情"]
             lib.notice = detail_dict["客户端公告"]
             lib.url_update = detail_dict["更新网址"]
-            lib.url_card = detail_dict["发卡网址"]
             lib.allow_login = detail_dict["允许登录"]
             lib.allow_reg = detail_dict["允许注册"]
             lib.allow_unbind = detail_dict["允许解绑"]
@@ -554,18 +553,14 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.btn_login.setEnabled(lib.allow_login)
         self.btn_reg.setEnabled(lib.allow_reg)
         self.btn_unbind.setEnabled(lib.allow_unbind)
-        # 充值页
-        self.lbe_pay_key.setText("<a href={}>充值卡: </a>".format(lib.url_card))
         # 公告页
         self.lbe_notice.setText("<a href={}>公 告</a>".format(lib.url_update))
         self.lbe_notice_text.setText(lib.notice)
-
         # 初始化json文件
         if not os.path.exists(lib.PATH_JSON_LOGIN):
             lib.log.info("自动创建登录界面配置文件")
             lib.dict_to_json_file(lib.cfg_login, lib.PATH_JSON_LOGIN)
         lib.log.info("初始化配置文件完成")
-
         # 系统注册组件
         ret = lib.reg_com_to_system(lib.COM_NAME_TR)
         lib.log.info("系统注册组件结果: {}".format(ret))

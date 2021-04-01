@@ -28,14 +28,14 @@ DIR_LOG = "\\".join([DIR_SAVE, "log"])
 PATH_LOG_INFO = "\\".join([DIR_LOG, "info.log"])
 PATH_LOG_WARN = "\\".join([DIR_LOG, "warn.log"])
 cfg_server = {
-    "更新网址": "www.baidu.com", "发卡网址": "www.qq.com", "充值赠送天数": 0,
+    "更新网址": "www.baidu.com", "充值赠送天数": 0, "注册赠送天数": 0, "推荐人赠送天数": 0,
     "额外赠送": True, "额外赠送倍率": 3, "客户端公告": "", "最新客户端版本": "0.0.0",
 }
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "3.2.2"
-mysql_host = "rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
+server_ver = "3.2.3"
+mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
@@ -102,23 +102,24 @@ class WndServer(QMainWindow, Ui_WndServer):
         cfg_server.update(cfg_load)
 
         self.edt_proj_url_update.setText(cfg_server["更新网址"])
-        self.edt_proj_url_card.setText(cfg_server["发卡网址"])
         self.edt_proj_pay_gift_day.setText(str(cfg_server["充值赠送天数"]))
         self.chk_additional_gift.setChecked(cfg_server["额外赠送"])
         self.edt_addtional_gift.setText(str(cfg_server["额外赠送倍率"]))
         self.tedt_proj_public_notice.setPlainText(cfg_server["客户端公告"])
         self.lbe_latest_ver.setText(cfg_server["最新客户端版本"])
-
+        self.edt_proj_reg_gift_day.setText(str(cfg_server["注册赠送天数"]))
+        self.edt_proj_recmd_gift_day.setText(str(cfg_server["推荐人赠送天数"]))
 
     # 写入配置
     def cfg_write(self):
-        cfg_server["发卡网址"] = self.edt_proj_url_card.text()
         cfg_server["更新网址"] = self.edt_proj_url_update.text()
         cfg_server["充值赠送天数"] = int(self.edt_proj_pay_gift_day.text())
         cfg_server["额外赠送"] = self.chk_additional_gift.isChecked()
         cfg_server["额外赠送倍率"] = int(self.edt_addtional_gift.text())
         cfg_server["客户端公告"] = self.tedt_proj_public_notice.toPlainText()
         cfg_server["最新客户端版本"] = self.lbe_latest_ver.text()
+        cfg_server["注册赠送天数"] = int(self.edt_proj_reg_gift_day.text())
+        cfg_server["推荐人赠送天数"] = int(self.edt_proj_recmd_gift_day.text())
 
         num = self.sql_table_update_ex("7项目配置", cfg_server, {"id": 1})
         log.info(f"配置保存结果:{num}")
@@ -1136,7 +1137,6 @@ class WndServer(QMainWindow, Ui_WndServer):
                 "允许解绑": query_proj["允许解绑"],
                 "客户端公告": cfg_server["客户端公告"],
                 "更新网址": cfg_server["更新网址"],
-                "发卡网址": cfg_server["发卡网址"],
                 "最新客户端版本": cfg_server["最新客户端版本"],
             }
         else:
@@ -1146,7 +1146,6 @@ class WndServer(QMainWindow, Ui_WndServer):
                 "允许解绑": False,
                 "客户端公告": cfg_server["客户端公告"],
                 "更新网址": cfg_server["更新网址"],
-                "发卡网址": cfg_server["发卡网址"],
                 "最新客户端版本": cfg_server["最新客户端版本"],
             }
         # 把处理_项目数据结果整理成py字典, 并发送给客户端
@@ -1183,29 +1182,44 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"[注册] 正在处理账号: {account}")
         ret = False
 
-        locker = QMutexLocker(mutex)  # 处理用户充值时要互斥
+        locker = QMutexLocker(mutex)  # 处理用户注册时要互斥
         if not self.is_record_exist("2用户管理", "账号=%s", account):
             query_card_list = self.sql_table_query_ex("3卡密管理", {"卡号": card_key})  # 查询数据库, 判断卡密是否存在
             if query_card_list:
                 query_card = query_card_list[0]
                 if not query_card["使用时间"]:  # 卡密未被使用
+                    reg_gift_day = cfg_server["注册赠送天数"]
+                    recmd_gift_day = cfg_server["推荐人赠送天数"]
                     # 根据卡类型计算基础天数
                     type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 90, "年卡": 365, "永久卡": 3650}
                     card_type = query_card["卡类型"]
                     base_day = type_time_dict[card_type]
-                    delta_day = base_day + (base_day // 30) * 2  # 新用户加的天数 = 卡密天数 + 2*卡密月数
+                    # 充值30天以上, 再加上注册赠送天数
+                    delta_day = base_day if base_day < 30 else base_day + reg_gift_day
                     cur_date = datetime.datetime.now()
                     offset = datetime.timedelta(days=delta_day)
-                    due_date = (cur_date+offset).strftime("%Y-%m-%d %H:%M:%S")
-                    print("注册后的到期时间:", due_date)
+                    due_date = (cur_date + offset).strftime("%Y-%m-%d %H:%M:%S")
                     client_content_dict["注册时间"] = cur_time_fmt
                     client_content_dict["到期时间"] = due_date
                     num = self.sql_table_insert_ex("2用户管理", client_content_dict)
-                    detail = "注册成功" if num else "注册失败, 数据库异常"
-                    if recmd_account != account and base_day >= 30:  # 推荐人账号和新用户账号不同, 且 卡密天数 >= 30
-                        num = self.sql_table_update("update 2用户管理 set 到期时间=date_add(到期时间, interval 5 day) where 账号=%s;",
-                                                  recmd_account);
-                        log.info(f"推荐人账号{recmd_account}充值结果: {num}")
+                    if num:
+                        ret, detail = True, "注册成功"
+                        # 更新卡密表-使用时间
+                        self.sql_table_update("update 3卡密管理 set 使用时间=%s where 卡号=%s;", cur_time_fmt, card_key)
+                        # 更新流水表-充值用户数
+                        card_pay_num = card_type + "充值数"
+                        self.sql_table_update(f"update 5每日流水 set 充值用户数=充值用户数+1, {card_pay_num}={card_pay_num}+1 "
+                                              f"where 日期='{today}';")
+                        # 更新用户表-累计充值月数
+                        add_month = base_day // 30
+                        self.sql_table_update("update 2用户管理 set 累计充值月数=累计充值月数+%s where 账号=%s", add_month, account)
+                        # 给推荐人加时间
+                        if recmd_account != account and base_day >= 30:  # 推荐人账号和新用户账号不同, 且 卡密天数 >= 30
+                            num = self.sql_table_update("update 2用户管理 set 到期时间=date_add(到期时间, interval %s day) "
+                                                        "where 账号=%s;", recmd_gift_day, recmd_account);
+                            log.info(f"推荐人账号{recmd_account}充值结果: {num}")
+                    else:
+                        detail = "注册失败, 数据库异常"
                 else:
                     detail = "注册失败, 充值卡已被使用!"
             else:
@@ -1286,6 +1300,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         card_key = client_content_dict["卡号"]
         ret = False
 
+        locker = QMutexLocker(mutex)  # 处理用户充值时要互斥
         query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)
         if query_user_list:  # 账号存在
             query_user = query_user_list[0]

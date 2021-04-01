@@ -120,6 +120,22 @@ class Ui_WndServer(object):
         self.groupBox_5.setObjectName(u"groupBox_5")
         self.gridLayout_2 = QGridLayout(self.groupBox_5)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.label = QLabel(self.groupBox_5)
+        self.label.setObjectName(u"label")
+
+        self.gridLayout_2.addWidget(self.label, 1, 0, 1, 1)
+
+        self.btn_proj_confirm = QPushButton(self.groupBox_5)
+        self.btn_proj_confirm.setObjectName(u"btn_proj_confirm")
+        self.btn_proj_confirm.setMinimumSize(QSize(120, 0))
+
+        self.gridLayout_2.addWidget(self.btn_proj_confirm, 1, 2, 1, 1)
+
+        self.edt_proj_client_ver = QLineEdit(self.groupBox_5)
+        self.edt_proj_client_ver.setObjectName(u"edt_proj_client_ver")
+
+        self.gridLayout_2.addWidget(self.edt_proj_client_ver, 1, 1, 1, 1)
+
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.chk_proj_login = QCheckBox(self.groupBox_5)
@@ -143,22 +159,6 @@ class Ui_WndServer(object):
 
         self.gridLayout_2.addLayout(self.horizontalLayout_6, 0, 0, 1, 3)
 
-        self.label = QLabel(self.groupBox_5)
-        self.label.setObjectName(u"label")
-
-        self.gridLayout_2.addWidget(self.label, 1, 0, 1, 1)
-
-        self.edt_proj_client_ver = QLineEdit(self.groupBox_5)
-        self.edt_proj_client_ver.setObjectName(u"edt_proj_client_ver")
-
-        self.gridLayout_2.addWidget(self.edt_proj_client_ver, 1, 1, 1, 1)
-
-        self.btn_proj_confirm = QPushButton(self.groupBox_5)
-        self.btn_proj_confirm.setObjectName(u"btn_proj_confirm")
-        self.btn_proj_confirm.setMinimumSize(QSize(120, 0))
-
-        self.gridLayout_2.addWidget(self.btn_proj_confirm, 1, 2, 1, 1)
-
 
         self.verticalLayout_6.addWidget(self.groupBox_5)
 
@@ -166,74 +166,87 @@ class Ui_WndServer(object):
         self.groupBox.setObjectName(u"groupBox")
         self.gridLayout_3 = QGridLayout(self.groupBox)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.label_5 = QLabel(self.groupBox)
-        self.label_5.setObjectName(u"label_5")
+        self.edt_proj_pay_gift_day = QLineEdit(self.groupBox)
+        self.edt_proj_pay_gift_day.setObjectName(u"edt_proj_pay_gift_day")
 
-        self.gridLayout_3.addWidget(self.label_5, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.edt_proj_pay_gift_day, 3, 2, 1, 1)
 
         self.edt_proj_url_update = QLineEdit(self.groupBox)
         self.edt_proj_url_update.setObjectName(u"edt_proj_url_update")
 
         self.gridLayout_3.addWidget(self.edt_proj_url_update, 0, 1, 1, 6)
 
-        self.label_6 = QLabel(self.groupBox)
-        self.label_6.setObjectName(u"label_6")
-
-        self.gridLayout_3.addWidget(self.label_6, 1, 0, 1, 1)
-
-        self.edt_proj_url_card = QLineEdit(self.groupBox)
-        self.edt_proj_url_card.setObjectName(u"edt_proj_url_card")
-
-        self.gridLayout_3.addWidget(self.edt_proj_url_card, 1, 1, 1, 6)
-
         self.label_7 = QLabel(self.groupBox)
         self.label_7.setObjectName(u"label_7")
 
-        self.gridLayout_3.addWidget(self.label_7, 2, 0, 1, 2)
-
-        self.edt_proj_pay_gift_day = QLineEdit(self.groupBox)
-        self.edt_proj_pay_gift_day.setObjectName(u"edt_proj_pay_gift_day")
-
-        self.gridLayout_3.addWidget(self.edt_proj_pay_gift_day, 2, 2, 1, 1)
+        self.gridLayout_3.addWidget(self.label_7, 3, 0, 1, 2)
 
         self.label_3 = QLabel(self.groupBox)
         self.label_3.setObjectName(u"label_3")
 
-        self.gridLayout_3.addWidget(self.label_3, 3, 0, 1, 1)
-
-        self.tedt_proj_public_notice = QTextEdit(self.groupBox)
-        self.tedt_proj_public_notice.setObjectName(u"tedt_proj_public_notice")
-
-        self.gridLayout_3.addWidget(self.tedt_proj_public_notice, 3, 1, 2, 6)
-
-        self.verticalSpacer = QSpacerItem(20, 139, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.gridLayout_3.addItem(self.verticalSpacer, 4, 0, 1, 1)
-
-        self.chk_additional_gift = QCheckBox(self.groupBox)
-        self.chk_additional_gift.setObjectName(u"chk_additional_gift")
-
-        self.gridLayout_3.addWidget(self.chk_additional_gift, 2, 3, 1, 1)
-
-        self.label_11 = QLabel(self.groupBox)
-        self.label_11.setObjectName(u"label_11")
-
-        self.gridLayout_3.addWidget(self.label_11, 2, 6, 1, 1)
-
-        self.edt_addtional_gift = QLineEdit(self.groupBox)
-        self.edt_addtional_gift.setObjectName(u"edt_addtional_gift")
-
-        self.gridLayout_3.addWidget(self.edt_addtional_gift, 2, 4, 1, 2)
-
-        self.btn_cfg_read = QPushButton(self.groupBox)
-        self.btn_cfg_read.setObjectName(u"btn_cfg_read")
-
-        self.gridLayout_3.addWidget(self.btn_cfg_read, 5, 3, 1, 1)
+        self.gridLayout_3.addWidget(self.label_3, 4, 0, 1, 1)
 
         self.btn_cfg_save = QPushButton(self.groupBox)
         self.btn_cfg_save.setObjectName(u"btn_cfg_save")
 
-        self.gridLayout_3.addWidget(self.btn_cfg_save, 5, 4, 1, 3)
+        self.gridLayout_3.addWidget(self.btn_cfg_save, 6, 4, 1, 3)
+
+        self.label_5 = QLabel(self.groupBox)
+        self.label_5.setObjectName(u"label_5")
+
+        self.gridLayout_3.addWidget(self.label_5, 0, 0, 1, 1)
+
+        self.btn_cfg_read = QPushButton(self.groupBox)
+        self.btn_cfg_read.setObjectName(u"btn_cfg_read")
+
+        self.gridLayout_3.addWidget(self.btn_cfg_read, 6, 3, 1, 1)
+
+        self.tedt_proj_public_notice = QTextEdit(self.groupBox)
+        self.tedt_proj_public_notice.setObjectName(u"tedt_proj_public_notice")
+
+        self.gridLayout_3.addWidget(self.tedt_proj_public_notice, 4, 1, 2, 6)
+
+        self.edt_proj_recmd_gift_day = QLineEdit(self.groupBox)
+        self.edt_proj_recmd_gift_day.setObjectName(u"edt_proj_recmd_gift_day")
+
+        self.gridLayout_3.addWidget(self.edt_proj_recmd_gift_day, 2, 6, 1, 1)
+
+        self.verticalSpacer = QSpacerItem(20, 139, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout_3.addItem(self.verticalSpacer, 5, 0, 1, 1)
+
+        self.label_15 = QLabel(self.groupBox)
+        self.label_15.setObjectName(u"label_15")
+
+        self.gridLayout_3.addWidget(self.label_15, 2, 4, 1, 2)
+
+        self.label_12 = QLabel(self.groupBox)
+        self.label_12.setObjectName(u"label_12")
+
+        self.gridLayout_3.addWidget(self.label_12, 2, 0, 1, 1)
+
+        self.edt_proj_reg_gift_day = QLineEdit(self.groupBox)
+        self.edt_proj_reg_gift_day.setObjectName(u"edt_proj_reg_gift_day")
+
+        self.gridLayout_3.addWidget(self.edt_proj_reg_gift_day, 2, 2, 1, 1)
+
+        self.horizontalSpacer_10 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_3.addItem(self.horizontalSpacer_10, 2, 3, 1, 1)
+
+        self.edt_addtional_gift = QLineEdit(self.groupBox)
+        self.edt_addtional_gift.setObjectName(u"edt_addtional_gift")
+
+        self.gridLayout_3.addWidget(self.edt_addtional_gift, 3, 6, 1, 1)
+
+        self.chk_additional_gift = QCheckBox(self.groupBox)
+        self.chk_additional_gift.setObjectName(u"chk_additional_gift")
+
+        self.gridLayout_3.addWidget(self.chk_additional_gift, 3, 5, 1, 1)
+
+        self.horizontalSpacer_11 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_3.addItem(self.horizontalSpacer_11, 3, 3, 1, 1)
 
 
         self.verticalLayout_6.addWidget(self.groupBox)
@@ -241,8 +254,8 @@ class Ui_WndServer(object):
 
         self.horizontalLayout_2.addLayout(self.verticalLayout_6)
 
-        self.horizontalLayout_2.setStretch(0, 3)
-        self.horizontalLayout_2.setStretch(1, 2)
+        self.horizontalLayout_2.setStretch(0, 2)
+        self.horizontalLayout_2.setStretch(1, 1)
 
         self.verticalLayout_7.addLayout(self.horizontalLayout_2)
 
@@ -870,7 +883,7 @@ class Ui_WndServer(object):
 
         self.retranslateUi(WndServer)
 
-        self.stack_widget.setCurrentIndex(1)
+        self.stack_widget.setCurrentIndex(0)
         self.cmb_user_order_by.setCurrentIndex(0)
 
 
@@ -896,20 +909,20 @@ class Ui_WndServer(object):
         self.btn_proj_page_next.setText(QCoreApplication.translate("WndServer", u">", None))
         self.btn_proj_page_go.setText(QCoreApplication.translate("WndServer", u"Go", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("WndServer", u"\u7248\u672c\u7ba1\u7406", None))
+        self.label.setText(QCoreApplication.translate("WndServer", u"\u5ba2\u6237\u7aef\u7248\u672c", None))
+        self.btn_proj_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u5b9a\u6dfb\u52a0\u6216\u4fee\u6539", None))
         self.chk_proj_login.setText(QCoreApplication.translate("WndServer", u"\u5141\u8bb8\u767b\u5f55", None))
         self.chk_proj_reg.setText(QCoreApplication.translate("WndServer", u"\u5141\u8bb8\u6ce8\u518c", None))
         self.chk_proj_unbind.setText(QCoreApplication.translate("WndServer", u"\u5141\u8bb8\u89e3\u7ed1", None))
-        self.label.setText(QCoreApplication.translate("WndServer", u"\u5ba2\u6237\u7aef\u7248\u672c", None))
-        self.btn_proj_confirm.setText(QCoreApplication.translate("WndServer", u"\u786e\u5b9a\u6dfb\u52a0\u6216\u4fee\u6539", None))
         self.groupBox.setTitle(QCoreApplication.translate("WndServer", u"\u9879\u76ee\u7ba1\u7406", None))
-        self.label_5.setText(QCoreApplication.translate("WndServer", u"\u66f4\u65b0\u7f51\u5740", None))
-        self.label_6.setText(QCoreApplication.translate("WndServer", u"\u53d1\u5361\u7f51\u5740", None))
         self.label_7.setText(QCoreApplication.translate("WndServer", u"\u5145\u503c\u8d60\u9001\u5929\u6570", None))
         self.label_3.setText(QCoreApplication.translate("WndServer", u"\u5ba2\u6237\u7aef\u516c\u544a", None))
-        self.chk_additional_gift.setText(QCoreApplication.translate("WndServer", u"\u989d\u5916\u8d60\u9001 \u7d2f\u8ba1\u5145\u503c\u6708\u6570 * ", None))
-        self.label_11.setText(QCoreApplication.translate("WndServer", u"\u5929 ", None))
-        self.btn_cfg_read.setText(QCoreApplication.translate("WndServer", u"\u8bfb\u53d6\u914d\u7f6e", None))
         self.btn_cfg_save.setText(QCoreApplication.translate("WndServer", u"\u4fdd\u5b58\u914d\u7f6e", None))
+        self.label_5.setText(QCoreApplication.translate("WndServer", u"\u66f4\u65b0\u7f51\u5740", None))
+        self.btn_cfg_read.setText(QCoreApplication.translate("WndServer", u"\u8bfb\u53d6\u914d\u7f6e", None))
+        self.label_15.setText(QCoreApplication.translate("WndServer", u"\u63a8\u8350\u4eba \u8d60\u9001\u5929\u6570", None))
+        self.label_12.setText(QCoreApplication.translate("WndServer", u"\u6ce8\u518c\u8d60\u9001\u5929\u6570", None))
+        self.chk_additional_gift.setText(QCoreApplication.translate("WndServer", u"\u989d\u5916\u8d60\u9001\u500d\u7387", None))
         ___qtablewidgetitem6 = self.tbe_custom.horizontalHeaderItem(0)
         ___qtablewidgetitem6.setText(QCoreApplication.translate("WndServer", u"ID", None));
         ___qtablewidgetitem7 = self.tbe_custom.horizontalHeaderItem(1)

@@ -347,7 +347,6 @@ due_time = "1970-01-01 00:00:00"
 
 notice = "加载公告失败..."  # 公告
 url_update = "https://www.baidu.com"  # 更新网址
-url_card = "https://www.bilibili.com"  # 发卡网址
 allow_login = False  # 允许登录
 allow_reg = False  # 允许注册
 allow_unbind = False  # 允许解绑

@@ -49,7 +49,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stack_widget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page_proj">
        <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -66,7 +66,7 @@
          <number>2</number>
         </property>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="3,2">
+         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,1">
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
@@ -226,6 +226,29 @@
                <string>版本管理</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_2">
+               <item row="1" column="0">
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>客户端版本</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QPushButton" name="btn_proj_confirm">
+                 <property name="minimumSize">
+                  <size>
+                   <width>120</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>确定添加或修改</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="edt_proj_client_ver"/>
+               </item>
                <item row="0" column="0" colspan="3">
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <item>
@@ -260,29 +283,6 @@
                  </item>
                 </layout>
                </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label">
-                 <property name="text">
-                  <string>客户端版本</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="edt_proj_client_ver"/>
-               </item>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="btn_proj_confirm">
-                 <property name="minimumSize">
-                  <size>
-                   <width>120</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>确定添加或修改</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </widget>
             </item>
@@ -292,6 +292,33 @@
                <string>项目管理</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
+               <item row="3" column="2">
+                <widget class="QLineEdit" name="edt_proj_pay_gift_day"/>
+               </item>
+               <item row="0" column="1" colspan="6">
+                <widget class="QLineEdit" name="edt_proj_url_update"/>
+               </item>
+               <item row="3" column="0" colspan="2">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>充值赠送天数</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_3">
+                 <property name="text">
+                  <string>客户端公告</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="4" colspan="3">
+                <widget class="QPushButton" name="btn_cfg_save">
+                 <property name="text">
+                  <string>保存配置</string>
+                 </property>
+                </widget>
+               </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_5">
                  <property name="text">
@@ -299,40 +326,20 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="1" colspan="6">
-                <widget class="QLineEdit" name="edt_proj_url_update"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_6">
+               <item row="6" column="3">
+                <widget class="QPushButton" name="btn_cfg_read">
                  <property name="text">
-                  <string>发卡网址</string>
+                  <string>读取配置</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1" colspan="6">
-                <widget class="QLineEdit" name="edt_proj_url_card"/>
-               </item>
-               <item row="2" column="0" colspan="2">
-                <widget class="QLabel" name="label_7">
-                 <property name="text">
-                  <string>充值赠送天数</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="2">
-                <widget class="QLineEdit" name="edt_proj_pay_gift_day"/>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_3">
-                 <property name="text">
-                  <string>客户端公告</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1" rowspan="2" colspan="6">
+               <item row="4" column="1" rowspan="2" colspan="6">
                 <widget class="QTextEdit" name="tedt_proj_public_notice"/>
                </item>
-               <item row="4" column="0">
+               <item row="2" column="6">
+                <widget class="QLineEdit" name="edt_proj_recmd_gift_day"/>
+               </item>
+               <item row="5" column="0">
                 <spacer name="verticalSpacer">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -345,36 +352,58 @@
                  </property>
                 </spacer>
                </item>
-               <item row="2" column="3">
-                <widget class="QCheckBox" name="chk_additional_gift">
-                 <property name="text">
-                  <string>额外赠送 累计充值月数 * </string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="6">
-                <widget class="QLabel" name="label_11">
-                 <property name="text">
-                  <string>天 </string>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="4" colspan="2">
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>推荐人 赠送天数</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_12">
+                 <property name="text">
+                  <string>注册赠送天数</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QLineEdit" name="edt_proj_reg_gift_day"/>
+               </item>
+               <item row="2" column="3">
+                <spacer name="horizontalSpacer_10">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="3" column="6">
                 <widget class="QLineEdit" name="edt_addtional_gift"/>
                </item>
-               <item row="5" column="3">
-                <widget class="QPushButton" name="btn_cfg_read">
+               <item row="3" column="5">
+                <widget class="QCheckBox" name="chk_additional_gift">
                  <property name="text">
-                  <string>读取配置</string>
+                  <string>额外赠送倍率</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="4" colspan="3">
-                <widget class="QPushButton" name="btn_cfg_save">
-                 <property name="text">
-                  <string>保存配置</string>
+               <item row="3" column="3">
+                <spacer name="horizontalSpacer_11">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
-                </widget>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
               </layout>
              </widget>

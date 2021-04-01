@@ -340,6 +340,8 @@ class WndLogin(QDialog, Ui_WndLogin):
         reg_account = self.edt_reg_account.text()
         reg_pwd = self.edt_reg_pwd.text()
         reg_qq = self.edt_reg_qq.text()
+        reg_key = self.edt_reg_key.text()
+        reg_recmd = self.edt_reg_recmd.text()
         # 把客户端信息整理成字典
         reg_pwd = crypto.get_encrypted_str(reg_pwd.encode())
         client_info_dict = {
@@ -348,7 +350,8 @@ class WndLogin(QDialog, Ui_WndLogin):
                 "账号": reg_account,
                 "密码": reg_pwd,
                 "QQ": reg_qq,
-                "机器码": lib.machine_code,
+                "卡号": reg_key,
+                "推荐人账号": reg_recmd,
             }
         }
         # 发送客户端消息
@@ -552,7 +555,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.btn_reg.setEnabled(lib.allow_reg)
         self.btn_unbind.setEnabled(lib.allow_unbind)
         # 充值页
-        self.lbe_pay_key.setText("<a href={}>充值卡号: </a>".format(lib.url_card))
+        self.lbe_pay_key.setText("<a href={}>充值卡: </a>".format(lib.url_card))
         # 公告页
         self.lbe_notice.setText("<a href={}>公 告</a>".format(lib.url_update))
         self.lbe_notice_text.setText(lib.notice)

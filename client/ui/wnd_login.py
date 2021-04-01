@@ -148,6 +148,31 @@ class Ui_WndLogin(object):
 
         self.gridLayout_3 = QGridLayout()
         self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.edt_reg_pwd = QLineEdit(self.widget_2)
+        self.edt_reg_pwd.setObjectName(u"edt_reg_pwd")
+
+        self.gridLayout_3.addWidget(self.edt_reg_pwd, 1, 1, 1, 1)
+
+        self.label_5 = QLabel(self.widget_2)
+        self.label_5.setObjectName(u"label_5")
+
+        self.gridLayout_3.addWidget(self.label_5, 0, 0, 1, 1)
+
+        self.edt_reg_qq = QLineEdit(self.widget_2)
+        self.edt_reg_qq.setObjectName(u"edt_reg_qq")
+
+        self.gridLayout_3.addWidget(self.edt_reg_qq, 2, 1, 1, 1)
+
+        self.edt_reg_account = QLineEdit(self.widget_2)
+        self.edt_reg_account.setObjectName(u"edt_reg_account")
+
+        self.gridLayout_3.addWidget(self.edt_reg_account, 0, 1, 1, 1)
+
+        self.label_4 = QLabel(self.widget_2)
+        self.label_4.setObjectName(u"label_4")
+
+        self.gridLayout_3.addWidget(self.label_4, 4, 0, 1, 1)
+
         self.label_3 = QLabel(self.widget_2)
         self.label_3.setObjectName(u"label_3")
 
@@ -158,25 +183,20 @@ class Ui_WndLogin(object):
 
         self.gridLayout_3.addWidget(self.label_6, 1, 0, 1, 1)
 
-        self.label_5 = QLabel(self.widget_2)
-        self.label_5.setObjectName(u"label_5")
+        self.edt_reg_key = QLineEdit(self.widget_2)
+        self.edt_reg_key.setObjectName(u"edt_reg_key")
 
-        self.gridLayout_3.addWidget(self.label_5, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.edt_reg_key, 4, 1, 1, 1)
 
-        self.edt_reg_account = QLineEdit(self.widget_2)
-        self.edt_reg_account.setObjectName(u"edt_reg_account")
+        self.edt_reg_recmd = QLineEdit(self.widget_2)
+        self.edt_reg_recmd.setObjectName(u"edt_reg_recmd")
 
-        self.gridLayout_3.addWidget(self.edt_reg_account, 0, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.edt_reg_recmd, 5, 1, 1, 1)
 
-        self.edt_reg_qq = QLineEdit(self.widget_2)
-        self.edt_reg_qq.setObjectName(u"edt_reg_qq")
+        self.label_7 = QLabel(self.widget_2)
+        self.label_7.setObjectName(u"label_7")
 
-        self.gridLayout_3.addWidget(self.edt_reg_qq, 2, 1, 1, 1)
-
-        self.edt_reg_pwd = QLineEdit(self.widget_2)
-        self.edt_reg_pwd.setObjectName(u"edt_reg_pwd")
-
-        self.gridLayout_3.addWidget(self.edt_reg_pwd, 1, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.label_7, 5, 0, 1, 1)
 
 
         self.gridLayout_7.addLayout(self.gridLayout_3, 1, 1, 1, 3)
@@ -448,21 +468,31 @@ class Ui_WndLogin(object):
 #endif // QT_CONFIG(tooltip)
         self.btn_unbind.setText(QCoreApplication.translate("WndLogin", u"\u89e3 \u7ed1", None))
         self.btn_exit.setText(QCoreApplication.translate("WndLogin", u"\u9000 \u51fa", None))
-        self.label_3.setText(QCoreApplication.translate("WndLogin", u"QQ:", None))
-        self.label_6.setText(QCoreApplication.translate("WndLogin", u"\u5bc6\u7801:", None))
-        self.label_5.setText(QCoreApplication.translate("WndLogin", u"\u8d26\u53f7:", None))
 #if QT_CONFIG(tooltip)
-        self.edt_reg_account.setToolTip(QCoreApplication.translate("WndLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d, \u6bcf\u53f0\u673a\u5668\u53ea\u80fd\u6ce8\u518c\u4e00\u4e2a\u8d26\u53f7, \u4e14\u8d26\u53f7\u540d\u65e0\u6cd5\u4fee\u6539", None))
+        self.edt_reg_pwd.setToolTip(QCoreApplication.translate("WndLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
 #endif // QT_CONFIG(tooltip)
-        self.edt_reg_account.setText("")
+        self.edt_reg_pwd.setText("")
+        self.label_5.setText(QCoreApplication.translate("WndLogin", u"\u8d26\u53f7:", None))
 #if QT_CONFIG(tooltip)
         self.edt_reg_qq.setToolTip(QCoreApplication.translate("WndLogin", u"\u8bf7\u586b\u5199\u771f\u5b9eQQ, \u6ce8\u518c\u540e\u4e0d\u53ef\u66f4\u6539, \u662f\u60a8\u8d26\u53f7\u6539\u5bc6\u7684\u91cd\u8981\u51ed\u8bc1", None))
 #endif // QT_CONFIG(tooltip)
         self.edt_reg_qq.setText("")
 #if QT_CONFIG(tooltip)
-        self.edt_reg_pwd.setToolTip(QCoreApplication.translate("WndLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d", None))
+        self.edt_reg_account.setToolTip(QCoreApplication.translate("WndLogin", u"\u5b57\u6bcd\u6570\u5b57\u7ec4\u5408, 6-12\u4f4d, \u6bcf\u53f0\u673a\u5668\u53ea\u80fd\u6ce8\u518c\u4e00\u4e2a\u8d26\u53f7, \u4e14\u8d26\u53f7\u540d\u65e0\u6cd5\u4fee\u6539", None))
 #endif // QT_CONFIG(tooltip)
-        self.edt_reg_pwd.setText("")
+        self.edt_reg_account.setText("")
+        self.label_4.setText(QCoreApplication.translate("WndLogin", u"\u5145\u503c\u5361:", None))
+        self.label_3.setText(QCoreApplication.translate("WndLogin", u"QQ:", None))
+        self.label_6.setText(QCoreApplication.translate("WndLogin", u"\u5bc6\u7801:", None))
+#if QT_CONFIG(tooltip)
+        self.edt_reg_key.setToolTip(QCoreApplication.translate("WndLogin", u"\u8bf7\u586b\u5199\u771f\u5b9eQQ, \u6ce8\u518c\u540e\u4e0d\u53ef\u66f4\u6539, \u662f\u60a8\u8d26\u53f7\u6539\u5bc6\u7684\u91cd\u8981\u51ed\u8bc1", None))
+#endif // QT_CONFIG(tooltip)
+        self.edt_reg_key.setText("")
+#if QT_CONFIG(tooltip)
+        self.edt_reg_recmd.setToolTip(QCoreApplication.translate("WndLogin", u"\u8bf7\u586b\u5199\u771f\u5b9eQQ, \u6ce8\u518c\u540e\u4e0d\u53ef\u66f4\u6539, \u662f\u60a8\u8d26\u53f7\u6539\u5bc6\u7684\u91cd\u8981\u51ed\u8bc1", None))
+#endif // QT_CONFIG(tooltip)
+        self.edt_reg_recmd.setText("")
+        self.label_7.setText(QCoreApplication.translate("WndLogin", u"\u63a8\u8350\u4eba\u8d26\u53f7:", None))
         self.btn_reg.setText(QCoreApplication.translate("WndLogin", u"\u6ce8 \u518c", None))
         self.label_13.setText(QCoreApplication.translate("WndLogin", u"\u8d26\u53f7:", None))
 #if QT_CONFIG(tooltip)

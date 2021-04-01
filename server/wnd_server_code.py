@@ -34,8 +34,8 @@ cfg_server = {
 
 server_ip = "0.0.0.0"
 server_port = 47123
-server_ver = "3.1.8"
-mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
+server_ver = "3.1.9"
+mysql_host = "rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
@@ -1176,21 +1176,40 @@ class WndServer(QMainWindow, Ui_WndServer):
     # 处理_注册
     def deal_reg(self, client_socket: socket.socket, client_content_dict: dict):
         account = client_content_dict["账号"]
+        card_key = client_content_dict["卡号"]
+        recmd_account = client_content_dict["推荐人账号"]
+        client_content_dict.pop("卡号")
+        client_content_dict.pop("推荐人账号")
+
         log.info(f"[注册] 正在处理账号: {account}")
         ret = False
 
-        if not self.is_record_exist("2用户管理", "账号=%s", account):  # 不存在则插入记录
-            machine_code = client_content_dict["机器码"]
-            query_user_list = self.sql_table_query("select * from 2用户管理 where 机器码=%s;", machine_code)
-            if not query_user_list:  # 没有找到此机器码, 则同意注册
-                client_content_dict["注册时间"] = cur_time_fmt
-                client_content_dict["到期时间"] = cur_time_fmt
-                ret = self.sql_table_insert_ex("2用户管理", client_content_dict)
-                detail = "注册成功" if ret else "注册失败, 数据库异常"
+        if not self.is_record_exist("2用户管理", "账号=%s", account):
+            query_card_list = self.sql_table_query_ex("3卡密管理", {"卡号": card_key})  # 查询数据库, 判断卡密是否存在
+            if query_card_list:
+                query_card = query_card_list[0]
+                if not query_card["使用时间"]:  # 卡密未被使用
+                    # 根据卡类型计算基础天数
+                    type_time_dict = {"天卡": 1, "周卡": 7, "月卡": 30, "季卡": 90, "年卡": 365, "永久卡": 3650}
+                    card_type = query_card["卡类型"]
+                    base_day = type_time_dict[card_type]
+                    delta_day = base_day + (base_day // 30) * 2  # 新用户加的天数 = 卡密天数 + 2*卡密月数
+                    cur_date = datetime.datetime.now()
+                    offset = datetime.timedelta(days=delta_day)
+                    due_date = (cur_date+offset).strftime("%Y-%m-%d %H:%M:%S")
+                    print("注册后的到期时间:", due_date)
+                    client_content_dict["注册时间"] = cur_time_fmt
+                    client_content_dict["到期时间"] = due_date
+                    num = self.sql_table_insert_ex("2用户管理", client_content_dict)
+                    detail = "注册成功" if num else "注册失败, 数据库异常"
+                    if recmd_account != account:  # 推荐人账号和新用户账号不同, 才加推荐人的到期时间
+                        num = self.sql_table_update("update 2用户管理 set 到期时间=date_add(到期时间, interval 5 day) where 账号=%s;",
+                                                  recmd_account);
+                        log.info(f"推荐人账号{recmd_account}充值结果: {num}")
+                else:
+                    detail = "注册失败, 充值卡已被使用!"
             else:
-                query_user = query_user_list[0]
-                reged_account = query_user["账号"]
-                detail = f"注册失败, 此机器已注册过账号{reged_account}"
+                detail = "注册失败, 充值卡不存在!"
         else:
             detail = "注册失败, 此账号已被注册!"
         # 记录到日志
@@ -1220,8 +1239,6 @@ class WndServer(QMainWindow, Ui_WndServer):
                            "用户行为": action}
             if query_user["状态"] == "冻结":
                 detail = "登录失败, 此账号已冻结"
-            # elif query_user["状态"] == "在线":
-            #     detail = "登录失败, 此账号在线中, 请10分钟后再试"
             elif cur_time_fmt > str(query_user["到期时间"]):
                 detail = "登录失败, 此账号已到期"
             elif action != "正常":
@@ -1369,6 +1386,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             else:
                 ret, detail = "正常", ""
                 update_dict["状态"] = "在线"
+                update_dict["机器码"] = machine_code
             log.info(f"[心跳] 账号{account} {ret} {detail}")
         else:
             ret, detail = "下线", "此账号不存在"
@@ -1420,8 +1438,8 @@ class WndServer(QMainWindow, Ui_WndServer):
             query_user = query_user_list[0]
             if query_user["机器码"] == "":  # 若原本就没绑定机器
                 detail = "无需解绑, 此账号未绑定机器"
-            elif query_user["状态"] == "在线":
-                detail = "解绑失败, 此账号在线中, 请10分钟后再试"
+            # elif query_user["状态"] == "在线":
+            #     detail = "解绑失败, 此账号在线中, 请10分钟后再试"
             elif query_user["状态"] == "冻结":
                 detail = "解绑失败, 此账号已冻结, 无法解绑"
             elif pwd == query_user["密码"]:  # 密码正确, 把机器码置为空

@@ -3,7 +3,7 @@ import time, datetime
 import json
 import base64
 import urllib.request, ssl
-from threading import Thread, Lock
+from threading import Thread
 from random import randint
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 from PySide2.QtGui import QIcon, QCloseEvent, QCursor, QIntValidator
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, QMessageBox, QHeaderView,\
     QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem, QTableWidget
-from PySide2.QtCore import Qt, QTimer
+from PySide2.QtCore import Qt, QTimer, QMutex, QMutexLocker
 import pymysql
 import socket
 
@@ -20,7 +20,7 @@ import wnd_server_rc
 from ui.wnd_server import Ui_WndServer
 import crypto
 
-lock = Lock()
+mutex = QMutex()
 cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_fmt[:10]
 DIR_SAVE = "C:\\MyServer"
@@ -28,14 +28,14 @@ DIR_LOG = "\\".join([DIR_SAVE, "log"])
 PATH_LOG_INFO = "\\".join([DIR_LOG, "info.log"])
 PATH_LOG_WARN = "\\".join([DIR_LOG, "warn.log"])
 cfg_server = {
-    "更新网址": "www.baidu.com", "发卡网址": "www.bilibili.com", "充值赠送天数": 0,
+    "更新网址": "www.baidu.com", "发卡网址": "www.qq.com", "充值赠送天数": 0,
     "额外赠送": True, "额外赠送倍率": 3, "客户端公告": "", "最新客户端版本": "0.0.0",
 }
 
 server_ip = "0.0.0.0"
 server_port = 47123
 server_ver = "3.1.9"
-mysql_host = "rm-2vcdv0g1sq8tj1y0w.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
+mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+0o
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
@@ -967,8 +967,8 @@ class WndServer(QMainWindow, Ui_WndServer):
     def update_ip_location(self):
         def append_ip_location(ip: str):
             location = get_ip_location(ip)
-            with mutex:
-                ip_location_list.append((ip, location))
+            locker = QMutexLocker(mutex)  # 添加到列表时要互斥
+            ip_location_list.append((ip, location))
 
         # 获取用户表有, 但归属表没有的, ip列表
         query_ip_list = self.sql_table_query("select distinct A.上次登录IP from 2用户管理 A left join 6ip管理 B "
@@ -978,7 +978,6 @@ class WndServer(QMainWindow, Ui_WndServer):
             # 并发获取这些ip的归属地
             ip_location_list = []
             thd_pool = []
-            mutex = Lock()
             for query_ip in query_ip_list:
                 t = Thread(target=append_ip_location, args=(query_ip,))
                 t.start()
@@ -1184,6 +1183,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"[注册] 正在处理账号: {account}")
         ret = False
 
+        locker = QMutexLocker(mutex)  # 处理用户充值时要互斥
         if not self.is_record_exist("2用户管理", "账号=%s", account):
             query_card_list = self.sql_table_query_ex("3卡密管理", {"卡号": card_key})  # 查询数据库, 判断卡密是否存在
             if query_card_list:
@@ -1202,7 +1202,7 @@ class WndServer(QMainWindow, Ui_WndServer):
                     client_content_dict["到期时间"] = due_date
                     num = self.sql_table_insert_ex("2用户管理", client_content_dict)
                     detail = "注册成功" if num else "注册失败, 数据库异常"
-                    if recmd_account != account:  # 推荐人账号和新用户账号不同, 才加推荐人的到期时间
+                    if recmd_account != account and base_day >= 30:  # 推荐人账号和新用户账号不同, 且 卡密天数 >= 30
                         num = self.sql_table_update("update 2用户管理 set 到期时间=date_add(到期时间, interval 5 day) where 账号=%s;",
                                                   recmd_account);
                         log.info(f"推荐人账号{recmd_account}充值结果: {num}")
@@ -1253,14 +1253,15 @@ class WndServer(QMainWindow, Ui_WndServer):
                     update_dict["上次登录时间"] = cur_time_fmt
                     update_dict["上次登录IP"] = ip
                     update_dict["上次登录版本"] = client_content_dict["上次登录版本"]
-                    # 返回到期时间给用户
-                    due_time = query_user["到期时间"]
-                    detail = str(due_time)
                     # 用户若是第一次登录, 重新计算到期时间
                     if query_user["状态"] == "":  # 新到期时间 = 到期时间 + (现在时间 - 注册时间)
                         self.sql_table_update(
                             "update 2用户管理 set 到期时间=date_add(到期时间, interval timestampdiff(minute, 注册时间, now()) minute) "
                             "where 账号=%s;", account)
+                        query_user = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)[0]
+                    # 返回到期时间给用户
+                    due_time = query_user["到期时间"]
+                    detail = str(due_time)
                 else:
                     detail = "登录失败, 异机登录请先解绑"
             else:

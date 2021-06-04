@@ -1,24 +1,27 @@
 # pyside2开发的网络验证管理后台-桌面端
 ![](https://img.shields.io/badge/Python-3.8-blue.svg)
 ![](https://img.shields.io/badge/PySide2-5.15.2-blue.svg)
+![](https://img.shields.io/badge/MySQL-5.7-green.svg)
 
 
 ## 项目介绍
-此项目是基于pyside2框架开发的网络验证管理后台
+基于Pyside2框架开发的网络验证管理后台，实现接收并处理客户端发出的登录，注册，改密，充值等请求，客户端防破解, 并进行用户数据管理与分析。
 
+### 项目结构
+![](https://z3.ax1x.com/2021/06/04/2JtJo9.png)
 
-### (1) 项目管理
+- 项目管理
 ![](https://z3.ax1x.com/2021/06/03/2152TI.png)
-### (2) 用户管理
-![](https://z3.ax1x.com/2021/06/03/21LLWR.png)
-### (3) 卡密管理
+- 用户管理
+![](https://z3.ax1x.com/2021/06/04/2JtFsS.png)
+- 卡密管理
 ![](https://z3.ax1x.com/2021/06/03/21OXNQ.png)
 ### (4) 每日流水
 ![](https://z3.ax1x.com/2021/06/03/23SfN8.png)
 ### (5) IP与日志
 ![](https://z3.ax1x.com/2021/06/03/23SfN8.png)
 ### (6) 客户端
-客户端demo用于配合服务端测试
+客户端demo用于配合服务端测试  
 ![](https://z3.ax1x.com/2021/06/03/23QPAO.png)
 
 ## 更新公告

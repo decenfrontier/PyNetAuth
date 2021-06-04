@@ -8,22 +8,22 @@ from random import randint
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from concurrent.futures import ThreadPoolExecutor
+import socket
 
 from PySide2.QtGui import QIcon, QCloseEvent, QCursor, QIntValidator
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, QMessageBox, QHeaderView,\
     QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem, QTableWidget
 from PySide2.QtCore import Qt, QTimer, QMutex, QMutexLocker
 import pymysql
-import socket
 
 import wnd_server_rc
 from ui.wnd_server import Ui_WndServer
 import crypto
 
-mutex = QMutex()
+mutex = QMutex()  # 充值时要互斥, 避免一张卡同时充值两次的情况
 cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
-today = cur_time_fmt[:10]
-DIR_SAVE = "C:\\MyServer"
+today = cur_time_fmt[:10]  # 今天日期
+DIR_SAVE = "C:\\MyServer"  # 日志保存路径
 DIR_LOG = "\\".join([DIR_SAVE, "log"])
 PATH_LOG_INFO = "\\".join([DIR_LOG, "info.log"])
 PATH_LOG_WARN = "\\".join([DIR_LOG, "warn.log"])
@@ -32,16 +32,16 @@ cfg_server = {
     "额外赠送": True, "额外赠送倍率": 3, "客户端公告": "", "最新客户端版本": "0.0.0",
 }
 
-server_ip = "0.0.0.0"
-server_port = 47123
-server_ver = "3.2.6"
-mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # 内网, 公网+
+server_ip = "0.0.0.0"  # 服务端绑定的IP地址
+server_port = 47123  # 服务端端口号
+server_ver = "3.2.6"  # 服务端版本号
+mysql_host = ""  # TODO: 填入MySQL服务器的IP
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
 enc_aes_key = crypto.encrypt_rsa(crypto.public_key_client, aes_key)
 
-action_code_dict = {
+action_code_dict = {  # 防止用户行为关键数据被拦截分析出明文, 网络通信时用后面的value来传递
     "正常": "*d#fl1I@34rt7%gh.",
     "检测到改数据": "*d#flI1@34rt7%gh.",
     "检测到虚拟机": "*d#flI2@34rt7%gh.",
@@ -50,17 +50,18 @@ action_code_dict = {
 
 code_action_dict = {v: k for k, v in action_code_dict.items()}
 
-TBE_USER_ACCOUNT = 1
-TBE_USER_STATE = 5
+TBE_USER_ACCOUNT = 1  # 用户账号在用户表中所在的列
+TBE_USER_STATE = 5  # 用户状态在用户表中所在的列
 
 
 class Log():
+    """日志类, 实现记录日志, 日志自动创建与删除"""
     def __init__(self):
         dir_create(DIR_LOG)
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
-        # 创建handler对象
+        # 创建handler对象, 每天凌晨创建新日志, 只保留最新的7份日志
         self.handler_info = TimedRotatingFileHandler(filename=PATH_LOG_INFO, when="midnight", interval=1, backupCount=7)
         self.handler_info.setFormatter(logging.Formatter("%(asctime)s  %(message)s"))
         self.handler_info.setLevel(logging.INFO)
@@ -72,9 +73,11 @@ class Log():
         self.logger.addHandler(self.handler_warn)
 
     def info(self, msg: str):
+        """普通日志"""
         self.logger.info(msg)
 
     def warn(self, msg: str):
+        """用户危险行为 或 数据库出错"""
         self.logger.warning(msg)
 
 
@@ -1013,10 +1016,12 @@ class WndServer(QMainWindow, Ui_WndServer):
                               active_user_num, online_user_num, today)
 
     def on_timer_sec_timeout(self):
+        """每秒钟更新当前时间变量"""
         global cur_time_fmt
         cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
 
     def on_timer_min_timeout(self):
+        """每分钟"""
         log.info("----------------------------- 检测开始 -----------------------------")
         global today
         cur_day = cur_time_fmt[:10]
@@ -1080,9 +1085,9 @@ class WndServer(QMainWindow, Ui_WndServer):
                     break
             msg_func_dict = {
                 "初始": self.deal_init,
-                "锟斤拷": self.deal_proj,
-                "烫烫烫": self.deal_custom1,
-                "屯屯屯": self.deal_custom2,
+                "锟斤拷": self.deal_proj,  # 项目信息
+                "烫烫烫": self.deal_custom1,  # 自定义数据分两批, 这是第一批
+                "屯屯屯": self.deal_custom2,  # 自定义数据2
                 "注册": self.deal_reg,
                 "登录": self.deal_login,
                 "充值": self.deal_pay,

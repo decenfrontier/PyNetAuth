@@ -15,11 +15,12 @@ import lib, crypto
 from lib import rnd
 
 class WndLogin(QDialog, Ui_WndLogin):
-    sig_accept = Signal()
-    sig_reject = Signal()
-    sig_info = Signal(str)
-    sig_pass = Signal(bool)
-    sig_close = Signal()
+    """登录窗口类"""
+    sig_accept = Signal()  # 同意登录信号
+    sig_reject = Signal()  # 拒绝登录信号
+    sig_info = Signal(str)  # 信息信号
+    sig_pass = Signal(bool)  # 验证码通过信号
+    sig_close = Signal()  # 窗口关闭信号
 
     def __init__(self):
         super().__init__()
@@ -533,19 +534,20 @@ class WndLogin(QDialog, Ui_WndLogin):
         self.edt_captcha_answer.setText("")
 
     def on_sig_pass(self, is_pass: bool):
-        if is_pass:
-            if self.captcha_btn_text == "登录":
-                self.send_recv_login()
-            elif self.captcha_btn_text == "注册":
-                self.send_recv_reg()
-            elif self.captcha_btn_text == "充值":
-                self.send_recv_pay()
-            elif self.captcha_btn_text == "解绑":
-                self.send_recv_unbind()
-            elif self.captcha_btn_text == "改密":
-                self.send_recv_modify()
-        else:
+        if not is_pass:
             self.show_info("验证码输入错误")
+            return
+        if self.captcha_btn_text == "登录":
+            self.send_recv_login()
+        elif self.captcha_btn_text == "注册":
+            self.send_recv_reg()
+        elif self.captcha_btn_text == "充值":
+            self.send_recv_pay()
+        elif self.captcha_btn_text == "解绑":
+            self.send_recv_unbind()
+        elif self.captcha_btn_text == "改密":
+            self.send_recv_modify()
+
 
     # 初始化成功后的操作
     def on_init_success(self):

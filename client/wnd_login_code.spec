@@ -2,7 +2,7 @@
 
 from PyInstaller.archive.pyz_crypto import PyiBlockCipher
 
-block_cipher = PyiBlockCipher(key="659457")
+block_cipher = PyiBlockCipher(key="QWER")
 
 
 a = Analysis(['wnd_login_code.py'],
@@ -31,7 +31,7 @@ exe = EXE(pyz,
           strip=False,
           upx=False,
           console=True,
-          icon="F:\\icon\\2.ico")
+          icon="F:\\icon\\2.ico")  # 图标自己改
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

@@ -2,7 +2,7 @@
 
 from PyInstaller.archive.pyz_crypto import PyiBlockCipher
 
-block_cipher = PyiBlockCipher(key="659457")
+block_cipher = PyiBlockCipher(key="1234QAQA")
 
 a = Analysis(['wnd_server_code.py'],
              pathex=['E:\\PycharmProjects\\PyNetAuth\\server'],
@@ -28,7 +28,7 @@ exe = EXE(pyz,
           strip=False,
           upx=False,
           console=False,
-		  icon="F:\\icon\\1.ico")
+		  icon="F:\\icon\\1.ico")  # 图标自己改
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

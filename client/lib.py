@@ -207,7 +207,6 @@ def is_user_dangerous():
         print("检测到调试器")
         action_code = action_code_dict["检测到调试器"]
         ret = True
-    # todo: 正式发布前删掉
     if not ret:
         print("没检测到调试器和虚拟机")
     return ret

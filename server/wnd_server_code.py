@@ -36,6 +36,9 @@ server_ip = "0.0.0.0"  # 服务端绑定的IP地址
 server_port = 47123  # 服务端端口号
 server_ver = "3.2.6"  # 服务端版本号
 mysql_host = ""  # TODO: 填入MySQL服务器的IP
+mysql_user = ""  # TODO: 填入MySQL服务器的账号
+mysql_pwd = ""  # TODO: 填入MySQL服务器的密码
+mysql_db = ""  # TODO: 填入MySQL服务器的数据库名
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
@@ -132,9 +135,9 @@ class WndServer(QMainWindow, Ui_WndServer):
             self.db = pymysql.connect(
                 host=mysql_host,
                 port=3306,
-                user="cpalyth",
-                passwd="Kptg6594571",
-                db="net_auth",
+                user=mysql_user,
+                passwd=mysql_pwd,
+                db=mysql_db,
                 charset="utf8"
             )
             # 创建游标对象, 指定返回一个字典列表, 获取的每条数据的类型为字典(默认是元组)
@@ -180,7 +183,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.int_validator = QIntValidator()
         # ---------------------- 线程池 ----------------------
         self.pool = ThreadPoolExecutor(4)  # 最大线程数为4
-
 
     def init_widgets(self):
         # ------------------------------ 窗口 ------------------------------
@@ -715,7 +717,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         if state != "冻结":
             self.show_info("解冻失败, 该账号未被冻结")
             return
-        # 若账号已到期, 则 到期时间=现在时间+(到期时间-心跳时间),
         # 若账号未到期, 则 到期时间=到期时间+(现在时间-心跳时间)
         num = self.sql_table_update("update 2用户管理 set 状态=%s, 到期时间 = if(到期时间 < now(), "
                                     "date_add(now(), interval hour(timediff(到期时间, 心跳时间)) hour), "
@@ -1055,7 +1056,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     def thd_serve_client(self, client_socket: socket.socket, ip: str):
         log.info(f"等待客户端{ip}发出消息中...")
-        client_socket.settimeout(2.5)  # 设置为非阻塞接收, 只等2.5秒
+        client_socket.settimeout(2.5)  # 最多等2.5秒
         while True:
             try:
                 recv_bytes = client_socket.recv(4096)

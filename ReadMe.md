@@ -10,19 +10,24 @@
 ### 项目结构
 ![](https://z3.ax1x.com/2021/06/04/2JtJo9.png)
 
-- 项目管理
-![](https://z3.ax1x.com/2021/06/03/2152TI.png)
-- 用户管理
-![](https://z3.ax1x.com/2021/06/04/2JtFsS.png)
-- 卡密管理
-![](https://z3.ax1x.com/2021/06/03/21OXNQ.png)
-### (4) 每日流水
-![](https://z3.ax1x.com/2021/06/03/23SfN8.png)
-### (5) IP与日志
-![](https://z3.ax1x.com/2021/06/03/23SfN8.png)
-### (6) 客户端
+#### 1 服务端
+- 项目管理  
+<img src=https://z3.ax1x.com/2021/06/03/2152TI.png width=50%>
+- 用户管理  
+<img src=https://z3.ax1x.com/2021/06/04/2JtFsS.png width=50%>
+- 卡密管理  
+<img src=https://z3.ax1x.com/2021/06/03/21OXNQ.png width=50%>
+- 每日流水  
+<img src=https://z3.ax1x.com/2021/06/03/23SfN8.png width=50%>
+- IP与日志  
+<img src=https://z3.ax1x.com/2021/06/03/23SfN8.png width=50%>
+
+
+#### 2 客户端
 客户端demo用于配合服务端测试  
-![](https://z3.ax1x.com/2021/06/03/23QPAO.png)
+<img src=https://z3.ax1x.com/2021/06/03/23QPAO.png width=50%>
+
+
 
 ## 更新公告
 

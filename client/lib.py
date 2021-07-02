@@ -261,11 +261,10 @@ def send_to_server(tcp_socket: socket.socket, client_info_dict: dict):
 # 从服务端接收数据
 def recv_from_server(tcp_socket: socket.socket):
     tcp_socket.settimeout(5)  # 最多等待5秒
-    recv_bytes = ""
-    try:  # 等待服务端响应期间, 会导致异常的情况：1客户端套接字关闭，2
+    try:  # 等待服务端响应
         recv_bytes = tcp_socket.recv(4096)
     except:
-        ...
+        recv_bytes = ""
     tcp_socket.settimeout(None)  # 重新设置为阻塞模式
     if not recv_bytes:  # 若客户端退出,会收到一个空str
         return "", {}

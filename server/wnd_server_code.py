@@ -164,73 +164,9 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.server.bind((server_ip, server_port))  # 主机号+端口号
         self.server.listen()  # 设为监听套接字
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)  # 重新使用处理TIME_WAIT状态的本地套接字
-        # self.server.setblocking(False)  # 设置为非阻塞
-        Thread(target=self.thd_accept_client, daemon=True).start()
-
-    def thd_accept_client(self):
-        log.info("服务端已开启, 准备接受客户请求...")
-        while True:
-            log.info("等待接收新客户端...")
-            try:
-                conn, addr = self.server.accept()
-            except:
-                break
-            ip = addr[0]
-            log.info(f"新接收客户端{ip}, 已分配客服套接字")
-            self.pool.submit(self.thd_serve_client, conn, ip)
-        log.info("服务端已关闭, 停止接受客户端请求...")
-
-    def thd_serve_client(self, conn: socket.socket, ip: str):
-        log.info(f"等待客户端{ip}发出消息中...")
-        conn.settimeout(2.5)  # 最多等2.5秒
-        while True:
-            try:
-                recv_bytes = conn.recv(4096)
-            except:  # 客户端直接退出, 会抛出异常
-                break
-            if not recv_bytes:  # 若任何消息都没收到
-                break
-            # base85解码
-            json_str = base64.b85decode(recv_bytes).decode()
-            log.info(f"收到客户端{ip}的消息: {json_str}")
-            # json字符串 转 py字典
-            client_info_dict = json_str_to_dict(json_str)
-            msg_type = client_info_dict["消息类型"]
-            client_content_str = client_info_dict["内容"]
-            # 把内容json字符串 转 py字典
-            if msg_type == "初始":  # 若为初始类型的消息
-                # json字符串 转 py字典
-                client_content_dict = json_str_to_dict(client_content_str)
-            else:  # 若不为初始类型的消息
-                # 先aes解密, 获取json字符串
-                client_content_str = aes.decrypt(client_content_str)
-                if client_content_str != "":  # 解密成功, json字符串 转 py字典
-                    client_content_dict = json_str_to_dict(client_content_str)
-                else:  # 解密失败
-                    log.warn(f"[解密Warn] 停止服务此ip: {ip}")  # 日志记录此IP
-                    conn.close()  # 停止服务此ip
-                    break
-            msg_func_dict = {
-                "初始": self.deal_init,
-                "锟斤拷": self.deal_proj,  # 项目信息
-                "烫烫烫": self.deal_custom1,  # 自定义数据分两批, 这是第一批
-                "屯屯屯": self.deal_custom2,  # 自定义数据2
-                "注册": self.deal_reg,
-                "登录": self.deal_login,
-                "充值": self.deal_pay,
-                "改密": self.deal_modify,
-                "心跳": self.deal_heart,
-                "离线": self.deal_offline,
-                "解绑": self.deal_unbind,
-            }
-            func = msg_func_dict.get(msg_type)
-            if func is None:
-                log.info(f"消息类型不存在: {msg_type}")
-            else:
-                func(conn, client_content_dict)
-        log.info(f"客户端{ip}已断开连接, 服务结束")
-        conn.close()
-
+        self.server.setblocking(False)  # 设置为非阻塞
+        self.rlist = [self.server]  # 监听的套接字列表
+        Thread(target=self.thd_listen_sockets, daemon=True).start()
 
 
     # 初始化实例属性
@@ -1033,27 +969,76 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.lst_log.addItems(dir_get_files(DIR_LOG))
 
     def thd_listen_sockets(self):
-        fd_r_list, fd_w_list, fd_e_list = select.select(self.rlist, [], [])
-        for sock in fd_r_list:
-            if sock is self.server:  # 告诉server: 有新的客户端连接请求进来了
-                # 接收客户端的连接
-                conn, addr = sock.accept()
-                conn.setblocking(False)
-                # 把新的客户端套接字加入监听列表
-                self.rlist.append(conn)
-            else:  # 告诉conn: 有数据准备好了, 来接收一下
-                try:
-                    data = sock.recv(2048)
-                    if not data:
-                        sock.close()
-                        self.rlist.remove(sock)
-                        continue
-                    ...
-                except:
-                    ...
-                ...
+        while True:
+            fd_r_list, fd_w_list, fd_e_list = select.select(self.rlist, [], [])
+            for sock in fd_r_list:
+                if sock is self.server:  # 告诉server: 有新的客户端连接请求进来了
+                    print('有新的客户端连接请求进来了')
+                    self.accept_client(sock)
+                else:  # 告诉conn: 有数据准备好了, 来接收一下
+                    print('有数据准备好了, 来接收一下')
+                    self.response_client(sock)
 
-            ...
+    def accept_client(self, sock):
+        """接受客户端"""
+        try:
+            conn, addr = sock.accept()
+            conn.setblocking(False)
+            ip = addr[0]
+            log.info(f"新接收客户端{ip}, 已分配客服套接字")  # 把新的客户端套接字加入监听列表
+            self.rlist.append(conn)
+        except:
+            return
+
+    def response_client(self, sock: socket.socket):
+        """响应客户端"""
+        try:
+            recv_bytes = sock.recv(2048)
+            if not recv_bytes:
+                sock.close()
+                self.rlist.remove(sock)
+                return
+            # base85解码
+            json_str = base64.b85decode(recv_bytes).decode()
+            ip = sock.getpeername()
+            log.info(f"收到客户端{ip}的消息: {json_str}")
+            # json字符串 转 py字典
+            client_info_dict = json_str_to_dict(json_str)
+            msg_type = client_info_dict["消息类型"]
+            client_content_str = client_info_dict["内容"]
+            # 把内容json字符串 转 py字典
+            if msg_type == "初始":  # 若为初始类型的消息
+                # json字符串 转 py字典
+                client_content_dict = json_str_to_dict(client_content_str)
+            else:  # 若不为初始类型的消息
+                # 先aes解密, 获取json字符串
+                client_content_str = aes.decrypt(client_content_str)
+                if client_content_str != "":  # 解密成功, json字符串 转 py字典
+                    client_content_dict = json_str_to_dict(client_content_str)
+                else:  # 解密失败
+                    log.warn(f"[解密Warn] 停止服务此ip: {ip}")  # 日志记录此IP
+                    sock.close()  # 停止服务此ip
+                    return
+            msg_func_dict = {
+                "初始": self.deal_init,
+                "锟斤拷": self.deal_proj,  # 项目信息
+                "烫烫烫": self.deal_custom1,  # 自定义数据分两批, 这是第一批
+                "屯屯屯": self.deal_custom2,  # 自定义数据2
+                "注册": self.deal_reg,
+                "登录": self.deal_login,
+                "充值": self.deal_pay,
+                "改密": self.deal_modify,
+                "心跳": self.deal_heart,
+                "离线": self.deal_offline,
+                "解绑": self.deal_unbind,
+            }
+            func = msg_func_dict.get(msg_type)
+            if func:
+                func(sock, client_content_dict)
+        except Exception as e:
+            print(e)
+            return
+
 
     def update_ip_location(self):
         """更新ip归属地"""

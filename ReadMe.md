@@ -1,4 +1,4 @@
-# pyside2开发的网络验证管理后台-桌面端
+# python网络验证管理后台
 ![](https://img.shields.io/badge/Python-3.8-blue.svg)
 ![](https://img.shields.io/badge/PySide2-5.15.2-blue.svg)
 ![](https://img.shields.io/badge/MySQL-5.7-green.svg)
@@ -21,6 +21,8 @@
 <img src=https://z3.ax1x.com/2021/06/03/23SfN8.png width=50%>
 - IP与日志  
 <img src=https://z3.ax1x.com/2021/06/03/23SfN8.png width=50%>
+- 数据库  
+<img src=https://z3.ax1x.com/2021/06/23/RuxQDs.png width=50%>
 
 
 #### 2 客户端

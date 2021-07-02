@@ -36,10 +36,10 @@ cfg_server = {
 server_ip = "0.0.0.0"  # 服务端绑定的IP地址
 server_port = 47123  # 服务端端口号
 server_ver = "3.2.7"  # 服务端版本号
-mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # TODO: 填入MySQL服务器的IP
-mysql_user = "cpalyth"  # TODO: 填入MySQL服务器的账号
-mysql_pwd = "Kptg6594571"  # TODO: 填入MySQL服务器的密码
-mysql_db = "net_auth"  # TODO: 填入MySQL服务器的数据库名
+mysql_host = ""  # TODO: 填入MySQL服务器的IP
+mysql_user = ""  # TODO: 填入MySQL服务器的账号
+mysql_pwd = ""  # TODO: 填入MySQL服务器的密码
+mysql_db = ""  # TODO: 填入MySQL服务器的数据库名
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypt.AesEncryption(aes_key)

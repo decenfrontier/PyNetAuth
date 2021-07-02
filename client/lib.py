@@ -17,7 +17,7 @@ from comtypes.client import CreateObject
 from win32com.client import Dispatch
 from PySide2.QtCore import QThread
 
-import crypto
+import crypt
 
 # ---------------------- 日志操作 ----------------------
 class Log():
@@ -324,7 +324,7 @@ anti_anti_debug4 = my_dll.fn5
 show_task_bar_icon = my_dll.fn6
 
 # ------------------------- 网络验证相关 -------------------------
-server_ip = "192.168.3.67"  # 127.0.0.1  47.108.170.195  www.gbdjob.cn
+server_ip = "127.0.0.1"  # 192.168.3.67  47.108.170.195  www.gbdjob.cn
 server_port = 47123
 machine_code = get_machine_code()
 
@@ -353,7 +353,7 @@ allow_unbind = False  # 允许解绑
 latest_ver = "0.0.0"  # 最新客户端版本
 
 # 构造加密类实例化对象
-aes = crypto.AesEncryption(aes_key)  # 先构造一个假的
+aes = crypt.AesEncryption(aes_key)  # 先构造一个假的
 
 # ------------------------- 配置相关 -------------------------
 cfg_login = {  # 登录窗口

@@ -11,7 +11,8 @@ from PySide2.QtCore import Qt, QRegExp, QSize, QPoint, Signal
 import wnd_login_rc
 from ui.wnd_login import Ui_WndLogin
 from wnd_main_code import WndMain
-import lib, crypto
+import crypt
+import lib
 from lib import rnd
 
 class WndLogin(QDialog, Ui_WndLogin):
@@ -227,8 +228,8 @@ class WndLogin(QDialog, Ui_WndLogin):
             if server_content_dict["结果"]:
                 enc_aes_key = server_content_dict["详情"]
                 # 重新构造新的aes密钥
-                lib.aes_key = crypto.decrypt_rsa(crypto.private_key_client, enc_aes_key)
-                lib.aes = crypto.AesEncryption(lib.aes_key)
+                lib.aes_key = crypt.decrypt_rsa(crypt.private_key_client, enc_aes_key)
+                lib.aes = crypt.AesEncryption(lib.aes_key)
                 return True
             else:
                 detail = server_content_dict["详情"]
@@ -299,7 +300,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         # ----------------- 发送数据给服务器 -----------------
         login_account = lib.cfg_login["账号"]
         login_pwd = lib.cfg_login["密码"]
-        login_pwd = crypto.get_encrypted_str(login_pwd.encode())
+        login_pwd = crypt.get_encrypted_str(login_pwd.encode())
         login_system = lib.get_operation_system()
         # 把客户端信息整理成字典
         client_info_dict = {
@@ -344,7 +345,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         reg_key = self.edt_reg_key.text()
         reg_recmd = self.edt_reg_recmd.text()
         # 把客户端信息整理成字典
-        reg_pwd = crypto.get_encrypted_str(reg_pwd.encode())
+        reg_pwd = crypt.get_encrypted_str(reg_pwd.encode())
         client_info_dict = {
             "消息类型": "注册",
             "内容": {
@@ -395,7 +396,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         # ----------------- 发送数据给服务器 -----------------
         account = self.edt_login_account.text()
         pwd = self.edt_login_pwd.text()
-        pwd = crypto.get_encrypted_str(pwd.encode())
+        pwd = crypt.get_encrypted_str(pwd.encode())
         # 允许异地解绑. 不用发机器码
         client_info_dict = {
             "消息类型": "解绑",
@@ -420,7 +421,7 @@ class WndLogin(QDialog, Ui_WndLogin):
         account = self.edt_modify_account.text()
         qq = self.edt_modify_qq.text()
         new_pwd = self.edt_modify_new_pwd.text()
-        new_pwd = crypto.get_encrypted_str(new_pwd.encode())
+        new_pwd = crypt.get_encrypted_str(new_pwd.encode())
         client_info_dict = {
             "消息类型": "改密",
             "内容": {

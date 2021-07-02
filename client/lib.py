@@ -260,9 +260,9 @@ def send_to_server(tcp_socket: socket.socket, client_info_dict: dict):
 
 # 从服务端接收数据
 def recv_from_server(tcp_socket: socket.socket):
-    tcp_socket.settimeout(5)  # 设置为非阻塞接收, 只等5秒
+    tcp_socket.settimeout(5)  # 最多等待5秒
     recv_bytes = ""
-    try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常
+    try:  # 等待服务端响应期间, 会导致异常的情况：1客户端套接字关闭，2
         recv_bytes = tcp_socket.recv(4096)
     except:
         ...

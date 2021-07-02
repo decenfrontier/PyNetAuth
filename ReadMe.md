@@ -20,7 +20,7 @@
 - 每日流水  
 <img src=https://z3.ax1x.com/2021/06/03/23SfN8.png width=50%>
 - IP与日志  
-<img src=https://z3.ax1x.com/2021/06/03/23SfN8.png width=50%>
+<img src=https://z3.ax1x.com/2021/07/02/R6EcFI.png width=50%>
 - 数据库  
 <img src=https://z3.ax1x.com/2021/06/23/RuxQDs.png width=50%>
 

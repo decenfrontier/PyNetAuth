@@ -1,4 +1,4 @@
-client_ver = "5.4.36"
+client_ver = "5.4.40"
 
 import base64
 import time
@@ -324,7 +324,7 @@ anti_anti_debug4 = my_dll.fn5
 show_task_bar_icon = my_dll.fn6
 
 # ------------------------- 网络验证相关 -------------------------
-server_ip = "127.0.0.1"  # 47.108.170.195  www.gbdjob.cn
+server_ip = "192.168.3.67"  # 127.0.0.1  47.108.170.195  www.gbdjob.cn
 server_port = 47123
 machine_code = get_machine_code()
 

@@ -16,6 +16,7 @@ from lib import rnd
 
 class WndLogin(QDialog, Ui_WndLogin):
     """登录窗口类"""
+    # 信号槽机制, 防逆向跟踪
     sig_accept = Signal()  # 同意登录信号
     sig_reject = Signal()  # 拒绝登录信号
     sig_info = Signal(str)  # 信息信号

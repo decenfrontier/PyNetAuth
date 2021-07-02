@@ -12,7 +12,7 @@ def get_encrypted_str(ori_bytes: bytes) -> str:
 
 # ---------------------------------------- 对称加密 ----------------------------------------
 class AesEncryption():
-    def __init__(self, key: str, mode=AES.MODE_GCM):
+    def __init__(self, key: str, mode=AES.MODE_CBC):
         # 密钥key 长度必须为16(AES-128),24(AES-192),或者32(AES-256)
         if len(key) < 16:
             key = key.center(16, "*")

@@ -9,6 +9,7 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 from concurrent.futures import ThreadPoolExecutor
 import socket
+import select
 
 from PySide2.QtGui import QIcon, QCloseEvent, QCursor, QIntValidator
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, QMessageBox, QHeaderView,\
@@ -34,11 +35,11 @@ cfg_server = {
 
 server_ip = "0.0.0.0"  # 服务端绑定的IP地址
 server_port = 47123  # 服务端端口号
-server_ver = "3.2.6"  # 服务端版本号
-mysql_host = ""  # TODO: 填入MySQL服务器的IP
-mysql_user = ""  # TODO: 填入MySQL服务器的账号
-mysql_pwd = ""  # TODO: 填入MySQL服务器的密码
-mysql_db = ""  # TODO: 填入MySQL服务器的数据库名
+server_ver = "3.2.7"  # 服务端版本号
+mysql_host = "rm-2vcdv0g1sq8tj1y0w0o.mysql.cn-chengdu.rds.aliyuncs.com"  # TODO: 填入MySQL服务器的IP
+mysql_user = "cpalyth"  # TODO: 填入MySQL服务器的账号
+mysql_pwd = "Kptg6594571"  # TODO: 填入MySQL服务器的密码
+mysql_db = "net_auth"  # TODO: 填入MySQL服务器的数据库名
 
 aes_key = "csbt34.ydhl12s"  # AES密钥
 aes = crypto.AesEncryption(aes_key)
@@ -98,7 +99,7 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 关闭套接字和数据库
     def closeEvent(self, event: QCloseEvent):
-        self.tcp_socket.close()
+        self.server.close()
         self.cursor.close()
         self.db.close()
 
@@ -159,15 +160,15 @@ class WndServer(QMainWindow, Ui_WndServer):
 
     # 初始化tcp连接
     def init_net_auth(self):
-        try:
-            self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.tcp_socket.bind((server_ip, server_port))  # 主机号+端口号
-            self.tcp_socket.listen(128)  # 允许同时有XX个客户端连接此服务器, 排队等待被服务
-            Thread(target=self.thd_accept_client, daemon=True).start()
-        except Exception as e:
-            log.info(f"tcp连接失败: {e}")
-            QMessageBox.critical(self, "错误", f"tcp连接失败: {e}")
-            raise e
+        self.server = socket.socket()  # 默认是TCP套接字
+        self.server.bind((server_ip, server_port))  # 主机号+端口号
+        self.server.listen()  # 设为监听套接字
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR)  # 重新使用处理TIME_WAIT状态的本地套接字
+        self.server.setblocking(False)  # 设置为非阻塞
+        self.rlist = [self.server]  # 监听的套接字列表
+        Thread(target=self.thd_listen_sockets, daemon=True).start()
+
+
 
     # 初始化实例属性
     def init_instance_field(self):
@@ -968,8 +969,31 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.lst_log.clear()
         self.lst_log.addItems(dir_get_files(DIR_LOG))
 
-    # 更新ip归属地
+    def thd_listen_sockets(self):
+        fd_r_list, fd_w_list, fd_e_list = select.select(self.rlist, [], [])
+        for sock in fd_r_list:
+            if sock is self.server:  # 告诉server: 有新的客户端连接请求进来了
+                # 接收客户端的连接
+                conn, addr = sock.accept()
+                conn.setblocking(False)
+                # 把新的客户端套接字加入监听列表
+                self.rlist.append(conn)
+            else:  # 告诉conn: 有数据准备好了, 来接收一下
+                try:
+                    data = sock.recv(2048)
+                    if not data:
+                        sock.close()
+                        self.rlist.remove(sock)
+                        continue
+                    ...
+                except:
+                    ...
+                ...
+
+            ...
+
     def update_ip_location(self):
+        """更新ip归属地"""
         def append_ip_location(ip: str):
             location = get_ip_location(ip)
             locker = QMutexLocker(mutex)  # 添加到列表时要互斥
@@ -1041,69 +1065,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.sql_table_update("update 2用户管理 set 状态='离线' where 状态='在线' and 心跳时间 < date_sub(now(), interval 10 minute);")
         log.info("----------------------------- 检测结束 -----------------------------\n")
 
-    def thd_accept_client(self):
-        log.info("服务端已开启, 准备接受客户请求...")
-        while True:
-            log.info("等待接收新客户端...")
-            try:
-                client_socket, client_addr = self.tcp_socket.accept()
-            except:
-                break
-            ip = client_addr[0]
-            log.info(f"新接收客户端{ip}, 已分配客服套接字")
-            self.pool.submit(self.thd_serve_client, client_socket, ip)
-        log.info("服务端已关闭, 停止接受客户端请求...")
-
-    def thd_serve_client(self, client_socket: socket.socket, ip: str):
-        log.info(f"等待客户端{ip}发出消息中...")
-        client_socket.settimeout(2.5)  # 最多等2.5秒
-        while True:
-            try:
-                recv_bytes = client_socket.recv(4096)
-            except:  # 客户端直接退出, 会抛出异常
-                break
-            if not recv_bytes:  # 若任何消息都没收到
-                break
-            # base85解码
-            json_str = base64.b85decode(recv_bytes).decode()
-            log.info(f"收到客户端{ip}的消息: {json_str}")
-            # json字符串 转 py字典
-            client_info_dict = json_str_to_dict(json_str)
-            msg_type = client_info_dict["消息类型"]
-            client_content_str = client_info_dict["内容"]
-            # 把内容json字符串 转 py字典
-            if msg_type == "初始":  # 若为初始类型的消息
-                # json字符串 转 py字典
-                client_content_dict = json_str_to_dict(client_content_str)
-            else:  # 若不为初始类型的消息
-                # 先aes解密, 获取json字符串
-                client_content_str = aes.decrypt(client_content_str)
-                if client_content_str != "":  # 解密成功, json字符串 转 py字典
-                    client_content_dict = json_str_to_dict(client_content_str)
-                else:  # 解密失败
-                    log.warn(f"[解密Warn] 停止服务此ip: {ip}")  # 日志记录此IP
-                    client_socket.close()  # 停止服务此ip
-                    break
-            msg_func_dict = {
-                "初始": self.deal_init,
-                "锟斤拷": self.deal_proj,  # 项目信息
-                "烫烫烫": self.deal_custom1,  # 自定义数据分两批, 这是第一批
-                "屯屯屯": self.deal_custom2,  # 自定义数据2
-                "注册": self.deal_reg,
-                "登录": self.deal_login,
-                "充值": self.deal_pay,
-                "改密": self.deal_modify,
-                "心跳": self.deal_heart,
-                "离线": self.deal_offline,
-                "解绑": self.deal_unbind,
-            }
-            func = msg_func_dict.get(msg_type)
-            if func is None:
-                log.info(f"消息类型不存在: {msg_type}")
-            else:
-                func(client_socket, client_content_dict)
-        log.info(f"客户端{ip}已断开连接, 服务结束")
-        client_socket.close()
 
     # 处理_初始
     def deal_init(self, client_socket: socket.socket, client_content_dict: dict):

@@ -13,14 +13,13 @@ import select
 from PySide2.QtGui import QIcon, QCloseEvent, QCursor, QIntValidator
 from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, QMessageBox, \
     QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem, QTableWidget
-from PySide2.QtCore import Qt, QTimer, QMutex, QMutexLocker
+from PySide2.QtCore import Qt, QTimer
 import pymysql
 
 import wnd_server_rc
 from ui.wnd_server import Ui_WndServer
 import crypt
 
-mutex = QMutex()  # 充值时要互斥, 避免一张卡同时充值两次的情况
 cur_time_fmt = time.strftime("%Y-%m-%d %H:%M:%S")
 today = cur_time_fmt[:10]  # 今天日期
 DIR_SAVE = "C:\\MyServer"  # 日志保存路径
@@ -1033,8 +1032,7 @@ class WndServer(QMainWindow, Ui_WndServer):
             func = msg_func_dict.get(msg_type)
             if func:
                 func(sock, client_content_dict)
-        except Exception as e:
-            print(e)
+        except:
             return
 
 
@@ -1042,7 +1040,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         """更新ip归属地"""
         def append_ip_location(ip: str):
             location = get_ip_location(ip)
-            locker = QMutexLocker(mutex)  # 添加到列表时要互斥
             ip_location_list.append((ip, location))
 
         # 获取用户表有, 但归属表没有的, ip列表
@@ -1197,7 +1194,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         log.info(f"[注册] 正在处理账号: {account}")
         ret = False
 
-        locker = QMutexLocker(mutex)  # 处理用户注册时要互斥
         if not self.is_record_exist("2用户管理", "账号=%s", account):
             query_card_list = self.sql_table_query_ex("3卡密管理", {"卡号": card_key})  # 查询数据库, 判断卡密是否存在
             if query_card_list:
@@ -1322,7 +1318,6 @@ class WndServer(QMainWindow, Ui_WndServer):
         card_key = client_content_dict["卡号"]
         ret = False
 
-        locker = QMutexLocker(mutex)  # 处理用户充值时要互斥
         query_user_list = self.sql_table_query("select * from 2用户管理 where 账号=%s;", account)
         if query_user_list:  # 账号存在
             query_user = query_user_list[0]

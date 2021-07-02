@@ -7,12 +7,11 @@ from threading import Thread
 from random import randint
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from concurrent.futures import ThreadPoolExecutor
 import socket
 import select
 
 from PySide2.QtGui import QIcon, QCloseEvent, QCursor, QIntValidator
-from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, QMessageBox, QHeaderView,\
+from PySide2.QtWidgets import QApplication, QStyleFactory, QMainWindow, QLabel, QMessageBox, \
     QTableWidgetItem, QMenu, QAction, QInputDialog, QLineEdit, QListWidgetItem, QTableWidget
 from PySide2.QtCore import Qt, QTimer, QMutex, QMutexLocker
 import pymysql
@@ -181,8 +180,7 @@ class WndServer(QMainWindow, Ui_WndServer):
         self.timer_min = QTimer()
         # ---------------------- 验证器 ----------------------
         self.int_validator = QIntValidator()
-        # ---------------------- 线程池 ----------------------
-        self.pool = ThreadPoolExecutor(4)  # 最大线程数为4
+
 
     def init_widgets(self):
         # ------------------------------ 窗口 ------------------------------
